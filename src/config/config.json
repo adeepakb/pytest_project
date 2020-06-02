@@ -1,0 +1,28 @@
+{
+	"testrail": {
+		"url": "https://tnl.testrail.io/",
+		"userName": "garima.gupta@byjus.com",
+		"password": "Byjusk12"
+	},
+	"desired_cap": {
+		"platformName": "Android",
+		"deviceName": "device",
+		"appPackage": "com.byjus.thelearningapp.premium",
+		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
+		"eventTimings": "True",
+		"noReset": "True",
+		"url": "http://localhost:4723/wd/hub",
+		"implicitWait": 10
+	},
+	"profile_credentials": {
+		"mobileNum": "+1-9871234",
+		"grade": "8"
+	},
+	"profile_credentials3": {
+		"mobileNum": "+91-9980307342"
+	},
+	"profile_credentials4": {
+		"mobileNum": "+91-9740255522"
+	}
+}
+	

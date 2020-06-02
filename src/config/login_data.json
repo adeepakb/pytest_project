@@ -1,0 +1,34 @@
+{
+	"login_details": {
+		"code": "+1-",
+		"un_registered_mob_no": "12345",
+		"mobile_no": "9871234",
+		"country_code": "Canada (+1)",
+		"OTP": "1729"
+	},
+	"login_details2": {
+		"code": "+91-",
+		"mobile_no": "9871234",
+		"country_code": "India (+91)",
+		"OTP": "1729"
+	},
+	"login_detail3": {
+		"code": "+91-",
+		"mobile_no": "9980307342",
+		"country_code": "India (+91)",
+		"OTP": "1729"
+	},
+	"login_details4_varientC": {
+		"code": "+91-",
+		"mobile_no": "9740255522",
+		"country_code": "India (+91)",
+		"OTP": "1728"
+	},
+	"login_detail4": {
+		"code": "+91 ",
+		"mobile_no": "9513357002",
+		"country_code": "India (+91)",
+		"OTP": "2705"
+	}
+}
+																	

@@ -1,0 +1,12 @@
+{
+	"appium_details": {
+		"app_package": "com.byjus.thelearningapp",
+		"app_activity": "com.byjus.app.onboarding.activity.SplashActivity"
+	},
+	"user_details": {
+		"name": "Byjus",
+		"mobile": "52839003",
+		"email": "test123.byjus@gmail.com",
+		"city": "Karnataka"
+	}
+}
