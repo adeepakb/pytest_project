@@ -1,0 +1,9 @@
+Appium-Python-Client==0.52
+numpy~=1.17.4
+Pillow~=6.2.1
+pytest==5.3.2
+pytest-bdd==3.2.1
+requests~=2.22.0
+selenium~=3.141.0
+opencv-python~=4.1.2.30
+pytesseract~=0.3.0
