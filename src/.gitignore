@@ -1,5 +1,4 @@
 App_logs
-tests/features
 __pycache__/
 Constants/__pycache__/
 POM_Pages/__pycache__/
