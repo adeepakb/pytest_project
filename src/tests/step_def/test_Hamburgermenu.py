@@ -48,7 +48,8 @@ def ham_verify(browser):
 @when('User taps on profile button')
 def profile_verify(browser):
     Hamburg.profile_button(browser)
-    
+
+
 @then('Verify that user should  navigate to profilescreen') 
 def profile_screen(browser):
     Hamburg.profilescreen_verify(browser)
