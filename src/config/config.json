@@ -1,8 +1,8 @@
 {
 	"testrail": {
 		"url": "https://tnl.testrail.io/",
-		"userName": "garima.gupta@byjus.com",
-		"password": "Byjusk12"
+		"userName": "reshma.nair@byjus.com",
+		"password": "Tnl@123456"
 	},
 	"desired_cap": {
 		"platformName": "Android",
