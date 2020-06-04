@@ -15,8 +15,7 @@ CommonMethods = CommonMethods()
 """storing the feature file name"""
 featureFileName = "Video player setting Behaviour"
 
-"""configuring the Logging Files"""
-base_class.setupLogs(featureFileName)
+# base_class.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 scenarios('../features/' + featureFileName + '.feature')

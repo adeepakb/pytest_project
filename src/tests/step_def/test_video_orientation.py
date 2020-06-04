@@ -10,8 +10,7 @@ video = VideoPage(browser)
 featureFileName = "Video  Orientation"
 
 
-"""configuring the Logging Files"""
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""

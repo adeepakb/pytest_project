@@ -17,7 +17,7 @@ bookmarkQnScn=BookMarkQuestionScreen(browser)
 featureFileName = 'Bookmark questions'
 
 
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 

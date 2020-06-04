@@ -9,8 +9,7 @@ video = VideoPage(browser)
 """storing the feature file name"""
 featureFileName = "videoplayer screen"
 
-"""configuring the Logging Files"""
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 scenarios('../features/'+featureFileName+'.feature')
