@@ -763,7 +763,7 @@ class BookMarkQuestionScreen():
 
             else:
                 while True:
-                    question = elements[count].get_attribute('content-desc')
+                    question = elements[count].get_attribute('text')
                     if question == None or question == '':
                         count = count + 1
                     else:
