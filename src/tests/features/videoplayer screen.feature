@@ -1,6 +1,6 @@
 Feature: videoplayer screen
 
-@Video @Sanity
+
 Scenario: Verify all elements  should be Present in Video Landscape Mode when video is playing
 	Given Launch the app online
 	And navigate to "Chemistry" library chapter list screen
@@ -17,7 +17,7 @@ Scenario: Verify all elements  should be Present in Video Landscape Mode when vi
 	And verify Seek bar in between Start and End Timer at the bottom of the Player.
 	And verify Full screen mode icon next to End timer.
 
-@Video @Sanity
+
 Scenario: Verify that when Video is in Paused state Pause icon should be Replaced with Play icon in Landscape/Portrait Mode
 	Given Launch the app online
 	And navigate to "Chemistry" library chapter list screen

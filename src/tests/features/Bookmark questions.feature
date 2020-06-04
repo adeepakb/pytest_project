@@ -35,7 +35,7 @@ Scenario: Verify that in Question screen bookmark icon appears on the top right 
 	And Tap on Test button in Instruction screen
 	Then Verify that Bookmark icon should be present in the test screen
 
-@Sanity
+
 Scenario: Verify that in the question screen if the user bookmark  any question then the bookmark icon color should be same as subject theme color and "Bookmarked" toast  message should be shown
 	Given Launch the app online and navigate to Home screen
 	And Navigate to "Chemistry" library screen
@@ -45,7 +45,6 @@ Scenario: Verify that in the question screen if the user bookmark  any question 
 	Then Verify that "Bookmarked" toast message should be displayed at the bottom of the screen
 	And Verify that bookmark icon color should be same as subject theme color
 
-#@Sanity
 Scenario: Verify that if the user unbookmark the bookmarked question in bookmarked question screen then "Bookmark removed" toast message should be shown and that particular question should be removed from the bookmark home screen.
 	Given Launch the app online and navigate to Home screen
 	And Navigate to "Physics" library screen
@@ -66,7 +65,7 @@ Scenario: Verify that selecting the bookmarked option in the test  solution filt
 	And Tap on "Bookmarked" option from the filter list
 	Then Verify that bookmarked questions should be displayed on solution screen
 
-@Sanity
+
 Scenario: Verify that user should be able to bookmark practice  questions
 	Given Launch the app online and navigate to Home screen
 	And Navigate to "Mathematics" library screen
@@ -76,7 +75,7 @@ Scenario: Verify that user should be able to bookmark practice  questions
 	Then Verify that bookmarked question should be present in Bookmark home screen under All tab
 	And Verify that bookmarked question should be present under "Mathematics" tab
 
-@Sanity
+
 Scenario: Verify that in the question screen if the user bookmark  any question then the bookmark icon color should be  same as subject theme color and "Bookmarked" toast  message should be shown
 	Given Launch the app online and navigate to Home screen
 	And Navigate to "Chemistry" library screen
@@ -85,7 +84,7 @@ Scenario: Verify that in the question screen if the user bookmark  any question 
 	Then Verify that "Bookmarked" toast message should be displayed at the bottom of the screen
 	And Verify that bookmark icon color should be same as subject theme color
 
-@Sanity
+
 Scenario: Verify that if the user unbookmark the bookmarked practice question then "Bookmark removed" toast message should be shown and that particular question should be removed from the bookmark home screen.
 	Given Launch the app online and navigate to Home screen
 	And Navigate to "Chemistry" library screen
