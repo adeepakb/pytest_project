@@ -7,8 +7,8 @@ from time import sleep
 import datetime
 import logging
 import subprocess
-
 from appium import webdriver
+from selenium.webdriver import android
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -48,7 +48,6 @@ class CommonMethods():
             return 'tab'
         else:
             return 'mobile'
-        
 
         
     def click_on_Coordinate(self, x, y):

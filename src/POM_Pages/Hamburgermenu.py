@@ -86,7 +86,7 @@ class Hamburger():
                 account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
                 CommonMethods.scrollToElement(browser, account_text)
                 expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials3', 'mobileNum')
+                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(browser)
@@ -171,12 +171,10 @@ class Hamburger():
             if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
                 CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
                 self.verify_home_page(browser)
-                CommonMethods.elementClick(browser, self.back_button_id)
             # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
                 # self.verify_badge(browser)
                 self.verify_home_page(browser)
-                CommonMethods.elementClick(browser, self.back_button_id)
             # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             elif CommonMethods.wait_for_element_visible(browser, self.allow_btn_id,
                                                         3) or CommonMethods.wait_for_element_visible(browser,

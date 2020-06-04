@@ -32,6 +32,6 @@ class BaseClass:
     def setupLogs(self,featureFileName):
         date_Time = datetime.datetime.now()
         dateTime = date_Time.strftime("%d-%m-%y, %H-%M-%S")
-        logging.basicConfig(filename='App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
-#         logging.basicConfig(filename='../../App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+        # logging.basicConfig(filename='App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+        logging.basicConfig(filename='../../App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
     

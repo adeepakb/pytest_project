@@ -38,7 +38,6 @@ scenarios('../features/'+featureFileName+'.feature')
 def loginapp(browser):
     Hamburg.navigate_to_home_screen(browser)
    
-    
 
 @given('User is in Hamburger menu')
 def ham_verify(browser):
