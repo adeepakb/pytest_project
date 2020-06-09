@@ -18,7 +18,7 @@ data_file = CONFIG_PATH
 featureFileName = 'Bookmark questions'
 
 
-class BookMarkQuestionScreen():
+class BookMarkQuestionScreen:
 
     def __init__(self, browser):
         self.browser = browser

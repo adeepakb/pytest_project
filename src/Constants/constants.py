@@ -11,3 +11,5 @@ CONFIG_PATH = PATH('../config/config.json')
 Login_Credentials = PATH('../config/login_data.json')
 Hamburger_Options = PATH('../config/application_data.json')
 Registration_data = PATH('../Test_data/Registration_data.json')
+Test_data=PATH('../Test_data/test_details.json')
+

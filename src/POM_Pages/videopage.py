@@ -7,16 +7,14 @@ from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH, Login_Credentials
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-# from appium.webdriver.common.touch_action import TouchAction
-# from POM_Pages.locators import video
-# from selenium.webdriver.common.action_chains import ActionChains
+from appium.webdriver.common.touch_action import TouchAction
+from POM_Pages.locators import video
+from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 from io import BytesIO
 import random
-# from tkinter.constants import SEL
-import sys
-# f = open("../../Test_data/featureFileName.txt","r")
-print(sys.path)
+from Utilities.generic_methods import GenericMethods
+
 f = open("../../Test_data/featureFileName.txt", "r")
 featureFileName = f.read()
 
@@ -46,6 +44,9 @@ class VideoPage:
     def __init__(self, driver):
         self.driver = driver
 
+    register_page_email_txt_bx = (By.ID, "com.byjus.thelearningapp.premium:id/etEmail")
+    register_page_register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
+    register_page_name_field = (By.ID, "com.byjus.thelearningapp.premium:id/etName")
     login_register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/primaryAction")
     registration_name_field = (By.ID, "com.byjus.thelearningapp.premium:id/etName")
     register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
@@ -79,8 +80,8 @@ class VideoPage:
     first_videoLnk_xpath = (By.XPATH,
                             "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]")
     video_frame_id = (By.ID, "com.byjus.thelearningapp.premium:id/exo_subtitles")
-    chapter_videoLnk_elements = (By.XPATH,
-                                 "//android.widget.ImageView[@resource-id = 'com.byjus.thelearningapp.premium:id/chapter_video_thumbnail_imgvw']")
+    chapter_videoLnk_elements = (
+    By.XPATH, "//android.widget.ImageView[@resource-id = 'com.byjus.thelearningapp.premium:id/chapter_video_thumbnail_imgvw']")
     tab_chapter_videoLnk_elements = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_view_group")
     video_pause_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/exo_pause")
     video_play_btn = (By.ID, "com.byjus.thelearningapp.premium:id/exo_play")
@@ -141,8 +142,7 @@ class VideoPage:
                                     "//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index = 1]")
     video_title_in_list_id = (By.ID, "com.byjus.thelearningapp.premium:id/video_title_2")
     video_title = (By.ID, "com.byjus.thelearningapp.premium:id/video_title_2")
-    video_name_list = (
-    By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
+    video_name_list = (By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
     video_auto_cancelBtn_id = (By.XPATH, "//android.widget.TextView[@text = 'Cancel']")
     video_tab_auto_cancel_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnCancelAutoPlay")
     video_chapter_name_id = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_title_2")
@@ -159,7 +159,9 @@ class VideoPage:
     video_player_list_lay = (By.ID, "com.byjus.thelearningapp.premium:id/video_list_lay")
     video_grade_selection_btn = (By.ID, "com.byjus.thelearningapp.premium:id/tvGrade")
     mob_video_title_on_player = (By.ID, "com.byjus.thelearningapp.premium:id/videoTitle")
-    #     video Locator for tab
+    analysis_screen_start_test = (By.ID, "com.byjus.thelearningapp.premium:id/analytics_empty_state_start")
+
+    #     video Locator for tab  
     video_list_btn_tab = (By.ID, 'com.byjus.thelearningapp.premium:id/video_list')
     video_list_close_btn_tab = (By.ID, 'com.byjus.thelearningapp.premium:id/video_list_close')
     video_tab_videoframe = (By.ID, "com.byjus.thelearningapp.premium:id/exo_subtitles")
@@ -182,7 +184,7 @@ class VideoPage:
     video_10s_frwrd_text = (By.XPATH,
                             "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/center_area']//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/exo_ffwd']//android.widget.TextView")
 
-    #     Video Auto Enable
+    #     Video Auto Enable 
     video_next_video_title = (By.XPATH,
                               "//android.widget.LinearLayout[@resource-id = 'com.byjus.thelearningapp.premium:id/llNextVideoInfo']/android.widget.TextView[@resource-id ='com.byjus.thelearningapp.premium:id/tvNextVideoTitle']")
     tab_video_next_video_title = (By.ID, "com.byjus.thelearningapp.premium:id/tvNextVideoTitle")
@@ -200,8 +202,8 @@ class VideoPage:
                        "//android.widget.TextView[@text = 'Test']//parent::android.widget.RelativeLayout//android.widget.LinearLayout")
     video_practice_icon = (By.XPATH,
                            "//android.widget.TextView[@text = 'Practice']//parent::android.widget.RelativeLayout//android.widget.LinearLayout")
-    video_test_lable = (By.XPATH,
-                        "//android.widget.TextView[@text = 'Test' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
+    video_test_lable = (
+    By.XPATH, "//android.widget.TextView[@text = 'Test' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
     video_practice_lable = (By.XPATH,
                             "//android.widget.TextView[@text = 'Practice' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
     video_test_x_test = (By.XPATH,
@@ -226,12 +228,32 @@ class VideoPage:
     video_practice_question_screen = (By.ID, "com.byjus.thelearningapp.premium:id/practiceProgressParent")
 
     #     Journey Locators
-    first_journey_card = (By.XPATH,
-                          "//androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvChapterList']/android.widget.LinearLayout[@index=1]//androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/android.widget.RelativeLayout[@index=0]")
+    first_journey_card = (
+    By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvSubtopicName']")
     journey_start_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnPositive")
+    test_screen_start_elements = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_test_list_item_txtv_taketest")
+    test_screen_Test_btn = (By.ID, "com.byjus.thelearningapp.premium:id/test_start_button")
+    test_submit_Btn = (By.ID, "//android.widget.Button[@text='Submit']")
+    noneOftheAbove_xpath = (By.ID, "com.google.android.gms:id/cancel")
 
     def click_on_video(self, browser):
         browser.find_element_by_id(self.video).click()
+
+    def reset_app(self):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+
+    def login_the_user(self, browser, count):
+        if count == False:
+            self.reset_app()
+            GenericMethods.navigate_to_login_page(browser, getdata(Login_Credentials, 'login_details', 'grade'))
+            self.login_to_home_page(browser)
+            logging.info("successfully App resgistered with new number")
+            count = True
+            return count
+        else:
+            logging.info("Already App is resgistered with user")
 
     def click_test_btn(self, browser):
         browser.find_element_by_id(self.Btn_test).click()
@@ -314,7 +336,7 @@ class VideoPage:
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_details', 'mobile_no'), self.phone_num)
         CommonMethods.wait_for_locator(browser, self.loginBtn_id, 10)
         CommonMethods.elementClick(browser, self.loginBtn_id)
-        if CommonMethods.wait_for_element_visible(browser, self.login_register_btn, 3):
+        if CommonMethods.wait_for_element_visible(browser, self.login_register_btn, 5):
             self.user_registration(browser)
         CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_details', 'OTP'), self.OtpTxtBx_id)
@@ -325,7 +347,7 @@ class VideoPage:
         self.login_to_home_page(browser)
 
     def verify_badge(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 7):
+        if CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 10):
             CommonMethods.elementClick(browser, self.video_badge_close_btn)
 
     def verify_corana_dialog(self, browser):
@@ -346,12 +368,16 @@ class VideoPage:
             subject_rgb = (By.XPATH, "//android.widget.TextView[@text=\'" + text + "\']")
             if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog_ok_btn, 10):
                 CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
-                self.verify_home_page(browser)
+                self.verify_badge(browser)
+                #                     self.verify_home_page(browser)
                 VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 5):
                 self.verify_badge(browser)
-                self.verify_home_page(browser)
+                #                     self.verify_home_page(browser)
                 VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+
+            elif CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 5):
+                self.verify_badge(browser)
             else:
                 CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
                 CommonMethods.run(
@@ -359,7 +385,6 @@ class VideoPage:
                 self.verify_to_login_page(browser)
                 self.verify_corana_dialog(browser)
                 self.verify_badge(browser)
-                self.verify_home_page(browser)
                 VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
@@ -460,7 +485,8 @@ class VideoPage:
         try:
             device = CommonMethods.get_device_type(browser)
             if device == 'mobile':
-                CommonMethods.elementClick(browser, self.first_journey_card)
+                ele = CommonMethods.getElements(browser, self.first_journey_card)
+                ele[0].click()
             elif device == 'tab':
                 logging.info("handle")
             else:
@@ -538,6 +564,9 @@ class VideoPage:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_pause_btn')
         except:
             CommonMethods.exception(browser, featureFileName, 'tap_on_pause_btn')
+
+    def tap_on_player_screen(self):
+        CommonMethods.run('adb shell input tap 40 200')
 
     def verify_play_btn_in_lanscape(self, browser):
         try:
@@ -1071,9 +1100,9 @@ class VideoPage:
         try:
             sleep(3)
             start_time = self.get_video_start_time(browser)
-            sleep(10)
+            sleep(16)
             end_time = self.get_video_start_time(browser)
-            check = (end_time - start_time) < 10 > 5
+            check = (end_time - start_time) <= 16
             self.verify_true_or_false(browser, check, 'verify_speed_down_compare_to_normal', '0.75x is shown')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_speed_down_compare_to_normal')
@@ -1084,9 +1113,9 @@ class VideoPage:
         try:
             sleep(3)
             start_time = self.get_video_start_time(browser)
-            sleep(10)
+            sleep(16)
             end_time = self.get_video_start_time(browser)
-            check = (end_time - start_time) < 8 > 5
+            check = (end_time - start_time) <= 12
             self.verify_true_or_false(browser, check, 'verify_speed_down_compare_to_075x', '0.5x is shown')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_speed_down_compare_to_075x')
@@ -1098,9 +1127,9 @@ class VideoPage:
             self.wait_till_video_load(browser)
             start_time = self.get_video_start_time(browser)
             self.play_video(browser)
-            sleep(10)
+            sleep(16)
             end_time = self.get_video_start_time(browser)
-            check = (end_time - start_time) > 10
+            check = (end_time - start_time) >= 16
             self.verify_true_or_false(browser, check, 'verify_speed_up_compare_to_normal', '1.25x is shown')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_speed_up_compare_to_normal')
@@ -1112,9 +1141,9 @@ class VideoPage:
             sleep(3)
             start_time = self.get_video_start_time(browser)
             self.play_video(browser)
-            sleep(10)
+            sleep(16)
             end_time = self.get_video_start_time(browser)
-            check = (end_time - start_time) > 12
+            check = (end_time - start_time) >= 18
             self.verify_true_or_false(browser, check, 'verify_speed_up_compare_to_125x', '1.5x is shown')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_speed_up_compare_to_125x')
@@ -1280,7 +1309,7 @@ class VideoPage:
     #                 pytest.fail("Failed Due to Locator in Video Page")
     #         except NoSuchElementException:
     #             CommonMethods.noSuchEleExcept(browser,featureFileName,'tap_on_pause_btn')
-    #
+    #         
     #         except :
     #             CommonMethods.exception(browser,featureFileName,'tap_on_pause_btn')
 
@@ -1399,7 +1428,7 @@ class VideoPage:
                 check = orientation == 'LANDSCAPE'
                 self.verify_true_or_false(browser, check, 'verify_video_playing_in_landscape', "Landscape")
             elif device == 'mobile':
-                # check1 = not CommonMethods.wait_for_element_visible(browser, self.video_player_list_lay, 3)
+                #                 check1 = not CommonMethods.wait_for_element_visible(browser, self.video_player_list_lay, 3)
                 sleep(3)
                 orientation = CommonMethods.get_screen_orientation(browser)
                 check = orientation == 'LANDSCAPE'
@@ -1449,7 +1478,7 @@ class VideoPage:
 
     def video_play_without_any_interruption_in_potrait(self, browser):
         try:
-            #video_time_landscape = self.video_title_in_list_id
+            #             video_time_landscape = self.video_title_in_list_id
             VideoPage.video_start_time_portrait = self.get_video_start_time(browser)
             check = VideoPage.video_start_time_portrait >= VideoPage.video_start_time_landscape
             self.verify_true_or_false(browser, check, 'video_play_without_any_interruption_in_landscape',
@@ -1578,7 +1607,7 @@ class VideoPage:
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_autoloded_and_played')
 
-    #
+    #             
 
     #     def get_video_end_time(self, browser):
     #         check = True
@@ -1586,8 +1615,8 @@ class VideoPage:
     #         wait_count = 0
     #         try:
     #             while check and wait_count < 10:
-    #                 wait_count += 1
-    #                 CommonMethods.elementClick(browser, self.video_tab_videoframe)
+    #                 wait_count += 1 
+    #                 CommonMethods.elementClick(browser, self.video_tab_videoframe) 
     #                 time = CommonMethods.getTextOfElement(browser, self.remaingTime_id)
     #                 if time is not None:
     #                     after_split = time.split(':')
@@ -1595,7 +1624,7 @@ class VideoPage:
     #                     sec = int(after_split[1])
     #                     Total_sec = minutes*60 + sec
     #                     check = False
-    #                     return Total_sec
+    #                     return Total_sec        
     #         except:
     #             logging.info('Problem in fetching end progression time')
 
@@ -1657,6 +1686,8 @@ class VideoPage:
                             logging.info(title + " is highlighted ")
                             break
             elif device == 'mobile':
+                self.wait_till_autoload_completes(browser)
+                CommonMethods.wait_for_element_visible(browser, self.video_title_in_list_id, 10)
                 title = CommonMethods.getAttributeOfElement(browser, 'text', self.video_title_in_list_id)
                 elements_list = CommonMethods.getElements(browser, self.video_name_list)
                 for i in range(len(elements_list)):
@@ -1962,7 +1993,7 @@ class VideoPage:
     #                 pytest.fail("Failed Due to Locator in Video Page")
     #         except NoSuchElementException:
     #             CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_video_in_potrait')
-    #
+    #         
     #         except :
     #             CommonMethods.exception(browser,featureFileName,'verify_video_in_potrait')
     def verify_video_in_landscape(self, browser):
@@ -2280,7 +2311,7 @@ class VideoPage:
     #                 CommonMethods.elementClick(browser,video_title_xapth)
     #         except NoSuchElementException:
     #             CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_pause_btn')
-    #
+    # 
     #         except:
     #             CommonMethods.exception(browser, featureFileName, 'tap_pause_btn')
 
@@ -2465,8 +2496,8 @@ class VideoPage:
 
     def verify_chapter_name_color_with_subject_theme(self, browser):
         try:
-            css_data = browser.find_element_by_id(
-                'com.byjus.thelearningapp.premium:id/video_title_2').value_of_css_property("style")
+            css_data = browser.find_element_by_id('com.byjus.thelearningapp.premium:id/video_title_2').value_of_css_property(
+                "style")
 
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_chapter_name_color_with_subject_theme')
@@ -2474,7 +2505,7 @@ class VideoPage:
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_chapter_name_color_with_subject_theme')
 
-    # Video Utility methods
+    # Video Utility methods 
     def verify_true_or_false(self, browser, check, method_name, ele_name):
         if check == True:
             logging.info('The ' + ele_name + ' is present on screen')
@@ -2485,7 +2516,7 @@ class VideoPage:
 
     def verify_false(self, browser, check, method_name, ele_name):
         if check == False:
-            logging.info('The ' + ele_name + ' is present on screen')
+            logging.info('The ' + ele_name + ' is not present on screen')
         else:
             logging.info("Failed due to Element not visible in " + method_name)
             CommonMethods.takeScreenShot(browser, featureFileName)
@@ -2596,10 +2627,12 @@ class VideoPage:
     def turn_on_auto_play(self, browser):
         try:
             self.wait_till_video_load(browser)
-            self.pause_video(browser)
+            #             self.pause_video(browser)
+            self.tap_on_video_player_icon(browser, self.video_pause_btn_id)
             x, y = self.get_x_y_coordinate(browser, self.video_progressBar_id)
             CommonMethods.run('adb shell input tap {} {}'.format(x, y))
-            self.pause_video(browser)
+            #             self.pause_video(browser)
+            self.tap_on_video_player_icon(browser, self.video_pause_btn_id)
             CommonMethods.elementClick(browser, self.video_settingIcon_id)
             CommonMethods.wait_for_element_visible(browser, self.video_auto_enable_switch, 5)
             status = CommonMethods.getAttributeOfElement(browser, 'checked', self.video_auto_enable_switch)
@@ -2758,10 +2791,15 @@ class VideoPage:
     def complete_video(self, browser):
         try:
             self.wait_till_video_load(browser)
-            self.pause_video(browser)
+            #             self.pause_video(browser)
+            self.tap_on_video_player_icon(browser, self.video_pause_btn_id)
             self.end_the_video(browser)
-            self.play_video(browser)
-            check = CommonMethods.wait_for_element_visible(browser, self.video_play_btn, 60)
+            self.tap_on_video_player_icon(browser, self.video_play_btn)
+            check = CommonMethods.wait_for_element_visible(browser, self.video_play_btn,
+                                                           60) or CommonMethods.wait_for_element_visible(browser,
+                                                                                                         self.video_frame_pause_btn,
+                                                                                                         60) or CommonMethods.wait_for_element_visible(
+                browser, self.video_auto_cancelBtn_id, 60)
             self.verify_true_or_false(browser, check, 'complete_video', 'Play Btn')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'complete_video')
@@ -2803,7 +2841,8 @@ class VideoPage:
     def wait_till_autoload_completes(self, browser):
         try:
             VideoPage.next_video_title = CommonMethods.getTextOfElement(browser, self.video_next_video_title)
-            self.wait_till_element_visible(browser, self.video_auto_play_btn)
+            CommonMethods.wait_for_element_visible(browser, self.video_auto_play_btn, 5)
+            sleep(7)  # till the auto load completes
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'wait_till_autoload_completes')
         except:
@@ -2853,7 +2892,7 @@ class VideoPage:
                 element = ele[i]
                 check = element.get_attribute('selected')
                 if check == 'true':
-                    return i + 1  # index starts with zero so we are adding 1
+                    return i + 1  # index starts with zero so we are adding 1 
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_last_video_in_list_and_complete')
         except:
@@ -2944,7 +2983,7 @@ class VideoPage:
         try:
             while check and wait_count < 15:
                 wait_count += 1
-                #                 self.pause_video(browser)
+                #                 self.pause_video(browser) 
                 x1, y1, x2, y2 = self.get_element_coordinates(browser, self.video_progressBar_id)
                 x2 = x2 - 33
                 y2 = y2 - 22
@@ -2960,7 +2999,7 @@ class VideoPage:
         try:
             while check and wait_count < 15:
                 wait_count += 1
-                #                 self.pause_video(browser)
+                #                 self.pause_video(browser) 
                 x1, y1, x2, y2 = self.get_element_coordinates(browser, self.video_progressBar_id)
                 CommonMethods.run('adb shell input tap {} {}'.format(x1, y1))
                 #                 CommonMethods.run('adb shell input touchscreen swipe {} {} {} {}'.format(x1,y2,x2, y2))
@@ -3196,11 +3235,10 @@ class VideoPage:
 
     def verify_previous_icon_not_on_video(self, browser):
         try:
-            check = not CommonMethods.wait_for_element_visible(browser, self.video_play_previous_btn, 5)
-            self.verify_true_or_false(browser, check, 'verify_previous_icon_on_video', 'previous btn')
+            check = CommonMethods.wait_for_element_visible(browser, self.video_play_previous_btn, 10)
+            self.verify_false(browser, check, 'verify_previous_icon_on_video', 'previous btn')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_previous_icon_on_video')
-
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_previous_icon_on_video')
 
@@ -3218,9 +3256,24 @@ class VideoPage:
     def tap_on_keyFocus_area(self, browser):
         try:
             CommonMethods.scrollToElement(browser, 'Key focus areas')
-            check = CommonMethods.wait_for_element_visible(browser, self.video_keyFocus_1st_lnk, 5)
+            check = CommonMethods.wait_for_element_visible(browser, self.video_keyFocus_1st_lnk, 7)
             if check == True:
                 CommonMethods.elementClick(browser, self.video_keyFocus_1st_lnk)
+            elif CommonMethods.wait_for_element_visible(browser, self.analysis_screen_start_test, 7):
+                CommonMethods.elementClick(browser, self.analysis_screen_start_test)
+                subject = (By.XPATH, "//android.widget.TextView[@text='Physics']")
+                CommonMethods.elementClick(browser, subject)
+                CommonMethods.scrollToElementAndClick(browser, "Tests")
+                Start = (By.XPATH, "//android.widget.TextView[@text='Start']")
+                ele = CommonMethods.getElements(browser, Start)
+                ele[0].click()
+                CommonMethods.elementClick(browser, (By.ID, "com.byjus.thelearningapp.premium:id/test_start_button"))
+                CommonMethods.elementClick(browser, (By.XPATH, "//android.widget.Button[@text='Submit']"))
+                CommonMethods.elementClick(browser, (By.XPATH, "//android.widget.Button[@text='Submit']"))
+                CommonMethods.scrollToElement(browser, 'Key focus areas')
+                check = CommonMethods.wait_for_element_visible(browser, self.video_keyFocus_1st_lnk, 7)
+                if check == True:
+                    CommonMethods.elementClick(browser, self.video_keyFocus_1st_lnk)
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_keyFocus_area')
 
@@ -3228,7 +3281,7 @@ class VideoPage:
             CommonMethods.exception(browser, featureFileName, 'tap_on_keyFocus_area')
 
     #     def end_the_video(self, browser):
-    #         try:
+    #         try: 
     #             self.wait_till_video_load(browser)
     #             x,y = self.get_element_coordinates(browser, self.video_progressBar_id)
     #             self.click_on_video_icon(browser, self.video_play_btn)
@@ -3236,10 +3289,10 @@ class VideoPage:
     #             y2 = y-10
     #             sleep(3)
     #             CommonMethods.elementClick(browser, self.video_frame_id)
-    #             self.click_on_x_y_coordinate(x2, y2)
+    #             self.click_on_x_y_coordinate(x2, y2) 
     #             CommonMethods.wait_for_element_visible(browser, self.video_play_btn, 60)
     #         except:
-    #             logging.info("Error in ending the video")
+    #             logging.info("Error in ending the video")  
 
     def verify_comming_soon_on_video_card(self, browser, chapter):
         try:
@@ -3404,6 +3457,27 @@ class VideoPage:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_test_on_video_sub_list')
         except:
             CommonMethods.exception(browser, featureFileName, 'tap_on_test_on_video_sub_list')
+
+    def tap_on_start_btn_in_test_screen_finish_test(self, browser):
+        try:
+            device = CommonMethods.get_device_type(browser)
+            if device == 'mobile':
+                start_btn = CommonMethods.getElements(browser, self.test_screen_start_elements)
+                start_btn[0].click()
+                CommonMethods.wait_for_element_visible(browser, self.test_screen_Test_btn, 5)
+                CommonMethods.elementClick(browser, self.test_screen_Test_btn)
+                CommonMethods.wait_for_element_visible(browser, self.test_screen_Test_btn, 5)
+                CommonMethods.elementClick(browser, self.test_screen_Test_btn)
+                #self.verify_true_or_false(browser, check, 'tap_on_start_btn_in_test_screen', 'Test link')
+            elif device == 'tab':
+                start_btn = CommonMethods.getElements(browser, self.test_screen_start_elements)
+                start_btn[0].click()
+                check = CommonMethods.wait_for_element_visible(browser, self.test_screen_Test_btn, 5)
+                self.verify_true_or_false(browser, check, 'tap_on_start_btn_in_test_screen', 'Test link')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_start_btn_in_test_screen')
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_start_btn_in_test_screen')
 
     def tap_on_practice_on_video_sub_list(self, browser):
         try:
@@ -3750,3 +3824,4 @@ class VideoPage:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_video_icons_should_apper')
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_video_icons_should_apper')
+

@@ -6,13 +6,14 @@ browser = fixture = 'browser'
 baseClass = BaseClass()
 video = VideoPage(browser)
 
+count = False
+
 
 """storing the feature file name"""
 featureFileName = "video Autoplay Disabled"
 
 
-"""configuring the Logging Files"""
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
@@ -21,8 +22,9 @@ scenarios('../features/'+featureFileName+'.feature')
 
 @given("Launch the app online")
 def launchAppOnline(browser):
+    # global count
+    # count = video.login_the_user(browser, count)
     pass
-
 
 @given(parsers.parse('Navigate to "{text}" library chapter list screen'))
 def navigateToHomeScreen(browser,text): 
@@ -34,6 +36,21 @@ def navigateToHomeScreen(browser,text):
 def tap_on_first_video_lnk(browser):
     video.start_the_video(browser)
     
+ 
+@when('Tap on first video in subtopic list screen')
+def tap_on_first_video(browser):
+    video.tap_on_first_video_lnk(browser)
+    
+    
+@when('Tap on the last video in video list')
+def tap_on_last_video_in_list(browser):
+    video.tap_on_last_video_in_list(browser)
+
+
+@when('complete the video')
+def complete_video(browser):
+    video.complete_video(browser)
+ 
     
 @when('Tap on the first video in subtopic list screen  and complete a video')
 def tap_on_first_video_and_complete(browser):
@@ -80,9 +97,9 @@ def tap_on_last_video_lnk(browser):
     video.click_on_video_last_lnk(browser)
     
      
-@when('Tap on the last  video in subtopic list screen and complete a video')
-def tap_on_last_video_in_list(browser):
-    video.tap_on_last_video_in_list_and_complete(browser)
+# @when('Tap on the last  video in subtopic list screen and complete a video')
+# def tap_on_last_video_in_list2(browser):
+#     video.tap_on_last_video_in_list_and_complete(browser)
     
     
 @then('Verify that Next button option should not be shown on video player screen')
@@ -113,11 +130,6 @@ def turn_off_auto_play2(browser):
 @then('verify Replay icon is shown on the video player screen')
 def verify_reply_icon_is_shown(browser):
     video.verify_reply_icon_is_shown(browser)
-    
-
-@when('complete the video')
-def complete_video(browser):
-    video.complete_video(browser)
 
 
 @then('Verify Previous button ,Next button should be displayed on video player screen')

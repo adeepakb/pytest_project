@@ -29,3 +29,11 @@ Scenario: Verify that tapping on full screen mode in Video player should continu
 	And Tap on Landscape option in video
 	Then verify video continues to play without any interruption in landscape
 
+Scenario: On video player screen if user taps on device back button then orientation of the video should change to Portrait mode
+   Given Launch the app online
+   And navigate to "Chemistry" library chapter list screen
+   When Tap on any video from chapter list screen
+   And Tap on Landscape option in video
+   And verify video is played in landscape mode
+   And Tap on device back button
+   Then verify video continues to play without any interruption in potrait

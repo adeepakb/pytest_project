@@ -6,11 +6,13 @@ browser = fixture = 'browser'
 baseClass = BaseClass()
 video = VideoPage(browser)
 
+count = False
+
+
 """storing the feature file name"""
 featureFileName = "Videoplayer"
 
-"""configuring the Logging Files"""
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 scenarios('../features/'+featureFileName+'.feature')
@@ -18,6 +20,8 @@ scenarios('../features/'+featureFileName+'.feature')
 
 @given("Launch the app online")
 def launchAppOnline(browser):
+    # global count
+    # count = video.login_the_user(browser, count)
     pass
     
 

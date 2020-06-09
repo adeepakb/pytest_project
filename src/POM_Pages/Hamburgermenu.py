@@ -37,7 +37,7 @@ data_file = CONFIG_PATH
 featureFileName = "Hamburger Menu"
 
 
-class Hamburger():
+class Hamburger:
     def __init__(self, browser):
         self.browser = browser
 

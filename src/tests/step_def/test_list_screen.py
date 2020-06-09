@@ -4,7 +4,7 @@ from selenium.webdriver.common import keys
 from appium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from pytest_bdd import scenarios, given, when, then, parsers,scenario
-from POM_Pages.engine_test_list_screen import EngineTestListScreen
+from POM_Pages.engine_test_screen import EngineTestScreen
 import pytest
 import logging
 import datetime
@@ -13,19 +13,19 @@ browser = fixture = 'browser'
 
 
 baseClass = BaseClass()
-testlistscn = EngineTestListScreen(browser)
+testlistscn = EngineTestScreen(browser)
 featureFileName = 'Test List Screen'
 
 
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 
 scenarios('../features/' + featureFileName + '.feature')
 
-
 @given('Launch the app online and navigate to Home screen')
+@given('Launch the app and navigate to Home screen')
 def loginapp(browser):
     testlistscn.navigate_to_home_screen(browser)
 
@@ -55,7 +55,7 @@ def verify_chapter_name(browser):
 
 @then('Verify Chapter icon should be shown top right side of the screen')
 def verify_chapter_icon(browser):
-    testlistscn.verify_chapter_icon(browser)
+    testlistscn.verify_header_icon(browser)
     
 @then(parsers.parse('Verify "{text}" label'))
 def verify_the_text(browser,text):
