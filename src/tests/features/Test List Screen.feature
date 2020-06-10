@@ -157,26 +157,26 @@ Scenario: Verify on tapping Revise button user should  lands on instruction scre
 	Then Verify user should redirect to Instruction screen
 
 
-Scenario: OFFLINE MODE: Verify that tapping on Start button on objective test card displays an toaster message 'Please connect to network and try again later.' if the test is not downloaded.
-	Given Launch the app and navigate to Home screen
-	And Navigate to "Geography" library screen
-	When Tap on the "Test" option
-	And Verify that user lands on the "Test List" screen
-	And disconnect device wifi/mobile data
-	And Tap on Start button
-	Then Verify text message "Please connect to network and try again later." shown at the bottom of the test list screen
-	And connect device wifi/mobile data
+#Scenario: OFFLINE MODE: Verify that tapping on Start button on objective test card displays an toaster message 'Please connect to network and try again later.' if the test is not downloaded.
+#	Given Launch the app and navigate to Home screen
+#	And Navigate to "Geography" library screen
+#	When Tap on the "Test" option
+#	And Verify that user lands on the "Test List" screen
+#	And disconnect device wifi/mobile data
+#	And Tap on Start button
+#	Then Verify text message "Please connect to network and try again later." shown at the bottom of the test list screen
+#	And connect device wifi/mobile data
 
 
-Scenario: OFFLINE MODE: Verify that tapping on Revise button on subjective test card displays an toaster message 'Please connect to network and try again later.' if the test is not downloaded.
-	Given Launch the app and navigate to Home screen
-	And Navigate to "Physics" library screen
-	When Tap on the "Test" option
-	And Verify that user lands on the "Test List" screen
-	And disconnect device wifi/mobile data
-	And Tap on Revise button
-	Then Verify text message "Please connect to network and try again later." shown at the bottom of the test list screen
-	And connect device wifi/mobile data
+#Scenario: OFFLINE MODE: Verify that tapping on Revise button on subjective test card displays an toaster message 'Please connect to network and try again later.' if the test is not downloaded.
+#	Given Launch the app and navigate to Home screen
+#	And Navigate to "Physics" library screen
+#	When Tap on the "Test" option
+#	And Verify that user lands on the "Test List" screen
+#	And disconnect device wifi/mobile data
+#	And Tap on Revise button
+#	Then Verify text message "Please connect to network and try again later." shown at the bottom of the test list screen
+#	And connect device wifi/mobile data
 
 
 Scenario: OFFLINE MODE: Verify that user should redirect to the highlights screen on tapping analyse button
