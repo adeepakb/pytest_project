@@ -29,16 +29,16 @@ Scenario: Verify that elements of Objective test card should be present
 	And Verify "Start" button should shown in front of objective test
 
 
-Scenario: Verify that If the user has already taken the test then Start button should be replaced with Analyse text and Retake test icon.
-	Given Launch the app and navigate to Home screen
-	And Navigate to "Biology" library screen
-	And Tap on the "Test" option
-	And Verify that user lands on the "Test List" screen
-	When Tap on Start button
-	And Take a test
-	And Submit the test
-	Then Verify "Start" button should be replaced with "Analyse" text
-	And Verify retake test icon should be shown before Analyse text with chevron icon
+#Scenario: Verify that If the user has already taken the test then Start button should be replaced with Analyse text and Retake test icon.
+#	Given Launch the app and navigate to Home screen
+#	And Navigate to "Biology" library screen
+#	And Tap on the "Test" option
+#	And Verify that user lands on the "Test List" screen
+#	When Tap on Start button
+#	And Take a test
+#	And Submit the test
+#	Then Verify "Start" button should be replaced with "Analyse" text
+#	And Verify retake test icon should be shown before Analyse text with chevron icon
 
 
 Scenario: Verify that tapping on Retake test icon  should redirect the user to Instruction screen followed by tapping on test button should take the user to particular objective test Question screen
@@ -104,13 +104,13 @@ Scenario: Verify the elements of test list screen of special subjects
 	And Verify Test cards should be display below the Tests label
 
 
-Scenario: Verify on tapping start button user should  lands on instruction screen
-	Given Launch the app and navigate to Home screen
-	And Navigate to "Biology" library screen
-	And Tap on the "Test" option
-	And Verify that user lands on the "Test List" screen
-	When Tap on Start button
-	Then Verify user should redirect to Instruction screen
+#Scenario: Verify on tapping start button user should  lands on instruction screen
+#	Given Launch the app and navigate to Home screen
+#	And Navigate to "Biology" library screen
+#	And Tap on the "Test" option
+#	And Verify that user lands on the "Test List" screen
+#	When Tap on Start button
+#	Then Verify user should redirect to Instruction screen
 
 
 Scenario: Verify user should land on test list screen if user taps on test card from the video list screen
