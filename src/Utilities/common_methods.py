@@ -115,7 +115,10 @@ class CommonMethods():
             return False
 
     def run(self, command):
+        subprocess.Popen('adb connect in-cjb.headspin.io:7157', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        subprocess.Popen('adb disconnect in-cjb.headspin.io:7157', shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
         return sub.communicate()
 
     def element_click_using_x_y(self, x, y):
