@@ -51,12 +51,12 @@ Scenario: Verify that if the user taps on "Next"[>I] icon, then the next video s
 	Then Verify that next video is played
 
 
-#Scenario: Verify that if the user taps on "Previous"[I<] icon, the previous video should be played from the beginning
-#	Given Launch the app online
-#	And navigate to "Chemistry" library chapter list screen
-#	And Tap on any video from chapter list screen
-#	And Autoplay option should be  disabled for  Videos
-#	When Tap on the second video in subtopic list screen
-#	And complete the video
-#	And Tap on Previous icon [|<]
-#	Then Verify that previous video is played
+Scenario: Verify that if the user taps on "Previous"[I<] icon, the previous video should be played from the beginning
+	Given Launch the app online
+	And navigate to "Chemistry" library chapter list screen
+	And Tap on any video from chapter list screen
+	And Autoplay option should be  disabled for  Videos
+	When Tap on the second video in subtopic list screen
+	And complete the video
+	And Tap on Previous icon [|<]
+	Then Verify that previous video is played

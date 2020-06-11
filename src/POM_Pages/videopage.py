@@ -56,7 +56,7 @@ class VideoPage:
     practice_continue_btn = (By.ID, "com.byjus.thelearningapp.premium:id/primaryAction")
     practice_submit_btn = (By.ID, "com.byjus.thelearningapp.premium:id/action_morph_btn")
     practice_2nd_answer = (
-    By.XPATH, "//android.widget.ListView//android.view.View[@index=1]//android.view.View[@index=1]")
+        By.XPATH, "//android.widget.ListView//android.view.View[@index=1]//android.view.View[@index=1]")
     practice_start_practice_btn = (By.ID, "com.byjus.thelearningapp.premium:id/tvStartPractice")
     homescreen_corana_dialog_ok_btn = (By.XPATH, "//android.widget.TextView[@text = 'OK']")
     homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
@@ -81,7 +81,8 @@ class VideoPage:
                             "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]")
     video_frame_id = (By.ID, "com.byjus.thelearningapp.premium:id/exo_subtitles")
     chapter_videoLnk_elements = (
-    By.XPATH, "//android.widget.ImageView[@resource-id = 'com.byjus.thelearningapp.premium:id/chapter_video_thumbnail_imgvw']")
+        By.XPATH,
+        "//android.widget.ImageView[@resource-id = 'com.byjus.thelearningapp.premium:id/chapter_video_thumbnail_imgvw']")
     tab_chapter_videoLnk_elements = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_view_group")
     video_pause_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/exo_pause")
     video_play_btn = (By.ID, "com.byjus.thelearningapp.premium:id/exo_play")
@@ -142,7 +143,8 @@ class VideoPage:
                                     "//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index = 1]")
     video_title_in_list_id = (By.ID, "com.byjus.thelearningapp.premium:id/video_title_2")
     video_title = (By.ID, "com.byjus.thelearningapp.premium:id/video_title_2")
-    video_name_list = (By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
+    video_name_list = (
+        By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
     video_auto_cancelBtn_id = (By.XPATH, "//android.widget.TextView[@text = 'Cancel']")
     video_tab_auto_cancel_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnCancelAutoPlay")
     video_chapter_name_id = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_title_2")
@@ -169,7 +171,7 @@ class VideoPage:
     video_badge_close_btn = (By.ID, "com.byjus.thelearningapp.premium:id/ivCloseBtn")
     video_auto_enable_switch = (By.ID, "com.byjus.thelearningapp.premium:id/swAutoplay")
     video_play_list_elements = (
-    By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
+        By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/videoName']")
     video_practice_lnk = (By.XPATH, "//android.widget.TextView[@text = 'Practice']")
     video_auto_play_btn = (By.ID, "com.byjus.thelearningapp.premium:id/autoPlayProgressView")
     video_videos_list_in_video_list_lay_elements = (By.ID, "com.byjus.thelearningapp.premium:id/videoItem")
@@ -203,7 +205,8 @@ class VideoPage:
     video_practice_icon = (By.XPATH,
                            "//android.widget.TextView[@text = 'Practice']//parent::android.widget.RelativeLayout//android.widget.LinearLayout")
     video_test_lable = (
-    By.XPATH, "//android.widget.TextView[@text = 'Test' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
+        By.XPATH,
+        "//android.widget.TextView[@text = 'Test' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
     video_practice_lable = (By.XPATH,
                             "//android.widget.TextView[@text = 'Practice' and @resource-id = 'com.byjus.thelearningapp.premium:id/primaryText']")
     video_test_x_test = (By.XPATH,
@@ -229,7 +232,7 @@ class VideoPage:
 
     #     Journey Locators
     first_journey_card = (
-    By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvSubtopicName']")
+        By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvSubtopicName']")
     journey_start_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnPositive")
     test_screen_start_elements = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_test_list_item_txtv_taketest")
     test_screen_Test_btn = (By.ID, "com.byjus.thelearningapp.premium:id/test_start_button")
@@ -2496,7 +2499,8 @@ class VideoPage:
 
     def verify_chapter_name_color_with_subject_theme(self, browser):
         try:
-            css_data = browser.find_element_by_id('com.byjus.thelearningapp.premium:id/video_title_2').value_of_css_property(
+            css_data = browser.find_element_by_id(
+                'com.byjus.thelearningapp.premium:id/video_title_2').value_of_css_property(
                 "style")
 
         except NoSuchElementException:
@@ -2795,11 +2799,9 @@ class VideoPage:
             self.tap_on_video_player_icon(browser, self.video_pause_btn_id)
             self.end_the_video(browser)
             self.tap_on_video_player_icon(browser, self.video_play_btn)
-            check = CommonMethods.wait_for_element_visible(browser, self.video_play_btn,
-                                                           60) or CommonMethods.wait_for_element_visible(browser,
-                                                                                                         self.video_frame_pause_btn,
-                                                                                                         60) or CommonMethods.wait_for_element_visible(
-                browser, self.video_auto_cancelBtn_id, 60)
+            check = CommonMethods.wait_for_element_visible(browser, self.video_play_btn, 30) or \
+                    CommonMethods.wait_for_element_visible(browser, self.video_frame_pause_btn, 30) or \
+                    CommonMethods.wait_for_element_visible(browser, self.video_auto_cancelBtn_id, 30)
             self.verify_true_or_false(browser, check, 'complete_video', 'Play Btn')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'complete_video')
@@ -3468,7 +3470,7 @@ class VideoPage:
                 CommonMethods.elementClick(browser, self.test_screen_Test_btn)
                 CommonMethods.wait_for_element_visible(browser, self.test_screen_Test_btn, 5)
                 CommonMethods.elementClick(browser, self.test_screen_Test_btn)
-                #self.verify_true_or_false(browser, check, 'tap_on_start_btn_in_test_screen', 'Test link')
+                # self.verify_true_or_false(browser, check, 'tap_on_start_btn_in_test_screen', 'Test link')
             elif device == 'tab':
                 start_btn = CommonMethods.getElements(browser, self.test_screen_start_elements)
                 start_btn[0].click()
@@ -3824,4 +3826,3 @@ class VideoPage:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_video_icons_should_apper')
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_video_icons_should_apper')
-
