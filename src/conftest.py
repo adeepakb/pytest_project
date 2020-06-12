@@ -33,11 +33,11 @@ CommonMethods = CommonMethods()
 @pytest.fixture()
 def browser():
     browser = baseClass.driverSetup()
-    if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') is not None:
-        subprocess.Popen('adb connect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') is not None:
+    #     subprocess.Popen('adb connect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     yield browser
-    if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') is not None:
-        subprocess.Popen('adb disconnect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') is not None:
+    #     subprocess.Popen('adb disconnect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     browser.quit()
     
 
