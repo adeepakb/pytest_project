@@ -26,50 +26,50 @@ CommonMethods = CommonMethods()
 
 class PersonalizedChapterList():
     
-    stickycard_id = (By.ID, "com.byjus.thelearningapp:id/journeyStickCard")
+    stickycard_id = (By.ID, "com.byjus.thelearningapp.premium:id/journeyStickCard")
     Btn_library_xpath = (By.XPATH, "//android.widget.Button[@text='Library']")
-    Btn_library_when_text_isnot_there = (By.XPATH, "(//android.widget.Button[@resource-id='com.byjus.thelearningapp:id/roundedNavButton'])[2]")
+    Btn_library_when_text_isnot_there = (By.XPATH, "(//android.widget.Button[@resource-id='com.byjus.thelearningapp.premium:id/roundedNavButton'])[2]")
     Btn_personalised_xpath = (By.XPATH, "//android.widget.Button[@text='Personalised']")
-    Btn_BackArrow_xpath = (By.XPATH, "(//android.widget.Button[@resource-id='com.byjus.thelearningapp:id/roundedNavButton'])[1]")
-    txt_greetingText_id = (By.ID, "com.byjus.thelearningapp:id/header_greeting_text")
-    trendingJourney_id = (By.ID, "com.byjus.thelearningapp:id/ivHighlight")
-    subjectName_id = (By.ID, "com.byjus.thelearningapp:id/header_title_text")
-    subtitleText_id = (By.ID, "com.byjus.thelearningapp:id/header_subtitle_text")
-    recommendedLearning_id = (By.ID, "com.byjus.thelearningapp:id/resumeTitle")
-    forwardArrowOfStickyCard_id = (By.ID, "com.byjus.thelearningapp:id/journeyResumeIcon")
+    Btn_BackArrow_xpath = (By.XPATH, "(//android.widget.Button[@resource-id='com.byjus.thelearningapp.premium:id/roundedNavButton'])[1]")
+    txt_greetingText_id = (By.ID, "com.byjus.thelearningapp.premium:id/header_greeting_text")
+    trendingJourney_id = (By.ID, "com.byjus.thelearningapp.premium:id/ivHighlight")
+    subjectName_id = (By.ID, "com.byjus.thelearningapp.premium:id/header_title_text")
+    subtitleText_id = (By.ID, "com.byjus.thelearningapp.premium:id/header_subtitle_text")
+    recommendedLearning_id = (By.ID, "com.byjus.thelearningapp.premium:id/resumeTitle")
+    forwardArrowOfStickyCard_id = (By.ID, "com.byjus.thelearningapp.premium:id/journeyResumeIcon")
     practiceInChapters_xpath = (By.XPATH, "//android.widget.LinearLayout/android.widget.TextView[@text='Practice']")
-    chapters_xpath=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp:id/parent_layout']/descendant::android.widget.TextView[@resource-id='com.byjus.thelearningapp:id/tvChapterName']")
+    chapters_xpath=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp.premium:id/parent_layout']/descendant::android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvChapterName']")
     subTopics_xpath = (By.XPATH, "//android.widget.RelativeLayout/android.widget.TextView[@text='Rational Numbers']/following-sibling::androidx.recyclerview.widget.RecyclerView/descendant::android.widget.TextView")
-    journeyNameInStickyCard = (By.ID, "com.byjus.thelearningapp:id/recentJourneyTitle")
-    journeyCardIcon = (By.XPATH, "//android.widget.ImageView[@resource-id='com.byjus.thelearningapp:id/ivSubtopicIcon']")
-    journeyCardName = (By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp:id/tvSubtopicName']")
+    journeyNameInStickyCard = (By.ID, "com.byjus.thelearningapp.premium:id/recentJourneyTitle")
+    journeyCardIcon = (By.XPATH, "//android.widget.ImageView[@resource-id='com.byjus.thelearningapp.premium:id/ivSubtopicIcon']")
+    journeyCardName = (By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvSubtopicName']")
     btn_mathematics_xpath = (By.XPATH, "//android.widget.TextView[@text='Mathematics']")
-    first_row_of_chapters=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp:id/parent_layout' and @index=0]")
-    second_row_of_chapters=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp:id/parent_layout' and @index=1]")
-#     journey_name_in_loading_screen=(By.ID,"com.byjus.thelearningapp:id/journey_name")
-#     journey_name_in_loading_screen=(By.ID,"com.byjus.thelearningapp:id/animation_view")
-    name_of_journey_with_respect_to_chapter_name=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp:id/parent_layout']/descendant::android.widget.TextView[@text='Rational Numbers']/following-sibling::androidx.recyclerview.widget.RecyclerView/descendant::android.widget.TextView")
-    chapter_names=(By.XPATH,"//android.widget.TextView[@resource-id='com.byjus.thelearningapp:id/tvChapterName']")
+    first_row_of_chapters=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp.premium:id/parent_layout' and @index=0]")
+    second_row_of_chapters=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp.premium:id/parent_layout' and @index=1]")
+#     journey_name_in_loading_screen=(By.ID,"com.byjus.thelearningapp.premium:id/journey_name")
+#     journey_name_in_loading_screen=(By.ID,"com.byjus.thelearningapp.premium:id/animation_view")
+    name_of_journey_with_respect_to_chapter_name=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp.premium:id/parent_layout']/descendant::android.widget.TextView[@text='Rational Numbers']/following-sibling::androidx.recyclerview.widget.RecyclerView/descendant::android.widget.TextView")
+    chapter_names=(By.XPATH,"//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvChapterName']")
     practice_card=(By.XPATH,"(//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='Practice'])[1]")
     test_card=(By.XPATH,"(//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='Tests'])[1]")
-    first_subtopic_of_first_chapter=(By.XPATH,"(//android.widget.RelativeLayout/descendant::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']/descendant::android.widget.RelativeLayout)[1]")
-    practice_screen=(By.ID,"com.byjus.thelearningapp:id/header_subtitle1_text")
-    test_screen=(By.ID,"com.byjus.thelearningapp:id/header_layout")
-    toast_msg=(By.ID,"com.byjus.thelearningapp:id/snackbar_text")
+    first_subtopic_of_first_chapter=(By.XPATH,"(//android.widget.RelativeLayout/descendant::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.RelativeLayout)[1]")
+    practice_screen=(By.ID,"com.byjus.thelearningapp.premium:id/header_subtitle1_text")
+    test_screen=(By.ID,"com.byjus.thelearningapp.premium:id/header_layout")
+    toast_msg=(By.ID,"com.byjus.thelearningapp.premium:id/snackbar_text")
     
-    search_btn = (By.ID,"com.byjus.thelearningapp:id/optionalNav")
-    search_bar_in_search_screen = (By.ID,"com.byjus.thelearningapp:id/searchBar")
-    tool_bar = (By.ID,"com.byjus.thelearningapp:id/toolbarView")
-    sticky_card_minimize = (By.ID,"com.byjus.thelearningapp:id/collapsedHeader")
-    sticky_card_min_text = (By.ID,"com.byjus.thelearningapp:id/collapsedHeaderTitle")
-    sticky_card_min_forward_arrow = (By.ID,"com.byjus.thelearningapp:id/collapsedHeaderForwardArrow")
-    subject_centre_alligned = (By.ID,"com.byjus.thelearningapp:id/title")
+    search_btn = (By.ID,"com.byjus.thelearningapp.premium:id/optionalNav")
+    search_bar_in_search_screen = (By.ID,"com.byjus.thelearningapp.premium:id/searchBar")
+    tool_bar = (By.ID,"com.byjus.thelearningapp.premium:id/toolbarView")
+    sticky_card_minimize = (By.ID,"com.byjus.thelearningapp.premium:id/collapsedHeader")
+    sticky_card_min_text = (By.ID,"com.byjus.thelearningapp.premium:id/collapsedHeaderTitle")
+    sticky_card_min_forward_arrow = (By.ID,"com.byjus.thelearningapp.premium:id/collapsedHeaderForwardArrow")
+    subject_centre_alligned = (By.ID,"com.byjus.thelearningapp.premium:id/title")
     
-    primaryActionBtn=(By.ID,"com.byjus.thelearningapp:id/primaryAction")
-    start_practice= (By.ID,"com.byjus.thelearningapp:id/tvStartPractice")
-    secondaryActionBtn =(By.ID,"com.byjus.thelearningapp:id/secondaryAction")
-    chapter_list = (By.ID,"com.byjus.thelearningapp:id/rvChapterList")
-    resume_practice_title = (By.ID,"com.byjus.thelearningapp:id/resumeTitle")
+    primaryActionBtn=(By.ID,"com.byjus.thelearningapp.premium:id/primaryAction")
+    start_practice= (By.ID,"com.byjus.thelearningapp.premium:id/tvStartPractice")
+    secondaryActionBtn =(By.ID,"com.byjus.thelearningapp.premium:id/secondaryAction")
+    chapter_list = (By.ID,"com.byjus.thelearningapp.premium:id/rvChapterList")
+    resume_practice_title = (By.ID,"com.byjus.thelearningapp.premium:id/resumeTitle")
     
     def __init__(self, browser):
         self.browser = browser
@@ -313,9 +313,9 @@ class PersonalizedChapterList():
             
     def scroll_left_to_right(self,browser, chaptername):
         try:
-            journey_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']")
-            test_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']/descendant::android.widget.TextView[@text='Tests']")
-            practice_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']/descendant::android.widget.TextView[@text='Practice']")
+            journey_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']")
+            test_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.TextView[@text='Tests']")
+            practice_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.TextView[@text='Practice']")
             journey_ele=CommonMethods.getElement(browser, journey_xpath)
             checkForTest = CommonMethods.isElementPresent(browser, test_xpath)
             checkForPractice = CommonMethods.isElementPresent(browser, practice_xpath)
@@ -352,10 +352,10 @@ class PersonalizedChapterList():
             for chapter in list(chapters.keys()):
      
                 logging.info(chapter)
-                chapter_xpath=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp:id/parent_layout']/descendant::android.widget.TextView[@text='"+ chapter +"']")
+                chapter_xpath=(By.XPATH,"//android.widget.RelativeLayout[@resource-id='com.byjus.thelearningapp.premium:id/parent_layout']/descendant::android.widget.TextView[@text='"+ chapter +"']")
                 check=CommonMethods.isElementPresent(browser, chapter_xpath)
                 if check != None: 
-                    practice_icon = browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
+                    practice_icon = browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp.premium:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
                                     + "new UiSelector().textContains(\"Practice\"))")
                     if practice_icon !=None:
                         logging.info("practice is present")
@@ -383,7 +383,7 @@ class PersonalizedChapterList():
     
     def click_on_practice_card(self, browser):
         try:
-            browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
+            browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp.premium:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
             + "new UiSelector().textContains(\"Practice\"))").click()
             logging.info('Successfully clicked On practice card')
             
@@ -413,7 +413,7 @@ class PersonalizedChapterList():
             
     def click_on_test_card(self, browser):
         try:
-            browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
+            browser.find_element_by_android_uiautomator("new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp.premium:id/rvSubtopic\")).setAsHorizontalList().scrollIntoView("
             + "new UiSelector().textContains(\"Tests\"))").click()
             logging.info('Successfully clicked On test card')
             
@@ -453,7 +453,7 @@ class PersonalizedChapterList():
             self.scroll_from_bottom_to_top(browser)
             for chapter in list(chapters.keys()):
                 list_of_subtopics_names=[]
-                chapter_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chapter +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']/parent::android.widget.RelativeLayout")
+                chapter_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chapter +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/parent::android.widget.RelativeLayout")
                 check= CommonMethods.isElementPresent( browser, chapter_xpath)
                 
                 if check==False:
@@ -462,7 +462,7 @@ class PersonalizedChapterList():
                         check= CommonMethods.isElementPresent( browser, chapter_xpath)
 
                 logging.info("chapter name is : "+ chapter)
-                journey_card_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chapter +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp:id/rvSubtopic']/descendant::android.widget.TextView[not (@text='Practice') and not (@text='Tests')]")
+                journey_card_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chapter +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.TextView[not (@text='Practice') and not (@text='Tests')]")
                 sub_topic_list=CommonMethods.getElements(browser, journey_card_xpath)
                 for subtopic in sub_topic_list:
                     sub_topic_name=subtopic.text

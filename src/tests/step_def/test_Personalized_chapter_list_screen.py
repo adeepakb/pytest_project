@@ -17,6 +17,9 @@ from POM_Pages.personalizedChapterList import PersonalizedChapterList
 from POM_Pages.Journeyloadingscreen import JourneyLoadingScreen
 from POM_Pages.Journeymapscreen import JourneyMapScreen
 from POM_Pages.Librarychapterlistscreen import LibraryChapterListsScreen
+from Constants.constants import CONFIG_PATH, Login_Credentials
+from Constants.load_json import getdata
+
 
 browser = fixture = 'browser'
 baseClass = BaseClass()
@@ -29,8 +32,7 @@ library=LibraryChapterListsScreen(browser)
 """storing the feature file name"""
 featureFileName = "Personalized chapter list screen"
 
-"""configuring the Logging Files"""
-baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 scenarios('../features/' + featureFileName + '.feature')
@@ -39,10 +41,13 @@ scenarios('../features/' + featureFileName + '.feature')
 # scenario 1
 @given('Launch the app online')
 def launch_app(browser):
-    journey_loading.switch_to_wifi(browser)
-#     home.navigate_to_login_page(browser, '8th Grade')
-    home.navigate_to_home_screen(browser)
-
+    # journey_loading.switch_to_wifi(browser)
+    # code = getdata(Login_Credentials,'login_detail5_search', 'code')
+    # countrycode = getdata(Login_Credentials,'login_detail5_search', 'country_code')
+    # mobno = getdata(Login_Credentials,'login_detail5_search', 'mobile_no')
+    # otp = getdata(Login_Credentials,'login_detail5_search','OTP')
+   # home.navigate_to_home_screen(browser,code ,countrycode, mobno, otp)
+    pass
 
 @when('User is in Personalized chapter list screen')
 def personalized_chapter_screen_two(browser):
@@ -69,12 +74,6 @@ def personalized_chapter_screen(browser):
 # # scenario 3
 @given('Device is white listed for search experiment')
 def search_experiment(browser):
-#     home.navigate_to_login_page(browser, '8th Grade')
-    home.navigate_to_home_screen_for_varientC(browser)
-
-
-@given('Launch the app online.')
-def for_search_login(browser):
     pass
 
 
@@ -288,7 +287,9 @@ def offline(browser):
 
 @when('User taps on a journey card')
 def tap_on_a_journey(browser):
-    journey_map.click_on_trending_journey_card(browser)
+    personalize.scroll_up_with_highlight_journey(browser)
+    journey_loading.click_on_new_journey_card(browser)
+#     journey_map.click_on_trending_journey_card(browser)
 
 @then(parsers.parse('Verify that "{text}" toast message should be shown'))
 def toast_msg(browser,text):
@@ -298,6 +299,7 @@ def toast_msg(browser,text):
 @then('user should be navigate back to chapter list screen')
 def chapter(browser):
     library.verify_personalised_screen(browser)
+    journey_loading.switch_to_wifi(browser)
 
 
 #  scenario 19

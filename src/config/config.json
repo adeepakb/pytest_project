@@ -11,15 +11,15 @@
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
 		"eventTimings": "True",
 		"noReset": "True",
-		"udid": "febf18d0",
-		"url": "https://in-cjb.headspin.io:7002/v0/b924978401ae401abd55680e2a3a78d3/wd/hub",
+		"udid": "RF8MB11D6TP",
+		"url": "https://ca-tor.headspin.io:7009/v0/b924978401ae401abd55680e2a3a78d3/wd/hub",
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"headspin_device": "in-cjb.headspin.io:7153"
+		"headspin_device": "ca-tor.headspin.io:23150"
 	},
 	"profile_credentials": {
-		"mobileNum": "+91-9513357002",
+		"mobileNum": "+91-7503268450",
 		"grade": "6"
 	},
 	"profile_credentials3": {
