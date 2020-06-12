@@ -283,34 +283,34 @@ class PersonalizedChapterList():
             CommonMethods.exception(browser, featureFileName, 'verify_journey_card_icon_and_name')
 
 # -----------------------------
-
-    def click_on_sticky_card(self, browser):
-        try:
-            CommonMethods.wait_for_element_visible(browser, self.stickycard_id, 5)
-            journey_name = CommonMethods.getTextOfElement(browser, self.journeyNameInStickyCard)
-            check = CommonMethods.isElementPresent(browser, self.stickycard_id)
-            if(check == True):
-                CommonMethods.elementClick(browser, self.stickycard_id)
-                logging.info('Successfully clicked On resume card')
-        except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_sticky_card')
-        except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_sticky_card')
-        return journey_name
-
-    def verify_journey_name_with_respect_to_sticky_card(self,browser):
-        try:
-            journey_name=self.click_on_sticky_card(browser)
-            loading=CommonMethods.isElementPresent(browser,self.journey_name_in_loading_screen)
-            if loading==True:
-                journey_title=CommonMethods.getTextOfElement(browser,self.journey_name_in_loading_screen)
-                if journey_title==journey_name:
-                    logging.info("navigate to particular journey")
-        except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_journey_name_with_respect_to_sticky_card')
-        except:
-            CommonMethods.exception(browser, featureFileName, 'verify_journey_name_with_respect_to_sticky_card')
-            
+#
+#     def click_on_sticky_card(self, browser):
+#         try:
+#             CommonMethods.wait_for_element_visible(browser, self.stickycard_id, 5)
+#             journey_name = CommonMethods.getTextOfElement(browser, self.journeyNameInStickyCard)
+#             check = CommonMethods.isElementPresent(browser, self.stickycard_id)
+#             if(check == True):
+#                 CommonMethods.elementClick(browser, self.stickycard_id)
+#                 logging.info('Successfully clicked On resume card')
+#         except NoSuchElementException:
+#             CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_sticky_card')
+#         except:
+#             CommonMethods.exception(browser, featureFileName, 'click_on_sticky_card')
+#         return journey_name
+#
+#     def verify_journey_name_with_respect_to_sticky_card(self,browser):
+#         try:
+#             journey_name=self.click_on_sticky_card(browser)
+#             loading=CommonMethods.isElementPresent(browser,self.journey_name_in_loading_screen)
+#             if loading==True:
+#                 journey_title=CommonMethods.getTextOfElement(browser,self.journey_name_in_loading_screen)
+#                 if journey_title==journey_name:
+#                     logging.info("navigate to particular journey")
+#         except NoSuchElementException:
+#             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_journey_name_with_respect_to_sticky_card')
+#         except:
+#             CommonMethods.exception(browser, featureFileName, 'verify_journey_name_with_respect_to_sticky_card')
+#
     def scroll_left_to_right(self,browser, chaptername):
         try:
             journey_xpath=(By.XPATH,"//android.widget.RelativeLayout/descendant::android.widget.TextView[@text='"+ chaptername +"']/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']")
