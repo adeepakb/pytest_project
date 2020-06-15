@@ -32,8 +32,7 @@ Scenario: Verify the fields in personalized chapter list screen  when trending j
 	And back Button on top right corner of the screen
 	And Search button on top right corner of the screen
 	And Sticky card with recently taken chapter name followed by forward arrow
-#
-#
+
 Scenario: Verify the fields in personalized chapter list screen when trending journey is highlighted in first two rows with some user data
 	Given Device is white listed for search experiment
 	And Launch the app online
@@ -50,7 +49,7 @@ Scenario: Verify the fields in personalized chapter list screen when trending jo
 
 Scenario: Verify the fields in personalized chapter list screen when trending journey is highlighted after third row of chapter
 	Given Device is white listed for search experiment
-	Launch the app online
+	And Launch the app online
 	When User is in personalized chapter list screen.
 	And Trending journey card is highlighted after third row of chapter
 	Then Verify back arrow on top left corner of the screen
@@ -108,24 +107,10 @@ Scenario: Verify that journey card should have journey icon and journey name.
 	When User is in Personalized chapter list screen
 	Then Verify that journey card should have journey icon and journey name
 
-
-#Scenario: Verify that each topic can have multiple journeys and each journey can displayed on individual card.
-#	Given Launch the app online
-#	When User is in Personalized chapter list screen
-#	Then Verify that number of journey cards under each topic on personalized chapter list screen should be based on back end
-#
-#
-##Scenario: Verify that apart from journeys each chapter should consists of practice and free tests
-##	Given Launch the app online
-##	When User is in Personalized chapter list screen
-##	Then Verify that each chapter should consists of tests and practices and should be based on back end
-
-
 Scenario: Verify the fields in chapter if subject do not have any videos
 	Given Launch the app online
 	When User is in Personalized chapter list screen
 	Then Verify that user should be able to see only chapter name and test card and practice card
-#
 
 Scenario: Verify that scrolling upwards the top label should be minimized
 	Given Device is white listed for search experiment
