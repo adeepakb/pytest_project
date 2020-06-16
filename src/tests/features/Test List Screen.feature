@@ -1,3 +1,4 @@
+@mobile @tab
 Feature: Test List Screen
 
 

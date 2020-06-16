@@ -1,3 +1,4 @@
+@mobile @tab
 Feature: Personalized chapter list screen
 
 Scenario: Verify that trending journey card is highlighted in personalized chapter list screen

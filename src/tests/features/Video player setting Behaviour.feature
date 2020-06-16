@@ -1,3 +1,4 @@
+@mobile
 Feature: Video player setting Behaviour
 
 Scenario: Verify that when the Video is playing and if the Player Layer is up on the Video, this Player Layer should disappear after 2 sec

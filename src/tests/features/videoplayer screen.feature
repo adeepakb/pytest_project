@@ -1,3 +1,4 @@
+@mobile
 Feature: videoplayer screen
 
 

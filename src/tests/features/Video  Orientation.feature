@@ -1,3 +1,4 @@
+@mobile
 Feature: Video  Orientation
 
 

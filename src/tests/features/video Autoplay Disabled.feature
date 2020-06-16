@@ -1,3 +1,4 @@
+@mobile
 Feature: video Autoplay Disabled
 
 Scenario: Verify that if the video is first video in that sub-topic, that video should not have previous button

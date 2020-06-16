@@ -1,3 +1,4 @@
+@mobile
 Feature: Videoplayer
 
 Scenario: Verify that tapping on pause icon on the Video player should pause the current playing Video
