@@ -1,4 +1,4 @@
-@mobile @tab
+
 Feature: Library chapter list screen
 
 
