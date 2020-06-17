@@ -23,7 +23,7 @@ PATH = lambda p: os.path.abspath(
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
 
-os.system("start /B start cmd.exe @cmd /k appium -a 127.0.0.1 -p 4723")
+# os.system("start /B start cmd.exe @cmd /k appium -a 127.0.0.1 -p 4723")
  
 #appium_service = AppiumService()
 baseClass = BaseClass()
