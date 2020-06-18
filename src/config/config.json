@@ -16,7 +16,7 @@
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"headspin_device": "in-cjb.headspin.io:7253"
+		"headspin_device": "in-cjb.headspin.io:7613"
 	},
 	"profile_credentials": {
 		"mobileNum": "+91-9513357002",
