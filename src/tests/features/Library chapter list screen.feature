@@ -1,4 +1,4 @@
-
+@mobile
 Feature: Library chapter list screen
 
 
@@ -34,10 +34,10 @@ Scenario: Verify the fields in video carousel of library chapter list screen
 	And Test Button and Practice Button
 
 
-Scenario: Verify that each chapter in the subject should have video carousel in Library chapter list screen.
-	Given Launch the app online
-	When User is in Library Chapter list screen
-	Then Verify that each chapter in the subject should have video carousel in Library chapter list screen.
+#Scenario: Verify that each chapter in the subject should have video carousel in Library chapter list screen.
+#	Given Launch the app online
+#	When User is in Library Chapter list screen
+#	Then Verify that each chapter in the subject should have video carousel in Library chapter list screen.
 
 
 Scenario: Verify that tapping on Video card in chapter list screen should navigate the user to video list screen of that particular chapter
