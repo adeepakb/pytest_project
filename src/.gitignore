@@ -6,3 +6,4 @@ tests/step_def/__pycache__/
 Utilities/__pycache__/
 App_logs/SystemLogs/
 ScreenShots/
+/Test_data/session_completed_data.json
