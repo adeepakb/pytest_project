@@ -33,6 +33,7 @@ class StudentSession:
         self.bottom_dialog_cancel = '//*[contains(@resource-id, "tvCancel")]'
         self.custom_panel = '//*[contains(@resource-id, "customPanel")]'
         self.custom_panel_download = '//*[contains(@resource-id, "download_button")]'
+        self.tutor_video_container_status = '//*[contains(@resource-id, "remoteVideoViewContainer")]/android.view.View'
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
@@ -234,3 +235,10 @@ class StudentSession:
             self.login.wait_for_element_not_to_be_present('//*[contains(@resource-id, "messageTv")]',20)
         else:
             pass
+
+    def check_camera_turned_on_or_off(self, text):
+        if text == 'OFF':
+            assert not self.obj.is_element_present('xpath',
+                                                   self.tutor_video_container_status), "Camera access is not off"
+        elif text == 'ON':
+            assert self.obj.is_element_present('xpath', self.tutor_video_container_status), "Camera access is not on"
