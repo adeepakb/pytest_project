@@ -38,7 +38,7 @@ def launch_app(browser):
     # countrycode = getdata(Login_Credentials,'login_details2', 'country_code')
     # mobno = getdata(Login_Credentials,'login_details2', 'mobile_no')
     # otp = getdata(Login_Credentials,'login_details2','OTP')
-    # home.navigate_to_home_screen(browser,code ,countrycode, mobno, otp)
+    home.navigate_to_home_screen(browser)
     pass
 
 @when('User is in journey loading Screen')

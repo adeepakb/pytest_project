@@ -48,6 +48,15 @@ class BookMarkQuestionScreen:
     gms_cancel = (By.ID, "com.google.android.gms:id/cancel")
     btnRegister = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
     regscn_lgnbtn = (By.ID, "com.byjus.thelearningapp.premium:id/tvLoginBl")
+    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
+    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
+    back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
+    profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
+    profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
+    account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
@@ -92,64 +101,73 @@ class BookMarkQuestionScreen:
     subject_color = set()
     bookmark_icon_color = set()
 
+    def reset_and_login_with_otp(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 15)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 15)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 20)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
+
     # This method is used to navigate to home screen
     def navigate_to_home_screen(self, browser):
         try:
-            if self.verify_home_screen(browser):
-                pass
+            # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
+            if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
+                CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
+                self.verify_home_page(browser)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+            elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+                # self.verify_badge(browser)
+                self.verify_home_page(browser)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             else:
-                if CommonMethods.isElementPresent(browser, self.allowbutton):
-                    CommonMethods.elementClick(browser, self.allowbutton)
-                    CommonMethods.elementClick(browser, self.allowbutton)
-                if CommonMethods.isElementPresent(browser, self.skipButton):
-                    CommonMethods.elementClick(browser, self.skipButton)
-                if CommonMethods.isElementPresent(browser, self.grade8th):
-                    CommonMethods.elementClick(browser, self.grade8th)
-                    if CommonMethods.isElementPresent(browser, self.gms_cancel):
-                        CommonMethods.elementClick(browser, self.gms_cancel)
-                if CommonMethods.isElementPresent(browser, self.btnRegister):
-                    CommonMethods.elementClick(browser, self.regscn_lgnbtn)
-                    if CommonMethods.isElementPresent(browser, self.gms_cancel):
-                        CommonMethods.elementClick(browser, self.gms_cancel)
-                if CommonMethods.isElementPresent(browser, self.loginBtn_id):
-                    CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                    CommonMethods.elementClick(browser, self.country_Code)
-                    sleep(2)
-                    CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail4'
-                                                                           , 'country_code'))
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail4', 'mobile_no'),
-                                            self.phone_num)
-                    CommonMethods.wait_for_locator(browser, self.loginBtn_id, 10)
-                    CommonMethods.elementClick(browser, self.loginBtn_id)
-                    CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail4', 'OTP'),
-                                            self.OtpTxtBx_id)
-                    sleep(10)
-                self.verify_home_screen(browser)
-
+                self.reset_and_login_with_otp(browser)
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigate_to_home_screen')
-
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'navigate_to_home_screen')
+            CommonMethods.exception(browser, featureFileName, 'navigateToHomeScreen')
 
-    def verify_home_screen(self, browser):
+    def verify_home_page(self, browser):
+        print("------------------------method")
         try:
-            # if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 10):
-            #     CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
-            if CommonMethods.isElementPresent(browser, self.badge):
-                CommonMethods.elementClick(browser, self.closeBtn)
-            if CommonMethods.isElementPresent(browser, self.profile_header_id):
-                logging.info('User is in Home screen')
-                return True
+            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+                CommonMethods.elementClick(browser, self.back_button_id)
+                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(browser, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
+                account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
+                CommonMethods.scrollToElement(browser, account_text)
+                expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
+                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
+                if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
+                    print("---------------above")
+                    CommonMethods.click_on_device_back_btn(browser)
+                    print("----------------------below")
+                    logging.info('home page verified')
+                else:
+                    self.reset_and_login_with_otp(browser)
+                    return True
             else:
+                logging.info('user is not in Home page')
                 return False
-
-        except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_home_screen')
-
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_home_screen')
+            logging.info('Error in Verifing Home Page')
 
     # This method is used to navigate to Library chapter list screen
     def navigate_to_library(self, browser, sub):

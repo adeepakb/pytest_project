@@ -40,7 +40,7 @@ def launch_app(browser):
     # countrycode = getdata(Login_Credentials,'login_detail5_search', 'country_code')
     # mobno = getdata(Login_Credentials,'login_detail5_search', 'mobile_no')
     # otp = getdata(Login_Credentials,'login_detail5_search','OTP')
-    # home.navigate_to_home_screen(browser,code ,countrycode, mobno, otp)
+    home.navigate_to_home_screen(browser)
     pass
 
 

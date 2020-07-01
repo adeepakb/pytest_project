@@ -10,7 +10,6 @@ import logging
 from Constants.constants import CONFIG_PATH
 from Constants.load_json import *
 from Constants.constants import Hamburger_Options
-
 from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH, Login_Credentials, Hamburger_Options
 import logging
@@ -34,16 +33,15 @@ class BookMark():
         self.browser = browser
 
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
-    country_Code = "com.byjus.thelearningapp.premium:id/spnrCountry"
+    country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     video = "//android.widget.ImageView[@instance='2']"
     Btn_test = "com.byjus.thelearningapp.premium:id/chapter_list_item_test_txtvw"
     Btn_practice = "com.byjus.thelearningapp.premium:id/practice_mode_bottom_txtvw"
     Btn_play_pause = "//android.widget.ImageView[@instance='3']"
-    loginBtn_id = "com.byjus.thelearningapp.premium:id/btnLogin"
-    OtpTxtBx_id = "com.byjus.thelearningapp.premium:id/etOTP"
+    loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
+    OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
     librayBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/optionalNav")
     first_videoLnk_xpath = "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]"
-    videoFrame_id = "com.byjus.thelearningapp.premium:id/exo_subtitles"
     # videoPauseBtn_id = "com.byjus.thelearningapp.premium:id/exo_pause"
     # videoPlayBtn_id = "com.byjus.thelearningapp.premium:id/exo_play"
     analytics_icon = (By.ID, "com.byjus.thelearningapp.premium:id/iv_analysis")
@@ -57,33 +55,30 @@ class BookMark():
     tenSecBkwdBtn_id = "com.byjus.thelearningapp.premium:id/exo_rew"
     byjusAppPackage = "com.byjus.thelearningapp"
     skipBtn_id = "com.byjus.thelearningapp.premium:id/buttonSkip"
-    allow_btn_id = "com.android.packageinstaller:id/permission_allow_button"
-    skipBtn_id = "com.byjus.thelearningapp.premium:id/buttonSkip"
 
-    #     Login Locators
-    # com.byjus.thelearningapp.premium:id/backNav
+    # Login Locators
     back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
     profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
     account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
     profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
-    country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
-    loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
-    OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
     allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
-    loginPageVerify_id = (By.XPATH, "//android.widget.TextView[@text='Login']")
-    phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
+    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/roundedNavButton")
     all_subjects = (By.XPATH,
                     "//android.widget.GridLayout//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/home_subject_cardview']")
     all_bookmark_sub = (
-    By.XPATH, "//android.widget.HorizontalScrollView//android.widget.LinearLayout//android.widget.TextView")
+        By.XPATH, "//android.widget.HorizontalScrollView//android.widget.LinearLayout//android.widget.TextView")
 
+    homescreen_corana_dialog_ok_btn = (By.XPATH, "//android.widget.TextView[@text = 'OK']")
+    homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
     # subject  personalised  screen locators
     Library_btn = (By.XPATH, ("//android.widget.Button[@text='Library']"))
     personalised_btn = (By.XPATH, ("//android.widget.Button[@text='Personalised']"))
-    first_video_mob=(By.XPATH,("//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]"))
+    first_video_mob = (By.XPATH, (
+        "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]"))
     first_video_tab = (By.XPATH, (
         "//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index = 1]"))
     video_tab_list_close = (By.ID, ("com.byjus.thelearningapp.premium:id/video_list_close"))
@@ -96,7 +91,6 @@ class BookMark():
     personalizeScreen_xpath = (By.XPATH, ("//android.widget.Button[@text='Personalised']"))
 
     # Bookmarks
-
     filter_txt = (By.XPATH, "//android.widget.Button[@text='Filter']")
     mathematics_txt = (By.XPATH, "//android.widget.TextView[@text='Mathematics']")
     physics_txt = (By.XPATH, "//android.widget.TextView[@text='Physics']")
@@ -113,21 +107,28 @@ class BookMark():
     no_bookmark = (By.XPATH, ("//android.widget.TextView[@text='No Bookmarks']"))
     Bookmark_tab = (By.ID, ("com.byjus.thelearningapp.premium:id/bookmark"))
 
-    #     Login Locators
-    back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
-    profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
-    account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
-    profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
-    country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
-    loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
-    OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
-    none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
-    loginPageVerify_id = (By.XPATH, "//android.widget.TextView[@text='Login']")
-    phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
-    homescreen_corana_dialog_ok_btn = (By.XPATH, "//android.widget.TextView[@text = 'OK']")
-    homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
+    def reset_and_login_with_otp(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
 
     def verify_home_page(self, browser):
         print("------------------------method")
@@ -140,67 +141,20 @@ class BookMark():
                 account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
                 CommonMethods.scrollToElement(browser, account_text)
                 expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials3', 'mobileNum')
+                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(browser)
                     print("----------------------below")
-
                     logging.info('home page verified')
                 else:
-                    CommonMethods.run('adb shell pm clear com.byjus.thelearningapp')
-                    CommonMethods.run(
-                        'adb shell am start -n com.byjus.thelearningapp/com.byjus.app.onboarding.activity.SplashActivity')
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-                    CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                    CommonMethods.elementClick(browser, self.country_Code)
-                    sleep(2)
-                    CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                                           , 'country_code'))
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
-                                            self.phone_num)
-                    CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                    CommonMethods.elementClick(browser, self.loginBtn_id)
-                    CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
-                                            self.OtpTxtBx_id)
+                    self.reset_and_login_with_otp(browser)
                     return True
             else:
                 logging.info('user is not in Home page')
                 return False
         except:
             logging.info('Error in Verifing Home Page')
-
-    def verify_to_login_page(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3):
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-            CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-            CommonMethods.elementClick(browser, self.country_Code)
-            sleep(1)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
-        elif CommonMethods.wait_for_element_visible(browser, self.loginBtn_id, 3):
-            CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-            CommonMethods.elementClick(browser, self.country_Code)
-            sleep(2)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                                   , 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
-            return True
-        else:
-            logging.info('User verified Login page')
 
     def verify_badge(self, browser):
         if CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 2):
@@ -225,22 +179,13 @@ class BookMark():
             if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
                 CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
                 self.verify_home_page(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
                 # self.verify_badge(browser)
                 self.verify_home_page(browser)
-                CommonMethods.click_on_device_back_btn(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
-            elif CommonMethods.wait_for_element_visible(browser, self.allow_btn_id,
-                                                        3) or CommonMethods.wait_for_element_visible(browser,
-                                                                                                     self.loginBtn_id,
-                                                                                                     3):
-                self.verify_to_login_page(browser)
-                self.verify_corana_dialog(browser)
-                self.verify_home_page(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             else:
-                logging.info('Error in navigating to home page')
+                self.reset_and_login_with_otp(browser)
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
 
@@ -623,8 +568,8 @@ class BookMark():
             check = CommonMethods.isElementPresent(browser, self.first_video_mob)
             if check == True:
                 CommonMethods.elementClick(browser, self.first_video_mob)
-                #CommonMethods.wait_for_element_visible(browser, self.video_tab_list_close, 3)
-                #CommonMethods.elementClick(browser, self.video_tab_list_close)
+                # CommonMethods.wait_for_element_visible(browser, self.video_tab_list_close, 3)
+                # CommonMethods.elementClick(browser, self.video_tab_list_close)
                 check_initial = CommonMethods.isElementPresent(browser, self.video_initial_play)
                 if check_initial == True:
                     CommonMethods.elementClick(browser, self.video_initial_play)
@@ -675,29 +620,3 @@ class BookMark():
 
         except:
             CommonMethods.exception(browser, featureFileName, 'Bookmark_video')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

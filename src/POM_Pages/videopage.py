@@ -59,6 +59,8 @@ class VideoPage:
     practice_submit_btn = (By.ID,"com.byjus.thelearningapp.premium:id/action_morph_btn")
     practice_2nd_answer = (By.XPATH,"//android.widget.ListView//android.view.View[@index=1]//android.view.View[@index=1]")
     practice_start_practice_btn = (By.ID,"com.byjus.thelearningapp.premium:id/tvStartPractice")
+    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     homescreen_corana_dialog_ok_btn = (By.XPATH,"//android.widget.TextView[@text = 'OK']")
     homescreen_corana_dialog = (By.ID,"com.byjus.thelearningapp.premium:id/dialog_layout")
     profile_header_id = (By.ID,"com.byjus.thelearningapp.premium:id/llHeaderTextParent")
@@ -240,44 +242,56 @@ class VideoPage:
         
     def click_practice_btn(self, browser):
         browser.find_element_by_id(self.Btn_practice).click()
-        
+
+    def reset_and_login_with_otp(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
+
     def verify_home_page(self, browser):
+        print("------------------------method")
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 10):
+            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
                 CommonMethods.elementClick(browser, self.back_button_id)
-                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 10)
+                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 5)
                 CommonMethods.elementClick(browser, self.profile_name_hamburger)
-                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 10)
+                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
                 account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
                 CommonMethods.scrollToElement(browser, account_text)
                 expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
                 actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
+                    print("---------------above")
                     CommonMethods.click_on_device_back_btn(browser)
+                    print("----------------------below")
                     logging.info('home page verified')
                 else:
-                    CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
-                    CommonMethods.run('adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.click_none_of_the_above(browser,self.none_of_the_above_id)
-                    CommonMethods.wait_for_locator(browser,self.country_Code,15)
-                    CommonMethods.elementClick(browser,self.country_Code)
-                    sleep(2)
-                    CommonMethods.scrollToElementAndClick(browser,getdata(Login_Credentials,'login_details'
-                                                                          , 'country_code'))
-                    CommonMethods.enterText(browser,getdata(Login_Credentials,'login_details','mobile_no'),self.phone_num)
-                    CommonMethods.wait_for_locator(browser,self.loginBtn_id,15)
-                    CommonMethods.elementClick(browser,self.loginBtn_id)
-                    CommonMethods.wait_for_locator(browser,self.OtpTxtBx_id,15)
-                    CommonMethods.enterText(browser, getdata(Login_Credentials,'login_details','OTP'), self.OtpTxtBx_id)
+                    self.reset_and_login_with_otp(browser)
                     return True
             else:
                 logging.info('user is not in Home page')
                 return False
         except:
             logging.info('Error in Verifing Home Page')
-            
+
     def allow_notifications(self, browser):
         if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 5):
             CommonMethods.accept_notification(browser, self.allow_btn_id)
@@ -305,20 +319,8 @@ class VideoPage:
             CommonMethods.elementClick(browser, self.register_btn)
             
     def login_to_home_page(self, browser):
-        CommonMethods.click_none_of_the_above(browser,self.none_of_the_above_id)
-        CommonMethods.wait_for_locator(browser,self.country_Code,10)
-        CommonMethods.elementClick(browser,self.country_Code)
-        sleep(1)
-        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_details', 'country_code'))
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_details', 'mobile_no'), self.phone_num)
-        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 10)
-        CommonMethods.elementClick(browser, self.loginBtn_id)
-        if CommonMethods.wait_for_element_visible(browser, self.login_register_btn, 5):
-            self.user_registration(browser)
-        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_details', 'OTP'), self.OtpTxtBx_id)
-        
-        
+        self.reset_and_login_with_otp(browser)
+
     def verify_to_login_page(self, browser):
         self.allow_notifications(browser)
         self.check_for_skip_btn(browser)
@@ -351,22 +353,17 @@ class VideoPage:
                 if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog_ok_btn, 10):
                     CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
                     self.verify_badge(browser)
-#                     self.verify_home_page(browser)
+                    self.verify_home_page(browser)
                     VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
                 elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 5):
                     self.verify_badge(browser)
-#                     self.verify_home_page(browser)
+                    self.verify_home_page(browser)
                     VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
-                    
+
                 elif CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 5):
                     self.verify_badge(browser)
                 else:
-                    CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
-                    CommonMethods.run('adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
-                    self.verify_to_login_page(browser)
-                    self.verify_corana_dialog(browser)
-                    self.verify_badge(browser)
-                    VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+                    self.reset_and_login_with_otp(browser)
             except NoSuchElementException:
                 CommonMethods.noSuchEleExcept(browser,featureFileName,'navigateToHomeScreen')
             except :

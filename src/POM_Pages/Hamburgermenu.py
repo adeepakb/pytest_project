@@ -48,7 +48,6 @@ class Hamburger:
     nxt_btn_id = "com.byjus.thelearningapp:id/btnLogin"
     otp_msg_id = "com.byjus.thelearningapp:id/etOTP"
     ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/roundedNavButton")
-    #ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
     optins_list_id = (By.ID, "com.byjus.thelearningapp:id/home_drawer_lstvw_options")
     prof_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_imgvw_arrow_right")
     prof_acc_det_id = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
@@ -66,14 +65,38 @@ class Hamburger:
     profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
-    OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp:id/etOTP")
+    OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
     allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
-    loginPageVerify_id = (By.XPATH, "//android.widget.TextView[@text='Login']")
+    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     homescreen_corana_dialog_ok_btn = (By.XPATH, "//android.widget.TextView[@text = 'OK']")
     homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp:id/dialog_layout")
+
+    def reset_and_login_with_otp(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
 
     def verify_home_page(self, browser):
         print("------------------------method")
@@ -91,27 +114,9 @@ class Hamburger:
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(browser)
                     print("----------------------below")
-
                     logging.info('home page verified')
                 else:
-                    CommonMethods.run('adb shell pm clear com.byjus.thelearningapp')
-                    CommonMethods.run(
-                        'adb shell am start -n com.byjus.thelearningapp/com.byjus.app.onboarding.activity.SplashActivity')
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-                    CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                    CommonMethods.elementClick(browser, self.country_Code)
-                    sleep(2)
-                    CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                                           , 'country_code'))
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
-                                            self.phone_num)
-                    CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                    CommonMethods.elementClick(browser, self.loginBtn_id)
-                    CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-                    CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
-                                            self.OtpTxtBx_id)
+                    self.reset_and_login_with_otp(browser)
                     return True
             else:
                 logging.info('user is not in Home page')
@@ -119,34 +124,6 @@ class Hamburger:
         except:
             logging.info('Error in Verifing Home Page')
 
-    def verify_to_login_page(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3):
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-            CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-            CommonMethods.elementClick(browser, self.country_Code)
-            sleep(1)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
-        elif CommonMethods.wait_for_element_visible(browser, self.loginBtn_id, 3):
-            CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-            CommonMethods.elementClick(browser, self.country_Code)
-            sleep(2)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                                   , 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
-            return True
-        else:
-            logging.info('User verified Login page')
     #
     # def verify_badge(self, browser):
     #     if CommonMethods.wait_for_element_visible(browser, self.video_badge_close_btn, 2):
@@ -171,21 +148,13 @@ class Hamburger:
             if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
                 CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
                 self.verify_home_page(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
                 # self.verify_badge(browser)
                 self.verify_home_page(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
-            elif CommonMethods.wait_for_element_visible(browser, self.allow_btn_id,
-                                                        3) or CommonMethods.wait_for_element_visible(browser,
-                                                                                                     self.loginBtn_id,
-                                                                                                     3):
-                self.verify_to_login_page(browser)
-                self.verify_corana_dialog(browser)
-                self.verify_home_page(browser)
-            # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
             else:
-                logging.info('Error in navigating to home page')
+                self.reset_and_login_with_otp(browser)
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
 
