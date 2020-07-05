@@ -25,7 +25,7 @@ class BuildFeatureJob():
     # time.sleep(3)
     # print('Stop....')
     # last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-    last_build_number = '1694'
+    last_build_number = 1694
     print("last_build_number", last_build_number)
     build_info = j.get_build_info('B2C-Feature', last_build_number)
 
