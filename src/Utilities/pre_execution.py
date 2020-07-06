@@ -42,7 +42,8 @@ class BuildFeatureJob():
             baseClass.driverSetup()
             time.sleep(5)
             subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-            val = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+            time.sleep(2)
+            val = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
             print("adb install status ", val)
             print(artifact_displaypath + " is installed successfully")
 

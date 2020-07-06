@@ -13,11 +13,11 @@
 		"noReset": "True",
 	    "udid": "febf18d0",
 	    "url": "https://in-cjb.headspin.io:7002/v0/b924978401ae401abd55680e2a3a78d3/wd/hub",
-		"newCommandTimeout": 800,
+		"newCommandTimeout": 1000,
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"headspin_device": "in-cjb.headspin.io:7241"
+		"headspin_device": "in-cjb.headspin.io:7321"
 	},
 	"profile_credentials": {
 		"mobileNum": "+91-9513357002",
