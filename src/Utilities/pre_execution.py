@@ -13,21 +13,21 @@ class BuildFeatureJob():
     def __init__(self):
         j = jenkins.Jenkins('https://builds.byjus.com/', username='testautomation@byjus.com',
                             password='5a7b8f02aec0c2a7c5d4c348a1c7a590')
-        # branch_parameters = dict(branch='origin/feature/app2_phase3', env='staging', variant='ByjusPremium')
-        # j.build_job('B2C-Feature', parameters=branch_parameters, token='5a7b8f02aec0c2a7c5d4c348a1c7a590')
-        # time.sleep(10)
-        # while True:
-        #     print('Running....')
-        #     if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
-        #             j.get_job_info('B2C-Feature')['lastBuild'][
-        #                 'number']:
-        #         print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
-        #                                              j.get_job_info('B2C-Feature')['lastBuild']['number']))
-        #         break
-        #     time.sleep(10)
-        # print('Stop....')
-        # last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-        last_build_number = 1700
+        branch_parameters = dict(branch='origin/feature/app2_phase3', env='staging', variant='ByjusPremium')
+        j.build_job('B2C-Feature', parameters=branch_parameters, token='5a7b8f02aec0c2a7c5d4c348a1c7a590')
+        time.sleep(10)
+        while True:
+            print('Running....')
+            if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
+                    j.get_job_info('B2C-Feature')['lastBuild'][
+                        'number']:
+                print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
+                                                     j.get_job_info('B2C-Feature')['lastBuild']['number']))
+                break
+            time.sleep(10)
+        print('Stop....')
+        last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
+        # last_build_number = 1700
         print("last_build_number", last_build_number)
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
@@ -46,7 +46,7 @@ class BuildFeatureJob():
             connected = False
             stdout, stderr = subprocess.Popen('echo $PATH', shell=True, stdout=subprocess.PIPE).communicate()
             print("PATH", stdout)
-            
+
             for i in range(5):
                 subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
