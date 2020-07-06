@@ -24,6 +24,7 @@ class BaseClass:
         desired_caps['appPackage'] = getdata(desiredCap, 'desired_cap', 'appPackage')
         desired_caps['appActivity'] = getdata(desiredCap, 'desired_cap', 'appActivity')
         desired_caps['eventTimings'] = getdata(desiredCap, 'desired_cap', 'eventTimings')
+        desired_caps['newCommandTimeout'] = getdata(desiredCap, 'desired_cap', 'newCommandTimeout')
         desired_caps['noReset'] = getdata(desiredCap, 'desired_cap', 'noReset')
         driver = webdriver.Remote(getdata(desiredCap, 'desired_cap', 'url'), desired_caps)
         driver.implicitly_wait(getdata(desiredCap, 'desired_cap', 'implicitWait'))
