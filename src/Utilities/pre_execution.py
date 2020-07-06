@@ -35,7 +35,8 @@ class BuildFeatureJob():
             print("Build Success")
             artifact = build_info['artifacts'][0]
             artifact_displaypath = artifact['displayPath']
-            apk_url = 'https://builds.byjus.com/job/B2C-Feature/' + str(last_build_number) + '/artifact/app/build/outputs/apk/ByjusPremium/release/' + artifact_displaypath
+            apk_url = 'https://builds.byjus.com/job/B2C-Feature/' + str(
+                last_build_number) + '/artifact/app/build/outputs/apk/ByjusPremium/release/' + artifact_displaypath
             r = requests.Request('GET', apk_url)
             response = j.jenkins_request(r)
             with open("app.apk", "wb") as f:
@@ -43,18 +44,19 @@ class BuildFeatureJob():
 
             driver = baseClass.driverSetup()
             connected = False
-            for i in range(4):
+            for i in range(5):
                 subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
                 stdout, stderr = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE,
                                                   stderr=subprocess.STDOUT).communicate()
                 stdout = stdout.decode('ascii')
+                print("adb devices %s" % stdout)
                 if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout:
                     print("adb connected successfully")
                     connected = True
                     break
                 print("Connection failed, retrying...")
-                time.sleep(1 + i)
+                time.sleep(2 + i)
 
             if not connected:
                 raise Exception("Failed to connect to device")
