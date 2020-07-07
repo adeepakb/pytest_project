@@ -43,10 +43,8 @@ class BuildFeatureJob():
                 f.write(response.content)
 
             driver = baseClass.driverSetup()
-            connected = False
-            stdout, stderr = subprocess.Popen('echo $PATH', shell=True, stdout=subprocess.PIPE).communicate()
-            print("PATH", stdout)
 
+            connected = False
             for i in range(5):
                 subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
