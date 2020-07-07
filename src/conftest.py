@@ -10,7 +10,7 @@ from appium import webdriver
 from appium.webdriver.appium_service import AppiumService
 from Utilities.BasePage import BaseClass
 from Utilities.common_methods import CommonMethods
-from Utilities.pre_execution import BuildFeatureJob
+# from Utilities.pre_execution import BuildFeatureJob
 from Utilities.interrupt import *
 from Utilities import common_methods
 
@@ -21,7 +21,7 @@ from Constants.test_management import *
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-Featurejob = BuildFeatureJob()
+# Featurejob = BuildFeatureJob()
 
 
 @pytest.fixture()
