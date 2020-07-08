@@ -66,7 +66,7 @@ class BuildFeatureJob():
                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             print("adb install status ", stdout, stderr)
             output = stdout.decode("ascii")
-            if "Success" not in output or "1 file pushed, 0 skipped." not in output:
+            if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
             driver.quit()
