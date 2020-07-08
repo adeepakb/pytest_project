@@ -27,7 +27,6 @@ class BuildFeatureJob():
             time.sleep(10)
         print('Stop....')
         last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-        # last_build_number = 1700
         print("last_build_number", last_build_number)
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
@@ -43,10 +42,8 @@ class BuildFeatureJob():
                 f.write(response.content)
 
             driver = baseClass.driverSetup()
-            connected = False
-            stdout, stderr = subprocess.Popen('echo $PATH', shell=True, stdout=subprocess.PIPE).communicate()
-            print("PATH", stdout)
 
+            connected = False
             for i in range(5):
                 subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
@@ -54,7 +51,7 @@ class BuildFeatureJob():
                                                   stderr=subprocess.STDOUT).communicate()
                 stdout = stdout.decode('ascii')
                 print("adb devices %s" % stdout)
-                if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout:
+                if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout and "offline" not in stdout:
                     print("adb connected successfully")
                     connected = True
                     break
@@ -68,7 +65,7 @@ class BuildFeatureJob():
                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             print("adb install status ", stdout, stderr)
             output = stdout.decode("ascii")
-            if "Success" not in output or "1 file pushed, 0 skipped." not in output:
+            if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
             driver.quit()
