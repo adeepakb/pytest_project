@@ -12,12 +12,12 @@
 		"eventTimings": "True",
 		"noReset": "True",
 	    "udid": "febf18d0",
-	    "url": "https://in-cjb.headspin.io:7002/v0/b924978401ae401abd55680e2a3a78d3/wd/hub",
+	    "url": "https://in-cjb.headspin.io:7002/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
 		"newCommandTimeout": 1000,
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"headspin_device": "in-cjb.headspin.io:7377"
+		"headspin_device": "in-cjb.headspin.io:7513"
 	},
 	"profile_credentials": {
 		"mobileNum": "+91-9513357002",
