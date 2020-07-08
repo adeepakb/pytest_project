@@ -42,7 +42,7 @@ class BuildFeatureJob():
             with open("app.apk", "wb") as f:
                 f.write(response.content)
 
-            # driver = baseClass.driverSetup()
+            driver = baseClass.driverSetup()
 
             connected = False
             for i in range(5):
@@ -69,7 +69,7 @@ class BuildFeatureJob():
             if "Success" not in output or "1 file pushed, 0 skipped." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
-            # driver.quit()
+            driver.quit()
 
         else:
             print("Build Failed")
