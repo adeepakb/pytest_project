@@ -52,7 +52,7 @@ class BuildFeatureJob():
                                                   stderr=subprocess.STDOUT).communicate()
                 stdout = stdout.decode('ascii')
                 print("adb devices %s" % stdout)
-                if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout:
+                if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout and "offline" not in stdout:
                     print("adb connected successfully")
                     connected = True
                     break
