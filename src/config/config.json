@@ -12,7 +12,7 @@
 		"eventTimings": "True",
 		"noReset": "True",
 	    "udid": "febf18d0",
-	    "url": "https://in-cjb.headspin.io:7002/v0/572a60aa4a134c0f91b774293ee36f6a/wd/hub",
+	    "url": "https://in-cjb.headspin.io:7002/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
 		"newCommandTimeout": 1000,
 		"implicitWait": 10
 	},
