@@ -1,12 +1,10 @@
 import sys
 import os
 import time
-
 from io import BytesIO
-from PIL import Image
 import math
-import numpy as np 
-from skimage.measure import compare_ssim
+import numpy as np
+# from skimage.measure import compare_ssim
 import cv2
 from timeit import timeit
 
@@ -15,11 +13,9 @@ from appium import webdriver
 from selenium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
-# import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-# from pyparsing import Char
 from selenium.webdriver.support.wait import WebDriverWait
 from Utilities.common_methods import CommonMethods
 # from Constants.load_json import getdata
@@ -179,7 +175,7 @@ class ProfileScreen():
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_phn_no_and_icon')
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_phn_no_and_icon')
-    
+
     def click_phn_no_edit(self, browser):
         try:
             phn_edit= CommonMethods.isElementPresent(browser, self.acc_phn_no_edit)
@@ -292,6 +288,7 @@ class ProfileScreen():
     
     def verify_avtar_pop_up(self,browser):
         try:
+            CommonMethods.wait_for_locator(browser, self.avtar_label, 2)
             avtar_pop_up = CommonMethods.isElementPresent(browser, self.avtar_label)
             if avtar_pop_up  == True:
                 logging.info('avtar pop up is displayed')
