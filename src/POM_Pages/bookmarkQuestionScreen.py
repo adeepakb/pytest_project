@@ -42,6 +42,10 @@ class BookMarkQuestionScreen:
     snackbar_text = (By.ID, "com.byjus.thelearningapp.premium:id/snackbar_text")
     filter = (By.ID, "com.byjus.thelearningapp.premium:id/rightNav")
     allowbutton = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    multiple_accounts_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_linearlayout")
+    user_profile_name = (By.ID, "com.byjus.thelearningapp.premium:id/tv_profile_name")
+    profile_select_radio_button = (By.ID, "com.byjus.thelearningapp.premium:id/profile_select_radio_button")
+    continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
     denybutton = (By.ID, "com.android.packageinstaller:id/permission_deny_button")
     skipButton = (By.ID, "com.byjus.thelearningapp.premium:id/buttonSkip")
     grade8th = (By.XPATH, "//android.widget.Button[@text ='8th']")
@@ -121,6 +125,17 @@ class BookMarkQuestionScreen:
         CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 20)
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
+
+        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
+            profiles = CommonMethods.getElements(browser, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
+            for profile in profiles:
+                for button in radio_buttons:
+                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                        button.click()
+                        break
+        CommonMethods.elementClick(browser, self.continue_button)
+
         CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
         CommonMethods.elementClick(browser, self.welcome_button)
 

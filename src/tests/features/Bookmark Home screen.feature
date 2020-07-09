@@ -22,7 +22,7 @@ Scenario: Verify that the page with no bookmark message should be displayed when
 	And Navigate to bookmark home screen
 	And Remove existing bookmarks
 	When Check for bookmarked content
-	Then verify "No bookmarks" message should be shown when there are no bookmarks
+	Then verify "No Bookmarks" message should be shown when there are no bookmarks
 
 
 Scenario: Verify that once the user bookmark any video then in the bookmark home screen "No bookmark" message should be replaced by the bookmarked contents
@@ -31,7 +31,7 @@ Scenario: Verify that once the user bookmark any video then in the bookmark home
 	When Bookmark any video
 	And navigate back to bookmark screen
 	Then verify bookmark  is present
-	And verify "No bookmarks" message not shown in all tab
+	And verify "No Bookmarks" message not shown in all tab
 
 
 Scenario: Verify that user should be able to switch between the tabs

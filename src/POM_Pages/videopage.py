@@ -51,6 +51,10 @@ class VideoPage:
     register_page_name_field = (By.ID,"com.byjus.thelearningapp.premium:id/etName")    
     login_register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/primaryAction")
     registration_name_field= (By.ID,"com.byjus.thelearningapp.premium:id/etName")
+    multiple_accounts_dialog = (By.ID,"com.byjus.thelearningapp.premium:id/dialog_linearlayout")
+    user_profile_name = (By.ID,"com.byjus.thelearningapp.premium:id/tv_profile_name")
+    profile_select_radio_button = (By.ID,"com.byjus.thelearningapp.premium:id/profile_select_radio_button")
+    continue_button = (By.ID,"com.byjus.thelearningapp.premium:id/tv_submit")
     register_btn = (By.ID,"com.byjus.thelearningapp.premium:id/btnRegister")
     chooseCourse_Title_xpath = (By.XPATH, "//android.widget.TextView[@text='your course']")
     maths_subject = (By.XPATH, "//android.widget.TextView[@text='Mathematics']")
@@ -263,6 +267,16 @@ class VideoPage:
         CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
+        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
+            profiles = CommonMethods.getElements(browser, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
+            for profile in profiles:
+                for button in radio_buttons:
+                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                        button.click()
+                        break
+        CommonMethods.elementClick(browser, self.continue_button)
+
         CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
         CommonMethods.elementClick(browser, self.welcome_button)
 

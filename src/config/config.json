@@ -22,6 +22,11 @@
 	"profile_credentials": {
 		"mobileNum": "+91-9513357002",
 		"grade": "6"
+	},
+	"API_credentials": {
+		"url": "https://staging.tllms.com/_/graphql",
+		"key": "610c88099b12f67dbc6ab605730f7fa3",
+		"secret": "17baef418c002ddd7f22c8aa898c64dc6e677583"
 	}
 }
 	

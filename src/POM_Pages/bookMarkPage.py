@@ -4,6 +4,7 @@ import os
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+import subprocess
 import logging
 import json
 import logging
@@ -40,7 +41,7 @@ class BookMark():
     Btn_play_pause = "//android.widget.ImageView[@instance='3']"
     loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
     OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
-    librayBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/optionalNav")
+    librayBtn_id = (By.XPATH,"//android.widget.Button[@text='Library']")
     first_videoLnk_xpath = "//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group' and @index=1]/androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_videos_lstvw']/android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_video_list_cardview' and @index = 0]"
     # videoPauseBtn_id = "com.byjus.thelearningapp.premium:id/exo_pause"
     # videoPlayBtn_id = "com.byjus.thelearningapp.premium:id/exo_play"
@@ -64,6 +65,10 @@ class BookMark():
     allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    multiple_accounts_dialog = (By.ID,"com.byjus.thelearningapp.premium:id/dialog_linearlayout")
+    user_profile_name = (By.ID,"com.byjus.thelearningapp.premium:id/tv_profile_name")
+    profile_select_radio_button = (By.ID,"com.byjus.thelearningapp.premium:id/profile_select_radio_button")
+    continue_button = (By.ID,"com.byjus.thelearningapp.premium:id/tv_submit")
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/roundedNavButton")
@@ -127,6 +132,16 @@ class BookMark():
         CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
+        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
+            profiles = CommonMethods.getElements(browser, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
+            for profile in profiles:
+                for button in radio_buttons:
+                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                        button.click()
+                        break
+        CommonMethods.elementClick(browser, self.continue_button)
+
         CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
         CommonMethods.elementClick(browser, self.welcome_button)
 
@@ -527,8 +542,14 @@ class BookMark():
             if CommonMethods.isElementPresent(browser, self.personalizeScreen_xpath):
                 pass
             else:
-                CommonMethods.wait_for_locator(browser, self.librayBtn_id, 15)
+                for i in range(5):
+                    CommonMethods.run('adb shell input touchscreen swipe 300 300 300 800')
+                    check = CommonMethods.wait_for_element_visible(browser, self.librayBtn_id, 5)
+                    if check == True:
+                        break
+                CommonMethods.wait_for_locator(browser, self.librayBtn_id, 10)
                 CommonMethods.elementClick(browser, self.librayBtn_id)
+                logging.info('successfully navigated to library')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigate_to_library')
 

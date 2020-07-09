@@ -115,8 +115,8 @@ class CommonMethods():
             return False
 
     def run(self, command):
-        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        return sub.communicate()
+        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return sub.communicate(5)
 
     def element_click_using_x_y(self, x, y):
         self.run('adb shell input tap {} {}'.format(x, y))
