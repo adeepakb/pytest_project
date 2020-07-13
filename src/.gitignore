@@ -7,3 +7,5 @@ Utilities/__pycache__/
 App_logs/SystemLogs/
 ScreenShots/
 /Test_data/session_completed_data.json
+/tests/features/
+.DS_Store
