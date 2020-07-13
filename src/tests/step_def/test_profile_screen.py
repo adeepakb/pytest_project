@@ -810,7 +810,7 @@ def phn_numeric(browser):
 # scenario 80
 @given('User taps on profile card on hamburger menu')
 def hamburger_menu(browser):
-    pass
+    profile.navigate_to_profile_card(browser)
 
 
 @then('Verify that Profile Details has all fields <Name>')

@@ -55,7 +55,9 @@ class ProfileScreen():
     name_text=(By.ID,"com.byjus.thelearningapp.premium:id/name")
     profile_details=(By.ID,"com.byjus.thelearningapp.premium:id/profile_details")
     home_drawer_forward_arrow=(By.ID,"com.byjus.thelearningapp.premium:id/home_drawer_imgvw_arrow_right")
-    
+    ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/roundedNavButton")
+    profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
+
     avtar_label = (By.ID,"com.byjus.thelearningapp.premium:id/account_details_title")
     avtar_list = (By.ID,"com.byjus.thelearningapp.premium:id/avatar_list_view")
     avtar_images =(By.XPATH,"//androidx.recyclerview.widget.RecyclerView/descendant::android.widget.ImageView[@resource-id='com.byjus.thelearningapp.premium:id/avatar_image']")
@@ -268,7 +270,23 @@ class ProfileScreen():
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_phn_no_and_icon')
         except:
             CommonMethods.exception(browser, featureFileName, 'verify_phn_no_and_icon')
-    
+
+    def navigate_to_profile_card(self, browser):
+        try:
+            if CommonMethods.wait_for_element_visible(browser, self.ham_btn_id, 5):
+                CommonMethods.elementClick(browser, self.ham_btn_id)
+                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(browser, self.profile_name_hamburger)
+
+            else:
+                logging.info('profile_card Not Found')
+                pytest.fail("Failed due to Hamburger Menu")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigate_to_profile_card')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'hamburger_verify')
     def verify_profile_name_icon(self,browser):
         try:
             profile_name = CommonMethods.isElementPresent(browser, self.profile_name)
