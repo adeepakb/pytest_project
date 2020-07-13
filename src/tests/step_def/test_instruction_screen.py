@@ -14,7 +14,7 @@ browser = fixture = 'browser'
 
 baseClass = BaseClass()
 testinstructionscn = EngineTestScreen(browser)
-featureFileName = 'Test Instruction Screen'
+featureFileName = 'Instruction Screen'
 
 
 # baseClass.setupLogs(featureFileName)
