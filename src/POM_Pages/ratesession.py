@@ -1,14 +1,17 @@
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
+from selenium.common.exceptions import NoSuchElementException
+import logging
 from Utilities.tutor_common_methods import TutorCommonMethods
 from src.POM_Pages.session_completed import SessionComplete
 from src.POM_Pages.session_data import SessionData
 from src.POM_Pages.application_login import Login
 from src.POM_Pages.scroll_cards import ScrollCards
 from src.POM_Pages.student_session import StudentSession
+from Utilities.common_methods import CommonMethods
 import re
 
-
+CommonMethods = CommonMethods()
 class Dashboard:
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
@@ -29,37 +32,45 @@ class Dashboard:
         self.data_off_icon= "//*[@class='android.widget.ImageView' and @bounds='[798,263][1216,413]']"
 
     def find_completed_notrated_session(self):
-        self.studentsession.cancel_join_session_dialog()
-        completed_data = self.sessioncomplete.scroll_to_end(stop_up_next=True)
-        flag = False
-        while True:
-            completed_count = 0
-            for month in completed_data:
-                for details in completed_data[month]:
-                    if details['Status'] == "Completed":
-                        completed_count += 1
-            print(f"Number of session completed are: {completed_count}")
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            self.studentsession.cancel_join_session_dialog()
+            completed_data = self.sessioncomplete.scroll_to_end(stop_up_next=True)
+            flag = False
+            while True:
+                completed_count = 0
+                for month in completed_data:
+                    for details in completed_data[month]:
+                        if details['Status'] == "Completed":
+                            completed_count += 1
+                print(f"Number of session completed are: {completed_count}")
 
-            i = 0
-            while i < 5:
-                session_cards_list = self.obj.get_elements('xpath', self.card)
-                status = self.sessiondata.get_session_status(session_cards_list[i])
-                rating = self.sessiondata.get_sessions_ratings(session_cards_list[i])
-                if status == 'Completed' and rating == 'Not rated':
-                    session_cards_list[i].click()
-                    flag = True
+                i = 0
+                while i < 5:
+                    session_cards_list = self.obj.get_elements('xpath', self.card)
+                    status = self.sessiondata.get_session_status(session_cards_list[i])
+                    rating = self.sessiondata.get_sessions_ratings(session_cards_list[i])
+                    if status == 'Completed' and rating == 'Not rated':
+                        session_cards_list[i].click()
+                        flag = True
+                        break
+                    i += 1
+                    if i == 5:
+                        self.scrollcards.scroll_by_card(session_cards_list[1], session_cards_list[3])
+                        i = 0
+                if flag:
                     break
-                i += 1
-                if i == 5:
-                    self.scrollcards.scroll_by_card(session_cards_list[1], session_cards_list[3])
-                    i = 0
-            if flag:
-                break
 
-            if flag is False:
-                pytest.skip("No unrated sessions present")
+                if flag is False:
+                    pytest.skip("No unrated sessions present")
 
-        return i
+            return i
+        elif device == 'mobile':
+            self.studentsession.cancel_join_session_dialog()
+            completed_data = self.sessioncomplete.scroll_to_end(stop_up_next=True)
+        else:
+            logging.info("Failed in Method find_completed_notrated_session")
+            pytest.fail('Failed')
 
     def verify_rate_session_link_is_present(self, text):
         assert self.obj.is_link_displayed(text) is True, "Rate Session link is not present"

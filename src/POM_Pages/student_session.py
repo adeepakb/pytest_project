@@ -4,8 +4,9 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from Utilities.tutor_common_methods import TutorCommonMethods
 from src.Constants.load_json import getdata
 from src.POM_Pages.application_login import Login
+from Utilities.common_methods import CommonMethods
 
-
+CommonMethods = CommonMethods()
 class StudentSession:
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
@@ -29,6 +30,7 @@ class StudentSession:
         self.teaching_material_slide_image = '//android.view.View[2]/android.view.View/android.widget.Image'
         self.tutor_video_container = '//*[contains(@resource-id, "remoteVideoViewContainer")]'
         self.bottom_sheet_dialog = '//*[contains(@resource-id, "design_bottom_sheet")]'
+        self.dialog_layout = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/dialog_layout"]'
         self.bottom_dialog_title = '//*[contains(@resource-id, "tvTitle")]'
         self.bottom_dialog_cancel = '//*[contains(@resource-id, "tvCancel")]'
         self.custom_panel = '//*[contains(@resource-id, "customPanel")]'
@@ -224,10 +226,15 @@ class StudentSession:
             assert (flag is True), "Text color " + expected_colors_list[i] + " is not as expected"
 
     def cancel_join_session_dialog(self):
-        if self.obj.is_element_present('xpath', self.bottom_sheet_dialog):
-            self.obj.element_click('xpath', self.bottom_dialog_cancel)
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            if self.obj.is_element_present('xpath', self.bottom_sheet_dialog):
+                self.obj.element_click('xpath', self.bottom_dialog_cancel)
+        elif device == 'mobile':
+            if self.obj.is_element_present('xpath', self.dialog_layout):
+                self.obj.element_click('xpath', self.bottom_dialog_cancel)
         else:
-            pass
+            logging.info("Failed in Method cancel_join_session_dialog")
 
     def download_materials_for_session(self):
         if self.obj.is_element_present('xpath', self.custom_panel):
