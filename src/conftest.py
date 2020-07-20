@@ -28,9 +28,12 @@ Featurejob = BuildFeatureJob()
 @pytest.fixture()
 def browser():
     browser = baseClass.driverSetup()
-    subprocess.Popen('adb connect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    Featurejob.lock_or_unlock_device('lock')
+    serial = Featurejob.connect_adb_api()
+    Featurejob.connect_to_adb(serial)
     yield browser
-    subprocess.Popen('adb disconnect '+getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    Featurejob.lock_or_unlock_device('unlock')
     browser.quit()
     
 

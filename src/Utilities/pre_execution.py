@@ -1,12 +1,8 @@
+import json
 import time
 import jenkins
 import requests
 import subprocess
-from Constants.constants import CONFIG_PATH
-from Constants.load_json import getdata
-from Utilities.BasePage import BaseClass
-
-baseClass = BaseClass()
 
 
 class BuildFeatureJob():
@@ -41,34 +37,16 @@ class BuildFeatureJob():
             with open("app.apk", "wb") as f:
                 f.write(response.content)
 
-            driver = baseClass.driverSetup()
+            self.lock_or_unlock_device('lock')
+            serial = self.connect_adb_api()
+            self.connect_to_adb(serial)
 
-            connected = False
-            for i in range(5):
-                subprocess.Popen('adb connect ' + getdata(CONFIG_PATH, 'adb_connect', 'headspin_device'), shell=True,
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-                stdout, stderr = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE,
-                                                  stderr=subprocess.STDOUT).communicate()
-                stdout = stdout.decode('ascii')
-                print("adb devices %s" % stdout)
-                if getdata(CONFIG_PATH, 'adb_connect', 'headspin_device') in stdout and "unauthorized" not in stdout and "offline" not in stdout:
-                    print("adb connected successfully")
-                    connected = True
-                    break
-                print("Connection failed, retrying...")
-                time.sleep(2 + i)
-
-            if not connected:
-                raise Exception("Failed to connect to device")
-
-            stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,
-                                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+            stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             print("adb install status ", stdout, stderr)
             output = stdout.decode("ascii")
             if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
-            driver.quit()
 
         else:
             print("Build Failed")
@@ -76,3 +54,44 @@ class BuildFeatureJob():
             f = open('log_buildFail.txt', 'w')
             f.write(log)
             f.close()
+
+
+    @staticmethod
+    def connect_to_adb(serial):
+        connected = False
+        for i in range(5):
+            subprocess.Popen('adb connect ' + serial, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
+            stdout, stderr = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
+            stdout = stdout.decode('ascii')
+            print("adb devices %s" % stdout)
+            if serial in stdout and "unauthorized" not in stdout and "offline" not in stdout:
+                print("adb connected successfully")
+                connected = True
+                break
+            print("Connection failed, retrying...")
+            time.sleep(2 + i)
+
+        if not connected:
+            raise Exception("Failed to connect to device")
+
+    @staticmethod
+    def lock_or_unlock_device(flag):
+        if flag == 'lock':
+            url = "https://api-dev.headspin.io/v0/adb/" + getdata(CONFIG_PATH, 'desired_cap', 'udid') + "/lock"
+        else:
+            url = "https://api-dev.headspin.io/v0/adb/" + getdata(CONFIG_PATH, 'desired_cap', 'udid') + "/unlock"
+        headers = {'Authorization': 'Bearer ' + getdata(CONFIG_PATH, 'adb_connect', 'token')
+                   }
+        r = requests.post(url, headers=headers)
+        print(r.status_code)
+
+    @staticmethod
+    def connect_adb_api():
+        url = "https://api-dev.headspin.io/v0/adb/" + getdata(CONFIG_PATH, 'desired_cap', 'udid') + "/connect"
+        headers = {'Authorization': 'Bearer ' + getdata(CONFIG_PATH, 'adb_connect', 'token')
+                   }
+        r = requests.post(url, headers=headers)
+        print(r.status_code)
+        json_data = json.loads(r.text)
+        serial = json_data['serial']
+        return serial
