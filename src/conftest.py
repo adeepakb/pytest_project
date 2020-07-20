@@ -25,7 +25,7 @@ CommonMethods = CommonMethods()
 Featurejob = BuildFeatureJob()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def browser():
     browser = baseClass.driverSetup()
     Featurejob.lock_or_unlock_device('lock')

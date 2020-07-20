@@ -49,6 +49,8 @@ class BuildFeatureJob():
             if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
+            subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+            self.lock_or_unlock_device('unlock')
 
         else:
             print("Build Failed")
