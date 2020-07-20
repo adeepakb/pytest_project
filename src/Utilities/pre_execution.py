@@ -3,6 +3,8 @@ import time
 import jenkins
 import requests
 import subprocess
+from Constants.constants import CONFIG_PATH
+from Constants.load_json import getdata
 
 
 class BuildFeatureJob():
