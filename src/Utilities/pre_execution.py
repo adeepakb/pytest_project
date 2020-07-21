@@ -9,14 +9,12 @@ from Constants.load_json import getdata
 
 class BuildFeatureJob():
     def __init__(self):
-        j = jenkins.Jenkins('https://builds.byjus.com/', username='testautomation@byjus.com',
-                            password='5a7b8f02aec0c2a7c5d4c348a1c7a590')
-
+        j = jenkins.Jenkins('https://builds.byjus.com/',
+                            username='reshma.nair@byjus.com', password='1d4b7f1a039c21beef54b2a861aeb8f9')
         build_num = j.get_job_info('qa_app2')['lastBuild']['number']
         build_info = j.get_build_info('qa_app2', build_num)
         build_info_actions = build_info['actions']
         parameters = build_info_actions[0]['parameters']
-        print(parameters)
         branch = parameters[0]['value']
         env = parameters[1]['value']
         variant = parameters[2]['value']
@@ -24,8 +22,8 @@ class BuildFeatureJob():
         branch_parameters = dict(branch=branch, env=env, variant=variant)
         j.build_job('B2C-Feature', parameters=branch_parameters, token='5a7b8f02aec0c2a7c5d4c348a1c7a590')
         time.sleep(10)
+        print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
         while True:
-            print('Running....')
             if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
                     j.get_job_info('B2C-Feature')['lastBuild'][
                         'number']:
@@ -33,13 +31,11 @@ class BuildFeatureJob():
                                                      j.get_job_info('B2C-Feature')['lastBuild']['number']))
                 break
             time.sleep(10)
-        print('Stop....')
         last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-        print("last_build_number", last_build_number)
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
         if build_info['result'] == 'SUCCESS':
-            print("B2C-Feature Build "+last_build_number+" is Successful")
+            print("B2C-Feature Build %d is Successful" % last_build_number)
             log = j.get_build_console_output('B2C-Feature', last_build_number)
             print(log)
             artifact = build_info['artifacts'][0]
@@ -57,13 +53,15 @@ class BuildFeatureJob():
             self.connect_to_adb(serial)
 
             print("Installing latest apk ", apk_url)
-            stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+            stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,
+                                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             print("adb install status ", stdout, stderr)
             output = stdout.decode("ascii")
             if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
-            subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+            subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT).communicate()
             self.lock_or_unlock_device('unlock')
 
         else:
@@ -73,13 +71,14 @@ class BuildFeatureJob():
             f.write(log)
             f.close()
 
-
     @staticmethod
     def connect_to_adb(serial):
         connected = False
         for i in range(5):
-            subprocess.Popen('adb connect ' + serial, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
-            stdout, stderr = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
+            subprocess.Popen('adb connect ' + serial, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT).communicate()
+            stdout, stderr = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE,
+                                              stderr=subprocess.STDOUT).communicate()
             stdout = stdout.decode('ascii')
             print("adb devices %s" % stdout)
             if serial in stdout and "unauthorized" not in stdout and "offline" not in stdout:
