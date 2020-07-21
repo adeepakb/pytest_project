@@ -20,7 +20,7 @@ class BuildFeatureJob():
         variant = parameters[2]['value']
 
         branch_parameters = dict(branch=branch, env=env, variant=variant)
-        j.build_job('B2C-Feature', parameters=branch_parameters, token='5a7b8f02aec0c2a7c5d4c348a1c7a590')
+        j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
         time.sleep(10)
         print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
         while True:
@@ -55,7 +55,6 @@ class BuildFeatureJob():
             print("Installing latest apk ", apk_url)
             stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,
                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-            print("adb install status ", stdout, stderr)
             output = stdout.decode("ascii")
             if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
@@ -100,7 +99,8 @@ class BuildFeatureJob():
         headers = {'Authorization': 'Bearer ' + getdata(CONFIG_PATH, 'adb_connect', 'token')
                    }
         r = requests.post(url, headers=headers)
-        print(r.status_code)
+        if r.status_code == 200:
+            print("headspin device %s successful" %flag)
 
     @staticmethod
     def connect_adb_api():
@@ -108,7 +108,8 @@ class BuildFeatureJob():
         headers = {'Authorization': 'Bearer ' + getdata(CONFIG_PATH, 'adb_connect', 'token')
                    }
         r = requests.post(url, headers=headers)
-        print(r.status_code)
+        if r.status_code == 200:
+            print("adb api connect successful")
         json_data = json.loads(r.text)
         serial = json_data['serial']
         return serial
