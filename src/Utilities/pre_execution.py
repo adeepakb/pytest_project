@@ -39,7 +39,9 @@ class BuildFeatureJob():
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
         if build_info['result'] == 'SUCCESS':
-            print("Build "+last_build_number+" is Successful")
+            print("B2C-Feature Build "+last_build_number+" is Successful")
+            log = j.get_build_console_output('B2C-Feature', last_build_number)
+            print(log)
             artifact = build_info['artifacts'][0]
             artifact_displaypath = artifact['displayPath']
             apk_url = 'https://builds.byjus.com/job/B2C-Feature/' + str(
@@ -65,7 +67,7 @@ class BuildFeatureJob():
             self.lock_or_unlock_device('unlock')
 
         else:
-            print("Build Failed")
+            print("B2C-Feature latest build Failed")
             log = j.get_build_console_output('B2C-Feature', last_build_number)
             f = open('log_buildFail.txt', 'w')
             f.write(log)
