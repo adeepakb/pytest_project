@@ -1020,12 +1020,14 @@ class EngineTestScreen():
             text2 = classlist1[i].get_attribute('content-desc')
             if str(text) in str(text2):
                 check = True
+                return check
             else:
                 for i in range(len(classlist1)):
                     text2 = classlist1[i].get_attribute('text')
                     if str(text) in str(text2):
                         check = True
-        return check
+                        return check
+        return False
 
     # This method is used to verify text from data 'content-desc'
     def verify_the_content_desc_text(self, browser, text):

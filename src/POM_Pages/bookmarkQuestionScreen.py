@@ -35,6 +35,7 @@ class BookMarkQuestionScreen:
     concept_name_id = (By.ID, "com.byjus.thelearningapp.premium:id/conceptName")
     share_icon = (By.ID, "com.byjus.thelearningapp.premium:id/ivShare")
     bookmark_icon = (By.ID, "com.byjus.thelearningapp.premium:id/bookmark")
+    bookmark_icon_question_screen = (By.ID, "com.byjus.thelearningapp.premium:id/optionalNav")
     toast_msg = (By.XPATH, "//android.widget.Toast")
     title = (By.ID, "com.byjus.thelearningapp.premium:id/title")
     snackbar_action = (By.ID, "com.byjus.thelearningapp.premium:id/snackbar_action")
@@ -730,7 +731,7 @@ class BookMarkQuestionScreen:
         self.verify_elements_on_screen(browser, self.share_icon, 'Share icon')
 
     def verify_Bookmark_icon(self, browser):
-        self.verify_elements_on_screen(browser, self.bookmark_icon, 'Bookmark icon')
+        self.verify_elements_on_screen(browser, self.bookmark_icon_question_screen, 'Bookmark icon')
 
     def verify_chapter_label(self, browser):
         self.verify_elements_on_screen(browser, self.concept_name_id, 'Chapter label')
@@ -770,8 +771,8 @@ class BookMarkQuestionScreen:
     # This method is used to remove bookmark in Bookmark question screen
     def remove_bookmark_in_qnscn(self, browser):
         try:
-            CommonMethods.wait_for_locator(browser, self.bookmark_icon, 10)
-            CommonMethods.elementClick(browser, self.bookmark_icon)
+            CommonMethods.wait_for_locator(browser, self.bookmark_icon_question_screen, 10)
+            CommonMethods.elementClick(browser, self.bookmark_icon_question_screen)
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'remove_bookmark_in_qnscn')
 
