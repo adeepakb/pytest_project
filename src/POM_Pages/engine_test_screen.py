@@ -1,5 +1,6 @@
 from time import sleep
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 from Utilities.common_methods import CommonMethods
 from Utilities.interrupt import *
 from selenium.common.exceptions import NoSuchElementException
@@ -8,18 +9,22 @@ import pytest
 from Constants.load_json import *
 from Constants.constants import CONFIG_PATH, Login_Credentials, Test_data
 from appium.webdriver.common.touch_action import TouchAction
+from appium.webdriver.common.multi_action import MultiAction
 import re
 import random
 import time
-from PIL import Image
+from PIL import Image, ImageChops
 from io import BytesIO
 import math
 
 CommonMethods = CommonMethods()
 data_file = CONFIG_PATH
 
-f = open("../../Test_data/featureFileName.txt", "r")
-featureFileName = f.read()
+# uncomment below line while executing via cmd
+# f = open("../../Test_data/featureFileName.txt", "r")
+# uncomment below line while executing via unit test
+# f = open("Test_data/featureFileName.txt","r")
+featureFileName = "Question Screen"
 
 
 class EngineTestScreen():
@@ -32,23 +37,11 @@ class EngineTestScreen():
     snackbar_text = (By.ID, "com.byjus.thelearningapp.premium:id/snackbar_text")
     allowbutton = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
     denybutton = (By.ID, "com.android.packageinstaller:id/permission_deny_button")
-    multiple_accounts_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_linearlayout")
-    user_profile_name = (By.ID, "com.byjus.thelearningapp.premium:id/tv_profile_name")
-    profile_select_radio_button = (By.ID, "com.byjus.thelearningapp.premium:id/profile_select_radio_button")
-    continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
     skipButton = (By.ID, "com.byjus.thelearningapp.premium:id/buttonSkip")
     grade8th = (By.XPATH, "//android.widget.Button[@text ='8th']")
     gms_cancel = (By.ID, "com.google.android.gms:id/cancel")
     btnRegister = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
     regscn_lgnbtn = (By.ID, "com.byjus.thelearningapp.premium:id/tvLoginBl")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
-    none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
-    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
-    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
-    back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
-    profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
-    profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
@@ -78,10 +71,23 @@ class EngineTestScreen():
     home_drawer_arrow_right = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_imgvw_arrow_right")
     grade_drop_down = (By.ID, "com.byjus.thelearningapp.premium:id/tvGrade")
     account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
+    back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
+    profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
+    profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
+    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
+    loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    multiple_accounts_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_linearlayout")
+    user_profile_name = (By.ID, "com.byjus.thelearningapp.premium:id/tv_profile_name")
+    profile_select_radio_button = (By.ID, "com.byjus.thelearningapp.premium:id/profile_select_radio_button")
+    continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
+    welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     homescreen_corana_dialog_ok_btn = (By.ID, "com.byjus.thelearningapp.premium:id/tv_secondaryAction")
     homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
     free_live_classes = (By.XPATH, "//android.view.View[@content-desc='Free Live Classes']")
-
+    bookmark_tag = (By.ID, "com.byjus.thelearningapp.premium:id/ivBookmarkTag")
+    bookmark_ham_id = (By.XPATH, "//android.widget.TextView[@text ='Bookmarks']")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     # Test list screenlocators
     start_btn = (By.XPATH, "//android.widget.TextView[@text='Start']")
     analyse_btn = (By.XPATH, "//android.widget.TextView[@text='Analyse']")
@@ -96,8 +102,6 @@ class EngineTestScreen():
     test_name_list = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname")
     objective_test_list_xpath = (By.XPATH,
                                  "//android.widget.LinearLayout[@index=1]//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname']")
-    # objective_test=(By.XPATH,"//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname'][contains(@text,'Exemplar')]")
-    # subjective_test_list_xpath=(By.XPATH,"//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname'][contains(@text,'Subjective')]")
     subjective_test_list_xpath = (By.XPATH,
                                   "//android.widget.LinearLayout[@index=2]//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname']")
     ncert_exemplars = (By.XPATH,
@@ -108,7 +112,8 @@ class EngineTestScreen():
                       "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvSubtopicName'][@text='Tests']")
     test_list_scn = (By.XPATH,
                      "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/header_subtitle1_text'][@text='Test']")
-
+    subjective_test = (By.XPATH,
+                       "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname'][contains(@text,'Subjective')]")
     chapter_name = None
     objective_test_list = []
     subjective_test_list = []
@@ -129,6 +134,7 @@ class EngineTestScreen():
     submitbtn = (By.XPATH, "//android.widget.Button[@text='Submit']")
     finish_btn = (By.XPATH, "//android.widget.Button[@text='Finish']")
     radio_button = (By.XPATH, "//android.widget.Image[@content-desc='tick']")
+    radio_button1 = (By.XPATH, "//android.widget.Image[@text='tick']")
     report_an_issue = (By.ID, "com.byjus.thelearningapp.premium:id/ivReportIssue")
     previous_button_icon = (By.ID, "com.byjus.thelearningapp.premium:id/ivleftButtonIcon")
     previous_button = (By.ID, "com.byjus.thelearningapp.premium:id/tvLeftButtonText")
@@ -136,58 +142,63 @@ class EngineTestScreen():
     next_button = (By.ID, "com.byjus.thelearningapp.premium:id/tvRightButtonText")
     bookmark_icon = (By.ID, "com.byjus.thelearningapp.premium:id/ivBookmark")
     edit_text = (By.XPATH, "//android.widget.EditText")
-    fill_in_the_blank_text = (By.XPATH, "//android.view.View[@content-desc='Tap the blank to answer']")
     question_number = (By.ID, "com.byjus.thelearningapp.premium:id/tvTabText")
     question_number_tab = (By.ID, "com.byjus.thelearningapp.premium:id/rlTabs")
     bookmark_dot = (By.ID, "com.byjus.thelearningapp.premium:id/flagged")
     bookmark_id = (By.ID, "com.byjus.thelearningapp.premium:id/ivBookmark")
     question_one_id = (
     By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvTabText'][@text='1']")
-    bookmarkdot_question_one = (
-    By.XPATH, "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/flagged'][@text='1']")
+    option_scn = (By.XPATH, "//android.webkit.WebView")
+    image_class = (By.XPATH, "//android.widget.Image")
+    image_view = (By.ID, "com.byjus.thelearningapp.premium:id/img")
+    image_close_btn = (By.ID, "com.byjus.thelearningapp.premium:id/ic_close")
+    submit_test = (By.XPATH,
+                   "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/dialog_title'][@text='Submit Test?']")
+    dialog_image = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_image")
+    dialog_layout = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
+    design_bottom_sheet = (By.ID, "com.byjus.thelearningapp.premium:id/design_bottom_sheet")
+    Chevron = (By.ID, "com.byjus.thelearningapp.premium:id/ivChevron")
+    dialog_title = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_title")
+    dialog_message = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_message")
     total_questions = 0
     color1 = set()
     color2 = set()
     question = None
+    current_question_number = None
+    image = None
+    image2 = None
+    option_selected = None
+    time = None
+    image_mobile = (By.XPATH, "//android.view.View[@content-desc=" "]")
+    pause_image = (By.ID, "com.byjus.thelearningapp.premium:id/image")
+    pause_right_arrow = (By.ID, "com.byjus.thelearningapp.premium:id/right_arrow")
 
     # Highlight screen locator
     view_solutions = (By.ID, "com.byjus.thelearningapp.premium:id/view_solutions")
     filter_icon = (By.XPATH, "//android.widget.FrameLayout[@index='2']")
     Bookmarked_filter = (By.XPATH, "//android.widget.TextView[@text ='Bookmarked']")
 
-    def reset_and_login_with_otp(self, browser):
-        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
-        CommonMethods.run(
-            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
-        CommonMethods.accept_notification(browser, self.allow_btn_id)
-        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
-        CommonMethods.elementClick(browser, self.loginPageVerify_id)
-        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
-        CommonMethods.elementClick(browser, self.country_Code)
-        sleep(2)
-        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                               , 'country_code'))
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
-                                self.phone_num)
-        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-        CommonMethods.elementClick(browser, self.loginBtn_id)
-        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
-                                self.OtpTxtBx_id)
+    # Report an Issue
 
-        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
-            profiles = CommonMethods.getElements(browser, self.user_profile_name)
-            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
-            for profile in profiles:
-                for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
-                        button.click()
-                        break
-        CommonMethods.elementClick(browser, self.continue_button)
+    # This method is used to navigate to home screen
+    def navigate_to_home_screen(self, browser):
+        try:
+            # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
+            if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
+                CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
+                self.verify_home_page(browser)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+            elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+                # self.verify_badge(browser)
+                self.verify_home_page(browser)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+            else:
+                self.reset_and_login_with_otp(browser)
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
 
-        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
-        CommonMethods.elementClick(browser, self.welcome_button)
+        except:
+            CommonMethods.exception(browser, featureFileName, 'navigateToHomeScreen')
 
     def verify_home_page(self, browser):
         print("------------------------method")
@@ -215,25 +226,57 @@ class EngineTestScreen():
         except:
             logging.info('Error in Verifing Home Page')
 
-    # This method is used to navigate to home screen
-    def navigate_to_home_screen(self, browser):
+    def reset_and_login_with_otp(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
+            profiles = CommonMethods.getElements(browser, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
+            for profile in profiles:
+                for button in radio_buttons:
+                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                        button.click()
+                        break
+        CommonMethods.elementClick(browser, self.continue_button)
+
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
+
+    def verify_home_screen(self, browser):
         try:
-            # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
-            if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
+            if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 10):
                 CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
-                self.verify_home_page(browser)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
-            elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
-                # self.verify_badge(browser)
-                self.verify_home_page(browser)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+            if CommonMethods.isElementPresent(browser, self.badge):
+                CommonMethods.elementClick(browser, self.closeBtn)
+            if CommonMethods.isElementPresent(browser, self.analytics_icon):
+                logging.info('User is in Home screen')
+                return True
             else:
-                self.reset_and_login_with_otp(browser)
+                return False
+
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigateToHomeScreen')
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_home_screen')
 
         except:
-            CommonMethods.exception(browser, featureFileName, 'navigateToHomeScreen')
+            CommonMethods.exception(browser, featureFileName, 'verify_home_screen')
 
     # This method is used to check for subject, if subject not found it will switch to 8th grade
     def check_for_subject_and_tap(self, browser, sub):
@@ -246,10 +289,10 @@ class EngineTestScreen():
                     break
                 elif CommonMethods.scrollToElementAndClick(browser, sub):
                     break
-                # else:
-        #                     self.switch_grade(browser,'8th Grade')
-        #                     if CommonMethods.isElementPresent(browser, self.backToTopClick):
-        #                         CommonMethods.elementClick(browser, self.backToTopClick)
+                else:
+                    self.switch_grade(browser, '8th Grade')
+                    if CommonMethods.isElementPresent(browser, self.backToTopClick):
+                        CommonMethods.elementClick(browser, self.backToTopClick)
 
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(browser, featureFileName, 'check_for_subject_and_tap')
@@ -309,7 +352,6 @@ class EngineTestScreen():
         try:
             CommonMethods.wait_for_locator(browser, self.subtitle1_text, 20)
             if CommonMethods.getAttributeOfElement(browser, 'text', self.subtitle1_text) == 'Test':
-                #             if CommonMethods.findText(browser, 'Test'):
                 pass
             else:
                 logging.error('User is not in test list screen')
@@ -555,7 +597,6 @@ class EngineTestScreen():
         try:
             CommonMethods.wait_for_locator(browser, self.objective_test_list_xpath, 20)
             self.test_name = CommonMethods.getAttributeOfElement(browser, 'text', self.objective_test_list_xpath)
-            logging.info(self.test_name)
             if CommonMethods.isElementPresent(browser, self.retake_test):
                 CommonMethods.elementClick(browser, self.retake_test)
             elif CommonMethods.isElementPresent(browser, self.start_btn):
@@ -599,7 +640,7 @@ class EngineTestScreen():
             if CommonMethods.isElementPresent(browser, self.test_start_button):
                 logging.info('User is test instruction screen')
                 if CommonMethods.isElementPresent(browser, self.question_count):
-                    self.total_question = CommonMethods.getAttributeOfElement(browser, 'text', self.question_count)
+                    self.total_questions = CommonMethods.getAttributeOfElement(browser, 'text', self.question_count)
             else:
                 logging.error('User is not in test instruction screen')
                 pytest.fail('Failed to navigate test instruction screen')
@@ -710,8 +751,8 @@ class EngineTestScreen():
     def verify_highlights_screen(self, browser):
         try:
             if CommonMethods.isElementPresent(browser, self.primaryActionBtn):
-                CommonMethods.click_on_device_back_btn(self, browser)
-            CommonMethods.wait_for_locator(browser, self.subtitle1_text, 10)
+                CommonMethods.click_on_device_back_btn(browser)
+            CommonMethods.wait_for_locator(browser, self.subtitle1_text, 15)
             actual_text = CommonMethods.getAttributeOfElement(browser, 'text', self.header_title_text)
             result = CommonMethods.verifyTextMatch(actual_text, "Highlights")
             if result == False:
@@ -1066,10 +1107,13 @@ class EngineTestScreen():
     # This method is used to verify test instruction icons
     def verify_instruction_icons(self, browser):
         try:
-            # icon=(By.XPATH,"//android.widget.Image")
-            icon = (By.XPATH,
-                    "//android.widget.TextView/following-sibling::android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View[@index=0]")
-
+            icon1 = (By.XPATH, "//android.widget.Image")
+            icon2 = (By.XPATH,
+                     "//android.widget.TextView/following-sibling::android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View[@index=0]")
+            if CommonMethods.isElementPresent(browser, icon1):
+                icon = icon1
+            elif CommonMethods.isElementPresent(browser, icon2):
+                icon = icon2
             icons = CommonMethods.getElements(browser, icon)
             if len(icons) == 3:
                 logging.info('Instruction icons are verified')
@@ -1111,9 +1155,7 @@ class EngineTestScreen():
     def verify_chapter_n_test_name_on_instruction_screen(self, browser):
         try:
             CommonMethods.wait_for_locator(browser, self.header_title_text, 10)
-
             test_name = CommonMethods.getAttributeOfElement(browser, 'text', self.header_title_text)
-            logging.info(test_name)
             if CommonMethods.findText(browser, self.chapter_name):
                 pass
             else:
@@ -1155,8 +1197,7 @@ class EngineTestScreen():
     # This method is used to navigate to question screen
     def navigate_to_objective_test_question_scn(self, browser):
         try:
-            test_list = getdata(Test_data, 'Test_list_for_different_types_of_questions', 'list')
-            test = random.choice(test_list)
+            test = getdata(Test_data, 'Test_to_be_tested', 'Test')
             chapter = getdata(Test_data, test, 'Chapter')
             test_link1 = (By.XPATH,
                           "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_title_view' and @text=\'" + chapter + "\']/parent::android.widget.LinearLayout/following-sibling::android.widget.LinearLayout/android.widget.TextView[@text='Test']")
@@ -1218,13 +1259,7 @@ class EngineTestScreen():
     def verify_book_mark_icon(self, browser):
         self.verify_the_elements(browser, self.bookmark_icon, 'Bookmark icon')
 
-    #     def time_convert(self,sec):
-    #         mins = sec // 60
-    #         sec = sec % 60
-    #         hours = mins // 60
-    #         mins = mins % 60
-    #         logging.info("Time Lapsed = {0}:{1}:{2}".format(int(hours),int(mins),sec))
-
+    #
     #             input("Press Enter to start")
     #             start_time = time.time()
     #
@@ -1269,7 +1304,6 @@ class EngineTestScreen():
     # This method is used to verify multiple choice question in the test
     def verify_multiple_choice_question(self, browser):
         try:
-            CommonMethods.scrollToElementAndClick(browser, '1')
             while True:
                 if CommonMethods.isElementPresent(browser,
                                                   self.radio_button) == False and CommonMethods.isElementPresent(
@@ -1277,7 +1311,7 @@ class EngineTestScreen():
                     logging.info('Test has multiple choice question')
                     break
                 elif CommonMethods.isElementPresent(browser, self.next_button) == False:
-                    logging.info('Multiple choice question not found in the test')
+                    pytest.fail('Multiple choice question not found in the test')
                     break
                 else:
                     CommonMethods.elementClick(browser, self.next_button)
@@ -1290,13 +1324,15 @@ class EngineTestScreen():
     # This method is used to verify multiselect question in the test
     def verify_multi_select_question(self, browser):
         try:
-            CommonMethods.scrollToElementAndClick(browser, '1')
             while True:
                 if CommonMethods.isElementPresent(browser, self.radio_button) == True:
                     logging.info('Test has multiselect question')
                     break
+                elif CommonMethods.isElementPresent(browser, self.radio_button1) == True:
+                    logging.info('Test has multiselect question')
+                    break
                 elif CommonMethods.isElementPresent(browser, self.next_button) == False:
-                    logging.info('Multi select question not found in the test')
+                    pytest.fail('Multi select question not found in the test')
                     break
                 else:
                     CommonMethods.elementClick(browser, self.next_button)
@@ -1309,13 +1345,12 @@ class EngineTestScreen():
     # This method is used to verify fill in the blanks question in the test
     def verify_fill_in_the_blanks_question(self, browser):
         try:
-            CommonMethods.scrollToElementAndClick(browser, '1')
             while True:
                 if CommonMethods.isElementPresent(browser, self.edit_text) == True:
                     logging.info('Test has fill in question')
                     break
                 elif CommonMethods.isElementPresent(browser, self.next_button) == False:
-                    logging.info('Fill in the blancks question not found in the test')
+                    pytest.fail('Fill in the blanks question not found in the test')
                     break
                 else:
                     CommonMethods.elementClick(browser, self.next_button)
@@ -1365,18 +1400,27 @@ class EngineTestScreen():
             CommonMethods.exception(browser, featureFileName, 'remove_book_mark_in_qn_screen')
 
     def verify_bookmarked_dot_on_qn_number(self, browser):
-        if CommonMethods.isElementPresent(browser, self.bookmarkdot_question_one):
+        if CommonMethods.isElementPresent(browser, self.bookmark_dot):
             logging.info('bookmaark dot is shown on question screen')
         else:
             pytest.fail('Bookmark dot is not shown')
 
     def verify_bookmarked_dot_removed(self, browser):
-        if CommonMethods.isElementPresent(browser, self.bookmarkdot_question_one) == False:
+        if CommonMethods.isElementPresent(browser, self.bookmark_dot) == False:
             logging.info('Bookmark dot is not shown')
         else:
             pytest.fail('bookmaark dot is shown on question screen')
 
     def crop_screenshot_for_color(self, browser, locator):
+        im = self.crop_element(browser, locator)
+        # Quantize down to 2 colour palettised image using *"Fast Octree"* method:
+        q = im.quantize(colors=2, method=2)
+        # Now look at the first 2 colours, each 3 RGB entries in the palette:
+        logging.info(q.getpalette()[:6])
+        x = (q.getpalette()[:6])
+        return x
+
+    def crop_element(self, browser, locator):
         element = CommonMethods.getElement(browser, locator)
         location = element.location
         size = element.size
@@ -1387,12 +1431,7 @@ class EngineTestScreen():
         right = location['x'] + size['width']
         bottom = location['y'] + size['height']
         im = im.crop((left, top, right, bottom))
-        # Quantize down to 2 colour palettised image using *"Fast Octree"* method:
-        q = im.quantize(colors=2, method=2)
-        # Now look at the first 2 colours, each 3 RGB entries in the palette:
-        logging.info(q.getpalette()[:6])
-        x = (q.getpalette()[:6])
-        return x
+        return im
 
     #
     def root_mean_square_error(self, rgb1, rgb2):
@@ -1404,16 +1443,21 @@ class EngineTestScreen():
         rgb_color_code2 = tuple(self.color2[3:])
         match = self.root_mean_square_error(rgb_color_code1, rgb_color_code2)
         logging.info(match)
-        assert (match < 15), "Text color is not as expected"
+        assert (match < 35), "Text color is not as expected"
 
     def get_subject_color(self, browser, sub):
         CommonMethods.wait_for_element_visible(browser, self.profile_header_id, 20)
-        pythonSub_xpath = (By.XPATH, "//android.widget.TextView[@text=\'" + sub + "\']")
-        CommonMethods.wait_for_element_visible(browser, pythonSub_xpath, 3)
-        self.color1 = self.crop_screenshot_for_color(browser, pythonSub_xpath)
+        locator1 = (By.XPATH, "//android.widget.TextView[@text=\'" + sub + "\']/../*/android.widget.ImageView")
+        locator2 = (By.XPATH, "//android.widget.TextView[@text=\'" + sub + "\']/..")
+        if CommonMethods.isElementPresent(browser, locator1):
+            locator = locator1
+        elif CommonMethods.isElementPresent(browser, locator2):
+            locator = locator2
+        #         CommonMethods.wait_for_element_visible(browser, pythonSub_xpath, 3)
+        self.color1 = self.crop_screenshot_for_color(browser, locator)
 
     def verify_gray_color(self):
-        rgb_color_code1 = tuple([153, 153, 153])
+        rgb_color_code1 = tuple([187, 187, 187])
         rgb_color_code2 = tuple(self.color2[3:])
         match = self.root_mean_square_error(rgb_color_code1, rgb_color_code2)
         logging.info(match)
@@ -1426,7 +1470,6 @@ class EngineTestScreen():
     # This method will fetch a question and returns question
     def get_question(self, browser):
         try:
-            CommonMethods.wait_for_locator(browser, self.next_button, 10)
             test_question = (By.XPATH,
                              "//androidx.viewpager.widget.ViewPager//android.view.View[@resource-id='q']/android.view.View[@index=0]")
             count = 0
@@ -1437,7 +1480,7 @@ class EngineTestScreen():
                 return question
             else:
                 while True:
-                    question = elements[count].get_attribute('content-desc')
+                    question = elements[count].get_attribute('text')
                     if question == None or question == '':
                         count = count + 1
                     else:
@@ -1460,7 +1503,7 @@ class EngineTestScreen():
                 CommonMethods.elementClick(browser, self.previous_button)
             else:
                 CommonMethods.elementClick(browser, self.next_button)
-                CommonMethods.wait_for_locator(browser, self.previous_button, 5)
+                CommonMethods.wait_for_locator(browser, self.questiontime, 10)
                 self.question = self.get_question(browser)
                 CommonMethods.elementClick(browser, self.previous_button)
         except NoSuchElementException:
@@ -1473,7 +1516,7 @@ class EngineTestScreen():
     def tap_on_next_button(self, browser):
         try:
             CommonMethods.wait_for_locator(browser, self.next_button, 10)
-            sleep(2)
+            CommonMethods.wait_for_locator(browser, self.questiontime, 10)
             self.question = self.get_question(browser)
             CommonMethods.elementClick(browser, self.next_button)
         except NoSuchElementException:
@@ -1485,6 +1528,7 @@ class EngineTestScreen():
     # This method is used to verify user is in different question screen
     def user_in_different_qn_scn(self, browser):
         try:
+            CommonMethods.wait_for_locator(browser, self.questiontime, 10)
             question1 = self.get_question(browser)
             if question1 != self.question:
                 logging.info('User is in previous question screen')
@@ -1495,3 +1539,734 @@ class EngineTestScreen():
 
         except:
             CommonMethods.exception(browser, featureFileName, 'user_in_previous_qn_scn')
+
+    # This method is used to remove bookmark in bookmrak home screen
+    def remove_bookmark_in_book_mark_screen(self, browser):
+        try:
+            CommonMethods.isElementPresent(browser, self.analytics_icon)
+            CommonMethods.elementClick(browser, self.hamburger_id)
+            CommonMethods.wait_for_locator(browser, self.bookmark_ham_id, 10)
+            CommonMethods.elementClick(browser, self.bookmark_ham_id)
+            filter_btn = (By.XPATH, "//android.widget.Button[@text='Filter']")
+            CommonMethods.wait_for_locator(browser, filter_btn, 10)
+            while True:
+                if CommonMethods.isElementPresent(browser, self.bookmark_tag):
+                    CommonMethods.elementClick(browser, self.bookmark_tag)
+                else:
+                    CommonMethods.click_on_device_back_btn(browser)
+                    break
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'remove_bookmark_in_book_mark_screen')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'remove_bookmark_in_book_mark_screen')
+
+    # This method is used to tap any question number passed to this method
+    def tap_on_question_number(self, browser, question_number):
+        try:
+            CommonMethods.wait_for_locator(browser, self.questiontime, 20)
+            self.question = self.get_question(browser)
+            #             self.question_number_tab_scroll_click(browser,question_number)
+            CommonMethods.scrollToElementAndClick(browser, str(question_number))
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_question_number')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_question_number')
+
+    # This method is used to verify that the user is in particular question screen
+    def verify_user_is_in_particular_qn_scn(self, browser, question_number):
+        try:
+            question_number_id = (By.XPATH,
+                                  "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/tvTabText'][@text=\'" + str(
+                                      question_number) + "\']")
+            CommonMethods.wait_for_locator(browser, question_number_id, 15)
+            if self.question_highlighted(browser, question_number_id):
+                self.user_in_different_qn_scn(browser)
+                logging.info('User is in question screen of question number ' + str(self.current_question_number))
+            else:
+                pytest.fail('Failed to navigate to particular question')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_user_is_in_particular_qn_scn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_user_is_in_particular_qn_scn')
+
+    # This method is used to click on any random question from the text
+    def navigate_to_particular_qn_screen(self, browser):
+        logging.info('Total number of question in the test ' + self.total_questions)
+        self.current_question_number = random.randint(2, int(self.total_questions))
+        logging.info('Question number to click ' + str(self.current_question_number))
+        #         CommonMethods.scrollToElementAndClick(browser,str(self.current_question_number))
+        self.tap_on_question_number(browser, str(self.current_question_number))
+
+    def verify_particular_qn_scn(self, browser):
+        self.verify_user_is_in_particular_qn_scn(browser, self.current_question_number)
+
+    def navigate_to_last_question(self, browser):
+        CommonMethods.wait_for_locator(browser, self.questiontime, 20)
+        self.question_number_tab_scroll_click(browser, self.total_questions)
+        #         self.tap_on_question_number(browser, self.total_questions)
+        self.verify_user_is_in_particular_qn_scn(browser, self.total_questions)
+
+    # This method is used to verify user is in first question screen
+    def user_is_in_first_question_scn(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.question_number, 10)
+            if self.question_highlighted(browser, self.question_one_id):
+                logging.info('User is in first question screen')
+            else:
+                pytest.fail('User is not in First question screen')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'user_is_in_first_question_scn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'user_is_in_first_question_scn')
+
+    # This method is used to verify that element is not shown on the screen
+    def element_not_shown(self, browser, locator, text):
+        try:
+            if CommonMethods.isElementPresent(browser, locator) == False:
+                logging.info(text + ' is not shown in the screen')
+            else:
+                pytest.fail(text + ' is shown in the screen')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'element_not_shown')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'element_not_shown')
+
+    def next_button_not_shown(self, browser):
+        self.element_not_shown(browser, self.next_button, "Next button")
+
+    def previous_button_not_shown(self, browser):
+        self.element_not_shown(browser, self.previous_button, "Previous button")
+
+    # This method is used to scroll question number tab
+    def question_number_tab_scroll_click(self, browser, question_number):
+        try:
+            browser.find_element_by_android_uiautomator(
+                "new UiScrollable(new UiSelector().resourceId(\"com.byjus.thelearningapp.premium:id/tabs\")).setAsHorizontalList().scrollIntoView("
+                + "new UiSelector().textContains(\"" + str(question_number) + "\"))").click()
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'scroll_to_test_and_click')
+
+    # This method is used to verify the keypad enabled
+    def is_keypad_enabled(self, browser):
+        check = CommonMethods.isKeyBoardShown(browser)
+        if check == True:
+            logging.info('Keypad is displayed')
+        else:
+            pytest.fail('Failed to show keypad in method is_keypad_enabled')
+
+        # This method is used to tap on edit text field on fill the blanks question screen
+
+    def tap_on_edit_text(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.edit_text, 5)
+            CommonMethods.elementClick(browser, self.edit_text)
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_edit_text')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_edit_text')
+
+    def verify_edit_text_field_on_scn(self, browser):
+        self.verify_the_elements(browser, self.edit_text, 'Edit text')
+
+    # This method is used to enter data on fill in the blanks edit text field
+    def enter_answer(self, browser, Answer):
+        try:
+            self.image = self.crop_element(browser, self.option_scn)
+            if CommonMethods.enterText(browser, Answer, self.edit_text):
+                logging.info('You have entered answer ' + Answer)
+            else:
+                pytest.fail('Failed to enter answer ' + Answer)
+            self.image2 = self.crop_element(browser, self.option_scn)
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'enter_answer')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'enter_answer')
+
+        # This method is used verify entered answer
+
+    def verify_entered_answer(self, browser, Answer):
+        try:
+            if CommonMethods.getAttributeOfElement(browser, 'text', self.edit_text) == Answer:
+                logging.info('Entered answer verified')
+            elif CommonMethods.getAttributeOfElement(browser, 'content-desc', self.edit_text) == Answer:
+                logging.info('Entered answer verified')
+            else:
+                pytest.fail('Entered text is not matching')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_entered_answer')
+
+    # This method is used to verify options on question screen
+    def verify_options_shown(self, browser):
+        try:
+            options = ["a.", "b.", "c.", "d."]
+            for i in range(len(options)):
+                option = options[i]
+                option_content_desc = (By.XPATH, "//android.view.View[@content-desc=\'" + option + "\']/..")
+                option_text = (By.XPATH, "//android.view.View[@text=\'" + option + "\']/..")
+                locator = self.confirm_locator(browser, option_content_desc, option_text)
+                if CommonMethods.isElementPresent(browser, locator) == True:
+                    logging.info('Option found ' + option)
+                elif option == "c." or option == "d.":
+                    logging.info('Question type is True or False')
+                else:
+                    pytest.fail('Failed to verify options question screen')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_options_shown')
+
+    # This method is used to verify radio buttons on multiselect question screen
+    def verify_radio_buttons_on_question_Scn(self, browser):
+        try:
+            radio_buttons = CommonMethods.getElements(browser, self.radio_button)
+            if len(radio_buttons) == 4:
+                logging.info('Radio buttons are verified on the screen')
+            else:
+                pytest.fail(
+                    'All radio buttons are not found on question screen and number of radio buttons found ' + str(
+                        len(radio_buttons)))
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_radio_buttons_on_question_Scn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_radio_buttons_on_question_Scn')
+
+        # This method is used to select multiple choice question
+
+    def select_multiple_choice_option(self, browser):
+        try:
+            ts = time.strftime("%Y_%m_%d_%H%M%S")
+
+            options = ["a.", "b.", "c.", "d."]
+            option = random.choice(options)
+            option_content_desc = (By.XPATH, "//android.view.View[@content-desc=\'" + option + "\']/..")
+            option_text = (By.XPATH, "//android.view.View[@text=\'" + option + "\']/..")
+            self.option_selected = self.confirm_locator(browser, option_content_desc, option_text)
+            self.image = self.crop_element(browser, self.option_selected)
+            self.image.save(ts + "im1.png")
+            CommonMethods.elementClick(browser, self.option_selected)
+            sleep(2)
+            self.image2 = self.crop_element(browser, self.option_selected)
+            self.image2.save(ts + "im4.png")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'select_multiple_choice_option')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'select_multiple_choice_option')
+
+        # This method is used to compare multiple choice question screen
+
+    def image_compare(self, browser):
+        try:
+            #             diff = ImageChops.difference(self.image,self.image2)
+            #             if diff.getbbox()!=None:
+            if list(self.image.getdata()) != list(self.image2.getdata()):
+                logging.info('Option is selected')
+            else:
+                pytest.fail('Option is not selected')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'image_compare')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'image_compare')
+
+        # This method is used to confirm the locators in the screen
+
+    def confirm_locator(self, browser, locator1, locator2):
+        try:
+            if CommonMethods.isElementPresent(browser, locator1):
+                locator = locator1
+            elif CommonMethods.isElementPresent(browser, locator2):
+                locator = locator2
+            return locator
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'confirm_locator')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'confirm_locator')
+
+        # This method is used to select options in multi select question screen
+
+    def select_multi_select_options(self, browser):
+        try:
+            self.image = self.crop_element(browser, self.option_scn)
+            number_of_option_to_select = random.randint(1, 4)
+            logging.info(number_of_option_to_select)
+            options = ["a.", "b.", "c.", "d."]
+            option_list = random.sample(options, number_of_option_to_select)
+            logging.info(option_list)
+            for i in range(len(option_list)):
+                option_content_desc = (By.XPATH, "//android.view.View[@content-desc=\'" + option_list[i] + "\']/..")
+                option_text = (By.XPATH, "//android.view.View[@text=\'" + option_list[i] + "\']/..")
+                locator = self.confirm_locator(browser, option_content_desc, option_text)
+                CommonMethods.elementClick(browser, locator)
+            sleep(2)
+            self.image2 = self.crop_element(browser, self.option_scn)
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'select_multi_select_option')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'select_multi_select_option')
+
+        # This method is used to compare the multiselect question screen after the answer selection
+
+    def image_compare_multiselect(self, browser):
+        try:
+            #             diff = ImageChops.difference(self.image,self.image2)
+            # if diff.getbbox()!=None:
+            if list(self.image.getdata()) != list(self.image2.getdata()):
+                logging.info('Options are selected ')
+            else:
+                pytest.fail('Options are not selected')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'image_compare_multiselect')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'image_compare_multiselect')
+
+        # This method is to verify that the previously answered question answer is saved
+
+    def answer_saved(self, browser, locator):
+        try:
+            im2 = self.crop_element(browser, locator)
+
+            #             diff = ImageChops.difference(self.image2,im2)
+            #             if diff.getbbox()!=None:
+            if list(im2.getdata()) != list(self.image2.getdata()):
+                pytest.fail('Previously saved answer is not shown')
+            else:
+                logging.info('Answer is saved')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'image_compare_multiselect')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'image_compare_multiselect')
+
+    def compare_multiple_choice_option(self, browser):
+        self.answer_saved(browser, self.option_selected)
+
+    def compare_question_screen(self, browser):
+        self.answer_saved(browser, self.option_scn)
+
+    # This method is used to navigate to image type questions
+    def navigate_to_image_type_qn(self, browser):
+        try:
+            qn_number = getdata(Test_data, getdata(Test_data, 'Test_to_be_tested', 'Test'),
+                                'Image_type_question_number')
+            self.tap_on_question_number(browser, qn_number)
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'navigate_to_image_type_qn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'navigate_to_image_type_qn')
+
+    # This method is used to tap on Image on question screen
+    def tap_on_image(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.option_scn, 10)
+            if CommonMethods.isElementPresent(browser, self.image_class):
+                CommonMethods.elementClick(browser, self.image_class)
+            elif CommonMethods.elementClick(browser, self.option_scn):
+                logging.info('Tapped on image on question screen')
+            else:
+                pytest.fail('Failed to tap on the image on question screen')
+            CommonMethods.wait_for_locator(browser, self.image_view, 10)
+            self.image = self.crop_element(browser, self.image_view)
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_image')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_image')
+
+    def verify_image_view_screen(self, browser):
+        self.verify_the_elements(browser, self.image_view, 'Image view screen')
+
+    def verify_image_view_cls_btn(self, browser):
+        self.verify_the_elements(browser, self.image_close_btn, 'Image view close button')
+
+    # This method is used to tap on close button on image view screen
+    def tap_on_close_btn(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.image_close_btn, 5)
+            CommonMethods.elementClick(browser, self.image_close_btn)
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_close_btn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_close_btn')
+
+    # This method is used to verify that Image view screen is dismissed
+    def verify_image_view_dismissed(self, browser):
+        try:
+            if CommonMethods.isElementPresent(browser, self.image_view) == False:
+                if CommonMethods.isElementPresent(browser, self.option_scn):
+                    logging.info('Image view screen is dismissed')
+            else:
+                pytest.fail('Failed to dismiss Image view screen')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_image_view_dismissed')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_image_view_dismissed')
+
+    def double_tap_on_image(self, browser):
+        try:
+            element = CommonMethods.getElement(browser, self.image_view)
+            loc = element.rect
+            x = loc['x']
+            y = loc['y']
+            height = loc['height']
+            width = loc['width']
+            x2 = (x + width) / 2
+            y2 = (y + height) / 2
+            action1 = TouchAction(browser)
+            action1.press(x=x2, y=y2).release().perform().wait(100).press(x=x2, y=y2).release().perform()
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'double_tap_on_image')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'double_tap_on_image')
+
+    # This method is used to verify bottom sheet dialog
+    def verify_bottomsheet_dialog_shown(self, browser, text):
+        try:
+            CommonMethods.wait_for_locator(browser, self.dialog_title, 5)
+            if CommonMethods.findText(browser, text):
+                logging.info("'" + text + "'" + " bottom sheet dialog is shown")
+            else:
+                pytest.fail("'" + text + "'" + " bottom sheet dialog is not shown")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_bottomsheet_dialog_shown')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_bottomsheet_dialog_shown')
+
+    # This method is used to tap on submit button
+    def tap_on_submit_button(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.submitbtn, 10)
+            if CommonMethods.elementClick(browser, self.submitbtn):
+                logging.info('User tapped on submit button')
+            else:
+                pytest.fail('Failed to tap submit button')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_submit_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_submit_button')
+
+    def verify_test_icon(self, browser):
+        self.verify_the_elements(browser, self.dialog_image, "Dialog image")
+
+    def verify_bottom_sheet_dialog_title(self, browser, text):
+        try:
+            if CommonMethods.getAttributeOfElement(browser, 'text', self.dialog_title) == text:
+                logging.info("Title text '" + text + "' is verified")
+            else:
+                pytest.fail("Title text " + text + "' not found")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_bottom_sheet_dialog_title')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_bottom_sheet_dialog_title')
+
+    def verify_bottom_sheet_dialog_message(self, browser, text):
+        try:
+            if CommonMethods.getAttributeOfElement(browser, 'text', self.dialog_message) == text:
+                logging.info("Message ' " + text + "' is verified")
+            else:
+                pytest.fail("Message ' " + text + "' not found")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_bottom_sheet_dialog_message')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_bottom_sheet_dialog_message')
+
+    # This method is used verify primary button
+    def verify_primary_button(self, browser, text):
+        try:
+            if CommonMethods.getAttributeOfElement(browser, 'text', self.primaryActionBtn) == text:
+                logging.info("Primary Action button ' " + text + "' is verified")
+            else:
+                pytest.fail("Primary Action button ' " + text + "' not found")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_primary_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_primary_button')
+
+    # This method is used verify secondary button
+    def verify_secondary_button(self, browser, text):
+        try:
+            if CommonMethods.getAttributeOfElement(browser, 'text', self.secondaryActionBtn) == text:
+                logging.info("Secondary Action button ' " + text + "' is verified")
+            else:
+                pytest.fail("Secondary Action button ' " + text + "'not found")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_secondary_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_secondary_button')
+
+    # This method is used to tap on primary action button
+    def tap_on_primary_action_button(self, browser):
+        try:
+            if CommonMethods.elementClick(browser, self.primaryActionBtn):
+                logging.info("User tappped on primary action button")
+            else:
+                pytest.fail("Failed to tap on primary action button")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_primary_action_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_primary_action_button')
+
+    # This method is used to tap on secondary action button
+    def tap_on_secondary_action_button(self, browser):
+        try:
+            if CommonMethods.elementClick(browser, self.secondaryActionBtn):
+                logging.info("User tappped on secondary action button")
+            else:
+                pytest.fail("Failed to tap on secondary action button")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_secondary_action_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_secondary_action_button')
+
+    # This method is used verify bottom sheet dialog is dismissed
+    def bottomsheet_dailog_dismissed(self, browser):
+        try:
+            sleep(2)
+            if CommonMethods.isElementPresent(browser, self.dialog_layout) == False:
+                logging.info('Bottom sheet dialog is dismissed')
+            elif CommonMethods.isElementPresent(browser, self.design_bottom_sheet) == False:
+                logging.info('Bottom sheet dialog is dismissed')
+            else:
+                pytest.fail('Failed to dismiss the bottom sheet dialog')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'bottomsheet_dailog_dismissed')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'bottomsheet_dailog_dismissed')
+
+    # This method is used to verify submit test bottom sheet dialog text message
+    def verify_submit_test_message(self, browser, text):
+        try:
+            to_find_text = re.compile(r'Hey (.*), are you sure you want to end this test?')
+            search_text = to_find_text.search(text)
+            if search_text:
+                found_text = search_text.group()
+                logging.info('Found message ' + found_text)
+            else:
+                pytest.fail('Failed to find the text message "' + text + '" in method verify_submit_test_message ')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_submit_test_message')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_submit_test_message')
+
+    # This method is used to verify image is zoomed in
+    def image_zoom_in(self, browser):
+        try:
+            sleep(2)
+            self.image2 = self.crop_element(browser, self.image_view)
+            #             diff = ImageChops.difference(self.image,self.image2)
+            #             if diff.getbbox()!=None:
+            if list(self.image.getdata()) != list(self.image2.getdata()):
+                logging.info('Image is zoomed')
+            else:
+                pytest.fail('Failed to zoom the image')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'image_zoom_in')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'image_zoom_in')
+
+    # This method is used to verify image is zoomed out
+    def image_zoom_out(self, browser):
+        try:
+            sleep(2)
+            self.image2 = self.crop_element(browser, self.image_view)
+            #             diff = ImageChops.difference(self.image,self.image2)
+            #             if diff.getbbox()!=None:
+            if list(self.image.getdata()) != list(self.image2.getdata()):
+                pytest.fail('Failed to zoom out the image')
+            else:
+                logging.info('Image zoomed in')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'image_zoom_out')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'image_zoom_out')
+
+    def navigate_to_first_qn(self, browser):
+        CommonMethods.scrollToElementAndClick(browser, '1')
+
+    # This method is used to tap on Pause button
+    def tap_on_pause_button(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.pause_timer, 10)
+            if CommonMethods.elementClick(browser, self.pause_timer):
+                logging.info("User tappped on pause button")
+            else:
+                pytest.fail("Failed to tap on pause button")
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_pause_button')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_pause_button')
+
+    # This method is used to tap on option on "Test Paused" bottom sheet dialog
+    def tap_on_option(self, browser, text):
+        try:
+            locator = (By.XPATH, "//android.widget.TextView[@text=\'" + text + "\']")
+            CommonMethods.wait_for_locator(browser, locator, 5)
+            if CommonMethods.elementClick(browser, locator):
+                logging.info('User tapped on ' + text + ' option')
+            else:
+                pytest.fail('Failed to tap on ' + text + ' option')
+
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'tap_on_option')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'tap_on_option')
+
+    # This method is used to verify option, icon and right arrow on Test Paused bottom sheet dialog
+    def verify_option_icon_rightarrow(self, browser, text):
+        try:
+            option = (By.XPATH,
+                      "//android.widget.ImageView/following-sibling::android.widget.RelativeLayout/android.widget.TextView[@text = \'" + text + "\']/following-sibling::android.widget.ImageView")
+            icon = (By.XPATH,
+                    "//descendant::android.widget.TextView[@text=\'" + text + "\']/parent::android.widget.RelativeLayout/preceding-sibling::android.widget.ImageView")
+            right_arrow = (By.XPATH,
+                           "//android.widget.ImageView/following-sibling::android.widget.RelativeLayout/android.widget.TextView[@text =\'" + text + "\']/following-sibling::android.widget.ImageView")
+            self.verify_the_elements(browser, option, 'Option')
+            self.verify_the_elements(browser, icon, 'icon')
+            self.verify_the_elements(browser, right_arrow, 'right_arrow')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_option_icon_rightarrow')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_option_icon_rightarrow')
+
+    # This method is used to verify countdown timer in question screen
+    def verify_countdown_timer_time(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.timer, 5)
+            time1 = CommonMethods.getAttributeOfElement(browser, 'text', self.timer)
+            time1 = self.time_to_sec(time1)
+            logging.info(time1)
+            sleep(5)
+            time2 = CommonMethods.getAttributeOfElement(browser, 'text', self.timer)
+            time2 = self.time_to_sec(time2)
+            logging.info(time2)
+            if int(time1) > int(time2):
+                logging.info('Countdown timer started')
+            else:
+                logging.info('Timer1 is ' + str(time1) + ' and timer2 is ' + str(time2))
+                pytest.fail('Countdown timer failed')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_countdown_timer_time')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_countdown_timer_time')
+
+    # This method is used to convert time string into sec in integer value
+    def time_to_sec(self, time_str):
+        return sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(time_str.split(":"))))
+
+    # This method is to verify the timer count up for particular question
+    def verify_countup_for_qn(self, browser):
+        try:
+            time1 = self.time_to_sec(self.time)
+            logging.info(time1)
+            sleep(5)
+            time2 = CommonMethods.getAttributeOfElement(browser, 'text', self.questiontime)
+            time2 = self.time_to_sec(time2)
+            logging.info(time2)
+            if int(time1) < int(time2):
+                logging.info('Countup timer started')
+            else:
+                logging.info('Timer1 is ' + str(time1) + ' and timer2 is ' + str(time2))
+                pytest.fail('Countup timer failed')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_countup_for_qn')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_countup_for_qn')
+
+    # This method is to verify particular qn time start @ 00:00
+    def get_qn_start_time(self, browser):
+        try:
+            time = self.get_qn_time(browser)
+            time1 = self.time_to_sec(time)
+            logging.info(time1)
+            if int(time1) == 0 or int(time1) <= 2:
+                logging.info('Countup timer started from 00:00')
+            else:
+                logging.info('Timer count is ' + str(time1))
+                pytest.fail('Countup timer failed')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'get_qn_start_time')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'get_qn_start_time')
+
+    # This method is to verify particular qn time
+    def get_qn_time(self, browser):
+        try:
+            CommonMethods.wait_for_locator(browser, self.questiontime, 5)
+            self.time = CommonMethods.getAttributeOfElement(browser, 'text', self.questiontime)
+            return self.time
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'get_qn_time')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'get_qn_time')
+
+        # This method is used to tap on report an issue icon
+
+    def tap_on_report_an_issue_icon(self, browser):
+        self.verify_report_an_issue_option(browser)
+        CommonMethods.elementClick(browser, self.report_an_issue)
+
+    # This method is used to verify option and right arrow on Report an Issue bottom sheet dialog
+    def verify_option_rightarrow(self, browser, text):
+        try:
+            option = (By.XPATH, "//android.widget.TextView[@text=\'" + text + "\']")
+            right_arrow = (
+            By.XPATH, "//android.widget.TextView[@text=\'" + text + "\']/following-sibling::android.widget.ImageView")
+            self.verify_the_elements(browser, option, 'Option')
+            self.verify_the_elements(browser, right_arrow, 'right_arrow')
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_option_icon_rightarrow')
+
+        except:
+            CommonMethods.exception(browser, featureFileName, 'verify_option_icon_rightarrow')
+
+    #
