@@ -26,6 +26,11 @@ def launch_app_online():
     pass
 
 
+@given(parsers.parse('tap on "{text}"'))
+def navigate_to_live_classes(dashboard, text):
+    dashboard.click_link(text)
+
+
 @given("navigate to home page and verify student profile")
 def verify_student_session(login_in, browser):
     login_in.click_on_premium_school()
@@ -59,9 +64,10 @@ def verify_rate_session(dashboard, text):
     dashboard.verify_rate_session_link_is_present(text)
 
 
+@then(parsers.parse('tap on "{text}" hyperlink'))
 @when(parsers.parse('tap on "{text}" hyperlink'))
 def tap_rate_session(dashboard, text):
-    dashboard.tap_rate_session_link()
+    dashboard.tap_rate_session_link(index)
 
 
 @then(parsers.parse('verify "{text}" button is displayed'))
@@ -77,7 +83,6 @@ def verify_button_a(dashboard, text):
 @then("verify session details card is shown")
 def verify_session_details(browser):
     session_pop = SessionAlert(browser)
-    session_pop.verify_popup_present()
     global details_dict
     details_dict = session_pop.verify_session_card_details_loaded()
 
@@ -125,6 +130,11 @@ def tap_rate_session_close_button(dashboard):
 @then("tap on device back button")
 def tap_device_back(dashboard):
     dashboard.click_back()
+
+
+@then("tap on back navigation icon")
+def tap_device_back(dashboard):
+    dashboard.back_navigation()
 
 
 @then("tap on each star and verify user is able to select the stars")
@@ -194,3 +204,29 @@ def verify_rating_on_session_card(dashboard, rating):
 @then(parsers.parse('verify Rate Session hyperlink  text should not be shown on the  rated  session card'))
 def verify_rate_session_link_is_not_present(dashboard):
     dashboard.verify_rate_session_link_is_not_present(index)
+
+
+@then("tap on back navigation icon")
+def tap_back_navigation(dashboard):
+    dashboard.back_navigation()
+
+
+@then("Verify user is in dashboard")
+def verify_dashboard(dashboard):
+    dashboard.text_match("Classroom")
+
+
+@then(parsers.parse('tap on "{text}" button'))
+def tap_button(login_in, text):
+    button_status = login_in.button_click(text)
+    assert button_status is True, f"Unable to find {text} button"
+
+
+@then("tap on each star and verify feedback options will come up and verify able to select/deselect the feedback options")
+def verify_feedback_options(dashboard):
+    dashboard.tap_on_each_star_and_verify_feedback()
+
+
+@then("select a feedback")
+def select_feedback(dashboard):
+    dashboard.select_any_feedback()

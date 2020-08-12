@@ -1,7 +1,12 @@
+import time
+
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 import logging
+
+from selenium.webdriver import ActionChains
+
 from Utilities.tutor_common_methods import TutorCommonMethods
 from src.POM_Pages.session_completed import SessionComplete
 from src.POM_Pages.session_data import SessionData
@@ -12,6 +17,8 @@ from Utilities.common_methods import CommonMethods
 import re
 
 CommonMethods = CommonMethods()
+
+
 class Dashboard:
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
@@ -22,61 +29,49 @@ class Dashboard:
         self.scrollcards = ScrollCards(driver)
         self.driver = driver
         self.studentsession = StudentSession(driver)
-        self.card = '//*[contains(@resource-id,"ScheduleCard")]'
-        self.rate_session_link = '//*[contains(@resource-id,"tvRateSessionLink")]'
+        self.card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/cvScheduleCard"]'
+        self.rate_session_link = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/tvRateSessionLink"]'
         self.completed_badge = '//*[contains(@resource-id,"sessionCompleted")]'
         self.rate_session_button = '//*[contains(@resource-id,"actionCardButton")]'
+        self.rate_session_mobile = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/ivActionMobile"]'
         self.rate_session_close_button = '//*[contains(@resource-id,"feedback_session_close_icon")]'
         self.feedback_rating_bar = '//*[contains(@resource-id, "feedback_rate_bar")]'
         self.submitted_rating_bar = '//*[contains(@resource-id, "submitted_rating_rate_bar")]'
-        self.data_off_icon= "//*[@class='android.widget.ImageView' and @bounds='[798,263][1216,413]']"
+        self.data_off_icon = '//*[@resource-id="com.byjus.thelearningapp.premium:id/imageView"]'
+        self.back_nav = '//*[@resource-id="com.byjus.thelearningapp.premium:id/roundedNavButton"]'
+        self.feedback_options = '//*[@resource-id="com.byjus.thelearningapp.premium:id/feedback_options_rv"]'
+        self.feedback_options_checkbox = '//*[@resource-id="com.byjus.thelearningapp.premium:id/feedback_options_checkbox"]'
+        self.submit_rate_session = '//*[@resource-id="com.byjus.thelearningapp.premium:id/feedback_submit_button"]'
 
     def find_completed_notrated_session(self):
-        device = CommonMethods.get_device_type(self.driver)
-        if device == 'tab':
-            self.studentsession.cancel_join_session_dialog()
-            completed_data = self.sessioncomplete.scroll_to_end(stop_up_next=True)
-            flag = False
-            while True:
-                completed_count = 0
-                for month in completed_data:
-                    for details in completed_data[month]:
-                        if details['Status'] == "Completed":
-                            completed_count += 1
-                print(f"Number of session completed are: {completed_count}")
-
-                i = 0
-                while i < 5:
-                    session_cards_list = self.obj.get_elements('xpath', self.card)
-                    status = self.sessiondata.get_session_status(session_cards_list[i])
-                    rating = self.sessiondata.get_sessions_ratings(session_cards_list[i])
-                    if status == 'Completed' and rating == 'Not rated':
-                        session_cards_list[i].click()
-                        flag = True
-                        break
-                    i += 1
-                    if i == 5:
-                        self.scrollcards.scroll_by_card(session_cards_list[1], session_cards_list[3])
-                        i = 0
-                if flag:
+        self.studentsession.cancel_join_session_dialog()
+        flag = False
+        while True:
+            i = 0
+            session_cards_list = self.obj.get_elements('xpath', self.card)
+            while i < 5:
+                rating = self.sessiondata.is_rate_session_link_present(session_cards_list[i])
+                if rating == 'Not rated':
+                    flag = True
                     break
-
-                if flag is False:
-                    pytest.skip("No unrated sessions present")
-
-            return i
-        elif device == 'mobile':
-            self.studentsession.cancel_join_session_dialog()
-            completed_data = self.sessioncomplete.scroll_to_end(stop_up_next=True)
-        else:
-            logging.info("Failed in Method find_completed_notrated_session")
-            pytest.fail('Failed')
+                i += 1
+                if i == 5:
+                    self.scrollcards.scroll_by_card(session_cards_list[1], session_cards_list[3])
+                    i = 0
+                    session_cards_list = self.obj.get_elements('xpath', self.card)
+            if flag:
+                break
+            if flag is False:
+                pytest.skip("No unrated sessions present")
+        return i
 
     def verify_rate_session_link_is_present(self, text):
         assert self.obj.is_link_displayed(text) is True, "Rate Session link is not present"
 
-    def tap_rate_session_link(self):
-        self.obj.element_click('xpath', self.rate_session_link)
+    def tap_rate_session_link(self, index):
+        session_cards_list = self.obj.get_elements('xpath', self.card)
+        card = session_cards_list[index]
+        card.find_element_by_xpath('//*[contains(@resource-id, "tvRateSessionLink")]').click()
 
     def text_match(self, expected_text):
         self.obj.is_text_match(expected_text)
@@ -88,7 +83,11 @@ class Dashboard:
         self.obj.verify_element_color('xpath', self.completed_badge, rgb_color_code, 1)
 
     def tap_rate_session_button(self):
-        self.obj.element_click('xpath', self.rate_session_button)
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            self.obj.element_click('xpath', self.rate_session_button)
+        elif device == 'mobile':
+            self.obj.element_click('xpath', self.rate_session_mobile)
 
     def verify_star_rating(self, locator, rating):
         self.obj.wait_for_locator('xpath', locator)
@@ -153,7 +152,7 @@ class Dashboard:
             self.verify_star_rating(self.feedback_rating_bar, str(i) + '.0')
 
     def tap_on_submit_button(self):
-        self.obj.button_click("Submit")
+        self.obj.element_click("xpath",self.submit_rate_session)
 
     def verify_submit_button_enabled_or_not(self, text, expected_flag):
         if expected_flag is True:
@@ -184,3 +183,42 @@ class Dashboard:
         if data_off_icon_displayed and is_enabled:
             return True
         return False
+
+    def click_link(self, text):
+        self.obj.click_link(text)
+
+    def back_navigation(self):
+        self.obj.element_click("xpath", self.back_nav)
+
+    def tap_on_each_star_and_verify_feedback(self):
+        for i in range(1, 5):
+            self.tap_on_star(i)
+            self.verify_feedback_options(str(i) + '.0')
+        self.verify_select_deselect_feedback_options()
+
+    def verify_feedback_options(self, rating):
+        self.obj.wait_for_locator('xpath', self.feedback_options)
+        assert self.obj.get_element('xpath',
+                                    self.feedback_options).is_displayed(), "Verify for %s selected stars feedback options not displayed" % rating
+        items = ["Teaching Technique", "Solution Provided", "Tutor's Behaviour", "Call Quality", "Video Quality"]
+        feedback_options_checkbox_items = self.obj.get_elements('xpath', self.feedback_options_checkbox)
+        for i in range(0, 5):
+            feedback_options_checkbox_item_text = feedback_options_checkbox_items[i].text
+            assert (feedback_options_checkbox_item_text == items[i]), "Verify all feedback options not displayed for %s selected stars" % rating
+
+    def verify_select_deselect_feedback_options(self):
+        self.obj.wait_for_locator('xpath', self.feedback_options_checkbox)
+        feedback_options_checkbox_item =  self.obj.get_elements('xpath', self.feedback_options_checkbox)
+        for i in range(0, 5):
+            feedback_options_checkbox_item[i].click()
+            time.sleep(3)
+            assert (feedback_options_checkbox_item[i].get_attribute("checked") == 'true'), "verify able to select the feedback options failed"
+        for i in range(0, 5):
+            feedback_options_checkbox_item[i].click()
+            time.sleep(3)
+            assert (feedback_options_checkbox_item[i].get_attribute("checked") == 'false'), "verify able to deselect the feedback options failed "
+
+    def select_any_feedback(self):
+        self.obj.wait_for_locator('xpath', self.feedback_options_checkbox)
+        feedback_options_checkbox_items = self.obj.get_elements('xpath', self.feedback_options_checkbox)
+        feedback_options_checkbox_items[0].click()
