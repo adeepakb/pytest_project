@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import jenkins
 import requests
@@ -9,16 +10,13 @@ from Constants.load_json import getdata
 
 class BuildFeatureJob():
     def __init__(self):
+
+        branch = os.getenv('branch')
+        env = os.getenv('env')
+        variant = os.getenv('variant')
+
         j = jenkins.Jenkins('https://builds.byjus.com/',
                             username='reshma.nair@byjus.com', password='1d4b7f1a039c21beef54b2a861aeb8f9')
-        build_num = j.get_job_info('qa_app2')['lastBuild']['number']
-        build_info = j.get_build_info('qa_app2', build_num)
-        build_info_actions = build_info['actions']
-        parameters = build_info_actions[0]['parameters']
-        branch = parameters[0]['value']
-        env = parameters[1]['value']
-        variant = parameters[2]['value']
-
         branch_parameters = dict(branch=branch, env=env, variant=variant)
         j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
         time.sleep(10)
