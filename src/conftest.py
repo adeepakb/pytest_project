@@ -10,7 +10,7 @@ from appium import webdriver
 from appium.webdriver.appium_service import AppiumService
 from Utilities.BasePage import BaseClass
 from Utilities.common_methods import CommonMethods
-# from Utilities.pre_execution import BuildFeatureJob
+from Utilities.pre_execution import BuildFeatureJob
 from Utilities.interrupt import *
 from Utilities import common_methods
 
@@ -18,22 +18,22 @@ PATH = lambda p: os.path.abspath(
    os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-# from Constants.loadFeatureFile import fetch_featurefile
+from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-# Featurejob = BuildFeatureJob()
+Featurejob = BuildFeatureJob()
 
 
 @pytest.fixture()
 def browser():
     browser = baseClass.driverSetup()
-    # Featurejob.lock_or_unlock_device('lock')
-    # serial = Featurejob.connect_adb_api()
-    # Featurejob.connect_to_adb(serial)
+    Featurejob.lock_or_unlock_device('lock')
+    serial = Featurejob.connect_adb_api()
+    Featurejob.connect_to_adb(serial)
     yield browser
-    # subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
-    # Featurejob.lock_or_unlock_device('unlock')
+    subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    Featurejob.lock_or_unlock_device('unlock')
     browser.quit()
     
 

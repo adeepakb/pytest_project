@@ -31,10 +31,10 @@ class StudentSession:
         self.tutor_video_container = '//*[contains(@resource-id, "remoteVideoViewContainer")]'
         self.bottom_sheet_dialog = '//*[contains(@resource-id, "design_bottom_sheet")]'
         self.dialog_layout = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/dialog_layout"]'
-        self.bottom_dialog_title = '//*[contains(@resource-id, "tvTitle")]'
-        self.bottom_dialog_cancel = '//*[contains(@resource-id, "tvCancel")]'
-        self.custom_panel = '//*[contains(@resource-id, "customPanel")]'
-        self.custom_panel_download = '//*[contains(@resource-id, "download_button")]'
+        self.bottom_dialog_title = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/tvTitle"]'
+        self.bottom_dialog_cancel = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/tvCancel"]'
+        self.custom_panel = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/customPanel"]'
+        self.custom_panel_download = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/download_button"]'
         self.tutor_video_container_status = '//*[contains(@resource-id, "remoteVideoViewContainer")]/android.view.View'
 
     def verify_button(self, text):

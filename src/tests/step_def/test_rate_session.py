@@ -1,5 +1,6 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
+from POM_Pages.homepage import HomePage
 from src.POM_Pages.application_login import Login
 from src.POM_Pages.choose_topic import ChooseTopic
 from src.POM_Pages.ratesession import Dashboard
@@ -21,11 +22,6 @@ def dashboard(browser):
     yield dashboard
 
 
-@given('Launch the tutor application online')
-def launch_app_online():
-    pass
-
-
 @given(parsers.parse('tap on "{text}"'))
 def navigate_to_live_classes(dashboard, text):
     dashboard.click_link(text)
@@ -33,24 +29,8 @@ def navigate_to_live_classes(dashboard, text):
 
 @given("navigate to home page and verify student profile")
 def verify_student_session(login_in, browser):
+    HomePage(browser).navigate_to_one_to_many_user(browser)
     login_in.click_on_premium_school()
-    # pop_up_displayed = SessionAlert(browser)
-    # pop_up_displayed.cancel_join_session()
-
-
-@given('Navigate Tutor Home screen')
-def navigate_to_home_screen(browser):
-    instance = Login(browser)
-    instance.allow_deny_permission(['allow', 'allow', 'allow'])
-    instance.enter_phone('1111333300')
-    instance.button_click('Next')
-    instance.enter_password('112233')
-    instance.button_click('Next')
-
-
-@given('navigate to one to many student dashboard screen')
-def click_on_session_card_enter():
-    pass
 
 
 @when("Verify user has completed atleast a session")

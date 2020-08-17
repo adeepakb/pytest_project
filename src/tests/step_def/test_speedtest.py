@@ -5,6 +5,7 @@ from POM_Pages.application_login import Login
 from POM_Pages.student_session import StudentSession
 from POM_Pages.session_popup import SessionAlert
 from POM_Pages.speedtest import SpeedTest
+from POM_Pages.homepage import HomePage
 
 scenarios('../features/bandwidth_test.feature')
 
@@ -22,7 +23,8 @@ def speed_test(browser):
 
 
 @given("navigate to home page and verify student profile")
-def verify_student_session(login_in):
+def verify_student_session(browser, login_in):
+    HomePage(browser).navigate_to_one_to_many_user(browser)
     login_in.click_on_premium_school()
 
 
@@ -71,7 +73,7 @@ def join_session_and_verify_welcome_screen(login_in, browser):
 
 
 @then("verify that while clicking on the app back button should navigate to app home screen")
-def verify_session_card_details_loaded(login_in,speed_test, browser):
+def verify_session_card_details_loaded(login_in, speed_test, browser):
     speed_test.tap_on_appback_button()
     # verify user is back in classroom dashboard
     login_in.text_match("Classroom")
@@ -111,7 +113,7 @@ def tap_outside_dialog_layout(speed_test):
 
 @given(parsers.parse('send put request for one_to_many_skip_speed_test "{value1}" '
                      'and one_to_many_skip_speed_test_result "{value2}"'))
-def send_put_request(speed_test,value1,value2):
+def send_put_request(speed_test, value1, value2):
     speed_test.send_put_request((value1.lower() == 'true'), (value2.lower() == 'true'))
 
 

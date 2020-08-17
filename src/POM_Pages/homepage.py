@@ -87,7 +87,7 @@ class HomePage():
             logging.info("stay safe covid19 pop up is not present")
 
     def click_on_subject(self, browser):
-        #browser.find_element_by_xpath(self.btn_mathematics).click()
+        # browser.find_element_by_xpath(self.btn_mathematics).click()
         CommonMethods.elementClick(browser, self.btn_mathematics)
 
     def cancle_for_google_auto_suggestion(self, browser):
@@ -143,7 +143,7 @@ class HomePage():
         except:
             logging.info('Error in verify_to_login_page method in Homepage')
 
-    def reset_and_login_with_otp(self, browser):
+    def reset_and_login_with_otp(self, browser, account_type='personal'):
         CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
         CommonMethods.run(
             'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
@@ -163,14 +163,20 @@ class HomePage():
         CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
         CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
+        data = None
+        if account_type == 'personal':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_name')
+        elif account_type == 'one_to_many':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+
         if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
+            CommonMethods.scrollToElement(browser, data)
             profiles = CommonMethods.getElements(browser, self.user_profile_name)
             radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
-            for profile in profiles:
-                for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
-                        button.click()
-                        break
+            for i in range(len(profiles)):
+                if profiles[i].text == data:
+                    radio_buttons[i].click()
+                    break
         CommonMethods.elementClick(browser, self.continue_button)
         CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
         CommonMethods.elementClick(browser, self.welcome_button)
@@ -201,6 +207,32 @@ class HomePage():
         except:
             logging.info('Error in Verifing Home Page')
 
+    def verify_user_name(self, browser):
+        print("------------------------method")
+        try:
+            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+                CommonMethods.elementClick(browser, self.back_button_id)
+                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(browser, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
+                account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
+                CommonMethods.scrollToElement(browser, account_text)
+                expected_username = CommonMethods.getTextOfElement(browser, self.user_name_profile_page)
+                actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                if CommonMethods.verifyTwoText(expected_username, actual_username):
+                    print("---------------above")
+                    CommonMethods.click_on_device_back_btn(browser)
+                    print("----------------------below")
+                    logging.info('user name verified')
+                else:
+                    self.reset_and_login_with_otp(browser)
+                    return True
+            else:
+                logging.info('user is not in Home page')
+                return False
+        except:
+            logging.info('Error in Verifing Home Page')
+
     def navigate_to_home_screen(self, browser):
         try:
             # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
@@ -219,6 +251,12 @@ class HomePage():
 
         except:
             logging.info('Error in navigating to home page')
+
+    def navigate_to_one_to_many_user(self, browser):
+        if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+            self.verify_user_name(browser)
+        else:
+            self.reset_and_login_with_otp(browser, "one_to_many")
 
     def after_delete_the_user(self, browser, code, countrycode, mobno, otp):
         try:

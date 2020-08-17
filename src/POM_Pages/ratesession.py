@@ -44,6 +44,7 @@ class Dashboard:
         self.submit_rate_session = '//*[@resource-id="com.byjus.thelearningapp.premium:id/feedback_submit_button"]'
 
     def find_completed_notrated_session(self):
+        self.studentsession.download_materials_for_session()
         self.studentsession.cancel_join_session_dialog()
         flag = False
         while True:
