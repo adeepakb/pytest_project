@@ -7,7 +7,7 @@ from src.POM_Pages.ratesession import Dashboard
 from src.POM_Pages.session_popup import SessionAlert
 from src.POM_Pages.student_session import StudentSession
 
-scenarios('../features/rate_session.feature')
+scenarios('../features/Rate Session.feature')
 
 
 @fixture

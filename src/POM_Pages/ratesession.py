@@ -195,7 +195,13 @@ class Dashboard:
         for i in range(1, 5):
             self.tap_on_star(i)
             self.verify_feedback_options(str(i) + '.0')
-        self.verify_select_deselect_feedback_options()
+            feedback_options_checkbox_item = self.obj.get_elements('xpath', self.feedback_options_checkbox)
+            feedback_options_checkbox_item[i].click()
+            time.sleep(2)
+            assert (feedback_options_checkbox_item[i].get_attribute("checked") == 'true'), "verify able to select the feedback options failed"
+            feedback_options_checkbox_item[i].click()
+            time.sleep(2)
+            assert (feedback_options_checkbox_item[i].get_attribute("checked") == 'false'), "verify able to deselect the feedback options failed"
 
     def verify_feedback_options(self, rating):
         self.obj.wait_for_locator('xpath', self.feedback_options)

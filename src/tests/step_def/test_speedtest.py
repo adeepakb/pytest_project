@@ -7,7 +7,7 @@ from POM_Pages.session_popup import SessionAlert
 from POM_Pages.speedtest import SpeedTest
 from POM_Pages.homepage import HomePage
 
-scenarios('../features/bandwidth_test.feature')
+scenarios('../features/Bandwidth Test.feature')
 
 
 @fixture
