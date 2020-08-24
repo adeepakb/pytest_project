@@ -87,7 +87,7 @@ class EngineTestScreen():
     free_live_classes = (By.XPATH, "//android.view.View[@content-desc='Free Live Classes']")
     bookmark_tag = (By.ID, "com.byjus.thelearningapp.premium:id/ivBookmarkTag")
     bookmark_ham_id = (By.XPATH, "//android.widget.TextView[@text ='Bookmarks']")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
     # Test list screenlocators
     start_btn = (By.XPATH, "//android.widget.TextView[@text='Start']")
     analyse_btn = (By.XPATH, "//android.widget.TextView[@text='Analyse']")
@@ -351,7 +351,7 @@ class EngineTestScreen():
     def verify_test_list_screen(self, browser):
         try:
             CommonMethods.wait_for_locator(browser, self.subtitle1_text, 20)
-            if CommonMethods.getAttributeOfElement(browser, 'text', self.subtitle1_text) == 'Test':
+            if CommonMethods.isElementPresent(browser, self.header_title_text):
                 pass
             else:
                 logging.error('User is not in test list screen')

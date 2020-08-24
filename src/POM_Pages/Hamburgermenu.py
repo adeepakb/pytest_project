@@ -75,7 +75,7 @@ class Hamburger:
     continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
     homescreen_corana_dialog_ok_btn = (By.XPATH, "//android.widget.TextView[@text = 'OK']")
     homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp:id/dialog_layout")
 

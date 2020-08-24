@@ -70,7 +70,7 @@ class BookMark():
     profile_select_radio_button = (By.ID,"com.byjus.thelearningapp.premium:id/profile_select_radio_button")
     continue_button = (By.ID,"com.byjus.thelearningapp.premium:id/tv_submit")
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
     ham_btn_id = (By.ID, "com.byjus.thelearningapp.premium:id/roundedNavButton")
     all_subjects = (By.XPATH,
                     "//android.widget.GridLayout//android.widget.FrameLayout[@resource-id='com.byjus.thelearningapp.premium:id/home_subject_cardview']")

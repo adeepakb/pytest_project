@@ -32,7 +32,7 @@ class HomePage():
     profile_select_radio_button = (By.ID, "com.byjus.thelearningapp.premium:id/profile_select_radio_button")
     continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
     mob_no_auto_sugestion = (By.ID, "com.google.android.gms:id/cancel")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")

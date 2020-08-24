@@ -76,7 +76,7 @@ class VideoPage():
     profile_name = (By.ID,"com.byjus.thelearningapp.premium:id/header_title_text")
     profile_mob_num = (By.ID,"com.byjus.thelearningapp.premium:id/mobile_number")
     back_button_id = (By.ID,"com.byjus.thelearningapp.premium:id/backNav")
-    user_name_profile_page = (By.ID,"com.byjus.thelearningapp.premium:id/tvUserName")
+    user_name_profile_page = (By.ID,"com.byjus.thelearningapp.premium:id/name")
     profile_name_hamburger = (By.ID,"com.byjus.thelearningapp.premium:id/home_drawer_imgvw_arrow_right")
     account_details_title = (By.ID,"com.byjus.thelearningapp.premium:id/account_details_title")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
