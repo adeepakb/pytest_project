@@ -351,7 +351,7 @@ class EngineTestScreen():
     def verify_test_list_screen(self, browser):
         try:
             CommonMethods.wait_for_locator(browser, self.subtitle1_text, 20)
-            if CommonMethods.getAttributeOfElement(browser, 'text', self.subtitle1_text) == 'Test':
+            if CommonMethods.isElementPresent(browser,self.subtitle1_text):
                 pass
             else:
                 logging.error('User is not in test list screen')

@@ -32,7 +32,7 @@ class HomePage():
     profile_select_radio_button = (By.ID, "com.byjus.thelearningapp.premium:id/profile_select_radio_button")
     continue_button = (By.ID, "com.byjus.thelearningapp.premium:id/tv_submit")
     mob_no_auto_sugestion = (By.ID, "com.google.android.gms:id/cancel")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     phone_num = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
@@ -143,6 +143,26 @@ class HomePage():
         except:
             logging.info('Error in verify_to_login_page method in Homepage')
 
+    def login_as_one_mega_user_only(self, browser):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(browser, self.allow_btn_id)
+        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(browser, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
+        CommonMethods.elementClick(browser, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail1', 'country_code'))
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail1', 'mobile_no'), self.phone_num)
+        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
+        CommonMethods.elementClick(browser, self.loginBtn_id)
+        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail1', 'OTP'), self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
+        CommonMethods.elementClick(browser, self.welcome_button)
+
     def reset_and_login_with_otp(self, browser, account_type='personal'):
         CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
         CommonMethods.run(
@@ -168,6 +188,8 @@ class HomePage():
             data = getdata(Login_Credentials, 'login_detail3', 'profile_name')
         elif account_type == 'one_to_many':
             data = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+        elif account_type == 'one_to_many_and_mega':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
 
         if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(browser, data)
@@ -207,7 +229,7 @@ class HomePage():
         except:
             logging.info('Error in Verifing Home Page')
 
-    def verify_user_name(self, browser):
+    def verify_user_name(self, browser, account_type):
         print("------------------------method")
         try:
             if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
@@ -217,15 +239,19 @@ class HomePage():
                 CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
                 account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
                 CommonMethods.scrollToElement(browser, account_text)
+                actual_username = None
+                if account_type == 'one_to_many_and_mega':
+                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+                elif account_type == 'one_to_many':
+                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
                 expected_username = CommonMethods.getTextOfElement(browser, self.user_name_profile_page)
-                actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
                 if CommonMethods.verifyTwoText(expected_username, actual_username):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(browser)
                     print("----------------------below")
                     logging.info('user name verified')
                 else:
-                    self.reset_and_login_with_otp(browser)
+                    self.reset_and_login_with_otp(browser,account_type)
                     return True
             else:
                 logging.info('user is not in Home page')
@@ -254,9 +280,15 @@ class HomePage():
 
     def navigate_to_one_to_many_user(self, browser):
         if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
-            self.verify_user_name(browser)
+            self.verify_user_name(browser, 'one_to_many')
         else:
-            self.reset_and_login_with_otp(browser, "one_to_many")
+            self.reset_and_login_with_otp(browser, 'one_to_many')
+
+    def navigate_to_one_to_many_and_mega_user(self, browser):
+        if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+            self.verify_user_name(browser, 'one_to_many_and_mega')
+        else:
+            self.reset_and_login_with_otp(browser, 'one_to_many_and_mega')
 
     def after_delete_the_user(self, browser, code, countrycode, mobno, otp):
         try:

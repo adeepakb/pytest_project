@@ -308,6 +308,24 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_ID, 
             return data
 
 
+def get_testrail_reports(project_ID):
+    client = get_testrail_client()
+    r = client.send_get('index.php?/api/v2/get_reports/' + str(project_ID))
+    assert r.status_code == 200, "reports are not returned in the response"
+    json_data = json.loads(r.text)
+    report_id = None
+    for elem in json_data:
+        if elem.get('name') == 'Runs (Summary) %date%':
+            report_id = elem.get['id']
+    return report_id
+
+def run_testrail_reports(report_id):
+    client = get_testrail_client()
+    r = client.send_get('index.php?/api/v2/run_report/' + str(report_id))
+    assert r.status_code == 200, "reports are not returned in the response"
+    json_data = json.loads(r.text)
+    report_url = json_data['report_url']
+    return report_url
 
 # to fetch the run id by giving test run name
 def get_run_id(test_run_name, project_name):

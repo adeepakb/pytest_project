@@ -1,3 +1,5 @@
+import time
+
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from selenium.common.exceptions import StaleElementReferenceException
@@ -65,6 +67,7 @@ def verify_button(speed_test, text):
 def join_session_and_verify_welcome_screen(login_in, browser):
     try:
         StudentSession(browser).speed_test()
+        time.sleep(3)
         StudentSession(browser).is_tutor_icon_displayed()
         login_in.text_match("Welcome")
         login_in.text_match("Waiting for tutor to join the session")

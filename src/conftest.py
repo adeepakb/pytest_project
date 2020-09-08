@@ -21,14 +21,11 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-
 # from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-
-
-# Featurejob = BuildFeatureJob()
+#Featurejob = BuildFeatureJob()
 
 
 @pytest.fixture()
@@ -41,7 +38,6 @@ def browser():
     # subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
     # Featurejob.lock_or_unlock_device('unlock')
     browser.quit()
-
 
 # ---------------------------testrail updation--------------------
 # testrail_file = CONFIG_PATH
@@ -159,9 +155,8 @@ def browser():
 #     updating result to testrail
 #     '''
 #     data = None
-# #     ProjectID = test_management.get_project_id("Learning App")
+#     #     ProjectID = test_management.get_project_id("Learning App")
 #     suitename = "PremiumApp_Automation"
-#
 #
 #     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
 #     e_type, value, tb = sys.exc_info()

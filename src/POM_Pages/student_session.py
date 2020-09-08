@@ -239,7 +239,7 @@ class StudentSession:
     def download_materials_for_session(self):
         if self.obj.is_element_present('xpath', self.custom_panel):
             self.obj.element_click('xpath', self.custom_panel_download)
-            self.login.wait_for_element_not_to_be_present('//*[contains(@resource-id, "messageTv")]',20)
+            self.login.wait_for_locator('class_name', 'android.widget.Toast',15)
         else:
             pass
 
