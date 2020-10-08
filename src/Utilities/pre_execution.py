@@ -18,18 +18,19 @@ class BuildFeatureJob():
         j = jenkins.Jenkins('https://builds.byjus.com/',
                             username='reshma.nair@byjus.com', password='1d4b7f1a039c21beef54b2a861aeb8f9')
         branch_parameters = dict(branch=branch, env=env, variant=variant)
-        j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
-        time.sleep(10)
-        print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
-        while True:
-            if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
-                    j.get_job_info('B2C-Feature')['lastBuild'][
-                        'number']:
-                print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
-                                                     j.get_job_info('B2C-Feature')['lastBuild']['number']))
-                break
-            time.sleep(10)
-        last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
+        # j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
+        # time.sleep(10)
+        # print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
+        # while True:
+        #     if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
+        #             j.get_job_info('B2C-Feature')['lastBuild'][
+        #                 'number']:
+        #         print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
+        #                                              j.get_job_info('B2C-Feature')['lastBuild']['number']))
+        #         break
+        #     time.sleep(10)
+        # last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
+        last_build_number= 2185
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
         if build_info['result'] == 'SUCCESS':
@@ -54,7 +55,7 @@ class BuildFeatureJob():
             stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,
                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             output = stdout.decode("ascii")
-            if "Success" not in output or "1 file pushed." not in output:
+            if "Success" not in output or "1 file pushed, 0 skipped." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
             subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
