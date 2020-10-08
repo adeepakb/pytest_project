@@ -204,6 +204,7 @@ class TutorCommonMethods:
                 logging.info(attribute)
                 list_of_elements[element].is_enabled()
                 list_of_elements[element].click()
+                break
 
     def scroll_to_element(self, text):
         try:

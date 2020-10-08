@@ -22,15 +22,15 @@ custom_Tag_List = [1, 2, 3]
 
 # by enum we are assigning the values of custom_autostatus
 class Autostatus(Enum):
-    Automated = 1
-    Inprogress = 2
-    Notautomatable = 3
-    Automatable = None
-member_autostaus_automatable=Autostatus.Automatable
+    Manual = 1
+    Automated = 2
+    Non_Automatable = None
+member_autostaus_automatable = Autostatus.Non_Automatable
+automation_updated_tag = Autostatus.Automated
 
 
 def get_testrail_client():
-    
+
     "Get the TestRail account credentials from the config file"
     # Get the TestRail Url
     client = APIClient(testrail_url)
@@ -40,7 +40,7 @@ def get_testrail_client():
     return client
 
 
-def get_section(section_ID): 
+def get_section(section_ID):
     client = get_testrail_client()
     section = client.send_get('get_section/' + section_ID)
     return section
@@ -60,26 +60,26 @@ def create_feature_file(suite_ID, project_ID, run_ID):
     suite = client.send_get('get_suite/' + suite_ID)
     feature_name = suite['name'].replace(" ", "_")
     cases = client.send_get('get_cases/' + project_ID + '&suite_id=' + suite_ID)
-    
+
     print(cases)
 
     currenttime = datetime.datetime.now()
     curstr = currenttime.__str__().replace("-", "").replace(":", "").replace(" ", "")[0:12]
-     
+
     f = None
-     
+
     filedata = None
     section_id_1 = 0
     section_id_2 = 1
-    count = 0    
-     
+    count = 0
+
     for case in cases:
         if case['custom_autostatus'] == member_autostaus_automatable.value:
-             
+
             section_id_1 = section_id_2
-            
+
             section_id_2 = case['section_id']
-        
+
             if section_id_1 != section_id_2:
                 try:
                     f.write(filedata)
@@ -90,23 +90,23 @@ def create_feature_file(suite_ID, project_ID, run_ID):
                 tag = str(get_section(str(section_id_2))['name'])
 #                 print(tag)
                 tag_name = tag.split(' ')
-#                 print (str(section_id_2))      
+#                 print (str(section_id_2))
                 filedata = 'Feature: ' + str(get_section(str(section_id_2))['name']) + '\n'
                 count += 1
 
             if case['title'] != None:
-                
+
                 if 'happyflow' in str(case['title']):
                     filedata += ('\n\n' + "@" + tag_name[0])
                     filedata += ('\n' + case['title'].strip())
                 else:
-                    filedata += ('\n\nScenario: ' + case['title'].strip())     
+                    filedata += ('\n\nScenario: ' + case['title'].strip())
             if case['custom_given'] != None:
                 strGiven = case['custom_given'].strip()
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tGiven ' + str1[0])
-                    
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
@@ -117,18 +117,18 @@ def create_feature_file(suite_ID, project_ID, run_ID):
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tWhen ' + str1[0])
-                    
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
                 else:
-                    filedata += ('\n\tWhen ' + case['custom_when'].strip())    
+                    filedata += ('\n\tWhen ' + case['custom_when'].strip())
             if case['custom_then'] != None:
                 strGiven = case['custom_then'].strip()
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tThen ' + str1[0])
-                    
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
@@ -140,7 +140,7 @@ def create_feature_file(suite_ID, project_ID, run_ID):
     print('Number of feature file created = ' + str(count))
 
 
-# this method is used to fetch the feature files from test run     
+# this method is used to fetch the feature files from test run
 def create_feature_from_run(suite_ID, project_ID, run_ID):
     delete_feature_files()
     client = APIClient('https://tnl.testrail.io/')
@@ -150,58 +150,58 @@ def create_feature_from_run(suite_ID, project_ID, run_ID):
     feature_name = suite['name'].replace(" ", "_")
     cases = client.send_get('get_tests/' + run_ID)
     print(cases)
- 
+
     currenttime = datetime.datetime.now()
     curstr = currenttime.__str__().replace("-", "").replace(":", "").replace(" ", "")[0:12]
-      
+
     f = None
-      
+
     filedata = None
     section_id_1 = 0
     section_id_2 = 1
-    count = 0    
+    count = 0
     no_of_featrure_files=0
     for case in cases:
-        if case['custom_autostatus'] == member_autostaus_automatable.value:
+        if case['custom_automation_type'] == 2:
             case_suite = client.send_get('get_case/' + str(case['case_id']))
             section_id_1 = section_id_2
             section_id_2 = case_suite['section_id']
-             
+
             f = open(PATH('../tests/features/' + str(get_section(str(section_id_2))['name']) + '.feature'), "a+")
-          
+
             if section_id_1 != section_id_2:
                 try:
-                    no_of_featrure_files += 1 
+                    no_of_featrure_files += 1
                     scenario_count=0
-                    print('\n' + str(get_section(str(section_id_2))['name'])) 
+                    print('\n' + str(get_section(str(section_id_2))['name']))
                     filedata = 'Feature: ' + str(get_section(str(section_id_2))['name'])
                     f.write(filedata)
                 except:
                     print('')
-                    
+
             if case['custom_tags'] != None:
-                filedata = ('\n\n') 
+                filedata = ('\n\n')
                 for i in case['custom_tags']:
-                     
+
                     if i in custom_Tag_List:
-                        filedata += ("@" + custom_Tag_Dict[i] + ' ') 
+                        filedata += ("@" + custom_Tag_Dict[i] + ' ')
             count += 1
-    
+
             if case['title'] != None:
                 if 'happyflow' in str(case['title']):
                     filedata += ('\n' + case['title'].strip())
                 else:
-                    filedata += ('\nScenario: ' + case['title'].strip())  
+                    filedata += ('\nScenario: ' + case['title'].strip())
             scenario_count +=1
-            print(scenario_count) 
+            print(scenario_count)
             print(case['title'].strip())
-             
+
             if case['custom_given'] != None:
                 strGiven = case['custom_given'].strip()
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tGiven ' + str1[0])
-                     
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
@@ -212,34 +212,34 @@ def create_feature_from_run(suite_ID, project_ID, run_ID):
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tWhen ' + str1[0])
-                     
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
                 else:
-                    filedata += ('\n\tWhen ' + case['custom_when'].strip())  
-                       
+                    filedata += ('\n\tWhen ' + case['custom_when'].strip())
+
             if case['custom_then'] != None:
                 strGiven = case['custom_then'].strip()
                 if '\r\n' in strGiven:
                     str1 = strGiven.split('\r\n')
                     filedata += ('\n\tThen ' + str1[0])
-                     
+
                     for i in range(len(str1)):
                         if i >= 1:
                             filedata += ('\n\t' + str1[i])
                 else:
-                    filedata += ('\n\tThen ' + case['custom_then'].strip()) 
+                    filedata += ('\n\tThen ' + case['custom_then'].strip())
 
             f.write(filedata)
-            f.close()                 
+            f.close()
     print('Number of feature file created = ' + str(no_of_featrure_files))
     print('Number of test cases in feature files = ' + str(count))
-#    ------------------------------------------------------------------------ 
+#    ------------------------------------------------------------------------
 
 
-# Update the result in TestRail using send_post function. 
-# Parameters for add_result_for_case is the combination of run id and case id. 
+# Update the result in TestRail using send_post function.
+# Parameters for add_result_for_case is the combination of run id and case id.
 # status_id is 1 for Passed, 2 For Blocked, 4 for Retest and 5 for Failed
 def update_testrail(case_id, run_id, result_flag,step, excp_msg):
     "Update TestRail for a given run_id and case_id"
@@ -257,7 +257,7 @@ def update_testrail(case_id, run_id, result_flag,step, excp_msg):
             print ('Exception in update_testrail() updating TestRail.')
         else:
             print ('Updated test result for case: %s in test run: %s ' % (case_id, run_id))
- 
+
     return update_flag
 
 # to featch the project id
@@ -267,7 +267,7 @@ def get_project_id(project_name):
         project_id = None
         projects = client.send_get('get_projects')
         for project in projects:
-            if project['name'] == project_name: 
+            if project['name'] == project_name:
                 project_id = project['id']
                 # project_found_flag=True
                 break
@@ -299,7 +299,7 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_ID, 
             run_id = test_run['id']
             break
     data.append(str(run_id))
-    cases = client.send_get('get_tests/' + str(run_id)) 
+    cases = client.send_get('get_tests/' + str(run_id))
     # print(cases)
     for case in cases:
         if case['title'] == scenario_name:
@@ -308,6 +308,24 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_ID, 
             return data
 
 
+def get_testrail_reports(project_ID):
+    client = get_testrail_client()
+    r = client.send_get('index.php?/api/v2/get_reports/' + str(project_ID))
+    assert r.status_code == 200, "reports are not returned in the response"
+    json_data = json.loads(r.text)
+    report_id = None
+    for elem in json_data:
+        if elem.get('name') == 'Runs (Summary) %date%':
+            report_id = elem.get['id']
+    return report_id
+
+def run_testrail_reports(report_id):
+    client = get_testrail_client()
+    r = client.send_get('index.php?/api/v2/run_report/' + str(report_id))
+    assert r.status_code == 200, "reports are not returned in the response"
+    json_data = json.loads(r.text)
+    report_url = json_data['report_url']
+    return report_url
 
 # to fetch the run id by giving test run name
 def get_run_id(test_run_name, project_name):

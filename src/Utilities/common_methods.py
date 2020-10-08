@@ -1,4 +1,3 @@
-
 """It contains all common elements and functionalities available to all pages."""
 import pytest
 import os
@@ -7,67 +6,74 @@ from time import sleep
 import datetime
 import logging
 import subprocess
-from math import sqrt
-
 from appium import webdriver
-
+from selenium.webdriver import android
+from math import sqrt
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
 
-class CommonMethods(): 
-#     def __init__(self, driver):
-#         self.driver = driver
-    
+class CommonMethods():
+    #     def __init__(self, driver):
+    #         self.driver = driver
 
-    ''' this method is use to wait for element visible'''
-    
-    def wait_for_element_visible(self, browser, locator, sec):
+    # this method is use to capture the screen shot
+
+    def accept_notification(self, driver, locator):
         try:
-            browser.implicitly_wait(0)
-            wait = WebDriverWait(browser, sec)
+            self.wait_for_locator(driver, locator, 5)
+            self.elementClick(driver, locator)
+        except:
+            pass
+
+    def wait_for_element_visible(self, driver, locator, sec):
+        try:
+            driver.implicitly_wait(0)
+            wait = WebDriverWait(driver, sec)
             wait.until(EC.visibility_of_element_located(locator))
             return True
         except:
             return False
 
-        
-#     def get_device_type(self,browser):
-#         list = []
-#         size = browser.get_window_size()
-#         width = size['width']
-#         height = size['height']
-#         if width > 1200 and height > 700:
-#             return 'tab'
-#         else:
-#             return 'mobile'
-    
-    ''' this method will return device type based on window size '''       
-    def get_device_type(self,browser):
+    def get_device_type(self, driver):
         list = []
-        size = browser.get_window_size()
+        size = driver.get_window_size()
         width = size['width']
         height = size['height']
-        dp = browser.get_display_density()
+        dp = driver.get_display_density()
         diagonal = (sqrt(width ** 2 + height ** 2)) / dp
         print(diagonal)
         if diagonal > 7:
             return 'tab'
         else:
             return 'mobile'
-    
-    ''' this method is use to convert string in to list '''   
-    def ConvertStringInToList(self, string):
-        if string != None:
-            li = list(string.split(" "))
-            return li
-        else:
-            logging.info("string is None")
 
-    ''' this method convert the locator in to by type '''
-            
+    def click_on_Coordinate(self, x, y):
+        self.run('adb shell input tap ' + x + ' ' + y)
+
+    def click_none_of_the_above(self, driver, locator):
+        try:
+            self.wait_for_element_visible(driver, locator, 3)
+            self.elementClick(driver, locator)
+        except:
+            pass
+
+    def ConvertStringInToList(self, string):
+        li = list(string.split(" "))
+        return li
+
+    def noSuchEleExcept(self, driver, featureFileName, methodName):
+        logging.error("Failed Locator in Method" + methodName)
+        self.takeScreenShot(driver, featureFileName)
+        pytest.fail("Failed Due to Locator in")
+
+    def exception(self, driver, featureFileName, methodName):
+        logging.error('Failed due to Exception in Method ' + methodName)
+        self.takeScreenShot(driver, featureFileName)
+        pytest.fail("Failed Due to Exception in")
+
     def getByType(self, locatorType):
         if locatorType == "id":
             return By.ID
@@ -84,74 +90,70 @@ class CommonMethods():
         else:
             logging.info("Locator type " + locatorType + " not correct/supported")
         return False
-    
-    def wait_for_locator(self, browser, locator, sec):
-#         locatorType = locator[0]
-#         locatorValue = locator[1]
-        wait = WebDriverWait(browser, sec)
-#         wait.until(EC.presence_of_element_located((self.getByType(locatorType), locatorValue)))
+
+    def wait_for_locator(self, driver, locator, sec):
+        #         locatorType = locator[0]
+        #         locatorValue = locator[1]
+        wait = WebDriverWait(driver, sec)
+        #         wait.until(EC.presence_of_element_located((self.getByType(locatorType), locatorValue)))
         wait.until(EC.presence_of_element_located(locator), "Locator Not Found")
-    
-    def wait_for_alert(self, browser, sec):
-        wait = WebDriverWait(browser, sec)
+
+    def wait_for_alert(self, driver, sec):
+        wait = WebDriverWait(driver, sec)
         wait.until(EC.alert_is_present)
-        alert = browser.switch_to().alert()
+        alert = driver.switch_to().alert()
         alert.cancel()
-        
-    def wait_for_clickable(self, browser, locator, sec):
+
+    def wait_for_clickable(self, driver, locator, sec):
         try:
             locatorType = locator[0]
             locator = locator[1]
-            wait = WebDriverWait(browser, sec)
-            wait.until(EC.element_to_be_clickable((self.getByType(locatorType), locator))) 
+            wait = WebDriverWait(driver, sec)
+            wait.until(EC.element_to_be_clickable((self.getByType(locatorType), locator)))
             return True
         except:
-            return False   
-        
-    def run(self, command):
-        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        return sub.communicate()
-    
-    def element_click_using_x_y(self, x, y):
-        self.run('adb shell input tap {} {}'.format(x,y))
+            return False
 
-    '''this method is use to capture the screen shot'''
-    
-    def takeScreenShot(self, browser, featureFileName):
+    def run(self, command):
+        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return sub.communicate(5)
+
+    def element_click_using_x_y(self, x, y):
+        self.run('adb shell input tap {} {}'.format(x, y))
+
+    def takeScreenShot(self, driver, featureFileName):
         screenShot = datetime.datetime.now()
         fileName = screenShot.strftime("%d-%m-%y, %H-%M-%S")
-        browser.get_screenshot_as_file('''../../ScreenShots/''' + featureFileName + " " + fileName + ".png")
+        driver.get_screenshot_as_file('''../../ScreenShots/''' + featureFileName + " " + fileName + ".png")
 
-    '''this methos is use to get the address of the element'''
-        
-    def getElement(self, browser, locator):
-            locatorType = locator[0]
-            locatorValue = locator[1]
-            element = None
-            locatorType = locatorType.lower()
-            byType = self.getByType(locatorType)
-            element = browser.find_element(byType, locatorValue)
-            return element
-    
-    ''' this method is use to get the address of the elements'''
-           
-    def getElements(self, browser, locator):
+    # this methos is use to get the address of the element
+    def getElement(self, driver, locator):
+        locatorType = locator[0]
+        locatorValue = locator[1]
+        element = None
+        locatorType = locatorType.lower()
+        byType = self.getByType(locatorType)
+        element = driver.find_element(byType, locatorValue)
+        return element
+
+    # this methos is use to get the address of the elements
+    def getElements(self, driver, locator):
         elements = []
         locatorType = locator[0]
         locatorValue = locator[1]
         locatorType = locatorType.lower()
         byType = self.getByType(locatorType)
-#             elements = browser.find_elements(byType, locator)
-        elements.extend(browser.find_elements(byType, locatorValue))
-            
-#         except:
-#             logging.info("Element not found with locator: " + locator + " and  locatorType: " + locatorType)
+        #             elements = driver.find_elements(byType, locator)
+        elements.extend(driver.find_elements(byType, locatorValue))
+
+        #         except:
+        #             logging.info("Element not found with locator: " + locator + " and  locatorType: " + locatorType)
         return elements
-    
-    '''this method is use to click on the element'''          
-    def elementClick(self, browser, locator):
+
+    # this method is use to click on the element
+    def elementClick(self, driver, locator):
         try:
-            element = self.getElement(browser, locator)
+            element = self.getElement(driver, locator)
             if element is not None:
                 element.click()
                 return True
@@ -161,12 +163,11 @@ class CommonMethods():
         except:
             return False
             logging.info("Cannot click on the element with locator: " + locator)
-            
-    '''this method first clear the data then enter the text in given element'''
-            
-    def enterText(self, browser, data, locator):
+
+    # this method first clear the data then enter the text in given element
+    def enterText(self, driver, data, locator):
         try:
-            element = self.getElement(browser, locator)
+            element = self.getElement(driver, locator)
             element.clear()
             sleep(3)
             element.send_keys(data)
@@ -176,18 +177,18 @@ class CommonMethods():
             logging.info("Cannot send data on the element with locator: ")
             return False
 
-    '''this method is use to clear the data'''       
-    def clearData(self, browser, locator):
+    # this method is use to clear the data
+    def clearData(self, driver, locator):
         try:
-            element = self.getElement(self, browser, locator)
+            element = self.getElement(self, driver, locator)
             sleep(2)
-            element.clear()   
+            element.clear()
         except:
-            logging.info("Cannot clear on the element with locator: " )
-#             logging.info("Cannot clear on the element with locator: " + locator)
-        
-    '''this method is use to compare two texts  '''
-               
+            logging.info("Cannot clear on the element with locator: ")
+
+    #             logging.info("Cannot clear on the element with locator: " + locator)
+
+    # this method is use to compare two texts
     def verifyTextMatch(self, actualText, expectedText):
         try:
             if actualText == expectedText:
@@ -198,70 +199,68 @@ class CommonMethods():
                 return False
         except NoSuchElementException:
             logging.info("No element")
-            
-    def findText(self, browser, text):
+
+    def findText(self, driver, text):
         check = False
         locator = (By.XPATH, "//android.widget.TextView")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
                 check = True
         return check
-    
-    def find_radio_btn(self, browser, text):
+
+    def find_radio_btn(self, driver, text):
         check = False
         locator = (By.XPATH, "//android.widget.RadioButton")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
                 check = True
         return check
-    
-    def find_element_of_radio_btn(self, browser, text):
+
+    def find_element_of_radio_btn(self, driver, text):
         ele = None
         locator = (By.XPATH, "//android.widget.RadioButton")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
                 ele = allTexts[i]
                 break
         return ele
-    
-    def find_element_of_text(self, browser, text):
+
+    def find_element_of_text(self, driver, text):
         ele = None
         locator = (By.XPATH, "//android.widget.TextView")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
                 ele = allTexts[i]
                 break
         return ele
-    
-    def findButton(self, browser, text):
+
+    def findButton(self, driver, text):
         locator = (By.XPATH, "//android.widget.Button")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
                 return True
                 break
         return False
-    
-    ''' this method is use'''
-   
-    def findLink(self, browser, text):
+
+    def findLink(self, driver, text):
         locator = (By.XPATH, "//android.widget.TextView")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
@@ -270,13 +269,11 @@ class CommonMethods():
                 return True
                 break
         return False
-    
-    ''' this method is use to click on a link'''
-   
-    def clickLink(self, browser, text):
+
+    def clickLink(self, driver, text):
         locator = (By.XPATH, "//android.widget.TextView")
-        allTexts = self.getElements(browser, locator)
-#         allTexts = browser.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']") 
+        allTexts = self.getElements(driver, locator)
+        #         allTexts = driver.find_elements_by_xpath("//android.widget.TextView[@text=\'"+text+"\']")
         for i in range(len(allTexts)):
             text2 = allTexts[i].text
             if text2 == text:
@@ -287,261 +284,202 @@ class CommonMethods():
                 return True
                 break
         return False
-    
-    '''this method is use to scroll and search the element ''' 
-    def scrollToElement(self, browser, text):
+
+    def scrollToElement(self, driver, text):
         try:
             scrollable = "new UiScrollable(new UiSelector().scrollable(true))"
             textElement = ".scrollIntoView(new UiSelector().text(\"" + text + "\"))"
-            browser.find_element_by_android_uiautomator(scrollable + textElement)
+            driver.find_element_by_android_uiautomator(scrollable + textElement)
             return True
-        except NoSuchElementException :
+        except NoSuchElementException:
             logging.info("Given " + text + " isCorrect or not Present in the dropdown List")
             return False
             pytest.fail()
-            
-    ''' this method is use to scroll till element and click on that'''
-            
-    def scrollToElementAndClick(self, browser, text):
+
+    def scrollToElementAndClick(self, driver, text):
         try:
             scrollable = "new UiScrollable(new UiSelector().scrollable(true))"
             textElement = ".scrollIntoView(new UiSelector().text(\"" + text + "\"))"
-            browser.find_element_by_android_uiautomator(scrollable + textElement).click()
+            driver.find_element_by_android_uiautomator(scrollable + textElement).click()
             return True
         except:
             return False
-        
-    ''' this method is used to verify two text are metching or not'''
-       
-    def verifyTwoText(self, actual, expected):
-            if actual == expected:
-                logging.info("The " + actual + " and " + expected + "  are Matching") 
-                return True
-            else:
-                logging.info("The " + actual + " and " + expected + "  are not Matching")
-                return False
 
-    '''this method is use to check element is present or not if yes it will return True else False '''       
-    
-    def isElementPresent(self, browser, locator):
+    def verifyTwoText(self, actual, expected):
+        if actual == expected:
+            logging.info("The " + actual + " and " + expected + "  are Matching")
+            return True
+        else:
+            logging.info("The " + actual + " and " + expected + "  are not Matching")
+            return False
+
+    # this method is use to check element is present or not if yes it will return True else False
+    def isElementPresent(self, driver, locator):
         try:
             element = None
-            self.wait_for_locator(browser, locator, 5)
-            element = self.getElement(browser, locator)
+            self.wait_for_locator(driver, locator, 5)
+            element = self.getElement(driver, locator)
             if element is not None:
                 return True
             else:
                 logging.info("Element not found")
                 return False
         except:
-            return False   
+            return False
 
-    '''this method is use to hide the visible keyboard from device   '''    
-          
-    def hideKeyboard(self, browser):
-            if browser.hide_keyboard():
-                return True
-            else:
-                return False
+        # this method is use to hide the visible keyboard from device
 
-    ''' this method is use to fetch the text from an element    '''    
-               
-    def getTextOfElement(self, browser, locator):
+    def hideKeyboard(self, driver):
+        if driver.hide_keyboard():
+            return True
+        else:
+            return False
+
+    # this method is use to fetch the text from an element
+    def getTextOfElement(self, driver, locator):
         try:
-            element = self.getElement(browser, locator)  
+            element = self.getElement(driver, locator)
             if element is not None:
                 elementTxt = element.text
-                return elementTxt  
+                return elementTxt
             else:
                 logging.error('Element text is Not Present')
         except:
             return None
-            
-    '''this method is use to fetch the value of attribute from the locator , in this we need to pass attribute name'''
-          
-    def getAttributeOfElement(self, browser, data, locator):
-        element = self.getElement(browser, locator)  
+
+    '''this method is use to fetch the value of 
+    attribute from the locator , 
+    in this we need to pass attribute name'''
+
+    def getAttributeOfElement(self, driver, data, locator):
+        element = self.getElement(driver, locator)
         if element is not None:
             elementTxt = element.get_attribute(data)
-            return elementTxt  
+            return elementTxt
         else:
             logging.error('Element attribute is Not Present')
 
-    ''' this method is use to check text is present or not  '''
-                      
-    def verifyTextisPresent(self, browser, locator):
-        element = self.getElement(browser, locator)  
+    # this method is use to check text is present or not
+    def verifyTextisPresent(self, driver, locator):
+        element = self.getElement(driver, locator)
         if element is not None:
             elementTxt = element.text
-            return True 
+            return True
         else:
             logging.error('Element text is Not Present')
             return False
 
-    ''' this method is use to check keyword is present or not   '''
-                
-    def isKeyBoardShown(self, browser):
-        check = browser.is_keyboard_shown()
+    # this method is use to check keyword is present or not
+    def isKeyBoardShown(self, driver):
+        check = driver.is_keyboard_shown()
         if check == True:
-            return True  
+            return True
         else:
             logging.error('Failed To show the Keyboard Screen')
             return False
 
-    '''this method is use to click on device back button  '''
-             
-    def click_on_device_back_btn(self, browser):
-        browser.back()
-        
-    def getCurrentPackage(self, browser):
-        package = browser.current_package()
+    # this method is use to click on device back button
+    def click_on_device_back_btn(self, driver):
+        driver.back()
+
+    def getCurrentPackage(self, driver):
+        package = driver.current_package()
         logging.info(package)
         return package
 
-    '''this method is use to click on device home button   '''
+    # this method is use to click on device home button
     def click_on_device_home_btn(self):
         try:
             sleep(2)
             self.run("adb shell input keyevent KEYCODE_HOME")
-            return True    
+            return True
         except:
             return False
             logging.info('Error in clicking the device back btn')
-        
-    def viewAppForeground(self, browser, appPackage):
+
+    def viewAppForeground(self, driver, appPackage):
         text = appPackage
         if text == 'HomeButton':
             self.run('adb shell input keyevent KEYCODE_HOME')
             return True
-            
+
         else:
             return False
-     
-    def isAppActive(self, browser, text):
+
+    def isAppActive(self, driver, text):
         try:
-            check = browser.query_app_state(text)
+            check = driver.query_app_state(text)
             return check
-        
+
         except:
             return check
-        
-    ''' to accept app notification '''
-             
-    def acceptNotification(self, browser):
+
+    def acceptNotification(self, driver):
         try:
-            allowPopUp = browser.find_element_by_id("com.android.packageinstaller:id/permission_allow_button")
+            allowPopUp = driver.find_element_by_id("com.android.packageinstaller:id/permission_allow_button")
             """Agreeing Allow Notification"""
             if allowPopUp.is_displayed():
                 allowPopUp.click()
                 sleep(2)
                 allowPopUp.click()
-    #             print('Clicked On Accept Element')
+        #             print('Clicked On Accept Element')
         except:
             pass
-        
-    ''' to check the elemenmt's visibility '''
-       
-    def is_element_visible(self, browser, locator):
-        element = self.getElement(browser, locator)
+
+    def is_element_visible(self, driver, locator):
+        element = self.getElement(driver, locator)
         if element is not None:
             check = element.getAttribute("Visible")
-            if check==True:
+            if check == True:
                 logging.info("element is visible")
                 return True
             else:
                 logging.error('element is not visible')
                 return False
 
-    
-    def take_app_foreground(self, browser, appPackage):
+    # -------------------------------janardhan---------------------------
+
+    def take_app_foreground(self, driver, appPackage):
         try:
-            browser.activate_app(appPackage)
+            driver.activate_app(appPackage)
             logging.info('irfan Success')
             return True
-    
+
         except:
             return False
-        
-    ''' to find the screen orientation '''
-       
-    def get_screen_orientation(self, browser):
-        screen = browser.orientation
+
+    def get_screen_orientation(self, driver):
+        screen = driver.orientation
         return screen
-    
-    ''' to find element's location '''
-   
-    def get_element_location(self, browser, locator):
-        element = self.getElement(browser, locator)
+
+    def get_element_location(self, driver, locator):
+        element = self.getElement(driver, locator)
         location = element.location
         return location
-    
-    ''' it will return element's size '''
-   
-    def get_size_of_element(self, browser, locator):
-        element = self.getElement(browser, locator)
+
+    def get_size_of_element(self, driver, locator):
+        element = self.getElement(driver, locator)
         location = element.rect
         return location
-    
-    
-    def get_swipe_count(self, browser, locator):
-        text = self.getTextOfElement(browser, locator)
+
+    def get_swipe_count(self, driver, locator):
+        text = self.getTextOfElement(driver, locator)
         res = [int(i) for i in text.split() if i.isdigit()]
         return res
-    
-    ''' to select a particular topic from chapter's list ''' 
-    def select_topic(self, browser, sub_chapter_xpath, topic_xpath, swipe_count):
+
+    def select_topic(self, driver, sub_chapter_xpath, topic_xpath, swipe_count):
         logging.info(topic_xpath)
-        loc = self.get_element_location(browser, sub_chapter_xpath)
+        loc = self.get_element_location(driver, sub_chapter_xpath)
         x2 = loc["x"] + 100
         y2 = loc["y"] + 100
         x1 = x2 + 700
         y1 = y2
         for i in range(swipe_count):
-            if self.isElementPresent(browser, topic_xpath):
-                self.elementClick(browser, topic_xpath)
+            if self.isElementPresent(driver, topic_xpath):
+                self.elementClick(driver, topic_xpath)
                 break
             else:
                 self.run('adb shell input swipe {} {} {} {}'.format(x1, y1, x2, y2))
-                
-    ''' this method is used to set the screen orientation '''
-                            
-    def set_screen_orientation(self, browser, screen):
-            browser.orientation = "LANDSCAPE"
-            
-    ''' this method is used to check app is installed or not in the device'''
-        
-    def verify_app_installed(self,apppackagename):
-        pathCmd = 'adb shell pm path ' + str(apppackagename)
-        result = os.popen(pathCmd).read()
-        if result:
-            logging.info ("App found on the device")
-        else:
-            logging.info ("App not found on the device")    
-    
-    def noSuchEleExcept(self, browser, featureFileName, methodName):
-        logging.error("Failed Locator in Method" + methodName)
-        self.takeScreenShot(browser, featureFileName)
-        pytest.fail("Failed Due to Locator in")
-        
-    def exception(self, browser, featureFileName, methodName):
-        logging.error('Failed due to Exception in Method ' + methodName)
-        self.takeScreenShot(browser, featureFileName)
-        pytest.fail("Failed Due to Exception in")
-    
-    def accept_notification(self,browser,locator):
-        try:
-            self.wait_for_locator(browser,locator, 5)
-            self.elementClick(browser, locator)
-        except:
-            pass
-    
-    def click_on_Coordinate(self, x, y):
-        self.run('adb shell input tap '+x+' '+y)   
-        
-        
-    def click_none_of_the_above(self,browser,locator):
-        try:
-            self.wait_for_element_visible(browser,locator, 3)
-            self.elementClick(browser, locator)
-        except:
-            pass   
+
+    def set_screen_orientation(self, driver, screen):
+        driver.orientation = "LANDSCAPE"

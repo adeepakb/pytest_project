@@ -46,13 +46,17 @@ class SessionData:
             rate_status = card.find_element_by_xpath(
                 '//*[contains(@resource-id, "session_rate_bar")]').text
         except NoSuchElementException:
-            try:
-                card.find_element_by_xpath(
-                    '//*[contains(@resource-id, "tvRateSessionLink")]')
-                rate_status = "Not rated"
-            except NoSuchElementException:
-                rate_status = None
+            rate_status = None
         return rate_status
+
+    @staticmethod
+    def is_rate_session_link_present(card):
+        try:
+            card.find_element_by_xpath(
+                '//*[contains(@resource-id, "tvRateSessionLink")]')
+            return "Not rated"
+        except NoSuchElementException:
+            return None
 
     @staticmethod
     def check_for_up_next(card):

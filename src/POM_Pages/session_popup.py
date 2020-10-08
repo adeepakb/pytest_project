@@ -15,7 +15,6 @@ class SessionAlert(TutorCommonMethods):
         self.cancel_download_btn = '//*[contains(@resource-id, "CancelDownload")]'
 
     def verify_popup_present(self):
-        self.studentsession.cancel_join_session_dialog()
         timeout = 15
         while timeout:
             try:
@@ -56,6 +55,20 @@ class SessionAlert(TutorCommonMethods):
         details = [subject_name, topic_name, session_time]
         return details
 
+    def content_card_loaded(self):
+        subject_name = self.get_element('xpath', '//*[contains(@resource-id, "subject_name")]').text
+        topic_name = self.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
+        session_time = self.get_element('xpath', '//*[contains(@resource-id, "session_time")]').text
+
+        content_dict = {
+            "Subject": subject_name,
+            "Topic": topic_name,
+            "Schedule Time": session_time,
+        }
+        assert all(v is not None for v in [subject_name, topic_name, session_time]), "content card not loaded"
+        return content_dict
+
+
     def verify_session_card_details_loaded(self):
         subject_name = self.get_element('xpath', '//*[contains(@resource-id, "subjectNametv")]').text
         topic_name = self.get_element('xpath', '//*[contains(@resource-id, "chapterNametv")]').text
@@ -63,15 +76,16 @@ class SessionAlert(TutorCommonMethods):
         session_time = self.get_element('xpath', '//*[contains(@resource-id, "sessionTimetv")]').text
         session_desc = self.get_element('xpath', '//*[contains(@resource-id, "sessionDesctv")]').text
         details_dict = {
-            "Subject":       subject_name,
-            "Topic":         topic_name,
+            "Subject": subject_name,
+            "Topic": topic_name,
             "Schedule Date": session_date,
             "Schedule Time": session_time,
-            "Session Desc":  session_desc
+            "Session Desc": session_desc
         }
         assert all(v is not None for v in [subject_name, topic_name, session_time, session_date,
                                            session_desc]), "Session card details not loaded"
         return details_dict
+
 
     def is_asset_download_present(self):
         self.driver.implicitly_wait(5)
@@ -81,12 +95,14 @@ class SessionAlert(TutorCommonMethods):
         except NoSuchElementException:
             return False
 
+
     def download_asset(self):
         if self.is_asset_download_present():
             try:
                 self.get_element('xpath', self.download_btn).click()
             except NoSuchElementException:
                 pass
+
 
     def cancel_download_asset(self):
         if self.is_asset_download_present():

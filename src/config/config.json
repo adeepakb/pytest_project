@@ -4,21 +4,33 @@
 		"userName": "reshma.nair@byjus.com",
 		"password": "Tnl@123456"
 	},
+	"staging_access":
+    {
+      "email":"testautomation@byjus.com",
+      "password":"Byjus@54321"
+    },
 	"desired_cap": {
+    	"automationName": "UiAutomator2",
 		"platformName": "Android",
 		"deviceName": "device",
+		"autoAcceptAlerts": true,
 		"appPackage": "com.byjus.thelearningapp.premium",
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
-		"eventTimings": "True",
-		"noReset": "True",
-	    "udid": "febf18d0",
-	    "url": "https://in-cjb.headspin.io:7002/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
+		"eventTimings": true,
+		"noReset": true,
+   		"udid": "HA158DEH",
+		"url": "https://in-bng.headspin.io:7012/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
 		"newCommandTimeout": 800,
 		"implicitWait": 10
 	},
 	"adb_connect": {
 		"token": "3bbdfc92b3b041a5a15323eb3222d6d7"
 	},
+	"account_details":
+   {
+       "mobile" : "+91-9513357002",
+       "premium_id" : "1018670043"
+   },
 	"profile_credentials": {
 		"mobileNum": "+91-9513357002",
 		"grade": "6"

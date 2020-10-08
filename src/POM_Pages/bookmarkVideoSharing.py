@@ -16,7 +16,7 @@ from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH,Login_Credentials,Hamburger_Options
 import logging
 import pytest
-from conftest import browser
+from conftest import driver
 from distutils.command.check import check
 
 
@@ -32,8 +32,8 @@ featureFileName = "Bookmarkvideo Sharing"
  
 class BookmarkVideoSharing():
     
-    def __init__(self,browser):
-        self.browser=browser
+    def __init__(self,driver):
+        self.driver=driver
         
         
         
@@ -186,18 +186,18 @@ class BookmarkVideoSharing():
     
     
     ''' verify_home_page method will verify home page and verifies the profile screen '''     
-    def verify_home_page(self, browser):
+    def verify_home_page(self, driver):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
-                CommonMethods.elementClick(browser, self.back_button_id)
-                CommonMethods.elementClick(browser, self.profile_name_hamburger)
-                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
-                account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
-                CommonMethods.scrollToElement(browser, account_text)
-                expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
+            if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+                CommonMethods.elementClick(driver, self.back_button_id)
+                CommonMethods.elementClick(driver, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
+                account_text = CommonMethods.getTextOfElement(driver, self.account_details_title)
+                CommonMethods.scrollToElement(driver, account_text)
+                expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
                 actual_mob_num = getdata(data_file, 'profile_credentials3', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
-                    CommonMethods.elementClick(browser, self.back_button_id)
+                    CommonMethods.elementClick(driver, self.back_button_id)
                     logging.info("condition pass")
                     pass
                 
@@ -206,19 +206,19 @@ class BookmarkVideoSharing():
                     CommonMethods.run('adb shell pm clear com.byjus.thelearningapp')
                     CommonMethods.run('adb shell am start -n com.byjus.thelearningapp/com.byjus.app.onboarding.activity.SplashActivity')
                     # sleep(2)
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.accept_notification(browser, self.allow_btn_id)
-                    CommonMethods.click_none_of_the_above(browser,self.none_of_the_above_id)
-                    CommonMethods.wait_for_locator(browser,self.country_Code,15)
-                    CommonMethods.elementClick(browser,self.country_Code)
+                    CommonMethods.accept_notification(driver, self.allow_btn_id)
+                    CommonMethods.accept_notification(driver, self.allow_btn_id)
+                    CommonMethods.click_none_of_the_above(driver,self.none_of_the_above_id)
+                    CommonMethods.wait_for_locator(driver,self.country_Code,15)
+                    CommonMethods.elementClick(driver,self.country_Code)
                     sleep(2)
-                    CommonMethods.scrollToElementAndClick(browser,getdata(Login_Credentials,'login_detail3'
+                    CommonMethods.scrollToElementAndClick(driver,getdata(Login_Credentials,'login_detail3'
                                                                           , 'country_code'))
-                    CommonMethods.enterText(browser,getdata(Login_Credentials,'login_detail3','mobile_no'),self.phone_num)
-                    CommonMethods.wait_for_locator(browser,self.loginBtn_id,15)
-                    CommonMethods.elementClick(browser,self.loginBtn_id)
-                    CommonMethods.wait_for_locator(browser,self.OtpTxtBx_id,15)
-                    CommonMethods.enterText(browser, getdata(Login_Credentials,'login_detail3','OTP'), self.OtpTxtBx_id)
+                    CommonMethods.enterText(driver,getdata(Login_Credentials,'login_detail3','mobile_no'),self.phone_num)
+                    CommonMethods.wait_for_locator(driver,self.loginBtn_id,15)
+                    CommonMethods.elementClick(driver,self.loginBtn_id)
+                    CommonMethods.wait_for_locator(driver,self.OtpTxtBx_id,15)
+                    CommonMethods.enterText(driver, getdata(Login_Credentials,'login_detail3','OTP'), self.OtpTxtBx_id)
                     sleep(15)
                     return True
             else:
@@ -228,93 +228,93 @@ class BookmarkVideoSharing():
             logging.info('Error in Verifing Home Page')
             
     
-    def verify_to_login_page(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 6):
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.click_none_of_the_above(browser,self.none_of_the_above_id)
-            CommonMethods.wait_for_locator(browser,self.country_Code,15)
-            CommonMethods.elementClick(browser,self.country_Code)
+    def verify_to_login_page(self, driver):
+        if CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 6):
+            CommonMethods.accept_notification(driver, self.allow_btn_id)
+            CommonMethods.accept_notification(driver, self.allow_btn_id)
+            CommonMethods.click_none_of_the_above(driver,self.none_of_the_above_id)
+            CommonMethods.wait_for_locator(driver,self.country_Code,15)
+            CommonMethods.elementClick(driver,self.country_Code)
             sleep(1)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            # CommonMethods.scrollToElementAndClick(browser, 'Canada (+1)')
-            # CommonMethods.enterText(browser, "9871234", self.profile_mob_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
+            CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3', 'country_code'))
+            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+            # CommonMethods.scrollToElementAndClick(driver, 'Canada (+1)')
+            # CommonMethods.enterText(driver, "9871234", self.profile_mob_num)
+            CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+            CommonMethods.elementClick(driver, self.loginBtn_id)
+            CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
         else:
             logging.info('User verified Login page')
             
          
-    def navigate_to_home_screen(self, browser):
+    def navigate_to_home_screen(self, driver):
             try:
-                self.verify_home_page(browser)
-                self.verify_to_login_page(browser)
+                self.verify_home_page(driver)
+                self.verify_to_login_page(driver)
                 
             except NoSuchElementException:
-                CommonMethods.noSuchEleExcept(browser,featureFileName,'navigateToHomeScreen')
+                CommonMethods.noSuchEleExcept(driver,featureFileName,'navigateToHomeScreen')
 
             except :
-                CommonMethods.exception(browser,featureFileName,'navigateToHomeScreen')
+                CommonMethods.exception(driver,featureFileName,'navigateToHomeScreen')
    
     
                 
                 
     ''' navigate_to_library method will take user from home screen to library screen   '''                    
-    def navigate_to_library(self,browser,sub):
+    def navigate_to_library(self,driver,sub):
         try:
             pythonSub_xpath =(By.XPATH,"//android.widget.TextView[@text=\'"+sub+"\']")
-            CommonMethods.wait_for_locator(browser,pythonSub_xpath,15)
-            CommonMethods.elementClick(browser,pythonSub_xpath)
-            if CommonMethods.isElementPresent(browser, self.personalizeScreen_xpath):
+            CommonMethods.wait_for_locator(driver,pythonSub_xpath,15)
+            CommonMethods.elementClick(driver,pythonSub_xpath)
+            if CommonMethods.isElementPresent(driver, self.personalizeScreen_xpath):
                 pass
             else:
-                CommonMethods.wait_for_locator(browser,self.librayBtn_id,3)
-                CommonMethods.elementClick(browser,self.librayBtn_id)
+                CommonMethods.wait_for_locator(driver,self.librayBtn_id,3)
+                CommonMethods.elementClick(driver,self.librayBtn_id)
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'navigate_to_library')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'navigate_to_library')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'navigate_to_library') 
+            CommonMethods.exception(driver,featureFileName,'navigate_to_library') 
             
             
     ''' hamburger_verify methods verifies hamburger menu and clicks on it  '''       
-    def hamburger_verify(self,browser):
+    def hamburger_verify(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.ham_btn_id,15):
-                CommonMethods.elementClick(browser, self.ham_btn_id)
+            if CommonMethods.wait_for_element_visible(driver, self.ham_btn_id,15):
+                CommonMethods.elementClick(driver, self.ham_btn_id)
                  
             else:
                 logging.info('Hamburger menu Not Found')
                 pytest.fail("Failed due to Hamburger Menu")
          
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'hamburger_verify')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'hamburger_verify')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'hamburger_verify')
+            CommonMethods.exception(driver, featureFileName, 'hamburger_verify')
             
             
     ''' bookmark_verify methods verifies Bookmarks options is present in the  hamburger  '''        
-    def bookmark_verify(self,browser):
+    def bookmark_verify(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.ham_bookmark, 10):
-                CommonMethods.elementClick( browser, self.ham_bookmark)
+            if CommonMethods.wait_for_element_visible( driver, self.ham_bookmark, 10):
+                CommonMethods.elementClick( driver, self.ham_bookmark)
             else:
                 logging.info('Hamburger menu Not Found')
                 pytest.fail("Failed due to Hamburger Menu")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'bookmark_verify')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'bookmark_verify')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'bookmark_verify')
+            CommonMethods.exception(driver, featureFileName, 'bookmark_verify')
             
     ''' bookmark_screen methods verifies Bookmarks screen   '''         
-    def bookmark_screen(self,browser):
+    def bookmark_screen(self,driver):
         try:
-            check=CommonMethods.wait_for_element_visible( browser, self.ham_bookmark, 3)
+            check=CommonMethods.wait_for_element_visible( driver, self.ham_bookmark, 3)
             
             if check== True:
                 logging.info("Bookmark present ")
@@ -323,213 +323,213 @@ class BookmarkVideoSharing():
                 logging.info('page Not Found')
                 pytest.fail("Failed due to Hamburger Menu")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'bookmark_screen')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'bookmark_screen')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'bookmark_screen')
+            CommonMethods.exception(driver, featureFileName, 'bookmark_screen')
     
     ''' video_share_tap methods verifies share icon in videoplayer and taps on it   '''            
-    def video_share_tap(self,browser):
+    def video_share_tap(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.videoplayer_shareicon, 3):
-                CommonMethods.elementClick( browser, self.videoplayer_shareicon)
+            if CommonMethods.wait_for_element_visible( driver, self.videoplayer_shareicon, 3):
+                CommonMethods.elementClick( driver, self.videoplayer_shareicon)
             else:
                 logging.info('shareicon not found ')
                 pytest.fail("failed due to player shareicon")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'video_share_tap')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'video_share_tap')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'video_share_tap')
+            CommonMethods.exception(driver, featureFileName, 'video_share_tap')
             
             
     ''' gmail_verify_tap methods verifies gmail icon in share bottomsheet dialog  and taps on it   '''         
-    def gmail_verify_tap(self,browser):
+    def gmail_verify_tap(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.Gmail_text, 3):
-                CommonMethods.elementClick( browser, self.Gmail_text)
+            if CommonMethods.wait_for_element_visible( driver, self.Gmail_text, 3):
+                CommonMethods.elementClick( driver, self.Gmail_text)
             else:
                 logging.info('Gmail option  not found ')
                 pytest.fail("Failed due to gmail option is not present in bottomsheet")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'gmail_verify_tap')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'gmail_verify_tap')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'gmail_verify_tap')
+            CommonMethods.exception(driver, featureFileName, 'gmail_verify_tap')
     
     
     ''' to_mail_recipient_enter methods verifies to address field and enters email id   '''         
-    def to_mail_recipient_enter(self,browser):
+    def to_mail_recipient_enter(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.Gmail_tosend, 10):
-                CommonMethods.enterText( browser, "test123@gmail.com", self.Gmail_tosend)
+            if CommonMethods.wait_for_element_visible( driver, self.Gmail_tosend, 10):
+                CommonMethods.enterText( driver, "test123@gmail.com", self.Gmail_tosend)
             else:
                 logging.info('Gmail to address failed to find ')
                 pytest.fail("Gmail to address failed to enter")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'to_mail_recipient_enter')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'to_mail_recipient_enter')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'to_mail_recipient_enter')
+            CommonMethods.exception(driver, featureFileName, 'to_mail_recipient_enter')
     
             
     ''' gmail_send_enter methods verifies send option and clicks on it   '''         
-    def gmail_send_enter(self,browser):
+    def gmail_send_enter(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.Gmail_send, 10):
-                CommonMethods.elementClick(browser, self.Gmail_send)
+            if CommonMethods.wait_for_element_visible( driver, self.Gmail_send, 10):
+                CommonMethods.elementClick(driver, self.Gmail_send)
             else:
                 logging.info('Gmail to address failed to find ')
                 pytest.fail("Gmail to address failed to enter")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'gmail_send_enter')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'gmail_send_enter')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'gmail_send_enter')
+            CommonMethods.exception(driver, featureFileName, 'gmail_send_enter')
             
             
     ''' These initial_remove_bookmark  will remove existing bookmark from bookmark screen   '''     
-    def initial_remove_bookmark(self,browser):
+    def initial_remove_bookmark(self,driver):
         try:
-            CommonMethods.wait_for_element_visible(browser, self.ham_btn_id,10)
-            CommonMethods.elementClick(browser, self.ham_btn_id)
-            CommonMethods.wait_for_element_visible( browser, self.ham_bookmark, 3)
-            CommonMethods.elementClick( browser, self.ham_bookmark)
-            CommonMethods.wait_for_element_visible( browser, self.ham_bookmark, 5)            
-            check=CommonMethods.isElementPresent( browser, self.bookmark_icon)
+            CommonMethods.wait_for_element_visible(driver, self.ham_btn_id,10)
+            CommonMethods.elementClick(driver, self.ham_btn_id)
+            CommonMethods.wait_for_element_visible( driver, self.ham_bookmark, 3)
+            CommonMethods.elementClick( driver, self.ham_bookmark)
+            CommonMethods.wait_for_element_visible( driver, self.ham_bookmark, 5)            
+            check=CommonMethods.isElementPresent( driver, self.bookmark_icon)
             if check == False:
                 logging.info("No Bookmarks items are present ")
-                #browser.back()
-                CommonMethods.click_on_device_back_btn(browser)
+                #driver.back()
+                CommonMethods.click_on_device_back_btn(driver)
             else:
                 while  check==True:
                     
-                    CommonMethods.elementClick(browser, self.bookmark_icon)
+                    CommonMethods.elementClick(driver, self.bookmark_icon)
                     
-                    check=CommonMethods.isElementPresent(browser, self.bookmark_icon)           
-                browser.back()
+                    check=CommonMethods.isElementPresent(driver, self.bookmark_icon)           
+                driver.back()
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'initial_remove_bookmark')
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'initial_remove_bookmark')
         except:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'initial_remove_bookmark') 
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'initial_remove_bookmark') 
             
     ''' bookmark_video  methods bookmarks video from library  '''                    
-    def bookmark_video(self,browser):
+    def bookmark_video(self,driver):
         try:
-            self.navigate_to_library(browser, 'Mathematics')
-            check=CommonMethods.isElementPresent(browser, self.first_video_tab)
+            self.navigate_to_library(driver, 'Mathematics')
+            check=CommonMethods.isElementPresent(driver, self.first_video_tab)
             if check == True:
-                CommonMethods.elementClick(browser,self.first_video_tab)
-                CommonMethods.wait_for_element_visible( browser, self.video_tab_list_close, 3)
-                CommonMethods.elementClick(browser,self.video_tab_list_close)
-                check_initial=CommonMethods.isElementPresent(browser,self.video_initial_play)
+                CommonMethods.elementClick(driver,self.first_video_tab)
+                CommonMethods.wait_for_element_visible( driver, self.video_tab_list_close, 3)
+                CommonMethods.elementClick(driver,self.video_tab_list_close)
+                check_initial=CommonMethods.isElementPresent(driver,self.video_initial_play)
                 if check_initial== True:
-                    CommonMethods.elementClick(browser,self.video_initial_play)
+                    CommonMethods.elementClick(driver,self.video_initial_play)
                     sleep(5)
-                    #self.pause_video(browser)
-                    CommonMethods.elementClick(browser,self.videoFrame_id)
-                    CommonMethods.elementClick(browser,self.video_tab_PauseBtn_id)
-                    CommonMethods.wait_for_element_visible(browser, self.Bookmark_tab, 5)
-                    CommonMethods.elementClick(browser,self.Bookmark_tab)
-                   #CommonMethods.elementClick(browser,self.Bookmark_tab)
-                    #browser.back()
-                    CommonMethods.click_on_device_back_btn(browser)
-                    #browser.back()
-                    CommonMethods.click_on_device_back_btn(browser)
+                    #self.pause_video(driver)
+                    CommonMethods.elementClick(driver,self.videoFrame_id)
+                    CommonMethods.elementClick(driver,self.video_tab_PauseBtn_id)
+                    CommonMethods.wait_for_element_visible(driver, self.Bookmark_tab, 5)
+                    CommonMethods.elementClick(driver,self.Bookmark_tab)
+                   #CommonMethods.elementClick(driver,self.Bookmark_tab)
+                    #driver.back()
+                    CommonMethods.click_on_device_back_btn(driver)
+                    #driver.back()
+                    CommonMethods.click_on_device_back_btn(driver)
                     
                 else:
                     
                     logging.info("video is playing ")              
                     sleep(5)
-                    #self.pause_video(browser)
-                    CommonMethods.elementClick(browser,self.videoFrame_id)
-                    CommonMethods.elementClick(browser,self.video_tab_PauseBtn_id)
-                    CommonMethods.wait_for_element_visible(browser, self.Bookmark_tab, 5)
-                    CommonMethods.elementClick(browser,self.Bookmark_tab)
-                    #browser.back()
-                    #browser.back()
-                    CommonMethods.click_on_device_back_btn(browser)
-                    CommonMethods.click_on_device_back_btn(browser)                
+                    #self.pause_video(driver)
+                    CommonMethods.elementClick(driver,self.videoFrame_id)
+                    CommonMethods.elementClick(driver,self.video_tab_PauseBtn_id)
+                    CommonMethods.wait_for_element_visible(driver, self.Bookmark_tab, 5)
+                    CommonMethods.elementClick(driver,self.Bookmark_tab)
+                    #driver.back()
+                    #driver.back()
+                    CommonMethods.click_on_device_back_btn(driver)
+                    CommonMethods.click_on_device_back_btn(driver)                
                  
             else:
                 logging.info("failed to navigate to videolist screen ")    
            
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'bookmark_video')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'bookmark_video')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'bookmark_video')
+            CommonMethods.exception(driver,featureFileName,'bookmark_video')
             
             
     ''' bookmark_video_verify_tap method verifies bookmark video is present and taps on it if it is present  '''                    
-    def bookmark_video_verify_tap(self,browser):
+    def bookmark_video_verify_tap(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser, self.bmrkvideo_verify)
+            check=CommonMethods.isElementPresent(driver, self.bmrkvideo_verify)
             if check == True:
                 logging.info("vedio verified sucessfully")
-                CommonMethods.elementClick( browser, self.bmrkvideo_verify)
+                CommonMethods.elementClick( driver, self.bmrkvideo_verify)
                 
             else:
                 logging.info("video is not present")
                 pytest.fail("video is not present")
                 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'bookmark_video_verify_tap')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'bookmark_video_verify_tap')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'bookmark_video_verify_tap')    
+            CommonMethods.exception(driver,featureFileName,'bookmark_video_verify_tap')    
             
             
-    def shareicon_tap(self,browser):        
+    def shareicon_tap(self,driver):        
         try:     
                 
-                check_initial=CommonMethods.isElementPresent(browser,self.video_initial_play)
+                check_initial=CommonMethods.isElementPresent(driver,self.video_initial_play)
                 if check_initial== True:
-                    CommonMethods.elementClick(browser,self.video_initial_play)
+                    CommonMethods.elementClick(driver,self.video_initial_play)
                     sleep(5)
-                    #self.pause_video(browser)
-                    CommonMethods.elementClick(browser,self.videoFrame_id)
-                    CommonMethods.elementClick(browser,self.video_tab_PauseBtn_id)
-                    CommonMethods.wait_for_element_visible(browser, self.videoplayer_shareicon, 5)
-                    CommonMethods.elementClick(browser,self.videoplayer_shareicon)
+                    #self.pause_video(driver)
+                    CommonMethods.elementClick(driver,self.videoFrame_id)
+                    CommonMethods.elementClick(driver,self.video_tab_PauseBtn_id)
+                    CommonMethods.wait_for_element_visible(driver, self.videoplayer_shareicon, 5)
+                    CommonMethods.elementClick(driver,self.videoplayer_shareicon)
                           
                 else:
                     
                     logging.info("video is playing ")
 
                     sleep(5)
-                    #self.pause_video(browser)
-                    CommonMethods.elementClick(browser,self.videoFrame_id)
-                    CommonMethods.elementClick(browser,self.video_tab_PauseBtn_id)
-                    CommonMethods.wait_for_element_visible(browser, self.videoplayer_shareicon, 5)
-                    CommonMethods.elementClick(browser,self.videoplayer_shareicon)
+                    #self.pause_video(driver)
+                    CommonMethods.elementClick(driver,self.videoFrame_id)
+                    CommonMethods.elementClick(driver,self.video_tab_PauseBtn_id)
+                    CommonMethods.wait_for_element_visible(driver, self.videoplayer_shareicon, 5)
+                    CommonMethods.elementClick(driver,self.videoplayer_shareicon)
                               
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'shareicon_tap')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'shareicon_tap')  
             
             
             
     ''' These check_nobookmark  method  verifies nobookmark text   '''    
-    def verify_gmail_subject_text(self,browser,text):
+    def verify_gmail_subject_text(self,driver,text):
         try:
             exp_txt=text
-            CommonMethods.wait_for_element_visible(browser, self.Gmail_subject_text, 10)
-            act_txt=CommonMethods.getTextOfElement(browser, self.Gmail_subject_text)
+            CommonMethods.wait_for_element_visible(driver, self.Gmail_subject_text, 10)
+            act_txt=CommonMethods.getTextOfElement(driver, self.Gmail_subject_text)
             print("actual text ............",act_txt)
             
             assert act_txt == exp_txt ,"subject text failed to match "
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'verify_gmail_subject_text')
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'verify_gmail_subject_text')
         except:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'verify_gmail_subject_text')
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'verify_gmail_subject_text')
     
             
     ''' These verify_descriptiontext_and_link_in_a_mail  method  verifies text and link in gmail   '''           
-    def verify_descriptiontext_and_link_in_a_mail(self,browser,text):
+    def verify_descriptiontext_and_link_in_a_mail(self,driver,text):
         try:
             text2="I am having fun learning Linear Equations in One Variable on the BYJU'S app. Download the app for free now and take a look at it."
             link="https://app.byjus.com/staging_video_share"
-            actual_text=CommonMethods.getTextOfElement(browser, self.Gmail_body_text)
+            actual_text=CommonMethods.getTextOfElement(driver, self.Gmail_body_text)
             if str(text) in str(actual_text):
                 logging.info('Description text found in gmail body')
             elif str(text2) in str(actual_text):
@@ -547,13 +547,13 @@ class BookmarkVideoSharing():
                 pytest.fail('Searching link is not found')
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_body_text_in_a_mail')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_body_text_in_a_mail')
             
     ''' These gmail_compose_verify method  verifies Compose text is present  in a mail window   '''           
-    def gmail_compose_verify(self,browser):
+    def gmail_compose_verify(self,driver):
         try:
-            CommonMethods.wait_for_element_visible(browser, self.Gmail_compose_txt, 5)
-            check=CommonMethods.isElementPresent(browser, self.Gmail_compose_txt)
+            CommonMethods.wait_for_element_visible(driver, self.Gmail_compose_txt, 5)
+            check=CommonMethods.isElementPresent(driver, self.Gmail_compose_txt)
             if check == True:
                 logging.info("Gmail compose is opened ")
                                 
@@ -562,31 +562,31 @@ class BookmarkVideoSharing():
                 pytest.fail("gmail compose is not found ")
                 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'gmail_compose_verify')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'gmail_compose_verify')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'gmail_compose_verify') 
+            CommonMethods.exception(driver,featureFileName,'gmail_compose_verify') 
             
     ''' messagingverify_tap methods verifies gmail icon in share bottomsheet dialog  and taps on it   '''         
-    def messageverify_tap(self,browser):
+    def messageverify_tap(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible( browser, self.Sms_messaging_txt, 3):
-                CommonMethods.elementClick( browser, self.Sms_messaging_txt)
+            if CommonMethods.wait_for_element_visible( driver, self.Sms_messaging_txt, 3):
+                CommonMethods.elementClick( driver, self.Sms_messaging_txt)
             else:
                 logging.info('Messaging option  not found ')
                 pytest.fail("Failed due to Messaging option is not present in bottomsheet")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'messageverify_tap')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'messageverify_tap')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'messageverify_tap')
+            CommonMethods.exception(driver, featureFileName, 'messageverify_tap')
     
     ''' These verify_descriptiontext_and_link_in_a_message method  verifies text and link in sms   '''            
-    def verify_descriptiontext_and_link_in_a_message(self,browser,text):
+    def verify_descriptiontext_and_link_in_a_message(self,driver,text):
         try:
             text2="I am having fun learning Linear Equations in One Variable on the BYJU'S app. Download the app for free now and take a look at it."
             link="https://app.byjus.com/staging_video_share"
-            actual_text=CommonMethods.getTextOfElement(browser, self.message_txt)
+            actual_text=CommonMethods.getTextOfElement(driver, self.message_txt)
             if str(text) in str(actual_text):
                 logging.info('Description text found in gmail body')
             elif str(text2) in str(actual_text):
@@ -604,122 +604,122 @@ class BookmarkVideoSharing():
                 pytest.fail('Searching link is not found')
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_body_text_in_a_mail')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_body_text_in_a_mail')
     
     ''' These navigate_to_journey will switch to journey screen  '''             
-    def navigate_to_journey(self,browser):
+    def navigate_to_journey(self,driver):
         try:
             sub='Mathematics'
             pythonSub_xpath =(By.XPATH,"//android.widget.TextView[@text=\'"+sub+"\']")
-            CommonMethods.wait_for_locator(browser,pythonSub_xpath,15)
-            CommonMethods.elementClick(browser,pythonSub_xpath)
-            if CommonMethods.isElementPresent(browser, self.personalizeScreen_xpath):
-                CommonMethods.elementClick(browser,self.personalizeScreen_xpath)
+            CommonMethods.wait_for_locator(driver,pythonSub_xpath,15)
+            CommonMethods.elementClick(driver,pythonSub_xpath)
+            if CommonMethods.isElementPresent(driver, self.personalizeScreen_xpath):
+                CommonMethods.elementClick(driver,self.personalizeScreen_xpath)
                 
             else:
-                CommonMethods.wait_for_locator(browser,self.librayBtn_id,10)
+                CommonMethods.wait_for_locator(driver,self.librayBtn_id,10)
                 pass
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'navigate_to_journey')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'navigate_to_journey')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'navigate_to_journey') 
+            CommonMethods.exception(driver,featureFileName,'navigate_to_journey') 
             
     ''' These first_journey will scroll the chapterlist from bottom to top and tap on first journey '''     
-    def first_journey(self,browser):
+    def first_journey(self,driver):
         try:
             sleep(5)    
-            check=CommonMethods.isElementPresent(browser,self.first_journey_card)
-            display_sub=CommonMethods.isElementPresent(browser,self.subjectName_id)
+            check=CommonMethods.isElementPresent(driver,self.first_journey_card)
+            display_sub=CommonMethods.isElementPresent(driver,self.subjectName_id)
             if check==True:
-                #CommonMethods.elementClick( browser,self.first_journey_card)
+                #CommonMethods.elementClick( driver,self.first_journey_card)
                 
                 while display_sub==False:
                     
-                    nodeCrd = CommonMethods.getElement(browser, self.first_journey_card)
+                    nodeCrd = CommonMethods.getElement(driver, self.first_journey_card)
                     n = nodeCrd.location_in_view
-                    browser.swipe(n['x'], n['y'], n['x'], n['y'] + 350)
+                    driver.swipe(n['x'], n['y'], n['x'], n['y'] + 350)
                     #print(n['x'],n['y'])
-                    display_sub = CommonMethods.isElementPresent(browser, self.subjectName_id)
+                    display_sub = CommonMethods.isElementPresent(driver, self.subjectName_id)
                     
-                CommonMethods.elementClick( browser,self.first_journey_card)
+                CommonMethods.elementClick( driver,self.first_journey_card)
                   
             else:
-                CommonMethods.elementClick( browser,self.first_journey_card)       
+                CommonMethods.elementClick( driver,self.first_journey_card)       
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'first_journey')
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'first_journey')
         
         except :
-            CommonMethods.exception(browser,featureFileName,'first_journey')
+            CommonMethods.exception(driver,featureFileName,'first_journey')
             
     ''' These video_player_verify  will click on pause icon     '''    
-    def video_player_verify(self,browser):
+    def video_player_verify(self,driver):
         try:
             sleep(5)
-            CommonMethods.wait_for_element_visible( browser, self.videoFrame_id, 15)
-            #CommonMethods.is_element_visible(self, browser, locator)
-            CommonMethods.elementClick(browser,self.videoFrame_id)
-            CommonMethods.elementClick(browser,self.video_tab_PauseBtn_id)
-            CommonMethods.wait_for_element_visible(browser, self.video_tap_playicon,2)
+            CommonMethods.wait_for_element_visible( driver, self.videoFrame_id, 15)
+            #CommonMethods.is_element_visible(self, driver, locator)
+            CommonMethods.elementClick(driver,self.videoFrame_id)
+            CommonMethods.elementClick(driver,self.video_tab_PauseBtn_id)
+            CommonMethods.wait_for_element_visible(driver, self.video_tap_playicon,2)
             
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'video_player_verify')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'video_player_verify')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'video_player_verify')
+            CommonMethods.exception(driver, featureFileName, 'video_player_verify')
             
     ''' These bookmark_playericon_verify  will  verify player icon in the video player screen   '''     
-    def bookmark_playericon_verify(self,browser):
+    def bookmark_playericon_verify(self,driver):
         try:
-            CommonMethods.wait_for_element_visible( browser, self.Bookmark_tab, 15)
-            check=CommonMethods.isElementPresent(browser, self.Bookmark_tab)
+            CommonMethods.wait_for_element_visible( driver, self.Bookmark_tab, 15)
+            check=CommonMethods.isElementPresent(driver, self.Bookmark_tab)
             if check == True:
                 logging.info("Bookmark icon is present")                                                   
             else:                    
                     logging.info("Bookmark icon is not present ")
                     
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'bookmark_playericon_verify')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'bookmark_playericon_verify')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'bookmark_playericon_verify') 
+            CommonMethods.exception(driver, featureFileName, 'bookmark_playericon_verify') 
             
             
     ''' These verify_toast_msg  will  verify toast message  '''    
-    def video_player_bookmark_tap(self,browser):
+    def video_player_bookmark_tap(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser, self.Bookmark_tab)
+            check=CommonMethods.isElementPresent(driver, self.Bookmark_tab)
             if check == True:
-                CommonMethods.elementClick(browser,self.Bookmark_tab)
+                CommonMethods.elementClick(driver,self.Bookmark_tab)
                 logging.info("Bookmark icon is selected")
                 sleep(2)                                                   
             else:                    
                     logging.info("Bookmark icon is not present ")
                     
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'video_player_bookmark_tap')  
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'video_player_bookmark_tap')  
                
         except:
-            CommonMethods.exception(browser, featureFileName, 'video_player_bookmark_tap')
+            CommonMethods.exception(driver, featureFileName, 'video_player_bookmark_tap')
             
             
     ''' These fromjourneyto_homescreen  method  takes user from journey screen to home screen   ''' 
-    def fromjourneyto_homescreen(self,browser):
+    def fromjourneyto_homescreen(self,driver):
         try:                        
-            check=CommonMethods.isElementPresent( browser, self.Videoplayer_appback)
+            check=CommonMethods.isElementPresent( driver, self.Videoplayer_appback)
             if check == True:
-                CommonMethods.elementClick( browser, self.Videoplayer_appback)
+                CommonMethods.elementClick( driver, self.Videoplayer_appback)
                 sleep(1)
-                browser.back()
-                if CommonMethods.isElementPresent(browser, self.exit_journey):
+                driver.back()
+                if CommonMethods.isElementPresent(driver, self.exit_journey):
                     
-                    CommonMethods.elementClick(browser, self.exit_journey)
-                    browser.back()
-#                 browser.back()
-#                 browser.back()
+                    CommonMethods.elementClick(driver, self.exit_journey)
+                    driver.back()
+#                 driver.back()
+#                 driver.back()
                 else:
-                    #browser.back()
-                    CommonMethods.click_on_device_back_btn(browser)
+                    #driver.back()
+                    CommonMethods.click_on_device_back_btn(driver)
                     
                     logging.info( "Navigated to home screen  ")              
                 
@@ -727,17 +727,17 @@ class BookmarkVideoSharing():
                 logging.info("Videoplayer app back button is not clicked ")
                 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'fromjourneyto_homescreen')
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'fromjourneyto_homescreen')
         except:
-            CommonMethods.noSuchEleExcept( browser, featureFileName, 'fromjourneyto_homescreen') 
+            CommonMethods.noSuchEleExcept( driver, featureFileName, 'fromjourneyto_homescreen') 
             
     ''' These verify_journeydescriptiontext_and_link_in_a_message method  verifies text and link in sms   ''' 
-    def verify_journeydescriptiontext_and_link_in_a_message(self,browser,text):
+    def verify_journeydescriptiontext_and_link_in_a_message(self,driver,text):
         
         try:
             text2="I am having fun learning Rational Numbers on the BYJU'S app. Download the app for free now and take a look at it."
             link="https://app.byjus.com/staging_video_share"
-            actual_text=CommonMethods.getTextOfElement(browser, self.message_txt)
+            actual_text=CommonMethods.getTextOfElement(driver, self.message_txt)
             if str(text) in str(actual_text):
                 logging.info('Description text found in gmail body')
             elif str(text2) in str(actual_text):
@@ -755,7 +755,7 @@ class BookmarkVideoSharing():
                 pytest.fail('Searching link is not found')
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_body_text_in_a_mail')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_body_text_in_a_mail')
     
                
     

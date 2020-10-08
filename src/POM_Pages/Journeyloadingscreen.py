@@ -53,111 +53,111 @@ class JourneyLoadingScreen():
     By.XPATH, "(//android.widget.Button[@resource-id='com.byjus.thelearningapp.premium:id/roundedNavButton'])[2]")
     personalised_btn = (By.XPATH, "//android.widget.Button[@text='Personalised']")
 
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, driver):
+        self.driver = driver
 
-    def scroll_up_with_highlight_journey(self, browser):
-        check = CommonMethods.isElementPresent(browser, self.trendingJourney_id)
-        display_sub = CommonMethods.isElementPresent(browser, self.subjectName_id)
+    def scroll_up_with_highlight_journey(self, driver):
+        check = CommonMethods.isElementPresent(driver, self.trendingJourney_id)
+        display_sub = CommonMethods.isElementPresent(driver, self.subjectName_id)
         if check == True:
             while display_sub == False:
-                nodeCrd = CommonMethods.getElement(browser, self.trendingJourney_id)
+                nodeCrd = CommonMethods.getElement(driver, self.trendingJourney_id)
                 n = nodeCrd.location_in_view
-                browser.swipe(n['x'], n['y'], n['x'], n['y'] + 100)
+                driver.swipe(n['x'], n['y'], n['x'], n['y'] + 100)
                 #                 print(n['x'],n['y'])
-                display_sub = CommonMethods.isElementPresent(browser, self.subjectName_id)
+                display_sub = CommonMethods.isElementPresent(driver, self.subjectName_id)
 
-    def switch_to_twoG(self, browser):
+    def switch_to_twoG(self, driver):
         try:
-            set_connection_type(browser, "DATA_ONLY")
+            set_connection_type(driver, "DATA_ONLY")
             logging.info("enabled data connection mode")
         except:
-            CommonMethods.exception(browser, featureFileName, 'switch_to_twoG')
+            CommonMethods.exception(driver, featureFileName, 'switch_to_twoG')
 
-    def switch_to_wifi(self, browser):
+    def switch_to_wifi(self, driver):
         try:
-            set_connection_type(browser, "WIFI_ONLY")
+            set_connection_type(driver, "WIFI_ONLY")
             logging.info("enabled wifi connectio mode")
         except:
-            CommonMethods.exception(browser, featureFileName, 'switch_to_wifi')
+            CommonMethods.exception(driver, featureFileName, 'switch_to_wifi')
 
-    def scroll_in_journeys(self, browser):
-        nodeCrd = CommonMethods.getElement(browser, self.node_Frame)
+    def scroll_in_journeys(self, driver):
+        nodeCrd = CommonMethods.getElement(driver, self.node_Frame)
         n = nodeCrd.location_in_view
-        browser.swipe(n['x'], n['y'], n['x'], n['y'] + 200)
+        driver.swipe(n['x'], n['y'], n['x'], n['y'] + 200)
         return n
 
-    def click_on_journey_card(self, browser):
-        CommonMethods.elementClick(browser, self.first_Journey_Card)
+    def click_on_journey_card(self, driver):
+        CommonMethods.elementClick(driver, self.first_Journey_Card)
         logging.info("journey screen is displayed")
 
-    def verify_back_arrow(self, browser):
+    def verify_back_arrow(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.back_arrow)
+            check = CommonMethods.isElementPresent(driver, self.back_arrow)
             if check == True:
                 logging.info("back arrow is displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_back_arrow')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_back_arrow')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_back_arrow')
+            CommonMethods.exception(driver, featureFileName, 'verify_back_arrow')
 
-    def verify_chapter_name(self, browser):
+    def verify_chapter_name(self, driver):
         try:
-            CommonMethods.wait_for_element_visible(browser, self.journey_name, 2)
-            check = CommonMethods.isElementPresent(browser, self.journey_name)
+            CommonMethods.wait_for_element_visible(driver, self.journey_name, 2)
+            check = CommonMethods.isElementPresent(driver, self.journey_name)
             if check == True:
-                chapter_nam = CommonMethods.getTextOfElement(browser, self.journey_name)
+                chapter_nam = CommonMethods.getTextOfElement(driver, self.journey_name)
                 # logging.info(chapter_nam)
                 logging.info("chapter name is " + chapter_nam)
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_chapter_name')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_chapter_name')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_chapter_name')
+            CommonMethods.exception(driver, featureFileName, 'verify_chapter_name')
 
-    def verify_msg(self, browser):
+    def verify_msg(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.personal_message)
+            check = CommonMethods.isElementPresent(driver, self.personal_message)
             if check == True:
-                msg = CommonMethods.getTextOfElement(browser, self.personal_message)
+                msg = CommonMethods.getTextOfElement(driver, self.personal_message)
                 logging.info("personal msg is displayed " + msg)
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_msg')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_msg')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_msg')
+            CommonMethods.exception(driver, featureFileName, 'verify_msg')
 
-    def click_on_device_back_Btn(self, browser):
+    def click_on_device_back_Btn(self, driver):
         try:
-            click_on_back_button(browser)
+            click_on_back_button(driver)
             logging.info('Successfully Tapped On device back button')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_device_back_Btn')
+            CommonMethods.exception(driver, featureFileName, 'click_on_device_back_Btn')
 
-    #     def verify_personlised_screen(self, browser):
+    #     def verify_personlised_screen(self, driver):
     #         try:
-    #             check = CommonMethods.isElementPresent(browser, self.btn_library_xpath)
+    #             check = CommonMethods.isElementPresent(driver, self.btn_library_xpath)
     #             if check == True:
     #                 logging.info("personalised screen is displayed")
     #         except NoSuchElementException:
-    #             CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_personlised_screen')
+    #             CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_personlised_screen')
     #         except:
-    #             CommonMethods.exception(browser, featureFileName, 'verify_personlised_screen')
+    #             CommonMethods.exception(driver, featureFileName, 'verify_personlised_screen')
 
-    def verify_journey_first(self, browser):
+    def verify_journey_first(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.btn_start)
+            check = CommonMethods.isElementPresent(driver, self.btn_start)
             if check == True:
                 logging.info("journey is loading first time")
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_journey_first')
+            CommonMethods.exception(driver, featureFileName, 'verify_journey_first')
 
-    def verify_journey_map_screen(self, browser):
+    def verify_journey_map_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.node_Frame)
+            check = CommonMethods.isElementPresent(driver, self.node_Frame)
             if check == True:
                 logging.info("journey map screen is displayed")
             elif check == False:
-                click_on_back_button(browser)
+                click_on_back_button(driver)
                 logging.info("journey map screen is displayed")
             else:
                 logging.info("journey map screen is not displayed")
@@ -165,130 +165,130 @@ class JourneyLoadingScreen():
                 pytest.fail("Failed Due to Locator in Journey map screen")
         except:
             logging.info("Failed Locator in Method verify_journey_map_screen")
-            CommonMethods.takeScreenShot(browser, featureFileName)
+            CommonMethods.takeScreenShot(driver, featureFileName)
             pytest.fail("Failed Due to Locator in Journey map screen")
 
-    def get_all_node_names(self, browser):
+    def get_all_node_names(self, driver):
         try:
             node_names = []
-            check = CommonMethods.isElementPresent(browser, self.node_Frame)
-            node = CommonMethods.isElementPresent(browser, self.node_with_node_text)
+            check = CommonMethods.isElementPresent(driver, self.node_Frame)
+            node = CommonMethods.isElementPresent(driver, self.node_with_node_text)
 
             if check == True:
                 while node == True:
-                    #currentNodeCords = self.scroll_in_journeys(browser)
-                    nodeCrd = CommonMethods.getElement(browser, self.node_Frame)
+                    #currentNodeCords = self.scroll_in_journeys(driver)
+                    nodeCrd = CommonMethods.getElement(driver, self.node_Frame)
                     currentNodeCords = nodeCrd.location_in_view
-                    browser.swipe(currentNodeCords['x'], currentNodeCords['y'], currentNodeCords['x'],
+                    driver.swipe(currentNodeCords['x'], currentNodeCords['y'], currentNodeCords['x'],
                                   currentNodeCords['y'] + 450)
-                    # check = CommonMethods.isElementPresent(browser, self.node_Frame)
-                    node = CommonMethods.isElementPresent(browser, self.node_with_node_text)
-                    text = CommonMethods.getTextOfElement(browser, self.node_Name_Text)
+                    # check = CommonMethods.isElementPresent(driver, self.node_Frame)
+                    node = CommonMethods.isElementPresent(driver, self.node_with_node_text)
+                    text = CommonMethods.getTextOfElement(driver, self.node_Name_Text)
                     if text not in node_names:
                         node_names.append(text)
                 logging.info("node with node name displayed")
             else:
-                click_on_back_button(browser)
-                check = CommonMethods.isElementPresent(browser, self.node_Frame)
-                node = CommonMethods.isElementPresent(browser, self.node_with_node_text)
+                click_on_back_button(driver)
+                check = CommonMethods.isElementPresent(driver, self.node_Frame)
+                node = CommonMethods.isElementPresent(driver, self.node_with_node_text)
                 if check == True:
                     while node == True:
-                        currentNodeCords = self.scroll_in_journeys(browser)
-                        browser.swipe(currentNodeCords['x'], currentNodeCords['y'], currentNodeCords['x'],
+                        currentNodeCords = self.scroll_in_journeys(driver)
+                        driver.swipe(currentNodeCords['x'], currentNodeCords['y'], currentNodeCords['x'],
                                       currentNodeCords['y'] + 200)
-                        node = CommonMethods.isElementPresent(browser, self.node_with_node_text)
-                        text = CommonMethods.getTextOfElement(browser, self.node_Name_Text)
+                        node = CommonMethods.isElementPresent(driver, self.node_with_node_text)
+                        text = CommonMethods.getTextOfElement(driver, self.node_Name_Text)
                         if text not in node_names:
                             node_names.append(text)
                 logging.info("node with node name displayed")
         except:
-            CommonMethods.exception(browser, featureFileName, 'get_all_node_names')
+            CommonMethods.exception(driver, featureFileName, 'get_all_node_names')
         return node_names
 
-    def nodes(self, browser):
-        nodes = self.get_all_node_names(browser)
+    def nodes(self, driver):
+        nodes = self.get_all_node_names(driver)
         logging.info(nodes)
 
-    def verify_journey_loading_screen(self, browser):
+    def verify_journey_loading_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.journey_loading_screen)
+            check = CommonMethods.isElementPresent(driver, self.journey_loading_screen)
             if check == True:
                 logging.info("journey screen is displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_journey_loading_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_journey_loading_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_journey_loading_screen')
+            CommonMethods.exception(driver, featureFileName, 'verify_journey_loading_screen')
 
-    def verify_already_download_journey(self, browser):
+    def verify_already_download_journey(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.btn_continue)
+            check = CommonMethods.isElementPresent(driver, self.btn_continue)
             if check == True:
                 logging.info("user opened already downloaded journey")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_already_download_journey')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_already_download_journey')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_already_download_journey')
+            CommonMethods.exception(driver, featureFileName, 'verify_already_download_journey')
 
-    def verify_node_frame_and_get_text_node(self, browser):
+    def verify_node_frame_and_get_text_node(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.node_Frame)
+            check = CommonMethods.isElementPresent(driver, self.node_Frame)
             if check == True:
-                text = CommonMethods.getTextOfElement(browser, self.node_Name_Text)
+                text = CommonMethods.getTextOfElement(driver, self.node_Name_Text)
                 logging.info("user will continue journey with this node" + text)
             else:
-                click_on_back_button(browser)
-                text = CommonMethods.getTextOfElement(browser, self.node_Name_Text)
+                click_on_back_button(driver)
+                text = CommonMethods.getTextOfElement(driver, self.node_Name_Text)
                 logging.info("user will continue journey with this node" + text)
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_node_frame_and_get_text_node')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_node_frame_and_get_text_node')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_node_frame_and_get_text_node')
+            CommonMethods.exception(driver, featureFileName, 'verify_node_frame_and_get_text_node')
 
-    def verify_new_journey_without_three_do(self, browser):
+    def verify_new_journey_without_three_do(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.already_taken_journey_with_threedot)
+            check = CommonMethods.isElementPresent(driver, self.already_taken_journey_with_threedot)
             if check == False:
                 logging.info('This journey is loading first time')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_new_journey_without_three_do')
+            CommonMethods.exception(driver, featureFileName, 'verify_new_journey_without_three_do')
 
-    def verify_resource_screen(self, browser):
+    def verify_resource_screen(self, driver):
         try:
             resource_name = ""
-            check1 = CommonMethods.isElementPresent(browser, self.video_name_in_resource_screen)
-            check2 = CommonMethods.isElementPresent(browser, self.resource_que_screen)
+            check1 = CommonMethods.isElementPresent(driver, self.video_name_in_resource_screen)
+            check2 = CommonMethods.isElementPresent(driver, self.resource_que_screen)
             if check1 == True:
                 resource_name = "Video Screen"
                 logging.info("video resource screen displayed")
             elif check2 == True:
-                click_on_back_button(browser)
+                click_on_back_button(driver)
                 resource_name = "Questions"
                 logging.info("Questions resource screen displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_resource_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_resource_screen')
 
-    def verify_resource(self, browser):
+    def verify_resource(self, driver):
         try:
-            check1 = CommonMethods.isElementPresent(browser, self.video_name_in_resource_screen)
-            check2 = CommonMethods.isElementPresent(browser, self.resource_que_screen)
+            check1 = CommonMethods.isElementPresent(driver, self.video_name_in_resource_screen)
+            check2 = CommonMethods.isElementPresent(driver, self.resource_que_screen)
             if check1 == True:
                 logging.info("video resource screen displayed")
             elif check2 == True:
                 logging.info("Questions resource screen displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_resource')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_resource')
 
-    def click_on_new_journey_card(self, browser):
+    def click_on_new_journey_card(self, driver):
         try:
-            browser.swipe(300, 500, 300, 100)
+            driver.swipe(300, 500, 300, 100)
             journey_card_without_test_practice = (By.XPATH,
                                                   "//android.widget.RelativeLayout/descendant::android.widget.TextView/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.TextView[not (@text='Practice') and not (@text='Tests')]")
-            all_journeys = CommonMethods.getElements(browser, journey_card_without_test_practice)
+            all_journeys = CommonMethods.getElements(driver, journey_card_without_test_practice)
             logging.info(len(all_journeys))
             taken_journey_with_dot_symbol = (By.XPATH,
                                              "//*[contains(@resource-id,'com.byjus.thelearningapp.premium:id/ivLayoverIcon')]/parent::android.widget.RelativeLayout/descendant::android.widget.TextView")
-            taken_jorney_cards = CommonMethods.getElements(browser, taken_journey_with_dot_symbol)
+            taken_jorney_cards = CommonMethods.getElements(driver, taken_journey_with_dot_symbol)
             logging.info(len(taken_jorney_cards))
             text_of_taken_journey = []
             for i in taken_jorney_cards:
@@ -299,20 +299,20 @@ class JourneyLoadingScreen():
                     j.click()
                     break
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_new_journey_card')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'click_on_new_journey_card')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_new_journey_card')
+            CommonMethods.exception(driver, featureFileName, 'click_on_new_journey_card')
 
-    def click_on_already_taken_journey_card(self, browser):
+    def click_on_already_taken_journey_card(self, driver):
         try:
             sleep(2)
             journey_card_without_test_practice = (By.XPATH,
                                                   "//android.widget.RelativeLayout/descendant::android.widget.TextView/following-sibling::androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/rvSubtopic']/descendant::android.widget.TextView[not (@text='Practice') and not (@text='Tests')]")
-            all_journeys = CommonMethods.getElements(browser, journey_card_without_test_practice)
+            all_journeys = CommonMethods.getElements(driver, journey_card_without_test_practice)
             logging.info(len(all_journeys))
             taken_journey_with_dot_symbol = (By.XPATH,
                                              "//*[contains(@resource-id,'com.byjus.thelearningapp.premium:id/ivLayoverIcon')]/parent::android.widget.RelativeLayout/descendant::android.widget.TextView")
-            taken_jorney_cards = CommonMethods.getElements(browser, taken_journey_with_dot_symbol)
+            taken_jorney_cards = CommonMethods.getElements(driver, taken_journey_with_dot_symbol)
             logging.info(len(taken_jorney_cards))
             text_of_taken_journey = []
             for i in taken_jorney_cards:
@@ -328,36 +328,36 @@ class JourneyLoadingScreen():
                 else:
                     logging.info('already taken journey is not present')
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_already_taken_journey_card')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'click_on_already_taken_journey_card')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_already_taken_journey_card')
+            CommonMethods.exception(driver, featureFileName, 'click_on_already_taken_journey_card')
 
-    def handle_exit_journey_pop_up(self, browser):
+    def handle_exit_journey_pop_up(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.exit_journey_button)
+            check = CommonMethods.isElementPresent(driver, self.exit_journey_button)
             if check == True:
-                CommonMethods.elementClick(browser, self.exit_journey_button)
+                CommonMethods.elementClick(driver, self.exit_journey_button)
                 logging.info("Exit journey pop up displayed and closed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'handle_exit_journey_pop_up')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'handle_exit_journey_pop_up')
         except:
-            CommonMethods.exception(browser, featureFileName, 'handle_exit_journey_pop_up')
+            CommonMethods.exception(driver, featureFileName, 'handle_exit_journey_pop_up')
 
-    def verify_personaised_screen(self, browser):
+    def verify_personaised_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.btn_library)
-            check1 = CommonMethods.isElementPresent(browser, self.Btn_library_when_text_isnot_there)
-            personaised_button = CommonMethods.isElementPresent(browser, self.personalised_btn)
+            check = CommonMethods.isElementPresent(driver, self.btn_library)
+            check1 = CommonMethods.isElementPresent(driver, self.Btn_library_when_text_isnot_there)
+            personaised_button = CommonMethods.isElementPresent(driver, self.personalised_btn)
             if check == True:
                 logging.info("personalised chapter list screen is displayed")
             elif check1 == True:
                 logging.info("personalised chapter list screen is displayed")
             elif personaised_button == True:
-                text_personalise = CommonMethods.getTextOfElement(browser, self.personalised_btn)
+                text_personalise = CommonMethods.getTextOfElement(driver, self.personalised_btn)
                 if text_personalise == 'Personalised':
-                    CommonMethods.elementClick(browser, self.personalised_btn)
+                    CommonMethods.elementClick(driver, self.personalised_btn)
                     logging.info("personalised chapter list screen is displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_personaised_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_personaised_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_personaised_screen')   
+            CommonMethods.exception(driver, featureFileName, 'verify_personaised_screen')   

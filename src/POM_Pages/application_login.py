@@ -39,6 +39,9 @@ class Login(TutorCommonMethods):
         self.btn_classroom = '//*[contains(@resource-id, "btnEnterClassroom")]'
         self.btn_personal = '//*[contains(@resource-id,"btnEnterPersonalise")]'
         self.profile_back_button = '//*[contains(@resource-id, "roundedNavButton")]'
+        self.permission_container = '//*[@resource-id = "com.android.packageinstaller:id/desc_container"]'
+        self.premium_school_card='com.byjus.thelearningapp.premium:id/premiumSchoolCardView'
+
         super().__init__(driver)
 
     def implicit_wait_for(self, pool):
@@ -52,6 +55,8 @@ class Login(TutorCommonMethods):
         try:
             self.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
             element.click()
+            if self.obj.is_element_present('xpath', self.permission_container):
+                self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
             raise LoginException("Premium School card might not be displayed!")
 
@@ -234,6 +239,7 @@ class Login(TutorCommonMethods):
         self.obj.toggle_wifi_connection(text)
 
     def is_offline_validation_layout_displayed(self):
+        self.obj.wait_for_locator('xpath', self.offline_validation_layout)
         layout = self.obj.get_element('xpath', self.offline_validation_layout).is_displayed()
         if layout is True:
             return True
@@ -471,6 +477,7 @@ class Login(TutorCommonMethods):
                     return False
                 except NoSuchElementException:
                     return True
+
 
 class LoginException(Exception):
     pass

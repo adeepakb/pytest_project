@@ -29,93 +29,93 @@ class ConceptSummaryScreen():
     # video_tap=(By.XPATH,"//android.view.View[@resource-id='com.byjus.thelearningapp:id/exo_subtitles' and @index=1]")
 
 
-    def __init__(self, browser):
-        self.browser = browser
-        self.revisit = RevisitScreen(browser)
+    def __init__(self, driver):
+        self.driver = driver
+        self.revisit = RevisitScreen(driver)
 
-    def for_two_concepts(self,browser):
+    def for_two_concepts(self,driver):
         try:
-            total_concept=self.revisit.verify_concepts_summary_details_and_count(browser)
+            total_concept=self.revisit.verify_concepts_summary_details_and_count(driver)
             logging.info("total concepts are "+str(total_concept))
             return total_concept
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
 
-    def swipe_for_concepts(self,browser):
+    def swipe_for_concepts(self,driver):
         pass
-    def verify_chapter_name(self,browser):
+    def verify_chapter_name(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.chapter_name)
+            check=CommonMethods.isElementPresent(driver,self.chapter_name)
             logging.info("chapter name is displayed in concept summary screen")
-            ch_name=CommonMethods.getTextOfElement(browser,self.chapter_name)
+            ch_name=CommonMethods.getTextOfElement(driver,self.chapter_name)
             logging.info(ch_name)
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
 
-    def verify_video_player(self,browser):
+    def verify_video_player(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.player_frame)
+            check=CommonMethods.isElementPresent(driver,self.player_frame)
             logging.info("chapter video player is displayed in concept summary screen")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
-    def scroll_concept(self,browser):
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
+    def scroll_concept(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.practice_image)
+            check=CommonMethods.isElementPresent(driver,self.practice_image)
             if check==True:
                 logging.info("practice screen is displayed")
             else:
                 while check==False:
-                    CommonMethods.wait_for_locator(browser, self.play_pause_button, 15)
-                    concept_video = CommonMethods.getElement(browser, self.play_pause_button)
+                    CommonMethods.wait_for_locator(driver, self.play_pause_button, 15)
+                    concept_video = CommonMethods.getElement(driver, self.play_pause_button)
                     n = concept_video.location_in_view
-                    browser.swipe(n['x'], n['y'], n['x'] - 550, n['y'])
-                    check = CommonMethods.isElementPresent(browser, self.practice_image)
+                    driver.swipe(n['x'], n['y'], n['x'] - 550, n['y'])
+                    check = CommonMethods.isElementPresent(driver, self.practice_image)
                 logging.info("practice screen is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
-    def click_on_video_card(self,browser):
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
+    def click_on_video_card(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.play_pause_button)
+            check=CommonMethods.isElementPresent(driver,self.play_pause_button)
             if check==True:
-                CommonMethods.elementClick(browser,self.play_pause_button)
-                start_time = CommonMethods.getTextOfElement(browser, self.video_time)
+                CommonMethods.elementClick(driver,self.play_pause_button)
+                start_time = CommonMethods.getTextOfElement(driver, self.video_time)
                 logging.info(start_time)
                 logging.info("clicked on play button")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
         return start_time
 
-    def check_video_played(self,browser):
+    def check_video_played(self,driver):
         try:
-            st_time=self.click_on_video_card(browser)
+            st_time=self.click_on_video_card(driver)
             sleep(30)
-            play_btn=CommonMethods.isElementPresent(browser,self.play_pause_button)
+            play_btn=CommonMethods.isElementPresent(driver,self.play_pause_button)
             if play_btn==False:
                 while play_btn==False:
-                    CommonMethods.elementClick(browser, self.video_tap)
-                    end_time = CommonMethods.getTextOfElement(browser, self.video_time)
-                    play_btn = CommonMethods.isElementPresent(browser, self.play_pause_button)
+                    CommonMethods.elementClick(driver, self.video_tap)
+                    end_time = CommonMethods.getTextOfElement(driver, self.video_time)
+                    play_btn = CommonMethods.isElementPresent(driver, self.play_pause_button)
                     logging.info(end_time)
                 if st_time!=end_time:
                     logging.info("video is played")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verifyVideoCorousel')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyVideoCorousel')
+            CommonMethods.exception(driver, featureFileName, 'verifyVideoCorousel')
 
 

@@ -73,127 +73,155 @@ class HomePage():
     register_page_email_txt_bx = (By.ID, "com.byjus.thelearningapp.premium:id/etEmail")
     register_page_register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
 
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, driver):
+        self.driver = driver
 
-    def handle_covid19_popup_secondary_ok_opn(self, browser):
+    def handle_covid19_popup_secondary_ok_opn(self, driver):
         try:
-            CommonMethods.wait_for_element_visible(browser, self.covid19_pop_up, 5)
-            check = CommonMethods.isElementPresent(browser, self.covid19_pop_up)
+            CommonMethods.wait_for_element_visible(driver, self.covid19_pop_up, 5)
+            check = CommonMethods.isElementPresent(driver, self.covid19_pop_up)
             if check == True:
-                CommonMethods.elementClick(browser, self.covid19_secondary_ok_opt)
+                CommonMethods.elementClick(driver, self.covid19_secondary_ok_opt)
                 logging.info("stay safe covid19 pop up is present")
         except:
             logging.info("stay safe covid19 pop up is not present")
 
-    def click_on_subject(self, browser):
-        #browser.find_element_by_xpath(self.btn_mathematics).click()
-        CommonMethods.elementClick(browser, self.btn_mathematics)
+    def click_on_subject(self, driver):
+        # driver.find_element_by_xpath(self.btn_mathematics).click()
+        CommonMethods.elementClick(driver, self.btn_mathematics)
 
-    def cancle_for_google_auto_suggestion(self, browser):
-        check = CommonMethods.isElementPresent(browser, self.mob_no_auto_sugestion)
+    def cancle_for_google_auto_suggestion(self, driver):
+        check = CommonMethods.isElementPresent(driver, self.mob_no_auto_sugestion)
         try:
             if check == True:
-                CommonMethods.elementClick(browser, self.mob_no_auto_sugestion)
+                CommonMethods.elementClick(driver, self.mob_no_auto_sugestion)
                 logging.info("auto suggestion for mob no was displayed")
                 logging.info("successfully clicked on cancel auto suggestion")
         except:
             logging.info("auto suggestion for mob no was not displayed")
 
-    def select_subject_mathematics(self, browser):
-        CommonMethods.wait_for_locator(browser, self.btn_mathematics_xpath, 15)
-        CommonMethods.elementClick(browser, self.btn_mathematics_xpath)
+    def select_subject_mathematics(self, driver):
+        CommonMethods.wait_for_locator(driver, self.btn_mathematics_xpath, 15)
+        CommonMethods.elementClick(driver, self.btn_mathematics_xpath)
 
-    def verify_corana_dialog(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 10):
-            CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
+    def verify_corana_dialog(self, driver):
+        if CommonMethods.wait_for_element_visible(driver, self.homescreen_corana_dialog, 10):
+            CommonMethods.elementClick(driver, self.homescreen_corana_dialog_ok_btn)
 
-    def tap_on_device_back_btn(self, browser):
-        CommonMethods.click_on_device_back_btn(browser)
+    def tap_on_device_back_btn(self, driver):
+        CommonMethods.click_on_device_back_btn(driver)
 
     #     ----
-    def verify_to_login_page(self, browser, code, countrycode, mobno, otp):
+    def verify_to_login_page(self, driver, code, countrycode, mobno, otp):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3):
-                CommonMethods.accept_notification(browser, self.allow_btn_id)
-                CommonMethods.accept_notification(browser, self.allow_btn_id)
-                CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-                CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                CommonMethods.elementClick(browser, self.country_Code)
+            if CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 3):
+                CommonMethods.accept_notification(driver, self.allow_btn_id)
+                CommonMethods.accept_notification(driver, self.allow_btn_id)
+                CommonMethods.click_none_of_the_above(driver, self.none_of_the_above_id)
+                CommonMethods.wait_for_locator(driver, self.country_Code, 15)
+                CommonMethods.elementClick(driver, self.country_Code)
                 sleep(1)
-                CommonMethods.scrollToElementAndClick(browser, countrycode)
-                CommonMethods.enterText(browser, mobno, self.phone_num)
-                CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                CommonMethods.elementClick(browser, self.loginBtn_id)
-                CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-                CommonMethods.enterText(browser, otp, self.OtpTxtBx_id)
-            elif CommonMethods.isElementPresent(browser, self.loginBtn_id) == True:
-                CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                CommonMethods.elementClick(browser, self.country_Code)
+                CommonMethods.scrollToElementAndClick(driver, countrycode)
+                CommonMethods.enterText(driver, mobno, self.phone_num)
+                CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+                CommonMethods.elementClick(driver, self.loginBtn_id)
+                CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+                CommonMethods.enterText(driver, otp, self.OtpTxtBx_id)
+            elif CommonMethods.isElementPresent(driver, self.loginBtn_id) == True:
+                CommonMethods.wait_for_locator(driver, self.country_Code, 15)
+                CommonMethods.elementClick(driver, self.country_Code)
                 sleep(2)
-                CommonMethods.scrollToElementAndClick(browser, countrycode)
-                CommonMethods.enterText(browser, mobno, self.phone_num)
-                CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                CommonMethods.elementClick(browser, self.loginBtn_id)
-                CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-                CommonMethods.enterText(browser, otp, self.OtpTxtBx_id)
+                CommonMethods.scrollToElementAndClick(driver, countrycode)
+                CommonMethods.enterText(driver, mobno, self.phone_num)
+                CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+                CommonMethods.elementClick(driver, self.loginBtn_id)
+                CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+                CommonMethods.enterText(driver, otp, self.OtpTxtBx_id)
                 return True
             else:
                 logging.info('Error in verify_to_login_page in Homepage')
         except:
             logging.info('Error in verify_to_login_page method in Homepage')
 
-    def reset_and_login_with_otp(self, browser):
+    def login_as_one_mega_user_only(self, driver):
         CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
         CommonMethods.run(
             'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
-        CommonMethods.accept_notification(browser, self.allow_btn_id)
-        CommonMethods.wait_for_locator(browser, self.loginPageVerify_id, 5)
-        CommonMethods.elementClick(browser, self.loginPageVerify_id)
-        CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-        CommonMethods.wait_for_locator(browser, self.country_Code, 5)
-        CommonMethods.elementClick(browser, self.country_Code)
+        CommonMethods.accept_notification(driver, self.allow_btn_id)
+        CommonMethods.wait_for_locator(driver, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(driver, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(driver, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(driver, self.country_Code, 5)
+        CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3'
-                                                               , 'country_code'))
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
-                                self.phone_num)
-        CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-        CommonMethods.elementClick(browser, self.loginBtn_id)
-        CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'),
-                                self.OtpTxtBx_id)
-        if CommonMethods.wait_for_element_visible(browser, self.multiple_accounts_dialog, 5):
-            profiles = CommonMethods.getElements(browser, self.user_profile_name)
-            radio_buttons = CommonMethods.getElements(browser, self.profile_select_radio_button)
-            for profile in profiles:
-                for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
-                        button.click()
-                        break
-        CommonMethods.elementClick(browser, self.continue_button)
-        CommonMethods.wait_for_locator(browser, self.welcome_button, 15)
-        CommonMethods.elementClick(browser, self.welcome_button)
+        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail1', 'country_code'))
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail1', 'mobile_no'), self.phone_num)
+        CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+        CommonMethods.elementClick(driver, self.loginBtn_id)
+        CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail1', 'OTP'), self.OtpTxtBx_id)
+        CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
+        CommonMethods.elementClick(driver, self.welcome_button)
 
-    def verify_home_page(self, browser):
+    def reset_and_login_with_otp(self, driver, account_type='personal'):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(driver, self.allow_btn_id)
+        CommonMethods.wait_for_locator(driver, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(driver, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(driver, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(driver, self.country_Code, 5)
+        CommonMethods.elementClick(driver, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+                                self.phone_num)
+        CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+        CommonMethods.elementClick(driver, self.loginBtn_id)
+        CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+                                self.OtpTxtBx_id)
+        data = None
+        if account_type == 'personal':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_name')
+        elif account_type == 'one_to_many':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+        elif account_type == 'one_to_many_and_mega':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+
+        if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
+            CommonMethods.scrollToElement(driver, data)
+            profiles = CommonMethods.getElements(driver, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
+            for i in range(len(profiles)):
+                if profiles[i].text == data:
+                    radio_buttons[i].click()
+                    break
+        CommonMethods.elementClick(driver, self.continue_button)
+        CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
+        CommonMethods.elementClick(driver, self.welcome_button)
+
+    def verify_home_page(self, driver):
         print("------------------------method")
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
-                CommonMethods.elementClick(browser, self.back_button_id)
-                CommonMethods.wait_for_locator(browser, self.profile_name_hamburger, 5)
-                CommonMethods.elementClick(browser, self.profile_name_hamburger)
-                CommonMethods.wait_for_locator(browser, self.user_name_profile_page, 5)
-                account_text = CommonMethods.getTextOfElement(browser, self.account_details_title)
-                CommonMethods.scrollToElement(browser, account_text)
-                expected_mob_num = CommonMethods.getTextOfElement(browser, self.profile_mob_num)
+            if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+                CommonMethods.elementClick(driver, self.back_button_id)
+                CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(driver, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
+                CommonMethods.scrollToElement(driver, 'Account Details')
+                CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
+                expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
                 actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
-                    CommonMethods.click_on_device_back_btn(browser)
+                    CommonMethods.click_on_device_back_btn(driver)
                     print("----------------------below")
                     logging.info('home page verified')
                 else:
-                    self.reset_and_login_with_otp(browser)
+                    self.reset_and_login_with_otp(driver)
                     return True
             else:
                 logging.info('user is not in Home page')
@@ -201,44 +229,86 @@ class HomePage():
         except:
             logging.info('Error in Verifing Home Page')
 
-    def navigate_to_home_screen(self, browser):
+    def verify_user_name(self, driver, account_type):
+        print("------------------------method")
+        try:
+            if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+                CommonMethods.elementClick(driver, self.back_button_id)
+                CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(driver, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
+                account_text = CommonMethods.getTextOfElement(driver, self.account_details_title)
+                CommonMethods.scrollToElement(driver, account_text)
+                actual_username = None
+                if account_type == 'one_to_many_and_mega':
+                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+                elif account_type == 'one_to_many':
+                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
+                if CommonMethods.verifyTwoText(expected_username, actual_username):
+                    print("---------------above")
+                    CommonMethods.click_on_device_back_btn(driver)
+                    print("----------------------below")
+                    logging.info('user name verified')
+                else:
+                    self.reset_and_login_with_otp(driver,account_type)
+                    return True
+            else:
+                logging.info('user is not in Home page')
+                return False
+        except:
+            logging.info('Error in Verifing Home Page')
+
+    def navigate_to_home_screen(self, driver):
         try:
             # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
-            if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 6):
-                CommonMethods.elementClick(browser, self.homescreen_corana_dialog_ok_btn)
-                self.verify_home_page(browser)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
-            elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
-                # self.verify_badge(browser)
-                self.verify_home_page(browser)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(browser, subject_rgb)
+            if CommonMethods.wait_for_element_visible(driver, self.homescreen_corana_dialog, 6):
+                CommonMethods.elementClick(driver, self.homescreen_corana_dialog_ok_btn)
+                self.verify_home_page(driver)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(driver, subject_rgb)
+            elif CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+                # self.verify_badge(driver)
+                self.verify_home_page(driver)
+                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(driver, subject_rgb)
             else:
-                self.reset_and_login_with_otp(browser)
+                self.reset_and_login_with_otp(driver)
         except NoSuchElementException:
             logging.info('Error in navigating to home page')
 
         except:
             logging.info('Error in navigating to home page')
 
-    def after_delete_the_user(self, browser, code, countrycode, mobno, otp):
+    def navigate_to_one_to_many_user(self, driver):
+        if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+            self.verify_user_name(driver, 'one_to_many')
+        else:
+            self.reset_and_login_with_otp(driver, 'one_to_many')
+
+    def navigate_to_one_to_many_and_mega_user(self, driver):
+        if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+            self.verify_user_name(driver, 'one_to_many_and_mega')
+        else:
+            self.reset_and_login_with_otp(driver, 'one_to_many_and_mega')
+
+    def after_delete_the_user(self, driver, code, countrycode, mobno, otp):
         try:
-            CommonMethods.wait_for_element_visible(browser, countrycode, 15)
-            CommonMethods.scrollToElementAndClick(browser, countrycode)
-            CommonMethods.enterText(browser, mobno, self.phone_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
+            CommonMethods.wait_for_element_visible(driver, countrycode, 15)
+            CommonMethods.scrollToElementAndClick(driver, countrycode)
+            CommonMethods.enterText(driver, mobno, self.phone_num)
+            CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+            CommonMethods.elementClick(driver, self.loginBtn_id)
         except NoSuchElementException:
             logging.info("Failed Locator in Method after_delete_the_user")
 
-    def check_dialog_box_display(self, browser, grade):
+    def check_dialog_box_display(self, driver, grade):
         try:
-            CommonMethods.wait_for_element_visible(browser, self.dialogBoxUnregisteredNo_id, 20)
-            check = CommonMethods.isElementPresent(browser, self.dialogBoxUnregisteredNo_id)
+            CommonMethods.wait_for_element_visible(driver, self.dialogBoxUnregisteredNo_id, 20)
+            check = CommonMethods.isElementPresent(driver, self.dialogBoxUnregisteredNo_id)
             if (check == True):
                 logging.info('Dialog box for unregistered no is displayed')
-                CommonMethods.elementClick(browser, self.registerBtnInDialog_id)
-                CommonMethods.wait_for_element_visible(browser, self.chooseCourse_Title_xpath, 7)
-                CommonMethods.scrollToElementAndClick(browser, grade)
+                CommonMethods.elementClick(driver, self.registerBtnInDialog_id)
+                CommonMethods.wait_for_element_visible(driver, self.chooseCourse_Title_xpath, 7)
+                CommonMethods.scrollToElementAndClick(driver, grade)
             else:
                 logging.info('Dialog box is not present')
                 logging.info("Failed Locator in Method checkDialogBoxDisplay")
@@ -247,84 +317,84 @@ class HomePage():
             logging.info("Failed Locator in Method checkDialogBoxDisplay")
             pytest.fail("Failed Due to Locator in Login Page")
 
-    def register_mobile_num(self, browser, name, mobile_num, email, otp):
+    def register_mobile_num(self, driver, name, mobile_num, email, otp):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.register_page_name_field, 10):
-                CommonMethods.enterText(browser, name, self.register_page_name_field)
-                CommonMethods.enterText(browser, mobile_num, self.register_page_mobile_num_field)
-                CommonMethods.enterText(browser, email, self.register_page_email_txt_bx)
-                CommonMethods.elementClick(browser, self.register_page_register_btn)
-                CommonMethods.wait_for_element_visible(browser, self.OtpTxtBx_id, 15)
-                CommonMethods.enterText(browser, otp, self.OtpTxtBx_id)
-                if CommonMethods.wait_for_element_visible(browser, self.homescreen_corana_dialog, 20):
-                    CommonMethods.elementClick(browser, self.covid19_secondary_ok_opt)
+            if CommonMethods.wait_for_element_visible(driver, self.register_page_name_field, 10):
+                CommonMethods.enterText(driver, name, self.register_page_name_field)
+                CommonMethods.enterText(driver, mobile_num, self.register_page_mobile_num_field)
+                CommonMethods.enterText(driver, email, self.register_page_email_txt_bx)
+                CommonMethods.elementClick(driver, self.register_page_register_btn)
+                CommonMethods.wait_for_element_visible(driver, self.OtpTxtBx_id, 15)
+                CommonMethods.enterText(driver, otp, self.OtpTxtBx_id)
+                if CommonMethods.wait_for_element_visible(driver, self.homescreen_corana_dialog, 20):
+                    CommonMethods.elementClick(driver, self.covid19_secondary_ok_opt)
 
         except:
             logging.info('Error in register_mobile_num method in Homepage')
 
     #     ------------------
-    def verify_to_login_page_for_new_user(self, browser, code, countrycode, mobno, otp, grade, name, mobile_num, email,
+    def verify_to_login_page_for_new_user(self, driver, code, countrycode, mobno, otp, grade, name, mobile_num, email,
                                           mob_with_country_code):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3) == True:
-                CommonMethods.accept_notification(browser, self.allow_btn_id)
-                CommonMethods.accept_notification(browser, self.allow_btn_id)
-                CommonMethods.click_none_of_the_above(browser, self.none_of_the_above_id)
-                CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                CommonMethods.elementClick(browser, self.country_Code)
+            if CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 3) == True:
+                CommonMethods.accept_notification(driver, self.allow_btn_id)
+                CommonMethods.accept_notification(driver, self.allow_btn_id)
+                CommonMethods.click_none_of_the_above(driver, self.none_of_the_above_id)
+                CommonMethods.wait_for_locator(driver, self.country_Code, 15)
+                CommonMethods.elementClick(driver, self.country_Code)
                 sleep(1)
-                CommonMethods.scrollToElementAndClick(browser, countrycode)
-                CommonMethods.enterText(browser, mobno, self.phone_num)
-                CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                CommonMethods.elementClick(browser, self.loginBtn_id)
-                if CommonMethods.isElementPresent(browser, self.registerBtnInDialog_id) == True:
-                    self.check_dialog_box_display(browser, grade)
-                    self.register_mobile_num(browser, name, mobile_num, email, otp)
+                CommonMethods.scrollToElementAndClick(driver, countrycode)
+                CommonMethods.enterText(driver, mobno, self.phone_num)
+                CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+                CommonMethods.elementClick(driver, self.loginBtn_id)
+                if CommonMethods.isElementPresent(driver, self.registerBtnInDialog_id) == True:
+                    self.check_dialog_box_display(driver, grade)
+                    self.register_mobile_num(driver, name, mobile_num, email, otp)
                 else:
-                    delete_single_registered_mobile_num(browser, mob_with_country_code)
-                    self.after_delete_the_user(browser, code, countrycode, mobno, otp)
-                    self.check_dialog_box_display(browser, grade)
-                    self.register_mobile_num(browser, name, mobno, email, otp)
-            elif CommonMethods.isElementPresent(browser, self.loginBtn_id) == True:
-                CommonMethods.wait_for_locator(browser, self.country_Code, 15)
-                CommonMethods.elementClick(browser, self.country_Code)
+                    delete_single_registered_mobile_num(driver, mob_with_country_code)
+                    self.after_delete_the_user(driver, code, countrycode, mobno, otp)
+                    self.check_dialog_box_display(driver, grade)
+                    self.register_mobile_num(driver, name, mobno, email, otp)
+            elif CommonMethods.isElementPresent(driver, self.loginBtn_id) == True:
+                CommonMethods.wait_for_locator(driver, self.country_Code, 15)
+                CommonMethods.elementClick(driver, self.country_Code)
                 sleep(2)
-                CommonMethods.scrollToElementAndClick(browser, countrycode)
-                CommonMethods.enterText(browser, mobno, self.phone_num)
-                CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-                CommonMethods.elementClick(browser, self.loginBtn_id)
-                if CommonMethods.isElementPresent(browser, self.registerBtnInDialog_id) == True:
-                    self.check_dialog_box_display(browser, grade)
-                    self.register_mobile_num(browser, name, mobile_num, email, otp)
+                CommonMethods.scrollToElementAndClick(driver, countrycode)
+                CommonMethods.enterText(driver, mobno, self.phone_num)
+                CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+                CommonMethods.elementClick(driver, self.loginBtn_id)
+                if CommonMethods.isElementPresent(driver, self.registerBtnInDialog_id) == True:
+                    self.check_dialog_box_display(driver, grade)
+                    self.register_mobile_num(driver, name, mobile_num, email, otp)
                 else:
-                    delete_single_registered_mobile_num(browser, mob_with_country_code)
-                    self.after_delete_the_user(browser, code, countrycode, mobno, otp)
-                    self.check_dialog_box_display(browser, grade)
-                    self.register_mobile_num(browser, name, mobno, email, otp)
+                    delete_single_registered_mobile_num(driver, mob_with_country_code)
+                    self.after_delete_the_user(driver, code, countrycode, mobno, otp)
+                    self.check_dialog_box_display(driver, grade)
+                    self.register_mobile_num(driver, name, mobno, email, otp)
 
             else:
                 logging.info('Error in verify_to_login_page_for_new_user in Homepage')
         except:
             logging.info('Error in verify_to_login_page_for_new_user method in Homepage')
 
-    def navigate_to_home_screen_for_new_user(self, browser, code, countrycode, mobno, otp, grade, name, mobile_num,
+    def navigate_to_home_screen_for_new_user(self, driver, code, countrycode, mobno, otp, grade, name, mobile_num,
                                              email, mob_with_country_code):
         try:
-            if CommonMethods.isElementPresent(browser, self.homescreen_corana_dialog) == True:
-                CommonMethods.elementClick(browser, self.covid19_secondary_ok_opt)
-                delete_single_registered_mobile_num(browser, mob_with_country_code)
-                self.verify_to_login_page_for_new_user(browser, code, countrycode, mobno, otp, grade, name, mobile_num,
+            if CommonMethods.isElementPresent(driver, self.homescreen_corana_dialog) == True:
+                CommonMethods.elementClick(driver, self.covid19_secondary_ok_opt)
+                delete_single_registered_mobile_num(driver, mob_with_country_code)
+                self.verify_to_login_page_for_new_user(driver, code, countrycode, mobno, otp, grade, name, mobile_num,
                                                        email, mob_with_country_code)
-            elif CommonMethods.isElementPresent(browser, self.back_button_id) == True:
-                delete_single_registered_mobile_num(browser, mob_with_country_code)
-                self.verify_to_login_page_for_new_user(browser, code, countrycode, mobno, otp, grade, name, mobile_num,
+            elif CommonMethods.isElementPresent(driver, self.back_button_id) == True:
+                delete_single_registered_mobile_num(driver, mob_with_country_code)
+                self.verify_to_login_page_for_new_user(driver, code, countrycode, mobno, otp, grade, name, mobile_num,
                                                        email, mob_with_country_code)
-            elif CommonMethods.isElementPresent(browser, self.loginBtn_id) == True:
-                self.verify_to_login_page_for_new_user(browser, code, countrycode, mobno, otp, grade, name, mobile_num,
+            elif CommonMethods.isElementPresent(driver, self.loginBtn_id) == True:
+                self.verify_to_login_page_for_new_user(driver, code, countrycode, mobno, otp, grade, name, mobile_num,
                                                        email, mob_with_country_code)
 
-            elif CommonMethods.isElementPresent(browser, self.allow_btn_id) == True:
-                self.verify_to_login_page_for_new_user(browser, code, countrycode, mobno, otp, grade, name, mobile_num,
+            elif CommonMethods.isElementPresent(driver, self.allow_btn_id) == True:
+                self.verify_to_login_page_for_new_user(driver, code, countrycode, mobno, otp, grade, name, mobile_num,
                                                        email, mob_with_country_code)
             else:
                 pytest.fail("failed in navigate_to_home_screen_for_new_user")

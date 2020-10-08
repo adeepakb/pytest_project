@@ -28,7 +28,7 @@ sys.path.append(PATH("../Constants/"))
 
 class LibraryChapterList(CommonMethods):
     
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, driver):
+        self.driver = driver
         self.frame_trendingjourneycard_xpath = "//android.widget.LinearLayout[@instance='6']"
         
