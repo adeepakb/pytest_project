@@ -31,184 +31,184 @@ class RevisitScreen():
     highlighted_Journey_card = (By.ID, "com.byjus.thelearningapp:id/ivHighlight")
     practice_image=(By.XPATH,"//android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp:id/introView']/descendant::android.widget.ImageView[@index=0]")
 
-    def __init__(self, browser):
-        self.browser = browser
+    def __init__(self, driver):
+        self.driver = driver
 
-    def verify_revisit_screen(self, browser):
+    def verify_revisit_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.revisit_label)
+            check = CommonMethods.isElementPresent(driver, self.revisit_label)
             if check == True:
                 logging.info("Revisit screen is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_revisit_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_revisit_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_revisit_screen')
+            CommonMethods.exception(driver, featureFileName, 'verify_revisit_screen')
 
-    def click_on_revisit_journey_card(self,browser):
+    def click_on_revisit_journey_card(self,driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.revisit_node_journey_card)
+            check=CommonMethods.isElementPresent(driver,self.revisit_node_journey_card)
             if check==True:
                 logging.info("revisit node journey card is visible")
             else:
                 while check==False:
-                    nodeCrd = CommonMethods.getElement(browser, self.highlighted_Journey_card)
+                    nodeCrd = CommonMethods.getElement(driver, self.highlighted_Journey_card)
                     n = nodeCrd.location_in_view
-                    browser.swipe(n['x'], n['y'], n['x'], n['y'] - 200)
-                    check = CommonMethods.is_element_visible(browser, self.revisit_node_journey_card)
-            CommonMethods.elementClick(browser,self.revisit_node_journey_card)
+                    driver.swipe(n['x'], n['y'], n['x'], n['y'] - 200)
+                    check = CommonMethods.is_element_visible(driver, self.revisit_node_journey_card)
+            CommonMethods.elementClick(driver,self.revisit_node_journey_card)
             logging.info("clicked on revisit journey card")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_revisit_journey_card')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'click_on_revisit_journey_card')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_revisit_journey_card')
-    def verify_progression_bar(self, browser):
+            CommonMethods.exception(driver, featureFileName, 'click_on_revisit_journey_card')
+    def verify_progression_bar(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.progression_bar)
+            check = CommonMethods.isElementPresent(driver, self.progression_bar)
             if check == True:
                 logging.info("progression bar is displayed in revisit screen")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_progression_bar')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_progression_bar')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_progression_bar')
+            CommonMethods.exception(driver, featureFileName, 'verify_progression_bar')
 
-    def verify_close_icon(self, browser):
+    def verify_close_icon(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.close_icon)
+            check = CommonMethods.isElementPresent(driver, self.close_icon)
             if check == True:
                 logging.info("close icon is displayed in revisit screen")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_close_icon')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_close_icon')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_close_icon')
+            CommonMethods.exception(driver, featureFileName, 'verify_close_icon')
 
-    def verify_lets_revisit_label(self, browser):
+    def verify_lets_revisit_label(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.revisit_label)
+            check = CommonMethods.isElementPresent(driver, self.revisit_label)
             if check == True:
                 logging.info("let's Revisit label is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_lets_revisit_label')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_lets_revisit_label')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_lets_revisit_label')
+            CommonMethods.exception(driver, featureFileName, 'verify_lets_revisit_label')
 
-    def verify_concepts_summary_details_and_count(self, browser):
+    def verify_concepts_summary_details_and_count(self, driver):
         try:
-            # concepts=browser.find_elements_by_xpath("//androidx.recyclerview.widget.RecyclerView / descendant::android.widget.LinearLayout / descendant::android.widget.TextView[ @ resource - id = 'com.byjus.thelearningapp:id/title']")
-            concepts=CommonMethods.getElements(browser, self.concept_summary_and_name)
+            # concepts=driver.find_elements_by_xpath("//androidx.recyclerview.widget.RecyclerView / descendant::android.widget.LinearLayout / descendant::android.widget.TextView[ @ resource - id = 'com.byjus.thelearningapp:id/title']")
+            concepts=CommonMethods.getElements(driver, self.concept_summary_and_name)
             if len(concepts) >= 0:
                 logging.info("concept summary and their name is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_concepts_summary_details_and_count')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_concepts_summary_details_and_count')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_concepts_summary_details_and_count')
+            CommonMethods.exception(driver, featureFileName, 'verify_concepts_summary_details_and_count')
         return len(concepts)
 
-    def verify_text_description(self, browser, expected_text):
+    def verify_text_description(self, driver, expected_text):
         try:
-            actual_text=CommonMethods.getTextOfElement(browser,self.txt_description)
+            actual_text=CommonMethods.getTextOfElement(driver,self.txt_description)
             if expected_text == actual_text:
                 logging.info("concept text description is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_text_description')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_text_description')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_text_description')
-    def verify_text_swipe_to_start(self, browser, expected_text):
+            CommonMethods.exception(driver, featureFileName, 'verify_text_description')
+    def verify_text_swipe_to_start(self, driver, expected_text):
         try:
-            actual_text=CommonMethods.getTextOfElement(browser, self.swipe_to_start)
+            actual_text=CommonMethods.getTextOfElement(driver, self.swipe_to_start)
             if expected_text == actual_text:
                 logging.info("swipe to start text is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_text_swipe_to_start')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_text_swipe_to_start')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_text_swipe_to_start')
-    def swipe_for_swipe_to_start(self,browser):
+            CommonMethods.exception(driver, featureFileName, 'verify_text_swipe_to_start')
+    def swipe_for_swipe_to_start(self,driver):
         try:
-            CommonMethods.wait_for_locator(browser, self.swipe_to_start, 20)
-            start = CommonMethods.getElement(browser, self.swipe_to_start)
+            CommonMethods.wait_for_locator(driver, self.swipe_to_start, 20)
+            start = CommonMethods.getElement(driver, self.swipe_to_start)
             n = start.location_in_view
-            browser.swipe(n['x'], n['y'], n['x']-300, n['y'])
+            driver.swipe(n['x'], n['y'], n['x']-300, n['y'])
             logging.info("swiped successfully")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'swipe_for_swipe_to_start')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'swipe_for_swipe_to_start')
         except:
-            CommonMethods.exception(browser, featureFileName, 'swipe_for_swipe_to_start')
+            CommonMethods.exception(driver, featureFileName, 'swipe_for_swipe_to_start')
         return  n
 
-    def verify_concept_summary_screen(self, browser):
+    def verify_concept_summary_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.concept_summary_screen)
+            check = CommonMethods.isElementPresent(driver, self.concept_summary_screen)
             if check == True:
                 logging.info("concept summary screen is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_concept_summary_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_concept_summary_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_concept_summary_screen')
+            CommonMethods.exception(driver, featureFileName, 'verify_concept_summary_screen')
 
-    def verify_journey_map_screen(self, browser):
+    def verify_journey_map_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.node_frame)
+            check = CommonMethods.isElementPresent(driver, self.node_frame)
             if check == True:
                 logging.info("journey map screen is displayed")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_journey_map_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_journey_map_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_journey_map_screen')
+            CommonMethods.exception(driver, featureFileName, 'verify_journey_map_screen')
 
-    def click_on_close_icon(self, browser):
+    def click_on_close_icon(self, driver):
         try:
-            CommonMethods.wait_for_locator(browser, self.close_icon, 20)
-            check = CommonMethods.elementClick(browser, self.close_icon)
+            CommonMethods.wait_for_locator(driver, self.close_icon, 20)
+            check = CommonMethods.elementClick(driver, self.close_icon)
             if check == True:
                 logging.info("clicked on close icon in revisit screen")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_close_icon')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'click_on_close_icon')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_close_icon')
+            CommonMethods.exception(driver, featureFileName, 'click_on_close_icon')
 
-    def click_on_device_back_btn(self, browser):
+    def click_on_device_back_btn(self, driver):
         try:
-            CommonMethods.wait_for_locator(browser, self.close_icon, 20)
-            click_on_back_button(browser)
+            CommonMethods.wait_for_locator(driver, self.close_icon, 20)
+            click_on_back_button(driver)
             logging.info("clicked on device back button from revisit screen")
 
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'click_on_device_back_btn')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'click_on_device_back_btn')
         except:
-            CommonMethods.exception(browser, featureFileName, 'click_on_device_back_btn')
+            CommonMethods.exception(driver, featureFileName, 'click_on_device_back_btn')
 
-    def verify_practice_screen(self, browser):
+    def verify_practice_screen(self, driver):
         try:
-            check=CommonMethods.isElementPresent(browser,self.practice_image)
+            check=CommonMethods.isElementPresent(driver,self.practice_image)
             if check == True:
                 logging.info("practice screen is displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'verify_practice_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_practice_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_practice_screen')
+            CommonMethods.exception(driver, featureFileName, 'verify_practice_screen')
 
-    def swipe_till_practice_screen(self, browser):
+    def swipe_till_practice_screen(self, driver):
         try:
-            check = CommonMethods.isElementPresent(browser, self.txt_practice_in_practice_screen)
+            check = CommonMethods.isElementPresent(driver, self.txt_practice_in_practice_screen)
             if check==False:
-                cords=self.swipe_for_swipe_to_start(browser)
+                cords=self.swipe_for_swipe_to_start(driver)
                 while check==False:
-                    browser.swipe(cords['x'], cords['y'], cords['x'] - 300, cords['y'])
-                    check = CommonMethods.isElementPresent(browser, self.txt_practice_in_practice_screen)
+                    driver.swipe(cords['x'], cords['y'], cords['x'] - 300, cords['y'])
+                    check = CommonMethods.isElementPresent(driver, self.txt_practice_in_practice_screen)
             else:
                 logging.info("practice screen is displayed")
         except NoSuchElementException:
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'swipe_till_practice_screen')
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'swipe_till_practice_screen')
         except:
-            CommonMethods.exception(browser, featureFileName, 'swipe_till_practice_screen')
+            CommonMethods.exception(driver, featureFileName, 'swipe_till_practice_screen')

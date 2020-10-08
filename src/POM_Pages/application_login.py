@@ -40,6 +40,7 @@ class Login(TutorCommonMethods):
         self.btn_personal = '//*[contains(@resource-id,"btnEnterPersonalise")]'
         self.profile_back_button = '//*[contains(@resource-id, "roundedNavButton")]'
         self.permission_container = '//*[@resource-id = "com.android.packageinstaller:id/desc_container"]'
+        self.premium_school_card='com.byjus.thelearningapp.premium:id/premiumSchoolCardView'
 
         super().__init__(driver)
 
@@ -238,6 +239,7 @@ class Login(TutorCommonMethods):
         self.obj.toggle_wifi_connection(text)
 
     def is_offline_validation_layout_displayed(self):
+        self.obj.wait_for_locator('xpath', self.offline_validation_layout)
         layout = self.obj.get_element('xpath', self.offline_validation_layout).is_displayed()
         if layout is True:
             return True

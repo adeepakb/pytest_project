@@ -17,13 +17,13 @@ class VerifyPage():
         self.verifyText_xpath = "//android.widget.TextView[@text='Verify']"
         self.otp1 = getdata(PATH('../Test_data/login_data.json'), "login_details", "OTP")
         
-    def clickOnVerifyPage(self, browser):
-        browser.find_element_by_id(self.verify_pag).click()
+    def clickOnVerifyPage(self, driver):
+        driver.find_element_by_id(self.verify_pag).click()
         
-#     def enterOtp(self,browser):
+#     def enterOtp(self,driver):
 #         sleep(15)
 #         run("adb shell input text "+otp+"")
-# #         otpcode=browser.find_element_by_id(self.txt_otp)
+# #         otpcode=driver.find_element_by_id(self.txt_otp)
 # #         otpcode.send_keys(getdata(PATH('../Test_data/login_data.json'),"login_details","OTP"))
 # 
 #     def demo(self):

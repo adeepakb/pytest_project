@@ -15,7 +15,7 @@ from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH,Login_Credentials,Hamburger_Options
 import logging
 import pytest
-from conftest import browser
+from conftest import driver
 from distutils.command.check import check
 
 page_value = None
@@ -28,8 +28,8 @@ data_file = CONFIG_PATH
 featureFileName = "Login OTP Verification Screen"
 
 class Loginoptscreen():
-    def __init__(self,browser):
-        self.browser=browser
+    def __init__(self,driver):
+        self.driver=driver
         
         
  #     Login Locators
@@ -78,96 +78,96 @@ class Loginoptscreen():
 
     
     
-    def allowPopUp(self,browser):
+    def allowPopUp(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3):
-                CommonMethods.elementClick(browser, self.allow_btn_id)
+            if CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 3):
+                CommonMethods.elementClick(driver, self.allow_btn_id)
                 logging.info('Allowed device Location')
-                CommonMethods.elementClick(browser, self.allow_btn_id)
+                CommonMethods.elementClick(driver, self.allow_btn_id)
                 logging.info('Allowed your Contacts')  
-            elif CommonMethods.wait_for_element_visible(browser, self.noneOftheAbove_xpath, 3):
-                CommonMethods.elementClick(browser, self.noneOftheAbove_xpath)  
+            elif CommonMethods.wait_for_element_visible(driver, self.noneOftheAbove_xpath, 3):
+                CommonMethods.elementClick(driver, self.noneOftheAbove_xpath)  
             else:
                 logging.info('Permission are not allowed') 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser, featureFileName, 'allowPopUp')    
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'allowPopUp')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'allowPopUp')
+            CommonMethods.exception(driver, featureFileName, 'allowPopUp')
     
-    def verify_to_login_page(self, browser):
-        if CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 6):
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.accept_notification(browser, self.allow_btn_id)
-            CommonMethods.click_none_of_the_above(browser,self.none_of_the_above_id)
-            CommonMethods.wait_for_locator(browser,self.country_Code,15)
-            CommonMethods.elementClick(browser,self.country_Code)
+    def verify_to_login_page(self, driver):
+        if CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 6):
+            CommonMethods.accept_notification(driver, self.allow_btn_id)
+            CommonMethods.accept_notification(driver, self.allow_btn_id)
+            CommonMethods.click_none_of_the_above(driver,self.none_of_the_above_id)
+            CommonMethods.wait_for_locator(driver,self.country_Code,15)
+            CommonMethods.elementClick(driver,self.country_Code)
             sleep(1)
-            CommonMethods.scrollToElementAndClick(browser, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
-            # CommonMethods.scrollToElementAndClick(browser, 'Canada (+1)')
-            # CommonMethods.enterText(browser, "9871234", self.profile_mob_num)
-            CommonMethods.wait_for_locator(browser, self.loginBtn_id, 15)
-            CommonMethods.elementClick(browser, self.loginBtn_id)
-            CommonMethods.wait_for_locator(browser, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
+            CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3', 'country_code'))
+            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+            # CommonMethods.scrollToElementAndClick(driver, 'Canada (+1)')
+            # CommonMethods.enterText(driver, "9871234", self.profile_mob_num)
+            CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+            CommonMethods.elementClick(driver, self.loginBtn_id)
+            CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
         else:
             logging.info('User verified Login page')
             
-    def navigateToLoginPage(self, browser):
+    def navigateToLoginPage(self, driver):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.loginPageVerify_id, 3):
+            if CommonMethods.wait_for_element_visible(driver, self.loginPageVerify_id, 3):
                 logging.info('App Navigated to Login Screen Successfully')
-            elif CommonMethods.wait_for_element_visible(browser, self.allow_btn_id, 3):
-                CommonMethods.elementClick(browser, self.allow_btn_id)
-                CommonMethods.elementClick(browser, self.allow_btn_id)
-                check = CommonMethods.wait_for_element_visible(browser, self.loginPageVerify_id, 3)
+            elif CommonMethods.wait_for_element_visible(driver, self.allow_btn_id, 3):
+                CommonMethods.elementClick(driver, self.allow_btn_id)
+                CommonMethods.elementClick(driver, self.allow_btn_id)
+                check = CommonMethods.wait_for_element_visible(driver, self.loginPageVerify_id, 3)
                 if check == True:
                     logging.info('App Navigated to Login Screen Successfully')   
-            elif CommonMethods.wait_for_element_visible(browser, self.back_button_id, 3):
+            elif CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
                 CommonMethods.run('adb shell pm clear com.byjus.thelearningapp')
                 CommonMethods.run('adb shell am start -n com.byjus.thelearningapp/com.byjus.app.onboarding.activity.SplashActivity')
-                self.navigateToLoginPage(browser)
+                self.navigateToLoginPage(driver)
             else:
                 CommonMethods.run('adb shell pm clear com.byjus.thelearningapp')
                 CommonMethods.run('adb shell am start -n com.byjus.thelearningapp/com.byjus.app.onboarding.activity.SplashActivity')
-                self.navigateToLoginPage(browser)
+                self.navigateToLoginPage(driver)
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'navigateToLoginPage')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'navigateToLoginPage')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'navigateToLoginPage')   
+            CommonMethods.exception(driver, featureFileName, 'navigateToLoginPage')   
             
-    def verify_loginpage(self,browser):
+    def verify_loginpage(self,driver):
         try:
-            if CommonMethods.wait_for_element_visible(browser, self.loginPageVerify_id, 3):
+            if CommonMethods.wait_for_element_visible(driver, self.loginPageVerify_id, 3):
                 logging.info(' Navigated to Login Screen Successfully')
             else:
                 logging.info("Failed to find Login text")
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_loginpage')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_loginpage')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_loginpage')
+            CommonMethods.exception(driver, featureFileName, 'verify_loginpage')
              
             
-    def country_code(self,browser): 
-        CommonMethods.wait_for_locator(browser,self.country_Code,15)
-        CommonMethods.elementClick(browser,self.country_Code)
+    def country_code(self,driver): 
+        CommonMethods.wait_for_locator(driver,self.country_Code,15)
+        CommonMethods.elementClick(driver,self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(browser,getdata(Login_Credentials,'login_detail3'
+        CommonMethods.scrollToElementAndClick(driver,getdata(Login_Credentials,'login_detail3'
                                                                       , 'country_code'))            
             
-    def enterMobileNo(self,browser):
-        CommonMethods.enterText(browser, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+    def enterMobileNo(self,driver):
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
 
  
     
-    def verifynum(self,browser):
+    def verifynum(self,driver):
         try:            
             expected_number = getdata(Login_Credentials, 'login_detail3', 'mobile_no')
             print("Expected num..........",expected_number)
             
-            act_num= CommonMethods.getAttributeOfElement(browser,'text',self.otp_phno)
+            act_num= CommonMethods.getAttributeOfElement(driver,'text',self.otp_phno)
    
-            #act_num=CommonMethods.getTextOfElement( browser, self.txt_phoneNum_id)
+            #act_num=CommonMethods.getTextOfElement( driver, self.txt_phoneNum_id)
             print("Actual num...........",act_num)
             
             if act_num==expected_number:
@@ -177,36 +177,36 @@ class Loginoptscreen():
                 pytest.fail("numbers are not eqaul ")
         
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verifynum')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verifynum')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifynum')
+            CommonMethods.exception(driver, featureFileName, 'verifynum')
             
 
             
-    def tap_on_edit(self,browser):
+    def tap_on_edit(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_phno, 15)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_phno, 15)
             sleep(5)
             if check == True:
-                CommonMethods.elementClick( browser, self.otp_phno)
+                CommonMethods.elementClick( driver, self.otp_phno)
                 logging.info("clicked on phone number field")
             else:
                 logging.info("failed to clicked on phoneno  field")
                 pytest.fail("failed to clicked on phoneno  field ")
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'tap_on_edit')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'tap_on_edit')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'tap_on_edit')
+            CommonMethods.exception(driver, featureFileName, 'tap_on_edit')
             
             
-    def verifyotp_subtitle(self,browser,text):
+    def verifyotp_subtitle(self,driver,text):
         try:
-            check=CommonMethods.isElementPresent( browser, self.otp_subtitle_text)
+            check=CommonMethods.isElementPresent( driver, self.otp_subtitle_text)
              
             if check == True:
                 
-                act_txt=CommonMethods.getTextOfElement(browser,self.otp_subtitle_text)
+                act_txt=CommonMethods.getTextOfElement(driver,self.otp_subtitle_text)
                 print("Actual text...........",act_txt)
                 exp_txt= text
                 print("Expected text........",exp_txt)
@@ -217,20 +217,20 @@ class Loginoptscreen():
                 pytest.fail("failed to verify otp subtitle txt ")
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verifyotp_subtitle')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verifyotp_subtitle')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verifyotp_subtitle') 
+            CommonMethods.exception(driver, featureFileName, 'verifyotp_subtitle') 
             
     
     
     
     
-    def verify_toast_msg(self,browser,text):
+    def verify_toast_msg(self,driver,text):
         try:
-            check=CommonMethods.isElementPresent( browser, self.toast_msg)             
+            check=CommonMethods.isElementPresent( driver, self.toast_msg)             
             if check == True:
                 
-                act_txt=CommonMethods.getTextOfElement(browser,self.toast_msg)
+                act_txt=CommonMethods.getTextOfElement(driver,self.toast_msg)
                 exp_txt= text
                 assert act_txt == exp_txt ,"toast  text  failed "
   
@@ -239,19 +239,19 @@ class Loginoptscreen():
                 pytest.fail("toast text verification failed ")
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_toast_msg')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_toast_msg')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_toast_msg') 
+            CommonMethods.exception(driver, featureFileName, 'verify_toast_msg') 
             
             
-    def stackbar_toast_msg(self,browser,text):
+    def stackbar_toast_msg(self,driver,text):
         try:
             sleep(1)
-            check=CommonMethods.isElementPresent( browser, self.otp_stackbar)
+            check=CommonMethods.isElementPresent( driver, self.otp_stackbar)
              
             if check == True:
                 
-                act_txt=CommonMethods.getTextOfElement(browser,self.otp_stackbar)
+                act_txt=CommonMethods.getTextOfElement(driver,self.otp_stackbar)
                 print("Actual Text..........",act_txt)
                 exp_txt= text
                 print("Expected text.........",exp_txt)
@@ -261,53 +261,53 @@ class Loginoptscreen():
                 pytest.fail("stack bar toast text failed ")
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'stackbar_toast_msg')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'stackbar_toast_msg')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'stackbar_toast_msg')  
+            CommonMethods.exception(driver, featureFileName, 'stackbar_toast_msg')  
             
     
-    def otp_invalid(self,browser):
+    def otp_invalid(self,driver):
         try:           
-            check = CommonMethods.wait_for_element_visible(browser, self.OtpTxtBx_id, 15)
+            check = CommonMethods.wait_for_element_visible(driver, self.OtpTxtBx_id, 15)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.OtpTxtBx_id)
-                CommonMethods.enterText(browser, "0000", self.OtpTxtBx_id)
+                CommonMethods.isElementPresent( driver, self.OtpTxtBx_id)
+                CommonMethods.enterText(driver, "0000", self.OtpTxtBx_id)
                 logging.info("Otp entered  verified ")
             else:
                 logging.info("Not in otp screen")
                 pytest.fail("Otp verification failed") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'otp_invalid')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'otp_invalid')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'otp_invalid')
+            CommonMethods.exception(driver, featureFileName, 'otp_invalid')
         
             
         
                 
-    def otp_screen_verify(self,browser):
+    def otp_screen_verify(self,driver):
         try:           
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_4digit_txt, 15)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_4digit_txt, 15)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.otp_4digit_txt)
+                CommonMethods.isElementPresent( driver, self.otp_4digit_txt)
                 logging.info("Otp screen verified ")
             else:
                 logging.info("Not in otp screen")
                 pytest.fail("Otp verification failed") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'otp_screen_verify')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'otp_screen_verify')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'otp_screen_verify')  
+            CommonMethods.exception(driver, featureFileName, 'otp_screen_verify')  
             
             
-    def verify_otp_bottomsheet(self,browser,text):
+    def verify_otp_bottomsheet(self,driver,text):
         try:
-            CommonMethods.isElementPresent( browser,self.otp_bottomsheet_txt )
+            CommonMethods.isElementPresent( driver,self.otp_bottomsheet_txt )
               
-            act_txt= CommonMethods.getAttributeOfElement(browser,'text', self.otp_bottomsheet_txt)
+            act_txt= CommonMethods.getAttributeOfElement(driver,'text', self.otp_bottomsheet_txt)
             print("Actual text.............",act_txt)
             exp_txt=text
             
@@ -316,155 +316,155 @@ class Loginoptscreen():
             assert act_txt == exp_txt ,"Bottom sheet text failed to match"
             
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_otp_bottomsheet')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_otp_bottomsheet')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_otp_bottomsheet')   
+            CommonMethods.exception(driver, featureFileName, 'verify_otp_bottomsheet')   
             
              
                
-    def Verify_progressbar(self,browser):
+    def Verify_progressbar(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.bottomsheet_progressbar, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.bottomsheet_progressbar, 1)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.bottomsheet_progressbar)
+                CommonMethods.isElementPresent( driver, self.bottomsheet_progressbar)
                 logging.info("progress bar   verified ")
             else:
                 logging.info(" progress bar is not present ")
                 pytest.fail("progress bar is not present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'Verify_progressbar')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'Verify_progressbar')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'Verify_progressbar') 
+            CommonMethods.exception(driver, featureFileName, 'Verify_progressbar') 
             
-    def verify_counter(self,browser):
+    def verify_counter(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.timer_check, 3)
+            check = CommonMethods.wait_for_element_visible(driver, self.timer_check, 3)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.timer_check)
+                CommonMethods.isElementPresent( driver, self.timer_check)
                 logging.info("counter is verified ")
             else:
                 logging.info(" counter is not present ")
                 pytest.fail("Counter is not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_counter')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_counter')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_counter') 
+            CommonMethods.exception(driver, featureFileName, 'verify_counter') 
             
-    def otp_bottom_dismiss(self,browser):
+    def otp_bottom_dismiss(self,driver):
         sleep(5)
-        CommonMethods.click_on_device_back_btn(browser)
+        CommonMethods.click_on_device_back_btn(driver)
         
 
             
             
             
-    def verify_all_otp_text(self,browser,text):             
+    def verify_all_otp_text(self,driver,text):             
         try:
             sleep(2)
             if "Receive SMS?" in text:
                 sub_opt = (By.XPATH,"//android.widget.TextView[contains(@text,'Receive SMS?')]")
             else:
                 sub_opt = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
-            act_txt=CommonMethods.getAttributeOfElement(browser, 'text', sub_opt)
+            act_txt=CommonMethods.getAttributeOfElement(driver, 'text', sub_opt)
             print("actual text.............",act_txt)
             exp_txt=text
             print("expected text..........",exp_txt)           
             assert act_txt == exp_txt,"text failed to match"
    
         except NoSuchElementException :
-                CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_all_otp_text') 
+                CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_all_otp_text') 
         except:
-                CommonMethods.exception(browser, featureFileName, 'verify_all_otp_text') 
+                CommonMethods.exception(driver, featureFileName, 'verify_all_otp_text') 
                 
    
-    def verify_country_code(self,browser):
+    def verify_country_code(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_country_id, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_country_id, 1)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.otp_country_id)
+                CommonMethods.isElementPresent( driver, self.otp_country_id)
                 logging.info("country code  is verified ")
             else:
                 logging.info(" country code is not present ")
                 pytest.fail("country codeis not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_country_code')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_country_code')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_country_code') 
+            CommonMethods.exception(driver, featureFileName, 'verify_country_code') 
     
    
-    def verify_mobilenum_field(self,browser):
+    def verify_mobilenum_field(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_phno, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_phno, 1)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.otp_phno)
+                CommonMethods.isElementPresent( driver, self.otp_phno)
                 logging.info("mobilenum field   is verified ")
             else:
                 logging.info(" mobilenum field is not present ")
                 pytest.fail("cmobilenum field is not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_mobilenum_field')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_mobilenum_field')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_mobilenum_field') 
+            CommonMethods.exception(driver, featureFileName, 'verify_mobilenum_field') 
     
     
-    def verify_otp_field(self,browser):
+    def verify_otp_field(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.OtpTxtBx_id, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.OtpTxtBx_id, 1)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.OtpTxtBx_id)
+                CommonMethods.isElementPresent( driver, self.OtpTxtBx_id)
                 logging.info("otp  field   is verified ")
             else:
                 logging.info(" otp field is not present ")
                 pytest.fail("otp field is not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_otp_field')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_otp_field')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_otp_field')  
+            CommonMethods.exception(driver, featureFileName, 'verify_otp_field')  
     
-    def verify_resend_btn(self,browser):
+    def verify_resend_btn(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_resend_txt, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_resend_txt, 1)
             sleep(5)
             if check == True:
-                CommonMethods.isElementPresent( browser, self.otp_resend_txt)
+                CommonMethods.isElementPresent( driver, self.otp_resend_txt)
                 logging.info("Resend button    is verified ")
             else:
                 logging.info(" Resend button is not present ")
                 pytest.fail("Resend button is not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'verify_resend_btn')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'verify_resend_btn')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'verify_resend_btn')
+            CommonMethods.exception(driver, featureFileName, 'verify_resend_btn')
             
       
               
-    def tap_resend_btn(self,browser):
+    def tap_resend_btn(self,driver):
         try:
-            check = CommonMethods.wait_for_element_visible(browser, self.otp_resend_txt, 1)
+            check = CommonMethods.wait_for_element_visible(driver, self.otp_resend_txt, 1)
             sleep(5)
             if check == True:
-                CommonMethods.elementClick( browser, self.otp_resend_txt)
+                CommonMethods.elementClick( driver, self.otp_resend_txt)
                 logging.info("Resend button    is verified ")
             else:
                 logging.info(" Resend button is not present ")
                 pytest.fail("Resend button is not  present") 
                 
         except NoSuchElementException :
-            CommonMethods.noSuchEleExcept(browser,featureFileName,'tap_resend_btn')    
+            CommonMethods.noSuchEleExcept(driver,featureFileName,'tap_resend_btn')    
         except:
-            CommonMethods.exception(browser, featureFileName, 'tap_resend_btn')
+            CommonMethods.exception(driver, featureFileName, 'tap_resend_btn')
     
         
-    def click_on_next(self,browser):
-        CommonMethods.elementClick(browser,self.Btn_next_id)
+    def click_on_next(self,driver):
+        CommonMethods.elementClick(driver,self.Btn_next_id)

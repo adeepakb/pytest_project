@@ -5,10 +5,10 @@ from Utilities.common_methods import CommonMethods
 from time import sleep
 # from Utilities.API_methods import *
 
-browser = fixture = 'browser'
+driver = fixture = 'driver'
 
 base_class = BaseClass()
-video = VideoPage(browser)
+video = VideoPage(driver)
 CommonMethods = CommonMethods()
 
 
@@ -24,47 +24,47 @@ scenarios('../features/' + featureFileName + '.feature')
 
 
 @given("Launch the app online")
-def launchAppOnline(browser):
+def launchAppOnline(driver):
     pass
 
 
 @when(parsers.parse('navigate to "{text}" library chapter list screen'))
-def navigateToHomeScreen2(browser, text):
-    video.navigate_to_home_screen(browser, text)
-    video.navigate_to_library(browser, text)
+def navigateToHomeScreen2(driver, text):
+    video.navigate_to_home_screen(driver, text)
+    video.navigate_to_library(driver, text)
 
 
 @given(parsers.parse('navigate to "{text}" library chapter list screen'))
-def navigateToHomeScreen(browser, text):
-    video.navigate_to_home_screen(browser, text)
-    video.navigate_to_library(browser, text)
+def navigateToHomeScreen(driver, text):
+    video.navigate_to_home_screen(driver, text)
+    video.navigate_to_library(driver, text)
 
 
 @given('Tap on any video from chapter list screen')
-def tapOnAnyVideo(browser):
-    video.tap_on_any_video_in_sub_screen(browser)
+def tapOnAnyVideo(driver):
+    video.tap_on_any_video_in_sub_screen(driver)
 
 
 @when('Tap on any video from chapter list screen')
-def tapOnAnyVideo2(browser):
-    video.tap_on_any_video_in_sub_screen(browser)
+def tapOnAnyVideo2(driver):
+    video.tap_on_any_video_in_sub_screen(driver)
 
 
 @when('Subtopic video slider will open')
-def verify_subtopic_video_slider(browser):
-    video.verify_subtopic_video_slider(browser)
+def verify_subtopic_video_slider(driver):
+    video.verify_subtopic_video_slider(driver)
 
 
 @when('Verify video should be played')
 @then('Verify video should be played')
-def video_should_played(browser):
-    video.video_should_played(browser)
+def video_should_played(driver):
+    video.video_should_played(driver)
 
 
 @when('Tap on any video')
 @when('Tap on any video from video list')
-def tap_on_any_video(browser):
-    video.tap_on_any_video(browser)
+def tap_on_any_video(driver):
+    video.tap_on_any_video(driver)
 
 
 @when(parsers.parse('wait for "{text}" secs'))
@@ -74,23 +74,23 @@ def wait_for_secs(text):
 
 
 @then('verify Player screen should be shown with out any player options')
-def verify_video_icons_should_disapper(browser):
-    video.verify_video_icons_should_disapper(browser)
+def verify_video_icons_should_disapper(driver):
+    video.verify_video_icons_should_disapper(driver)
 
 
 @then('Verify all the video player icons should disappear')
-def verify_video_icons_should_disapper2(browser):
-    video.verify_video_icons_should_disapper(browser)
+def verify_video_icons_should_disapper2(driver):
+    video.verify_video_icons_should_disapper(driver)
 
 
 @then('Verify the player layer is up and it should not disappear i.e all the options should be visible')
-def verify_video_icons_should_apper(browser):
-    video.verify_video_icons_should_apper(browser)
+def verify_video_icons_should_apper(driver):
+    video.verify_video_icons_should_apper(driver)
 
 
 @when('Taps on pause icon')
-def tap_on_pause_icon(browser):
-    video.tap_on_pause_btn(browser)
+def tap_on_pause_icon(driver):
+    video.tap_on_pause_btn(driver)
 
 
 @when('tap on the video player layer skin')
