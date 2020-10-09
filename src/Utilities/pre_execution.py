@@ -55,7 +55,7 @@ class BuildFeatureJob():
             stdout, stderr = subprocess.Popen('adb install -r ../../tests/step_def/app.apk', shell=True,
                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
             output = stdout.decode("ascii")
-            if "Success" not in output or "1 file pushed, 0 skipped." not in output:
+            if "Success" not in output or "1 file pushed." not in output:
                 raise Exception("Failed to install app due to error %s" % output)
             print("latest apk installed successfully " + artifact_displaypath)
             subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
