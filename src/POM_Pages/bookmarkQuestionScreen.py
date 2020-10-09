@@ -59,7 +59,7 @@ class BookMarkQuestionScreen:
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
     back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
     profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
-    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/name")
+    user_name_profile_page = (By.ID, "com.byjus.thelearningapp.premium:id/tvUserName")
     profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
     account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
