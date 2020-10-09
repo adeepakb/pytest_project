@@ -5,13 +5,13 @@ import pytest
 import pytest_bdd
 from appium.webdriver.common.touch_action import TouchAction
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.POM_Pages.scroll_cards import ScrollCards
+from POM_Pages.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from subprocess import Popen
 from json import load
-from src.POM_Pages.staging_tlms import Stagingtlms
+from POM_Pages.staging_tlms import Stagingtlms
 import logging
-from src.Constants.load_json import getdata
+from Constants.load_json import getdata
 
 
 class Login(TutorCommonMethods):
