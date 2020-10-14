@@ -107,7 +107,7 @@ class VideoPage:
     overlay_skip_btn = (By.ID, "com.byjus.thelearningapp.premium:id/overlay_skip")
     video1stLink_xpath = (By.XPATH,
                           "//androidx.recyclerview.widget.RecyclerView[@resource-id='com.byjus.thelearningapp.premium:id/video_list_view']/android.widget.LinearLayout[@index=0]")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    allow_btn_id = (By.XPATH, "//*[contains(@resource-id, 'permission_allow_button')]")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     select_8th_grade = (By.XPATH, "//android.widget.Button[@text='8th']")
     video_time_remaining = (By.ID, "com.byjus.thelearningapp.premium:id/chapter_video_subitem_name_txtv")

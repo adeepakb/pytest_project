@@ -1,6 +1,6 @@
 import re
 import traceback
-
+import os
 import pytest
 from _pytest._code.code import ExceptionInfo
 from pytest_bdd import scenarios, given, when, then, parsers, scenario
@@ -25,9 +25,15 @@ from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-
-
 Featurejob = BuildFeatureJob()
+
+
+global suitename
+suitename = os.getenv('suite')
+if suitename == 'Regression_PremiumApp_Automation':
+    fetch_featurefile("160", "13", "184")
+elif suitename == 'Sanity_PremiumApp_Automation':
+    fetch_featurefile("160", "13", "256")
 
 
 @pytest.fixture()
@@ -37,8 +43,10 @@ def driver():
     serial = Featurejob.connect_adb_api()
     Featurejob.connect_to_adb(serial)
     yield driver
-    subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT).communicate()
     driver.quit()
+
 
 # ---------------------------testrail updation--------------------
 testrail_file = CONFIG_PATH
@@ -158,7 +166,6 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     '''
     data = None
     #     ProjectID = test_management.get_project_id("Learning App")
-    suitename = "PremiumApp_Automation"
 
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()

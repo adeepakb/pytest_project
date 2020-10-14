@@ -75,7 +75,7 @@ class EngineTestScreen():
     back_button_id = (By.ID, "com.byjus.thelearningapp.premium:id/backNav")
     profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
     profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    allow_btn_id = (By.XPATH, "//*[contains(@resource-id, 'permission_allow_button')]")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
     multiple_accounts_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_linearlayout")
