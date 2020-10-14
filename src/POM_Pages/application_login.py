@@ -12,7 +12,9 @@ from json import load
 from POM_Pages.staging_tlms import Stagingtlms
 import logging
 from Constants.load_json import getdata
+from Utilities.common_methods import CommonMethods
 
+CommonMethods = CommonMethods()
 
 class Login(TutorCommonMethods):
     def __init__(self, driver):
@@ -59,6 +61,15 @@ class Login(TutorCommonMethods):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
             raise LoginException("Premium School card might not be displayed!")
+
+    def select_premium_school(self):
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/btnPremiumSchool')
+            assert self.text_match('BYJU’S Premium School'), "text is not displayed "
+        elif device == 'mobile':
+            self.click_on_link('Premium School')
+            assert self.text_match('Premium School'), "text is not displayed"
 
     def enter_phone(self, phone_num):
         self.obj.wait_for_locator('xpath', self.phone_number)

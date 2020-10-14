@@ -21,7 +21,7 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-from Constants.loadFeatureFile import fetch_featurefile
+# from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
@@ -158,7 +158,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     '''
     data = None
     #     ProjectID = test_management.get_project_id("Learning App")
-    suitename = "PremiumApp_Automation"
+    suitename = "Regression_PremiumApp_Automation"
 
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()

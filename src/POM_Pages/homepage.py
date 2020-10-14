@@ -237,8 +237,6 @@ class HomePage():
                 CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
                 CommonMethods.elementClick(driver, self.profile_name_hamburger)
                 CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
-                account_text = CommonMethods.getTextOfElement(driver, self.account_details_title)
-                CommonMethods.scrollToElement(driver, account_text)
                 actual_username = None
                 if account_type == 'one_to_many_and_mega':
                     actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
