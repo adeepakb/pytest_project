@@ -20,7 +20,7 @@
 		"noReset": true,
    		"udid": "HGAJJ5PK",
 		"url": "https://in-bng.headspin.io:7012/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
-		"newCommandTimeout": 800,
+		"newCommandTimeout": 300,
 		"implicitWait": 10
 	},
 	"adb_connect": {

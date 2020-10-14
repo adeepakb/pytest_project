@@ -182,8 +182,10 @@ class BookMarkQuestionScreen:
             else:
                 logging.info('user is not in Home page')
                 return False
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_home_page')
         except:
-            logging.info('Error in Verifing Home Page')
+            CommonMethods.exception(driver, featureFileName, 'verify_home_page')
 
     # This method is used to navigate to Library chapter list screen
     def navigate_to_library(self, driver, sub):

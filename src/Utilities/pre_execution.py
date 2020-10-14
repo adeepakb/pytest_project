@@ -18,19 +18,19 @@ class BuildFeatureJob():
         j = jenkins.Jenkins('https://builds.byjus.com/',
                             username='reshma.nair@byjus.com', password='1d4b7f1a039c21beef54b2a861aeb8f9')
         branch_parameters = dict(branch=branch, env=env, variant=variant)
-        # j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
-        # time.sleep(10)
-        # print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
-        # while True:
-        #     if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
-        #             j.get_job_info('B2C-Feature')['lastBuild'][
-        #                 'number']:
-        #         print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
-        #                                              j.get_job_info('B2C-Feature')['lastBuild']['number']))
-        #         break
-        #     time.sleep(10)
-        # last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-        last_build_number= 2185
+        j.build_job('B2C-Feature', parameters=branch_parameters, token='1d4b7f1a039c21beef54b2a861aeb8f9')
+        time.sleep(10)
+        print("B2C Feature job started running branch %s env %s variant %s" % (branch, env, variant))
+        while True:
+            if j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'] == \
+                    j.get_job_info('B2C-Feature')['lastBuild'][
+                        'number']:
+                print("Last ID %s, Current ID %s" % (j.get_job_info('B2C-Feature')['lastCompletedBuild']['number'],
+                                                     j.get_job_info('B2C-Feature')['lastBuild']['number']))
+                break
+            time.sleep(10)
+        last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
+        # last_build_number= 2224
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
         if build_info['result'] == 'SUCCESS':
