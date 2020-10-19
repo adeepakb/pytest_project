@@ -28,6 +28,24 @@ CommonMethods = CommonMethods()
 feature_job = BuildFeatureJob()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def configure():
+    feature_job.build_and_install_apk()
+    suite_name = os.getenv('suite')
+    if suite_name == 'Regression_PremiumApp_Automation':
+        fetch_featurefile("160", "13", "184")
+    elif suite_name == 'Sanity_PremiumApp_Automation':
+        fetch_featurefile("160", "13", "256")
+    yield
+    # Create report on demand via  API at the end of the session
+    if suite_name == 'Regression_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
+        run_testrail_reports(report_id)
+    elif suite_name == 'Sanity_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
+        run_testrail_reports(report_id)
+
+
 @pytest.fixture()
 def driver():
     driver = baseClass.driverSetup()
@@ -38,24 +56,6 @@ def driver():
     subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT).communicate()
     driver.quit()
-
-
-@pytest.fixture(scope="session", autouse=True)
-def configure():
-    suite_name = os.getenv('suite')
-    if suite_name == 'Regression_PremiumApp_Automation':
-        fetch_featurefile("160", "13", "184")
-    elif suite_name == 'Sanity_PremiumApp_Automation':
-        fetch_featurefile("160", "13", "256")
-    feature_job.build_and_install_apk()
-    yield
-    # Create report on demand via  API at the end of the session
-    if suite_name == 'Regression_PremiumApp_Automation':
-        report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
-        run_testrail_reports(report_id)
-    elif suite_name == 'Sanity_PremiumApp_Automation':
-        report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
-        run_testrail_reports(report_id)
 
 
 # ---------------------------testrail updation--------------------
