@@ -31,7 +31,7 @@ class BuildFeatureJob():
                 break
             time.sleep(10)
         last_build_number = j.get_job_info('B2C-Feature')['lastCompletedBuild']['number']
-        # last_build_number= 2224
+        # last_build_number= 2248
         build_info = j.get_build_info('B2C-Feature', last_build_number)
 
         if build_info['result'] == 'SUCCESS':

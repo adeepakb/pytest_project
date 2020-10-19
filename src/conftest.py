@@ -21,7 +21,7 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-from Constants.loadFeatureFile import fetch_featurefile
+from Constants.loadFeatureFile import *
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
@@ -29,19 +29,15 @@ feature_job = BuildFeatureJob()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def configure():
+def setup_teardown():
     feature_job.build_and_install_apk()
-    suite_name = os.getenv('suite')
-    if suite_name == 'Regression_PremiumApp_Automation':
-        fetch_featurefile("160", "13", "184")
-    elif suite_name == 'Sanity_PremiumApp_Automation':
-        fetch_featurefile("160", "13", "256")
     yield
     # Create report on demand via  API at the end of the session
-    if suite_name == 'Regression_PremiumApp_Automation':
+    suitename = os.getenv('suite')
+    if suitename == 'Regression_PremiumApp_Automation':
         report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
         run_testrail_reports(report_id)
-    elif suite_name == 'Sanity_PremiumApp_Automation':
+    elif suitename == 'Sanity_PremiumApp_Automation':
         report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
         run_testrail_reports(report_id)
 
