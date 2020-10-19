@@ -25,27 +25,37 @@ from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-Featurejob = BuildFeatureJob()
-
-
-global suitename
-suitename = os.getenv('suite')
-if suitename == 'Regression_PremiumApp_Automation':
-    fetch_featurefile("160", "13", "184")
-elif suitename == 'Sanity_PremiumApp_Automation':
-    fetch_featurefile("160", "13", "256")
+feature_job = BuildFeatureJob()
 
 
 @pytest.fixture()
 def driver():
     driver = baseClass.driverSetup()
-    Featurejob.lock_or_unlock_device('lock')
-    serial = Featurejob.connect_adb_api()
-    Featurejob.connect_to_adb(serial)
+    feature_job.lock_or_unlock_device('lock')
+    serial = feature_job.connect_adb_api()
+    feature_job.connect_to_adb(serial)
     yield driver
     subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT).communicate()
     driver.quit()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure():
+    suite_name = os.getenv('suite')
+    if suite_name == 'Regression_PremiumApp_Automation':
+        fetch_featurefile("160", "13", "184")
+    elif suite_name == 'Sanity_PremiumApp_Automation':
+        fetch_featurefile("160", "13", "256")
+    feature_job.build_and_install_apk()
+    yield
+    # Create report on demand via  API at the end of the session
+    if suite_name == 'Regression_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
+        run_testrail_reports(report_id)
+    elif suite_name == 'Sanity_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
+        run_testrail_reports(report_id)
 
 
 # ---------------------------testrail updation--------------------
@@ -166,7 +176,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     '''
     data = None
     #     ProjectID = test_management.get_project_id("Learning App")
-
+    suitename = os.getenv('suite')
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()
     summaries = traceback.format_exception(e_type, value, tb)

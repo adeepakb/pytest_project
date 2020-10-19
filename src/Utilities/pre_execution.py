@@ -9,8 +9,9 @@ from Constants.load_json import getdata
 
 
 class BuildFeatureJob():
-    def __init__(self):
 
+    # build b2c feature job for app2 apk, download artifact ,connect to headspin device and install apk on it
+    def build_and_install_apk(self):
         branch = os.getenv('branch')
         env = os.getenv('env')
         variant = os.getenv('variant')
@@ -69,6 +70,7 @@ class BuildFeatureJob():
             f.write(log)
             f.close()
 
+    # adb connect to headspin device
     @staticmethod
     def connect_to_adb(serial):
         connected = False
@@ -89,6 +91,7 @@ class BuildFeatureJob():
         if not connected:
             raise Exception("Failed to connect to device")
 
+    # to lock or unlock the headspin device
     @staticmethod
     def lock_or_unlock_device(flag):
         if flag == 'lock':
@@ -101,6 +104,7 @@ class BuildFeatureJob():
         if r.status_code == 200:
             print("headspin device %s successful" %flag)
 
+    # to call the connect API to get the current port number details and host
     @staticmethod
     def connect_adb_api():
         url = "https://api-dev.headspin.io/v0/adb/" + getdata(CONFIG_PATH, 'desired_cap', 'udid') + "/connect"
