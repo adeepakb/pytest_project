@@ -22,7 +22,7 @@ class SessionAlert(TutorCommonMethods):
                     '//*[contains(@resource-id, "dialog_layout")]').is_displayed()
                 logging.debug('session popup is displayed')
                 break
-            except NoSuchElementException:
+            except (NoSuchElementException,StaleElementReferenceException):
                 timeout -= 5
         logging.debug('session popup is not displayed')
 

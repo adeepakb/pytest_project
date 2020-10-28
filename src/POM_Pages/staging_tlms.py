@@ -24,6 +24,10 @@ class Stagingtlms:
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
+        self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
+        self.chrome_options.add_argument("--disable-extensions")
+        self.chrome_options.add_argument("--unlimited-storage")
         self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
 
     def login_to_staging(self):
@@ -71,14 +75,28 @@ class Stagingtlms:
         cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
 
         email_col = meeting_col = 8
+        tagged_col = status_col = None
+        for i in range(1, cols):
+            header = self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
+            if header == 'Teaching Material/Video Tagged':
+                tagged_col = i
+            elif header == 'Status':
+                status_col = i
+
         for r in range(1, rows + 1):
             try:
-                self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                    email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
-                self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                    email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").send_keys(email)
-                tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                    meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
+                status = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
+                # incase of multiple sessions in same day
+                course_details = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
+                course_id = re.search(r'^.*?\bCourse id : (\d+)', course_details).group(1)
+                if  'one_to_mega' in status and course_id == '168':
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").send_keys(email)
+                    tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
+                    break
 
             except NoSuchElementException:
                 continue
@@ -92,9 +110,9 @@ class Stagingtlms:
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
-        self.wait_for_locator_webdriver("//li[@id='mentoring']")
+        self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
         self.chrome_driver.find_element_by_xpath("//li[@id='mentoring']").click()
-        self.wait_for_locator_webdriver("//li[@id='student_sessions']")
+        self.wait_for_clickable_element_webdriver("//li[@id='student_sessions']")
         self.chrome_driver.find_element_by_xpath("//li[@id='student_sessions']").click()
 
         self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
@@ -106,7 +124,32 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
         self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
         self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-        self.chrome_driver.find_element_by_xpath("//a[text()= 'Reset']").click()
+
+        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
+        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
+        reset_col = 10
+        tagged_col = status_col = None
+        for i in range(1, cols):
+            header = self.chrome_driver.find_elements_by_xpath(
+                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
+            if header == 'Teaching Material/Video Tagged':
+                tagged_col = i
+            elif header == 'Status':
+                status_col = i
+
+        for r in range(1, rows + 1):
+            try:
+                status = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
+                # incase of multiple sessions in same day
+                course_details = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
+                course_id = re.search(r'^.*?\bCourse id : (\d+)', course_details).group(1)
+                if 'one_to_mega' in status and course_id == '168':
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(reset_col) + "]/a[text()= 'Reset']").click()
+                    break
+            except NoSuchElementException:
+                continue
+
+        time.sleep(120) # 2 minutes buffer time added by backend. Hence need to wait 2mins for reset session to start
         self.chrome_driver.close()
 
     @staticmethod

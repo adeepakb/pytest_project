@@ -7,7 +7,7 @@ from POM_Pages.mentor_session import MentorSession
 from POM_Pages.staging_tlms import Stagingtlms
 from POM_Pages.homepage import HomePage, Login_Credentials, getdata
 
-scenarios('../features/Join Session and Chat.feature')
+scenarios('../features/Join Session  and  Chat.feature')
 
 
 @fixture
@@ -169,6 +169,10 @@ def verify_live_chat_disabled(student_session):
 
 
 @then("tap on live chat is disabled text box")
+def tap_on_disabled_chat(student_session):
+    student_session.tap_on_disabled_chat()
+
+
 @then('tap on "Type something" text box')
 def tap_on_chat_textbox(student_session):
     student_session.tap_on_chat_textbox()
@@ -186,12 +190,12 @@ def tap_on_chat_dialog(student_session):
 
 @then("verify that cursor should point to the first place of the text field")
 def is_cursor_present(student_session):
-    assert student_session.is_cursor_present(),"Cursor is not present and hence text field is not focused"
+    assert student_session.is_cursor_present(), "Cursor is not present and hence text field is not focused"
 
 
 @then("verify smileys are disabled")
 def is_emoji_class_present(student_session):
-    assert student_session.is_emoji_present(), "Emoji is present in chat box"
+    assert not student_session.is_emoji_present(), "Emoji is present in chat box"
 
 
 @then("verify device keypad should be enabled")
@@ -394,6 +398,13 @@ def close_mentor_session_tab(mentor_session):
     mentor_session.close_mentor_session_tab()
 
 
-@then("reset student session")
+@given("reset student session")
 def reset_session(driver):
     Stagingtlms(driver).reset_session()
+
+
+@then("verify that videoplayer should not have any controls like seek bar,pause,play icons on the screen")
+def is_video_play_pause_progress_bar_present(student_session):
+    assert (not student_session.is_video_play_present()
+            and not student_session.is_video_pause_progress_bar_present()
+            and not student_session.is_video_progress_bar_present()),"seek bar,pause,play icons are present on the screen"

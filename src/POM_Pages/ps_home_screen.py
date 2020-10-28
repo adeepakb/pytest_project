@@ -17,6 +17,7 @@ class PS_Homescreen:
         self.obj = TutorCommonMethods(driver)
         self.login = Login(driver)
         self.driver = driver
+        self.action = TouchAction(driver)
         self.ps_tabs = 'androidx.appcompat.app.ActionBar$Tab'
         self.for_you_tab = '//androidx.appcompat.app.ActionBar.Tab[@content-desc="For you"]/android.widget.TextView'
         self.get_help = 'com.byjus.thelearningapp.premium:id/optionalNav'
@@ -62,6 +63,9 @@ class PS_Homescreen:
 
     def close_get_help(self):
         self.obj.get_element('id', self.close_chat).click()
+
+    def verify_get_help_close(self):
+        return self.obj.is_element_present('id', self.close_chat)
 
     def verify_card_details(self):
         subject_name = self.driver.find_element_by_xpath(
@@ -115,3 +119,6 @@ class PS_Homescreen:
         assert all(v is not None for v in [subject_name, topic_name, session_date,
                                            session_status]), "Completed Session card details not loaded"
         return details_dict
+
+    def tap_outside_dialog_layout(self):
+        self.action.tap(None, x=100, y=100).release().perform()

@@ -32,6 +32,10 @@ class StudentSession:
         self.dialog_layout = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/dialog_layout"]'
         self.live_chat_header = "//android.view.View[@text='Live Chat']"
         self.chat_popup = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/etChatInputText"]'
+        self.student_chat_disabled = '//*[@text="Live Chat is disabled"]'
+        self.exo_pause = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_pause"]'
+        self.exo_play = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_play"]'
+        self.exo_progress_bar = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_progress"]'
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
@@ -61,11 +65,13 @@ class StudentSession:
         assert topic_title in chapter, 'Chapter name is not correct'
 
     def is_student_chat_enabled(self):
-        if self.obj.is_element_present('xpath', self.student_chat) and not (
-        self.obj.is_text_match("LiveChat is disabled")):
+        if self.obj.is_element_present('xpath', self.student_chat) and not ( self.obj.is_element_present('xpath', self.student_chat_disabled)):
             return True
         else:
             return False
+
+    def tap_on_disabled_chat(self):
+        self.obj.get_element('xpath', self.student_chat_disabled).click()
 
     def is_chat_icon_displayed(self):
         self.obj.wait_for_locator('xpath', self.show_chat)
@@ -155,3 +161,11 @@ class StudentSession:
         end_y = el.location['y']
         self.action.press(x=start_x, y=start_y).move_to(x=start_x, y=end_y).release().perform()
 
+    def is_video_play_present(self):
+        return self.obj.is_element_present('id', self.exo_play)
+
+    def is_video_pause_progress_bar_present(self):
+        return self.obj.is_element_present('id', self.exo_pause)
+
+    def is_video_progress_bar_present(self):
+        return self.obj.is_element_present('id', self.exo_progress_bar)

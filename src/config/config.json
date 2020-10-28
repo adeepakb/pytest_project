@@ -18,13 +18,13 @@
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
 		"eventTimings": true,
 		"noReset": true,
-		"udid": "R9BN703T85J",
-		"url": "https://in-bng.headspin.io:7012/v0/41e1a4de6a214bf3a69c0aa8a95a7c3e/wd/hub",
-		"newCommandTimeout": 800,
+   		"udid": "R9BN703T85J",
+		"url": "https://in-bng.headspin.io:7012/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
+		"newCommandTimeout": 300,
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"token": "41e1a4de6a214bf3a69c0aa8a95a7c3e"
+		"token": "3bbdfc92b3b041a5a15323eb3222d6d7"
 	},
 	"account_details":
    {

@@ -40,7 +40,8 @@ class MentorSession:
         self.chat_container = '//div[@class= "chatContainer"]'
         self.chat_toggle = '//span[@class= "MuiSwitch-root"]'
         self.live_chat_close= "//img[@class='chatCloseIcon']"
-        self.end_button = '//*[@class= "endSessionBtn"]'
+        self.end_button_timer= '//*[@class= "session-button timer"]'
+        self.end_button ='//*[text() = "End Session Now"]'
         self.slides_container = '//*[@class= "slidesContainer"]'
         self.add_slide = '//*[@class= "add-slide-btn"]'
         self.up_arrow_button = '//*[@class= "fa fa-angle-up"]'
@@ -143,6 +144,8 @@ class MentorSession:
         return self.chrome_driver.find_element_by_xpath(self.end_button).is_displayed()
 
     def tutor_end_session(self):
+        self.wait_for_clickable_element_webdriver(self.end_button_timer)
+        self.chrome_driver.find_element_by_xpath(self.end_button_timer).click()
         self.wait_for_clickable_element_webdriver(self.end_button)
         self.chrome_driver.find_element_by_xpath(self.end_button).click()
         self.wait_for_locator_webdriver("//button[@class = 'endBtn']")
