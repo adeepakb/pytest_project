@@ -2,7 +2,6 @@ import logging
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.Constants.load_json import getdata
 from src.POM_Pages.application_login import Login
 from Utilities.common_methods import CommonMethods
 
