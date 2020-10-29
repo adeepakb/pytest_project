@@ -23,11 +23,9 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
+        # self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
         # self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
-        self.chrome_options.add_argument("--disable-extensions")
-        self.chrome_options.add_argument("--unlimited-storage")
+        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
 
     def login_to_staging(self):
@@ -35,6 +33,8 @@ class Stagingtlms:
         password = str(getdata('../../config/config.json', 'staging_access', 'password'))
 
         self.chrome_driver.get('https://staging.tllms.com/admin')
+        element_text = self.chrome_driver.find_element_by_id("title").text
+        print(element_text)
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
         self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
