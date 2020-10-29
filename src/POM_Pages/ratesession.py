@@ -8,11 +8,11 @@ import logging
 from selenium.webdriver import ActionChains
 
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.POM_Pages.session_completed import SessionComplete
-from src.POM_Pages.session_data import SessionData
-from src.POM_Pages.application_login import Login
-from src.POM_Pages.scroll_cards import ScrollCards
-from src.POM_Pages.student_session import StudentSession
+from POM_Pages.session_completed import SessionComplete
+from POM_Pages.session_data import SessionData
+from POM_Pages.application_login import Login
+from POM_Pages.scroll_cards import ScrollCards
+from POM_Pages.student_session import StudentSession
 from Utilities.common_methods import CommonMethods
 import re
 

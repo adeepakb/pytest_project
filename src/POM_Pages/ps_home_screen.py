@@ -5,7 +5,7 @@ import time
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.POM_Pages.application_login import Login
+from POM_Pages.application_login import Login
 from Utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
