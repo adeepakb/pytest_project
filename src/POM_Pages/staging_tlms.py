@@ -25,7 +25,7 @@ class Stagingtlms:
         self.chrome_options = Options()
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
-        self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
+        # self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
         self.chrome_options.add_argument("--disable-extensions")
         self.chrome_options.add_argument("--unlimited-storage")
         self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
