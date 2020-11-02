@@ -25,10 +25,7 @@ class Stagingtlms:
         self.chrome_options = Options()
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
-        # self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
-        # self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
-        # self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        self.chrome_driver = webdriver.Chrome('/usr/bin/chromedriver',chrome_options=self.chrome_options)
+        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
 
     def login_to_staging(self):
         email = str(getdata('../../config/config.json', 'staging_access', 'email'))
@@ -43,6 +40,8 @@ class Stagingtlms:
         self.wait_for_locator_webdriver("//input[@type='email']")
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
         self.wait_for_clickable_element_webdriver("//span[contains(text(),'Next')]")
+        time.sleep(5)
+        self.chrome_driver.save_screenshot("screenshot.png")
         self.chrome_driver.execute_script("arguments[0].click();", self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]"))
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)

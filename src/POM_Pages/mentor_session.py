@@ -19,9 +19,10 @@ class MentorSession:
     def __init__(self, driver):
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
-        # self.chrome_options = Options()
-        # self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        #self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
+        self.chrome_options = Options()
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
+        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
         self.tlms = Stagingtlms(driver)
         self.tutor_white_board = '//*[@class = "whiteboardCanvas"]'
         self.highlighter_icon = "//img[contains(@src,'select.b2bc79b8.svg')]"
@@ -420,6 +421,7 @@ class MentorSession:
         self.wait_for_locator_webdriver("//input[@type='email']")
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
         self.wait_for_clickable_element_webdriver("//span[contains(text(),'Next')]")
+        self.chrome_driver.save_screenshot("screenshot.png")
         self.chrome_driver.execute_script("arguments[0].click();",self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]"))
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
