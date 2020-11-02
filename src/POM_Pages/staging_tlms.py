@@ -39,14 +39,14 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
-        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Next')]")
+        self.wait_for_clickable_element_webdriver("//*[contains(text(),'Next')]")
         time.sleep(5)
         self.chrome_driver.save_screenshot("screenshot.png")
-        self.chrome_driver.execute_script("arguments[0].click();", self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]"))
+        self.chrome_driver.execute_script("arguments[0].click();", self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
-        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Next')]")
-        self.chrome_driver.execute_script("arguments[0].click();", self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]"))
+        self.wait_for_clickable_element_webdriver("//*[contains(text(),'Next')]")
+        self.chrome_driver.execute_script("arguments[0].click();", self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
 
     def get_tutor_url(self):
         email = str(getdata('../../config/config.json', 'staging_access', 'email'))
