@@ -436,7 +436,7 @@ class MentorSession:
         self.wait_for_locator_webdriver("//li[@id='mentoring']")
         self.chrome_driver.get(url)
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
-        self.driver.save_screenshot("image2.png")
+        self.chrome_driver.save_screenshot("image2.png")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
 
         return url
