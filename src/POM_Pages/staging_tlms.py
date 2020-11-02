@@ -101,7 +101,7 @@ class Stagingtlms:
                 continue
 
         self.chrome_driver.find_element_by_xpath("//button[contains(text(),'Submit')]").click()
-        self.driver.save_screenshot("screenshot.png")
+        self.driver.save_screenshot("image1.png")
         self.chrome_driver.close()
         return tutor_url
 
