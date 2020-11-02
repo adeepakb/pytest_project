@@ -25,7 +25,6 @@ class Stagingtlms:
         self.chrome_options = Options()
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument('--remote-debugging-port=4444')
         self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
 
     def login_to_staging(self):
