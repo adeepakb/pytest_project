@@ -50,7 +50,6 @@ class Login(TutorCommonMethods):
         self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
-        self.driver.save_screenshot("screenshot.png")
         element = self.get_element(
             'android_uiautomator',
             'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'

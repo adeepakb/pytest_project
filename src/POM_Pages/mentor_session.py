@@ -437,6 +437,7 @@ class MentorSession:
         self.chrome_driver.get(url)
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
+        self.driver.save_screenshot("screenshot.png")
         return url
 
     def verify_tutor_unable_to_join_session_again(self):

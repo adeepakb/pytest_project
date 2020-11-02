@@ -2,13 +2,13 @@ Feature: Join Session  and  Chat
 
 
 Scenario: verify that on click of "join now" button student should land on session page successfully
-	Given launch the app and navigate to home screen
+#	Given launch the app and navigate to home screen
 	Given ensure tutor has started the session
-	And tap on Premium School card
-	And navigate to one to mega homescreen
-	When verify "Join Now" option is enabled for the current day session on your session has started card
-	And tap on "Join Now" button
-	Then verify user is landed on tutor videoplayer screen
+#	And tap on Premium School card
+#	And navigate to one to mega homescreen
+#	When verify "Join Now" option is enabled for the current day session on your session has started card
+#	And tap on "Join Now" button
+#	Then verify user is landed on tutor videoplayer screen
 
 #
 #Scenario: verify that when clicking on the close"X" icon the "Live Chat window", the pop-up should close
