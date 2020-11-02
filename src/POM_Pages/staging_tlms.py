@@ -35,8 +35,6 @@ class Stagingtlms:
         password = str(getdata('../../config/config.json', 'staging_access', 'password'))
 
         self.chrome_driver.get('https://staging.tllms.com/admin')
-        element_text = self.chrome_driver.find_element_by_id("title").text
-        print(element_text)
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
         self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
