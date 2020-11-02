@@ -420,14 +420,16 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
-        self.wait_for_clickable_element_webdriver("//*[contains(text(),'Next')]")
-        self.chrome_driver.save_screenshot("screenshot.png")
-        self.chrome_driver.execute_script("arguments[0].click();",self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
+        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
+        # self.wait_for_clickable_element_webdriver("//*[contains(text(),'Next')]")
+        # self.chrome_driver.save_screenshot("screenshot.png")
+        # self.chrome_driver.execute_script("arguments[0].click();",self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
-        self.wait_for_locator_webdriver("//*[contains(text(),'Next')]")
-        self.chrome_driver.execute_script("arguments[0].click();",
-                                          self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
+        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
+        # self.wait_for_locator_webdriver("//*[contains(text(),'Next')]")
+        # self.chrome_driver.execute_script("arguments[0].click();",
+        #                                   self.chrome_driver.find_element_by_xpath("//*[contains(text(),'Next')]"))
 
     def start_tutor_session(self):
         url = self.tlms.get_tutor_url()
