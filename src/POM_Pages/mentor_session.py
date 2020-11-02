@@ -19,9 +19,9 @@ class MentorSession:
     def __init__(self, driver):
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
-        self.chrome_options = Options()
-        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
+        # self.chrome_options = Options()
+        # self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        #self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
         self.tlms = Stagingtlms(driver)
         self.tutor_white_board = '//*[@class = "whiteboardCanvas"]'
         self.highlighter_icon = "//img[contains(@src,'select.b2bc79b8.svg')]"
