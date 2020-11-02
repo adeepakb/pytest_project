@@ -25,7 +25,7 @@ class Stagingtlms:
         self.chrome_options = Options()
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
-        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
+        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def login_to_staging(self):
         email = str(getdata('../../config/config.json', 'staging_access', 'email'))
@@ -101,6 +101,7 @@ class Stagingtlms:
                 continue
 
         self.chrome_driver.find_element_by_xpath("//button[contains(text(),'Submit')]").click()
+        self.driver.save_screenshot("screenshot.png")
         self.chrome_driver.close()
         return tutor_url
 

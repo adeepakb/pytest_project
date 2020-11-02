@@ -22,7 +22,7 @@ class MentorSession:
         self.chrome_options = Options()
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
-        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
+        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.tlms = Stagingtlms(driver)
         self.tutor_white_board = '//*[@class = "whiteboardCanvas"]'
         self.highlighter_icon = "//img[contains(@src,'select.b2bc79b8.svg')]"
@@ -437,7 +437,7 @@ class MentorSession:
         self.chrome_driver.get(url)
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
-        self.driver.save_screenshot("screenshot.png")
+
         return url
 
     def verify_tutor_unable_to_join_session_again(self):
