@@ -23,8 +23,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('headless')
-        self.chrome_options.add_argument('no-sandbox')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         # self.chrome_options.add_experimental_option('androidPackage', 'com.android.chrome')
         # self.chrome_options.add_experimental_option('androidDeviceSerial', 'R9BN703T85J')
         # self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
