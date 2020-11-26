@@ -143,7 +143,7 @@ class HomePage():
         except:
             logging.info('Error in verify_to_login_page method in Homepage')
 
-    def login_as_one_mega_user_only(self, driver):
+    def login_as_another_one_mega_user(self, driver):
         CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
         CommonMethods.run(
             'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
@@ -160,6 +160,17 @@ class HomePage():
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
         CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail1', 'OTP'), self.OtpTxtBx_id)
+
+        data = getdata(Login_Credentials, 'login_detail1', 'profile_one_to_many_and_mega')
+        if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
+            CommonMethods.scrollToElement(driver, data)
+            profiles = CommonMethods.getElements(driver, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
+            for i in range(len(profiles)):
+                if profiles[i].text == data:
+                    radio_buttons[i].click()
+                    break
+        CommonMethods.elementClick(driver, self.continue_button)
         CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
         CommonMethods.elementClick(driver, self.welcome_button)
 

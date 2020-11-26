@@ -4,6 +4,8 @@ import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+
+from POM_Pages.staging_tlms import Stagingtlms
 from Utilities.tutor_common_methods import TutorCommonMethods
 from POM_Pages.application_login import Login
 from Utilities.common_methods import CommonMethods
@@ -21,8 +23,10 @@ class PS_Homescreen:
         self.for_you_tab = '//androidx.appcompat.app.ActionBar.Tab[@content-desc="For you"]/android.widget.TextView'
         self.get_help = 'com.byjus.thelearningapp.premium:id/optionalNav'
         self.back_navigation = 'com.byjus.thelearningapp.premium:id/backNav'
-        self.bottom_sheet ='com.byjus.thelearningapp.premium:id/bottomSheet'
-        self.close_chat ='com.byjus.thelearningapp.premium:id/closeChatBtn'
+        self.bottom_sheet = 'com.byjus.thelearningapp.premium:id/bottomSheet'
+        self.close_chat = 'com.byjus.thelearningapp.premium:id/closeChatBtn'
+        self.arrow_button = 'com.byjus.thelearningapp.premium:id/arrow_btn'
+        self.requisite_items = 'com.byjus.thelearningapp.premium:id/llRequisiteContentLyt'
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', self.ps_tabs)
@@ -31,12 +35,20 @@ class PS_Homescreen:
                 return True
         return False
 
-    def tap_on_tab(self,text):
-        self.obj.get_element('xpath', '//androidx.appcompat.app.ActionBar.Tab[@content-desc="'+text+'"]/android.widget.TextView').click()
+    def tap_on_tab(self, text):
+        self.obj.get_element('xpath',
+                             '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
 
-    def is_tab_selected(self,text):
+    def verify_arrow_present_for_each_requisite(self):
+        if len(self.obj.get_elements('id', self.requisite_items)) == len(self.obj.get_elements('id', self.arrow_button)):
+            return True
+        else:
+            return False
+
+    def is_tab_selected(self, text):
         try:
-            displayed = self.obj.get_element('xpath', '//androidx.appcompat.app.ActionBar.Tab[@content-desc="'+text+'"]/android.widget.TextView').is_selected()
+            displayed = self.obj.get_element('xpath',
+                                             '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').is_selected()
             if displayed:
                 return True
             return False
@@ -47,7 +59,7 @@ class PS_Homescreen:
         self.obj.click_back()
 
     def tap_on_get_help(self):
-        self.obj.get_element('id',self.get_help).click()
+        self.obj.get_element('id', self.get_help).click()
         time.sleep(2)
         self.obj.click_back()
 
@@ -58,7 +70,7 @@ class PS_Homescreen:
         return self.obj.is_element_present('id', self.back_navigation)
 
     def is_bottom_sheet_present(self):
-        return self.obj.is_element_present('id',self.bottom_sheet)
+        return self.obj.is_element_present('id', self.bottom_sheet)
 
     def close_get_help(self):
         self.obj.get_element('id', self.close_chat).click()
@@ -100,6 +112,9 @@ class PS_Homescreen:
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
         self.obj.is_button_enabled(text)
+
+    def attach_post_requisite_with_assessement(self, driver,assessment_name):
+        Stagingtlms(driver).attach_requisite(assessment_name)
 
     def verify_completed_card_details(self):
         subject_name = self.obj.get_element('xpath', '//*[contains(@resource-id, "subject_name")]').text

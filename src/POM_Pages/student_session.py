@@ -64,7 +64,8 @@ class StudentSession:
         assert topic_title in chapter, 'Chapter name is not correct'
 
     def is_student_chat_enabled(self):
-        if self.obj.is_element_present('xpath', self.student_chat) and not ( self.obj.is_element_present('xpath', self.student_chat_disabled)):
+        if self.obj.is_element_present('xpath', self.student_chat) and not (
+                self.obj.is_element_present('xpath', self.student_chat_disabled)):
             return True
         else:
             return False
@@ -98,8 +99,9 @@ class StudentSession:
         self.action.tap(None, x=100, y=100).release().perform()
 
     def video_elements_present(self):
+        self.obj.wait_for_locator('xpath', self.player_view, 10)
         return self.obj.is_element_present('xpath', self.player_view) and \
-               self.obj.is_element_present('xpath',self.exo_content) and \
+               self.obj.is_element_present('xpath', self.exo_content) and \
                self.obj.is_element_present('xpath', self.exo_overlay)
 
     def verify_student_chat_dialog(self):
@@ -112,7 +114,7 @@ class StudentSession:
         return self.obj.is_element_present('xpath', "//*[@class='emoji']")
 
     def is_cursor_present(self):
-        is_element_focused= self.obj.get_element('xpath', self.chat_popup).get_attribute('focused')
+        is_element_focused = self.obj.get_element('xpath', self.chat_popup).get_attribute('focused')
         return is_element_focused
 
     def click_back(self):
@@ -131,10 +133,14 @@ class StudentSession:
         self.obj.get_element('xpath', self.student_chat_send).click()
 
     def verify_student_sent_text(self, message):
-        self.obj.is_element_present('xpath', '//android.view.View[@text="' + message + '"]')
-
-    def is_student_sent_text_visible(self, message):
-        return self.obj.get_element('xpath', '//android.view.View[@text="' + message + '"]').is_displayed()
+        # self.obj.is_element_present('xpath', '//android.view.View[@text="' + message + '"]')
+        text_present = False
+        for element in self.obj.get_elements('xpath', '//android.view.View'):
+            view_text = element.text
+            if message in view_text:
+                text_present = True
+                break
+        return text_present
 
     def speed_test(self):
         try:

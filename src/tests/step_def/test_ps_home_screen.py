@@ -3,6 +3,7 @@ from pytest import fixture
 from POM_Pages.application_login import Login
 from POM_Pages.ps_home_screen import PS_Homescreen
 from POM_Pages.homepage import HomePage
+from POM_Pages.staging_tlms import Stagingtlms
 
 scenarios('../features/Premium School Home Screen.feature')
 
@@ -17,6 +18,11 @@ def login_in(driver):
 def home_screen(driver):
     home_screen = PS_Homescreen(driver)
     yield home_screen
+
+
+@given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
+def attach_post_requisite(home_screen, driver, assessment_name):
+    home_screen.attach_post_requisite_with_assessement(driver, assessment_name)
 
 
 @given("Launch the app online")
@@ -39,11 +45,20 @@ def is_tab_selected(home_screen, text):
     home_screen.is_tab_selected(text), text + " tab is not selected"
 
 
+@then(parsers.parse('Verify that "{text}" shown in the prerequisites card'))
 @then(parsers.parse('Verify that user navigates to "{text}" screen'))
 @then(parsers.parse('Verify the text "{text}"'))
 @then(parsers.parse('Verify that "{text}" Badge on top right hand side of the screen'))
 def verify_text(login_in, text):
     assert login_in.text_match(text), "%s text is not displayed " % text
+
+
+@then(parsers.parse('Verify the Video card along with Video Name "{text1}" and the text "{text2}" along with Video '
+                    'icon and forward Arrow button'))
+def verify_post_req_video_elements(login_in, home_screen, text1, text2):
+    assert login_in.text_match(text1), "%s text is not displayed " % text1
+    assert login_in.text_match(text1), "%s text is not displayed " % text2
+    assert home_screen.verify_arrow_present_for_each_requisite(), "forward arrow is not displayed"
 
 
 @then(parsers.parse('Verify "{text1}" and "{text2}" tabs'))
@@ -96,20 +111,20 @@ def verify_session_card_details(home_screen):
     home_screen.verify_card_details()
 
 
+@given("reset student session if the session is incase completed")
+def reset_session(driver):
+    Stagingtlms(driver).reset_session()
+
+
 @then(parsers.parse('verify "{text}" button'))
 def verify_button(home_screen, text):
     home_screen.verify_button(text)
 
 
-@then(
-    'Verify the upcoming session details card is showed along with Subject name,Topic Name,Date,Month,day of the week and time.')
-def verify_session_details_card_loaded(home_screen):
-    home_screen.verify_session_details_card_loaded()
-
-
 @then('Verify that Completed sessions tab contents are loading')
 @then(
-    'Verify the completed session card along with Subject Name, topic Name and the text "Completed" with date and the session rating given by the user in stars followed by the numeric')
+    'Verify the completed session card along with Subject Name, topic Name and the text "Completed" with date and the '
+    'session rating given by the user in stars followed by the numeric')
 def verify_completed_card_details(home_screen):
     home_screen.verify_completed_card_details()
 

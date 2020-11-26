@@ -7,7 +7,7 @@ from POM_Pages.mentor_session import MentorSession
 from POM_Pages.staging_tlms import Stagingtlms
 from POM_Pages.homepage import HomePage, Login_Credentials, getdata
 
-scenarios('../features/Join Session  and  Chat.feature')
+scenarios('../features/Session Flow.feature')
 
 
 @fixture
@@ -35,7 +35,8 @@ def start_tutor_session(mentor_session):
 
 @given("launch the app and navigate to home screen")
 def login_as_one_mega_user(driver):
-    HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
+    # HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
+    pass
 
 
 @given("tap on Premium School card")
@@ -134,6 +135,7 @@ def verify_live_chat_enabled(student_session):
     assert is_enabled is True, "Live chat is disabled"
 
 
+@then('verify that live chat is launched')
 @then("verify the text Live chat as header")
 def verify_live_chat_enabled(student_session):
     is_present = student_session.is_live_chat_displayed()
@@ -292,12 +294,6 @@ def is_teaching_material_present(student_session):
     student_session.is_teaching_material_present()
 
 
-@given("ensure that tutor has joined the session and has enabled audio and video of student")
-def start_tutor_session_and_enable_tutor_video_and_audio(mentor_session):
-    mentor_session.start_tutor_session()
-    mentor_session.enable_student_audio_and_video_by_global_controls()
-
-
 @then("verify video icon should be enabled")
 def verify_video_option_enabled(student_session):
     is_enabled = student_session.is_student_video_icon_enabled()
@@ -313,12 +309,6 @@ def verify_mic_option_disabled(student_session):
 @then("verify student video screen should be enabled")
 def verify_video_screen_disabled(student_session):
     assert student_session.is_student_video_screen_present() is True, "Video screen is disabled"
-
-
-@given("ensure that tutor has joined the session and has disabled tutor video")
-def start_tutor_session_and_disable_tutor_video(mentor_session):
-    mentor_session.start_tutor_session()
-    mentor_session.disable_tutor_video()
 
 
 @then("tap on video icon")
@@ -359,28 +349,16 @@ def start_tutor_session_and_tutor_send_message_in_chat(mentor_session, text):
     mentor_session.send_message_in_chat(text)
 
 
-@then("send around 8 messages")
-def student_send_multiple_messages(student_session):
-    global text_list
-    text_list = ["1!Maths", "2@Chemistry", "3#Physics", "4$Biology", "5%Computer_Science", "6^English", "7&Hindi",
-                 "8*(Economics)"]
-    for i in range(len(text_list)):
-        student_session.tap_on_chat_textbox()
-        student_session.tap_on_chat_dialog()
-        student_session.enter_text_in_chat(text_list[i])
-        student_session.tap_on_chat_send()
+@then(parsers.parse('send "{text}" message'))
+def student_send_multiple_messages(student_session, text):
+    student_session.tap_on_chat_textbox()
+    student_session.enter_text_in_chat(text)
+    student_session.tap_on_chat_send()
 
 
 @then("scroll the live chat")
 def scroll_live_chat(student_session):
     student_session.scroll_chat_container()
-
-
-@then("verify student scrolled the chat window and last message is visible")
-def is_message_visible(student_session):
-    flag = student_session.is_student_sent_text_visible(text_list[7])
-    assert flag, "Student scrolled the chat window and " \
-                 "last message is visible verification failed"
 
 
 @then('tutor ends session')
@@ -398,7 +376,7 @@ def close_mentor_session_tab(mentor_session):
     mentor_session.close_mentor_session_tab()
 
 
-@given("reset student session")
+@given("reset student session if the session is incase completed")
 def reset_session(driver):
     Stagingtlms(driver).reset_session()
 
@@ -407,4 +385,107 @@ def reset_session(driver):
 def is_video_play_pause_progress_bar_present(student_session):
     assert (not student_session.is_video_play_present()
             and not student_session.is_video_pause_progress_bar_present()
-            and not student_session.is_video_progress_bar_present()),"seek bar,pause,play icons are present on the screen"
+            and not student_session.is_video_progress_bar_present()), "seek bar,pause,play icons are present on the screen"
+
+
+@when("verify elements in Tutor's chat window")
+def verify_tutor_chat_window(mentor_session):
+    mentor_session.verify_tutor_chat_window()
+
+
+@then("Verify when student sends message student name is shown")
+def verify_student_name(mentor_session):
+    mentor_session.verify_student_name_present()
+
+
+@then("Verify that Ban button , Approve button and Reject button is shown")
+def verify_ban_approve_reject(mentor_session):
+    mentor_session.verify_ban_approve_reject_present()
+
+
+@then('tap on tutor chat icon')
+@when('tap on tutor chat icon')
+def tap_chat_icon(mentor_session):
+    mentor_session.tap_chat_icon()
+
+
+@then('tap on Ban button')
+def tap_ban_icon(mentor_session):
+    mentor_session.tap_ban_icon()
+
+
+@then("verify ban elements in tutor's window")
+def ban_elements(mentor_session):
+    mentor_session.verify_ban_elements()
+
+
+@then('Verify that "Ban the student" pop-up should be shown with the options as "Inappropriate Content",'
+      '"Abusive Language","Content Sharing" and "Others" along with radio button and "Cancel" and "Ban" buttons')
+def verify_ban_options_and_buttons(mentor_session):
+    mentor_session.verify_ban_options_and_buttons()
+
+
+@then('Verify that Inappropriate Content should be selected by default')
+def verify_default_ban_option(mentor_session):
+    mentor_session.verify_default_ban_option()
+
+
+@then('Verify that while clicking on Cancel button the pop-up should go off')
+def verify_ban_cancel(mentor_session):
+    mentor_session.verify_ban_cancel()
+
+
+@then("Verify the while clicking outside of the pop-up it should go off")
+def step_impl(mentor_session):
+    mentor_session.verify_click_outside_ban_popup()
+
+
+@then("Verify on clicking on Ban button user should be banned and banned student messages should not be shown")
+def verify_ban_student(mentor_session):
+    mentor_session.verify_ban_student()
+
+
+@then("tap on the tick mark (approve button) in the message")
+def tap_on_approve_message(mentor_session):
+    mentor_session.tap_on_approve_message()
+
+
+@then(parsers.parse('Verify that the tutor is able to approve the message "{text}"'))
+def tap_on_approve_message(mentor_session,text):
+    assert mentor_session.is_message_present_for_tutor(text), "tutor was unable to approve the message"
+
+
+@then(parsers.parse('Verify that the tutor is able to reject the message "{text}"'))
+def tap_on_approve_message(mentor_session, text):
+    assert not mentor_session.is_message_present_for_tutor(text), "tutor was unable to approve the message"
+
+
+@then('tap on "x" button(reject button) shown in the message')
+def tap_on_reject_message(mentor_session):
+    mentor_session.tap_on_reject_message()
+
+
+@then(parsers.parse('verify that approved message "{text}" is shown in the other student chat window'))
+def login_as_student2_and_verify_approved_msg(student_session, text):
+    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    expected_text = user_name + " " + text
+    assert student_session.verify_student_sent_text(expected_text), "approved message is not present"
+
+
+@then('login as another student who attends same session')
+def login_as_student2(driver, login_in):
+    HomePage(driver).login_as_another_one_mega_user(driver)
+    login_in.click_on_premium_school()
+    login_in.click_on_link('Premium School')
+
+
+@then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))
+def verify_rejected_msg(student_session, text):
+    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    expected_text = user_name + " " + text
+    assert not student_session.verify_student_sent_text(expected_text), "rejected message is  present"
+
+
+@given('verify reset buffer time is completed')
+def wait_for_reset_buffer_time_to_complete(mentor_session):
+    mentor_session.wait_for_reset_buffer_time_to_complete()

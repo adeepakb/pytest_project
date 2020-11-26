@@ -3,7 +3,7 @@ import math
 import subprocess
 from subprocess import getoutput
 import datetime
-from PIL import Image
+from PIL import Image, ImageChops
 from io import BytesIO
 import logging
 from selenium.webdriver.support.ui import WebDriverWait
@@ -72,6 +72,7 @@ class TutorCommonMethods:
         return element
 
     def get_elements(self, locator_type, locator_value):
+        self.wait_for_locator(locator_type, locator_value,5)
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
@@ -146,7 +147,8 @@ class TutorCommonMethods:
     # provide rgb color code
     # provide index = 1 for text element, as background color will be the prominent color
     # provide index = 0 for color filled element which has no background color
-    def verify_element_color(self, locator_type=None, locator_value=None, rgb_color_code=None, index=None, element=None):
+    def verify_element_color(self, locator_type=None, locator_value=None, rgb_color_code=None, index=None,
+                             element=None):
         if type(rgb_color_code) is str:
             target_color = tuple(map(int, rgb_color_code[1:-1].split(', ')))
         elif type(rgb_color_code) is list:
@@ -411,6 +413,13 @@ class TutorCommonMethods:
     def clear_app_from_recents(self):
         self.execute_command('adb shell input keyevent KEYCODE_APP_SWITCH')
         self.execute_command('adb shell input keyevent DEL')
+
+    @staticmethod
+    def compare_images(image1, image2):
+        im1 = Image.open(image1)
+        im2 = Image.open(image2)
+        diff = ImageChops.difference(im1, im2).getbbox()
+        return diff
 
 
 class InValidLocatorError(Exception):
