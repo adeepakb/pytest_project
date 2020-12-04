@@ -96,8 +96,6 @@ class MentorSession:
             print("Timed out while waiting for page to load")
 
     def toggle_chat(self, text):
-        self.wait_for_clickable_element_webdriver(self.chat_icon)
-        self.chrome_driver.find_element_by_xpath(self.chat_icon).click()
         current_toggle_status = self.check_toggle_state()
         if text == "off" and current_toggle_status:
             self.wait_for_locator_webdriver(self.chat_toggle)
@@ -210,10 +208,10 @@ class MentorSession:
         self.wait_for_clickable_element_webdriver(self.chat_icon)
         self.chrome_driver.find_element_by_xpath(self.chat_icon).click()
         self.wait_for_locator_webdriver(self.live_chat_header)
-        assert self.chrome_driver.find_element_by_xpath(
-            self.live_chat_header).is_displayed(), "Live chat header is not present"
-        assert self.chrome_driver.find_element_by_xpath(
-            self.live_chat_close).is_displayed(), "chat close icon is not present"
+        time.sleep(3)
+        assert self.chrome_driver.find_element_by_xpath(self.live_chat_header).is_displayed(), "Live chat header is not present"
+        self.wait_for_locator_webdriver(self.live_chat_close)
+        assert self.chrome_driver.find_element_by_xpath( self.live_chat_close).is_displayed(), "chat close icon is not present"
         self.verify_type_something_text()
         assert self.chrome_driver.find_element_by_xpath(self.type_something_inputcard).is_enabled(), \
             "text field is not enabled.No cursor in the text field"
@@ -232,6 +230,7 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath(self.ban).click()
 
     def verify_ban_options_and_buttons(self):
+        self.wait_for_locator_webdriver(self.ban_student_popup)
         expected_option_list = ['Inappropriate Content', 'Abusive Language', 'Content Sharing', 'Others']
         actual_option_list = []
         options = self.chrome_driver.find_elements_by_xpath("//div[@class='popupOption']")
@@ -268,6 +267,7 @@ class MentorSession:
     def verify_ban_student(self):
         # ban student and verify Banned student messages are not be shown
         self.tap_chat_icon()
+        self.wait_for_locator_webdriver(self.ban_student_popup)
         self.wait_for_clickable_element_webdriver(self.ban)
         self.chrome_driver.find_element_by_xpath(self.ban).click()
         self.chrome_driver.find_element_by_xpath(self.ban_student_ban).click()

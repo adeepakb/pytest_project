@@ -232,7 +232,7 @@ class TutorCommonMethods:
     # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator_type, locator_value):
         try:
-            self.wait_for_locator(locator_type, locator_value, 10)
+            # self.wait_for_locator(locator_type, locator_value, 10)
             element = self.get_element(locator_type, locator_value)
             if element is not None:
                 return True

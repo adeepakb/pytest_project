@@ -35,8 +35,7 @@ def start_tutor_session(mentor_session):
 
 @given("launch the app and navigate to home screen")
 def login_as_one_mega_user(driver):
-    # HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
-    pass
+    HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
 
 
 @given("tap on Premium School card")
@@ -58,6 +57,11 @@ def verify_join_now_is_enabled(driver, student_session, text):
     session_pop.verify_popup_present()
     details_dict = session_pop.content_card_loaded()
     student_session.verify_button(text)
+
+
+@then('tap on "Join Now" button')
+def tap_on_join_now(student_session):
+    student_session.tap_on_join_now()
 
 
 @when(parsers.parse('tap on "{text}" button'))
@@ -225,9 +229,10 @@ def tap_device_back(student_session):
     student_session.click_back()
 
 
+@then(parsers.parse('verify student able to view teacher message "{text}"'))
 @then(parsers.parse('verify student is able to send the typed text "{text}" to tutor'))
 def verify_user_sent_text(student_session, text):
-    student_session.verify_student_sent_text(text)
+    assert student_session.verify_message_at_student_side(text), "%s message is not present" % text
 
 
 @then(parsers.parse('Paste the copied text "{text}" in the chat field'))
@@ -248,7 +253,7 @@ def click_on_button(login_in, text):
 @then(parsers.parse('verify student is able to view the tutor message "{text}"'))
 @then(parsers.parse('verify old chat thread message "{text}" should be displayed in chat window'))
 def verify_old_chat(student_session, text):
-    student_session.verify_student_sent_text(text)
+    student_session.verify_message_at_student_side(text)
 
 
 @given("navigate to home page and verify student profile")
@@ -275,7 +280,7 @@ def verify_offline_dialog_sheet_disappeared(student_session):
 
 
 @then(parsers.parse('switch "{text}" the device data'))
-def switch_off_data(login_in, student_session, text):
+def switch_off_data(login_in, text):
     login_in.toggle_wifi_connection(text)
 
 
@@ -343,9 +348,8 @@ def verify_student_chat_dialog_not_present(student_session):
     assert (not student_session.verify_student_chat_dialog()), "Chat dialog is present"
 
 
-@given(parsers.parse('ensure that tutor has joined the session and send message "{text}" in chat to students'))
-def start_tutor_session_and_tutor_send_message_in_chat(mentor_session, text):
-    mentor_session.start_tutor_session()
+@then(parsers.parse('teacher send message "{text}" in chat to students'))
+def teacher_send_message_in_chat(mentor_session, text):
     mentor_session.send_message_in_chat(text)
 
 
@@ -414,10 +418,6 @@ def tap_ban_icon(mentor_session):
     mentor_session.tap_ban_icon()
 
 
-@then("verify ban elements in tutor's window")
-def ban_elements(mentor_session):
-    mentor_session.verify_ban_elements()
-
 
 @then('Verify that "Ban the student" pop-up should be shown with the options as "Inappropriate Content",'
       '"Abusive Language","Content Sharing" and "Others" along with radio button and "Cancel" and "Ban" buttons')
@@ -450,14 +450,15 @@ def tap_on_approve_message(mentor_session):
     mentor_session.tap_on_approve_message()
 
 
+@then(parsers.parse('verify tutor received "{text}" message from student'))
 @then(parsers.parse('Verify that the tutor is able to approve the message "{text}"'))
-def tap_on_approve_message(mentor_session,text):
-    assert mentor_session.is_message_present_for_tutor(text), "tutor was unable to approve the message"
+def tap_on_approve_message(mentor_session, text):
+    assert mentor_session.is_message_present_for_tutor(text), "Student's message not present at tutor side"
 
 
 @then(parsers.parse('Verify that the tutor is able to reject the message "{text}"'))
 def tap_on_approve_message(mentor_session, text):
-    assert not mentor_session.is_message_present_for_tutor(text), "tutor was unable to approve the message"
+    assert not mentor_session.is_message_present_for_tutor(text), "student's message still present at tutor side"
 
 
 @then('tap on "x" button(reject button) shown in the message')
@@ -469,7 +470,7 @@ def tap_on_reject_message(mentor_session):
 def login_as_student2_and_verify_approved_msg(student_session, text):
     user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
-    assert student_session.verify_student_sent_text(expected_text), "approved message is not present"
+    assert student_session.verify_message_at_student_side(expected_text), "approved message is not present"
 
 
 @then('login as another student who attends same session')
@@ -483,7 +484,7 @@ def login_as_student2(driver, login_in):
 def verify_rejected_msg(student_session, text):
     user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
-    assert not student_session.verify_student_sent_text(expected_text), "rejected message is  present"
+    assert not student_session.verify_message_at_student_side(expected_text), "rejected message is  present"
 
 
 @given('verify reset buffer time is completed')

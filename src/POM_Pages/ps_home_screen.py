@@ -117,21 +117,20 @@ class PS_Homescreen:
         Stagingtlms(driver).attach_requisite(assessment_name)
 
     def verify_completed_card_details(self):
-        subject_name = self.obj.get_element('xpath', '//*[contains(@resource-id, "subject_name")]').text
-        if self.obj.is_element_present('xpath', '//*[contains(@resource-id, "session_title")]'):
-            topic_name = self.obj.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
+        subject_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/subject_name').text
+        if self.obj.is_element_present('id', 'com.byjus.thelearningapp.premium:id/session_title'):
+            topic_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/session_title').text
         else:
-            topic_name = self.obj.get_element('xpath', '//*[contains(@resource-id, "topic_name")]').text
-        session_date = self.obj.get_element('xpath', '//*[contains(@resource-id, "post_requisite_date")]').text
-        session_status = self.obj.get_element('xpath', '//*[contains(@resource-id, "post_requisite_status")]').text
+            topic_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/topic_name').text
+        session_status = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/post_requisite_status').text
+        session_date = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/post_requisite_date').text
         details_dict = {
             "Subject": subject_name,
             "Topic": topic_name,
             "Schedule Date": session_date,
             "Session status": session_status
         }
-        assert all(v is not None for v in [subject_name, topic_name, session_date,
-                                           session_status]), "Completed Session card details not loaded"
+        assert (all(v is not None for v in [subject_name,topic_name, session_date,session_status]) and session_status == "Completed"), "Completed Session card details not loaded"
         return details_dict
 
     def tap_outside_dialog_layout(self):

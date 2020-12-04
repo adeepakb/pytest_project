@@ -35,6 +35,7 @@ class StudentSession:
         self.exo_pause = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_pause"]'
         self.exo_play = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_play"]'
         self.exo_progress_bar = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_progress"]'
+        self.join_now = 'com.byjus.thelearningapp.premium:id/card_strip_btn'
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
@@ -71,6 +72,7 @@ class StudentSession:
             return False
 
     def tap_on_disabled_chat(self):
+        self.obj.wait_for_locator('xpath', self.student_chat_disabled)
         self.obj.get_element('xpath', self.student_chat_disabled).click()
 
     def is_chat_icon_displayed(self):
@@ -89,10 +91,16 @@ class StudentSession:
         self.obj.wait_for_locator('xpath', self.show_chat)
         self.obj.get_element('xpath', self.show_chat).click()
 
+    def tap_on_join_now(self):
+        self.obj.wait_for_locator('id', self.join_now)
+        self.obj.get_element('id', self.join_now).click()
+
     def close_chat(self):
+        self.obj.wait_for_locator('xpath', self.chat_close_icon)
         self.obj.get_element('xpath', self.chat_close_icon).click()
 
     def tap_on_chat_textbox(self):
+        self.obj.wait_for_locator('xpath', self.student_chat)
         self.obj.get_element('xpath', self.student_chat).click()
 
     def tap_outside_dialog_layout(self):
@@ -108,6 +116,7 @@ class StudentSession:
         return self.obj.is_element_present('xpath', self.student_chat_dialog)
 
     def tap_on_chat_dialog(self):
+        self.obj.wait_for_locator('xpath', self.student_chat_dialog)
         self.obj.get_element('xpath', self.student_chat_dialog).click()
 
     def is_emoji_present(self):
@@ -130,9 +139,10 @@ class StudentSession:
         assert message == self.obj.get_element('xpath', self.student_chat).text, "Chat text verification failed"
 
     def tap_on_chat_send(self):
+        self.obj.wait_for_locator('xpath', self.student_chat_send)
         self.obj.get_element('xpath', self.student_chat_send).click()
 
-    def verify_student_sent_text(self, message):
+    def verify_message_at_student_side(self, message):
         # self.obj.is_element_present('xpath', '//android.view.View[@text="' + message + '"]')
         text_present = False
         for element in self.obj.get_elements('xpath', '//android.view.View'):
@@ -154,6 +164,7 @@ class StudentSession:
             pass
 
     def tap_on_cancel(self):
+        self.obj.wait_for_locator('xpath', '//*[contains(@resource-id, "secondaryAction")]')
         self.obj.get_element('xpath', '//*[contains(@resource-id, "secondaryAction")]').click()
 
     def verify_offline_dialog_disappeared(self):
