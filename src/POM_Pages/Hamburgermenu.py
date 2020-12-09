@@ -66,7 +66,7 @@ class Hamburger:
     country_Code = (By.ID, "com.byjus.thelearningapp.premium:id/spnrCountry")
     loginBtn_id = (By.ID, "com.byjus.thelearningapp.premium:id/btnLogin")
     OtpTxtBx_id = (By.ID, "com.byjus.thelearningapp.premium:id/etOTP")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    allow_btn_id = (By.XPATH, "//*[contains(@resource-id, 'permission_allow_button')]")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
     multiple_accounts_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_linearlayout")

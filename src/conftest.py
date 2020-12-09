@@ -1,6 +1,6 @@
 import re
 import traceback
-
+import os
 import pytest
 from _pytest._code.code import ExceptionInfo
 from pytest_bdd import scenarios, given, when, then, parsers, scenario
@@ -21,23 +21,36 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-# from Constants.loadFeatureFile import fetch_featurefile
+from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
+feature_job = BuildFeatureJob()
 
 
-Featurejob = BuildFeatureJob()
+@pytest.fixture(scope="session", autouse=True)
+def setup_teardown():
+    feature_job.build_and_install_apk()
+    yield
+    # Create report on demand via  API at the end of the session
+    suitename = os.getenv('suite')
+    if suitename == 'Regression_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
+        run_testrail_reports(report_id)
+    elif suitename == 'Sanity_PremiumApp_Automation':
+        report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
+        run_testrail_reports(report_id)
 
 
 @pytest.fixture()
 def driver():
     driver = baseClass.driverSetup()
-    Featurejob.lock_or_unlock_device('lock')
-    serial = Featurejob.connect_adb_api()
-    Featurejob.connect_to_adb(serial)
+    feature_job.lock_or_unlock_device('lock')
+    serial = feature_job.connect_adb_api()
+    feature_job.connect_to_adb(serial)
     yield driver
-    subprocess.Popen('adb disconnect '+serial, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+    subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT).communicate()
     driver.quit()
 
 # ---------------------------testrail updation--------------------
@@ -158,7 +171,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     '''
     data = None
     #     ProjectID = test_management.get_project_id("Learning App")
-    suitename = "Regression_PremiumApp_Automation"
+    suitename = os.getenv('suite')
 
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()

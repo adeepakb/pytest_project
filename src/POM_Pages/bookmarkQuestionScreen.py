@@ -53,7 +53,7 @@ class BookMarkQuestionScreen:
     gms_cancel = (By.ID, "com.google.android.gms:id/cancel")
     btnRegister = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
     regscn_lgnbtn = (By.ID, "com.byjus.thelearningapp.premium:id/tvLoginBl")
-    allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    allow_btn_id = (By.XPATH, "//*[contains(@resource-id, 'permission_allow_button')]")
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
@@ -182,8 +182,10 @@ class BookMarkQuestionScreen:
             else:
                 logging.info('user is not in Home page')
                 return False
+        except NoSuchElementException:
+            CommonMethods.noSuchEleExcept(driver, featureFileName, 'verify_home_page')
         except:
-            logging.info('Error in Verifing Home Page')
+            CommonMethods.exception(driver, featureFileName, 'verify_home_page')
 
     # This method is used to navigate to Library chapter list screen
     def navigate_to_library(self, driver, sub):
