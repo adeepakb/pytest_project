@@ -278,13 +278,13 @@ class MentorSession:
             print("banned student messages are not present")
 
     def tap_on_approve_message(self):
-        time.sleep(3)
+        time.sleep(5)
         self.wait_for_clickable_element_webdriver(self.approve_message)
         elements = self.chrome_driver.find_elements_by_xpath("//*[@class='action']")
         elements[2].click()
 
     def tap_on_reject_message(self):
-        time.sleep(3)
+        time.sleep(5)
         self.wait_for_clickable_element_webdriver(self.reject_message)
         elements = self.chrome_driver.find_elements_by_xpath("//*[@class='action']")
         elements[1].click()

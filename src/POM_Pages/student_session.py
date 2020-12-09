@@ -7,6 +7,8 @@ from Utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
+featureFileName = "Session Flow"
+
 
 class StudentSession:
     def __init__(self, driver):
@@ -133,6 +135,7 @@ class StudentSession:
         assert self.obj.is_keyboard_shown(), "Device keypad not enabled"
 
     def enter_text_in_chat(self, message):
+        self.obj.wait_for_locator('xpath', self.student_chat)
         self.obj.get_element('xpath', self.student_chat).send_keys(message)
 
     def verify_entered_chat(self, message):

@@ -588,15 +588,19 @@ class Stagingtlms:
                     self.chrome_driver.find_element_by_xpath("//a[text()='Attach Requisite Group']").click()
                     self.wait_for_locator_webdriver("//span[@role='presentation']")
                     self.chrome_driver.find_element_by_xpath("//span[@role='presentation']").click()
-                    self.wait_for_locator_webdriver("//li[text()='"+requisite_name+"']")
-                    self.chrome_driver.find_element_by_xpath("//li[text()='"+requisite_name+"']").click()
+                    # self.wait_for_locator_webdriver("//li[text()='"+requisite_name+"']")
+                    # self.chrome_driver.find_element_by_xpath("//li[text()='"+requisite_name+"']").click()
+                    self.chrome_driver.find_element_by_xpath("//input[@class='select2-search__field']").send_keys(requisite_name)
+                    time.sleep(2)
+                    self.chrome_driver.find_element_by_xpath("//li[@class='select2-results__option select2-results__option--highlighted']").click()
                     self.wait_for_locator_webdriver("//button[@type='submit']")
                     self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
                     try:
-                        WebDriverWait(self.chrome_driver, 3).until(EC.alert_is_present(),'Timed out waiting for confirmation popup to appear.')
+                        WebDriverWait(self.chrome_driver, 5).until(EC.alert_is_present(),'Timed out waiting for confirmation popup to appear.')
                         alert = self.chrome_driver.switch_to.alert
                         alert.accept()
                         print("alert accepted")
+                        time.sleep(2)
                     except TimeoutException:
                         print("no alert")
                     self.chrome_driver.close()

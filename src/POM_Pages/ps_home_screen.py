@@ -60,7 +60,7 @@ class PS_Homescreen:
 
     def tap_on_get_help(self):
         self.obj.get_element('id', self.get_help).click()
-        time.sleep(2)
+        time.sleep(8)
         self.obj.click_back()
 
     def is_get_help_present(self):

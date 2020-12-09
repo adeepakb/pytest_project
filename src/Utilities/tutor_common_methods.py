@@ -3,6 +3,8 @@ import math
 import subprocess
 from subprocess import getoutput
 import datetime
+
+import pytest
 from PIL import Image, ImageChops
 from io import BytesIO
 import logging
@@ -421,6 +423,20 @@ class TutorCommonMethods:
         diff = ImageChops.difference(im1, im2).getbbox()
         return diff
 
+    def takeScreenShot(self, featureFileName):
+        screenShot = datetime.datetime.now()
+        fileName = screenShot.strftime("%d-%m-%y, %H-%M-%S")
+        self.driver.get_screenshot_as_file('''../../ScreenShots/''' + featureFileName + " " + fileName + ".png")
+
+    def noSuchEleExcept(self, featureFileName, methodName):
+        logging.error("Failed Locator in Method" + methodName)
+        self.takeScreenShot(featureFileName)
+        pytest.fail("Failed Due to Locator in")
+
+    def exception(self, featureFileName, methodName):
+        logging.error('Failed due to Exception in Method ' + methodName)
+        self.takeScreenShot(featureFileName)
+        pytest.fail("Failed Due to Exception in")
 
 class InValidLocatorError(Exception):
     pass

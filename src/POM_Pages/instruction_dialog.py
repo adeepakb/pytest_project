@@ -27,7 +27,7 @@ class InstructionDialog:
         self.exit_assessment = 'android:id/button1'
         self.requisite_list = 'com.byjus.thelearningapp.premium:id/requisite_item_list'
         self.begin_assessment = '//*[@resource-id = "begin-assessment"]'
-        self.exit_assessment_button = '//android.view.View[@content-desc="Exit Assessment"]'
+        self.exit_assessment_button = '//android.view.View[@text="Exit Assessment"]'
 
     def is_close_instruction_displayed(self):
         return self.obj.is_element_present('xpath', self.close_instruction)
