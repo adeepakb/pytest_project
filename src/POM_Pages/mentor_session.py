@@ -23,8 +23,8 @@ class MentorSession:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.tlms = Stagingtlms(driver)
         self.byjus_icon = "//img[contains(@src,'data:image/png')]"
@@ -100,13 +100,9 @@ class MentorSession:
         if text == "off" and current_toggle_status:
             self.wait_for_locator_webdriver(self.chat_toggle)
             self.chrome_driver.find_element_by_xpath(self.chat_toggle).click()
-            self.wait_for_clickable_element_webdriver(self.live_chat_close)
-            self.chrome_driver.find_element_by_xpath(self.live_chat_close).click()
         elif text == "on" and (not current_toggle_status):
             self.wait_for_locator_webdriver(self.chat_toggle)
             self.chrome_driver.find_element_by_xpath(self.chat_toggle).click()
-            self.wait_for_clickable_element_webdriver(self.live_chat_close)
-            self.chrome_driver.find_element_by_xpath(self.live_chat_close).click()
         else:
             pass
 

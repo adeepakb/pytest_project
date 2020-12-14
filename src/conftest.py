@@ -173,6 +173,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     #     ProjectID = test_management.get_project_id("Learning App")
     suitename = os.getenv('suite')
 
+    # suitename = 'Regression_PremiumApp_Automation'
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()
     summaries = traceback.format_exception(e_type, value, tb)
