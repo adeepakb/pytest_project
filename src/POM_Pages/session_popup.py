@@ -1,7 +1,7 @@
 import logging
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.POM_Pages.student_session import StudentSession
+from POM_Pages.student_session import StudentSession
 
 
 class SessionAlert(TutorCommonMethods):
@@ -22,7 +22,7 @@ class SessionAlert(TutorCommonMethods):
                     '//*[contains(@resource-id, "dialog_layout")]').is_displayed()
                 logging.debug('session popup is displayed')
                 break
-            except NoSuchElementException:
+            except (NoSuchElementException,StaleElementReferenceException):
                 timeout -= 5
         logging.debug('session popup is not displayed')
 

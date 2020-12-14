@@ -3,7 +3,9 @@ import math
 import subprocess
 from subprocess import getoutput
 import datetime
-from PIL import Image
+
+import pytest
+from PIL import Image, ImageChops
 from io import BytesIO
 import logging
 from selenium.webdriver.support.ui import WebDriverWait
@@ -72,6 +74,7 @@ class TutorCommonMethods:
         return element
 
     def get_elements(self, locator_type, locator_value):
+        self.wait_for_locator(locator_type, locator_value,5)
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
@@ -146,7 +149,8 @@ class TutorCommonMethods:
     # provide rgb color code
     # provide index = 1 for text element, as background color will be the prominent color
     # provide index = 0 for color filled element which has no background color
-    def verify_element_color(self, locator_type=None, locator_value=None, rgb_color_code=None, index=None, element=None):
+    def verify_element_color(self, locator_type=None, locator_value=None, rgb_color_code=None, index=None,
+                             element=None):
         if type(rgb_color_code) is str:
             target_color = tuple(map(int, rgb_color_code[1:-1].split(', ')))
         elif type(rgb_color_code) is list:
@@ -230,7 +234,7 @@ class TutorCommonMethods:
     # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator_type, locator_value):
         try:
-            self.wait_for_locator(locator_type, locator_value, 10)
+            # self.wait_for_locator(locator_type, locator_value, 10)
             element = self.get_element(locator_type, locator_value)
             if element is not None:
                 return True
@@ -412,6 +416,27 @@ class TutorCommonMethods:
         self.execute_command('adb shell input keyevent KEYCODE_APP_SWITCH')
         self.execute_command('adb shell input keyevent DEL')
 
+    @staticmethod
+    def compare_images(image1, image2):
+        im1 = Image.open(image1)
+        im2 = Image.open(image2)
+        diff = ImageChops.difference(im1, im2).getbbox()
+        return diff
+
+    def takeScreenShot(self, featureFileName):
+        screenShot = datetime.datetime.now()
+        fileName = screenShot.strftime("%d-%m-%y, %H-%M-%S")
+        self.driver.get_screenshot_as_file('''../../ScreenShots/''' + featureFileName + " " + fileName + ".png")
+
+    def noSuchEleExcept(self, featureFileName, methodName):
+        logging.error("Failed Locator in Method" + methodName)
+        self.takeScreenShot(featureFileName)
+        pytest.fail("Failed Due to Locator in")
+
+    def exception(self, featureFileName, methodName):
+        logging.error('Failed due to Exception in Method ' + methodName)
+        self.takeScreenShot(featureFileName)
+        pytest.fail("Failed Due to Exception in")
 
 class InValidLocatorError(Exception):
     pass

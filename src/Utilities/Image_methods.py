@@ -36,9 +36,9 @@ def screenshot(browser):
 We'll use Pillow's Image class to open the image and pytesseract to detect the string in the image
 we need to install Tesseract first in the system
 '''
-def get_text_from_image(browser,imagefilepath, rtext):
+def get_text_from_image(driver,imagefilepath, rtext):
     img = cv2.imread(imagefilepath)
-    img_to_text = pytesseract.image_to_string(img)
+    img_to_text = pytesseract.image_to_string(img,config ='--psm 6')
     to_find_text = re.compile(rtext)
     print(img_to_text)
     search_text = to_find_text.search(img_to_text)

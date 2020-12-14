@@ -1946,7 +1946,7 @@ class VideoPage:
 
     def tap_on_practice_card(self, driver):
         try:
-            CommonMethods.scrollToElementAndClick(driver, 'Practice')
+            CommonMethods.scrollToElementAndClick(driver, 'Start Practice')
         except NoSuchElementException:
             CommonMethods.noSuchEleExcept(driver, featureFileName, 'tap_on_practice_card')
 

@@ -12,7 +12,9 @@ from json import load
 from POM_Pages.staging_tlms import Stagingtlms
 import logging
 from Constants.load_json import getdata
+from Utilities.common_methods import CommonMethods
 
+CommonMethods = CommonMethods()
 
 class Login(TutorCommonMethods):
     def __init__(self, driver):
@@ -40,6 +42,7 @@ class Login(TutorCommonMethods):
         self.btn_personal = '//*[contains(@resource-id,"btnEnterPersonalise")]'
         self.profile_back_button = '//*[contains(@resource-id, "roundedNavButton")]'
         self.permission_container = '//*[@resource-id = "com.android.packageinstaller:id/desc_container"]'
+        self.permission_container_tab = '//*[@resource-id = "com.android.permissioncontroller:id/content_container"]'
         self.premium_school_card='com.byjus.thelearningapp.premium:id/premiumSchoolCardView'
 
         super().__init__(driver)
@@ -48,17 +51,24 @@ class Login(TutorCommonMethods):
         self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
-        element = self.get_element(
-            'android_uiautomator',
-            'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
-            'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
+        # element = self.get_element( 'android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(
+        # true)).scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
         try:
-            self.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            element.click()
-            if self.obj.is_element_present('xpath', self.permission_container):
+            self.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
+            self.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout').click()
+            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath', self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
             raise LoginException("Premium School card might not be displayed!")
+
+    def select_premium_school(self):
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/btnPremiumSchool')
+            assert self.text_match('BYJU’S Premium School'), "text is not displayed "
+        elif device == 'mobile':
+            self.click_on_link('Premium School')
+            assert self.text_match('Premium School'), "text is not displayed"
 
     def enter_phone(self, phone_num):
         self.obj.wait_for_locator('xpath', self.phone_number)
