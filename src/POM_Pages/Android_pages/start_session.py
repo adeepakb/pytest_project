@@ -9,7 +9,7 @@ import json
 
 from POM_Pages.scroll_cards import ScrollCards
 from Utilities.common_methods import CommonMethods
-from POM_Pages.application_login import Login
+from POM_Pages.LoginAndroid import Login
 from POM_Pages.session_data import SessionData
 import xml.etree.ElementTree as ET
 from Utilities.tutor_common_methods import TutorCommonMethods

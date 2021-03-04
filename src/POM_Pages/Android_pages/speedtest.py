@@ -4,7 +4,7 @@ from selenium.common.exceptions import InvalidElementStateException, StaleElemen
 import requests
 import json
 from Utilities.common_methods import CommonMethods
-from POM_Pages.application_login import Login
+from POM_Pages.LoginAndroid import Login
 import xml.etree.ElementTree as ET
 from Utilities.tutor_common_methods import TutorCommonMethods
 

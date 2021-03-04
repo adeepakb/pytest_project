@@ -1,25 +1,39 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.student_session import StudentSession
-from POM_Pages.session_popup import SessionAlert
-from POM_Pages.mentor_session import MentorSession
-from POM_Pages.staging_tlms import Stagingtlms
-from POM_Pages.homepage import HomePage, Login_Credentials, getdata
+
+from Constants.platform import Platform
+from POM_Pages.Android_pages.login_android import LoginAndroid
+from POM_Pages.Android_pages.student_session import StudentSession
+from POM_Pages.Android_pages.session_popup import SessionAlert
+from POM_Pages.Android_pages.mentor_session import MentorSession
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
+from POM_Pages.Android_pages.homepage import HomePage, Login_Credentials, getdata
+from POM_Pages.Factory.login import LoginFactory
+from POM_Pages.Factory.student_session import StudentSessionFactory
 
 scenarios('../features/Session Flow.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = Login(driver)
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
 
 @fixture
-def student_session(driver):
-    student_session = StudentSession(driver)
-    yield student_session
+def student_session(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student_session = StudentSessionFactory().get_page(driver, Platform.ANDROID.value)
+        yield student_session
+    elif Platform.WEB.name in platform_list:
+        student_session = StudentSessionFactory().get_page(driver, Platform.WEB.value)
+        yield student_session
 
 
 @fixture
@@ -416,7 +430,6 @@ def tap_chat_icon(mentor_session):
 @then('tap on Ban button')
 def tap_ban_icon(mentor_session):
     mentor_session.tap_ban_icon()
-
 
 
 @then('Verify that "Ban the student" pop-up should be shown with the options as "Inappropriate Content",'

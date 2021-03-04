@@ -4,7 +4,7 @@ import re
 from appium.webdriver.common.touch_action import TouchAction
 from POM_Pages.staging_tlms import Stagingtlms
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.application_login import Login
+from POM_Pages.LoginAndroid import Login
 from Utilities.common_methods import CommonMethods
 import numpy as np
 from PIL import Image, ImageChops

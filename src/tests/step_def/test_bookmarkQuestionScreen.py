@@ -1,13 +1,6 @@
 from time import sleep
-import subprocess
-from selenium.webdriver.common import keys
-from appium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from pytest_bdd import scenarios, given, when, then, parsers,scenario
-from POM_Pages.bookmarkQuestionScreen import BookMarkQuestionScreen
-import pytest
-import logging
-import datetime
+from pytest_bdd import scenarios, given, when, then, parsers
+from POM_Pages.Android_pages.bookmarkQuestionScreen import BookMarkQuestionScreen
 from Utilities.BasePage import BaseClass
 driver = fixture = 'driver'
 

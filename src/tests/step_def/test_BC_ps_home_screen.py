@@ -1,16 +1,16 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.ps_home_screen import PS_Homescreen
-from POM_Pages.homepage import HomePage
-from POM_Pages.staging_tlms import Stagingtlms
+from POM_Pages.Factory.login import LoginFactory
+from POM_Pages.Android_pages.ps_home_screen_android import PS_Homescreen
+from POM_Pages.Android_pages.homepage import HomePage
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
 
 scenarios('../features/Premium School Home Screen.feature')
 
 
 @fixture
 def login_in(driver):
-    login_in = Login(driver)
+    login_in = LoginFactory().get_page(driver,'Android')
     yield login_in
 
 

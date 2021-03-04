@@ -1,28 +1,28 @@
 import re
-import sys
-import traceback
-import pytest
-import pytest_bdd
 from appium.webdriver.common.touch_action import TouchAction
+
+from Constants.constants import Login_Credentials
+from POM_Pages.Base_Pages.LoginBase import LoginBase
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from subprocess import Popen
 from json import load
-from POM_Pages.staging_tlms import Stagingtlms
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
 import logging
 from Constants.load_json import getdata
 from Utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
-class Login(TutorCommonMethods):
+
+class LoginAndroid(LoginBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.action = TouchAction(driver)
         self._scroll = ScrollCards(driver)
         self.driver = driver
-        self.phone_number = "//*[contains(@resource-id, 'etPhoneNumber')]"
+        self.phone_number = "com.byjus.thelearningapp.premium:id/etPhoneNumber"
         self.password = "//*[contains(@resource-id, 'etPassword')]"
         self.next_btn = "//*[contains(@resource-id, 'btnNext')]"
         self.login_btn = "//*[contains(@resource-id, 'btnLogin')]"
@@ -43,9 +43,17 @@ class Login(TutorCommonMethods):
         self.profile_back_button = '//*[contains(@resource-id, "roundedNavButton")]'
         self.permission_container = '//*[@resource-id = "com.android.packageinstaller:id/desc_container"]'
         self.permission_container_tab = '//*[@resource-id = "com.android.permissioncontroller:id/content_container"]'
-        self.premium_school_card='com.byjus.thelearningapp.premium:id/premiumSchoolCardView'
-
-        super().__init__(driver)
+        self.premium_school_card = 'com.byjus.thelearningapp.premium:id/premiumSchoolCardView'
+        self.OtpTxtBx_id = "com.byjus.thelearningapp.premium:id/etOTP"
+        self.multiple_accounts_dialog = "com.byjus.thelearningapp.premium:id/dialog_linearlayout"
+        self.user_profile_name = "com.byjus.thelearningapp.premium:id/tv_profile_name"
+        self.profile_select_radio_button = "com.byjus.thelearningapp.premium:id/profile_select_radio_button"
+        self.allow_btn_id = '//*[contains(@resource-id, "permission_allow_button")]'
+        self.none_of_the_above_id = "com.google.android.gms:id/cancel"
+        self.loginPageVerify_id = "//android.widget.Button[@text='Login']"
+        self.welcome_button = "com.byjus.thelearningapp.premium:id/welcomeButton"
+        self.loginBtn_id = "com.byjus.thelearningapp.premium:id/btnLogin"
+        self.continue_button = "com.byjus.thelearningapp.premium:id/tv_submit"
 
     def implicit_wait_for(self, pool):
         self.driver.implicitly_wait(pool)
@@ -54,9 +62,10 @@ class Login(TutorCommonMethods):
         # element = self.get_element( 'android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(
         # true)).scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
         try:
-            self.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            self.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout').click()
-            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath', self.permission_container_tab):
+            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
+            self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout').click()
+            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
+                                                                                                              self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
             raise LoginException("Premium School card might not be displayed!")
@@ -67,20 +76,51 @@ class Login(TutorCommonMethods):
             self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/btnPremiumSchool')
             assert self.text_match('BYJU’S Premium School'), "text is not displayed "
         elif device == 'mobile':
-            self.click_on_link('Premium School')
-            assert self.text_match('Premium School'), "text is not displayed"
+            self.click_on_link("Byju's classes")
+            assert self.text_match("Classes"), "text is not displayed"
 
-    def enter_phone(self, phone_num):
-        self.obj.wait_for_locator('xpath', self.phone_number)
-        self.obj.get_element('xpath', self.phone_number).send_keys(phone_num)
+    def launch_and_navigate_to_login_page(self):
+        self.obj.execute_command('adb shell pm clear com.byjus.thelearningapp.premium')
+        self.obj.execute_command(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        self.allow_deny_permission(["Allow"])
+        self.obj.wait_for_locator('xpath', self.loginPageVerify_id)
+        self.obj.get_element('xpath', self.loginPageVerify_id).click()
+        self.obj.wait_for_locator('id', self.none_of_the_above_id)
+        self.obj.get_element('id', self.none_of_the_above_id).click()
+
+    def enter_phone(self):
+        self.obj.wait_for_locator('id', self.phone_number)
+        self.obj.get_element('id', self.phone_number).send_keys(
+            getdata(Login_Credentials, 'login_detail3', 'mobile_no'))
 
     def click_on_next(self):
-        self.obj.wait_for_locator('xpath', self.next_btn)
-        self.driver.find_element_by_xpath(self.next_btn).click()
+        self.obj.wait_for_locator('id', self.loginBtn_id)
+        self.driver.find_element_by_id(self.loginBtn_id).click()
+
+    def enter_otp(self):
+        self.obj.wait_for_locator('id', self.OtpTxtBx_id)
+        self.obj.get_element('id', self.OtpTxtBx_id).send_keys(getdata(Login_Credentials, 'login_detail3', 'OTP'))
+        self.select_profile()
+        self.obj.element_click('id', self.continue_button)
+        self.obj.wait_for_locator('id', self.welcome_button, 15)
+        self.obj.element_click('id', self.welcome_button)
 
     def enter_password(self, psswd):
         self.obj.wait_for_locator('xpath', self.password)
         self.driver.find_element_by_xpath(self.password).send_keys(psswd)
+
+    def select_profile(self):
+        data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        self.obj.wait_for_locator('id', self.multiple_accounts_dialog)
+        if self.obj.is_element_present('id', self.multiple_accounts_dialog):
+            # CommonMethods.scrollToElement(driver, data)
+            profiles = self.obj.get_elements('id', self.user_profile_name)
+            radio_buttons = self.obj.get_elements('id', self.profile_select_radio_button)
+            for i in range(len(profiles)):
+                if profiles[i].text == data:
+                    radio_buttons[i].click()
+                    break
 
     @staticmethod
     def switch_back_to_app():
@@ -340,12 +380,6 @@ class Login(TutorCommonMethods):
         except (NoSuchElementException, StaleElementReferenceException):
             return None
 
-    def enter_otp(self, otp=None) -> None:
-        if otp is not None:
-            self.obj.get_element('id', self.otp_id).send_keys(otp)
-        else:
-            self.get_otp(self.driver)
-
     def get_otp(self, driver) -> None:
         OTP = Stagingtlms(driver).get_otp()
         self.wait_for_element_not_to_be_present('//*[contains(@resource-id, "dialog_layout")]')
@@ -488,6 +522,5 @@ class Login(TutorCommonMethods):
                 except NoSuchElementException:
                     return True
 
-
-class LoginException(Exception):
-    pass
+    def verify_home_page_loaded(self):
+        return self.text_match("Byju's Classes")

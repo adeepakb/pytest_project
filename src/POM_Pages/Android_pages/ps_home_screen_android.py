@@ -1,13 +1,11 @@
-import logging
 import re
 import time
 
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
-
-from POM_Pages.staging_tlms import Stagingtlms
+from selenium.common.exceptions import NoSuchElementException
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.application_login import Login
+from POM_Pages.Android_pages.LoginAndroid import Login
 from Utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()

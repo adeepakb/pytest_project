@@ -1,17 +1,7 @@
-import pytest
-import sys
-import os
-import subprocess
-from time import sleep
-from pytest_bdd import scenarios, given, when, then, parsers,scenario
-from selenium.webdriver.common import keys
-from appium import webdriver
-from POM_Pages.bookMarkPage import BookMark
+from pytest_bdd import scenarios, given, when, then, parsers
+from POM_Pages.Android_pages.bookMarkPage import BookMark
 from Utilities.BasePage import BaseClass
 import logging
-
-
-
 
 
 driver = fixture = 'driver'

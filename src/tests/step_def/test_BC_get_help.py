@@ -1,22 +1,32 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.ps_home_screen import PS_Homescreen
-from POM_Pages.homepage import HomePage
+from Constants.platform import Platform
+from POM_Pages.Factory.login import LoginFactory
+from POM_Pages.Android_pages.homepage import HomePage
+from POM_Pages.Factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Get Help.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = Login(driver)
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
-
-@fixture
-def home_screen(driver):
-    home_screen = PS_Homescreen(driver)
-    yield home_screen
+@fixture()
+def home_screen(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.ANDROID.value)
+        yield home_screen
+    elif Platform.WEB.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.WEB.value)
+        yield home_screen
 
 
 @given("Launch the app online")

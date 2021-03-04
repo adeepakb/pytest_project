@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from POM_Pages.staging_tlms import Stagingtlms
 from POM_Pages.session_data import SessionData
-from POM_Pages.application_login import Login
+from POM_Pages.LoginAndroid import Login
 from POM_Pages.scroll_cards import ScrollCards
 from Utilities.tutor_common_methods import TutorCommonMethods
 from conftest import driver

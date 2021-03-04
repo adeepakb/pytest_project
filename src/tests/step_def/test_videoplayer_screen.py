@@ -1,5 +1,5 @@
 from pytest_bdd import scenarios, given, when, then, parsers
-from POM_Pages.videopage import VideoPage
+from POM_Pages.Android_pages.videopage import VideoPage
 from Utilities.BasePage import BaseClass
 
 driver = fixture = 'driver'
