@@ -1,7 +1,7 @@
 import logging
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.student_session import StudentSession
+from POM_Pages.Android_pages.student_session import StudentSession
 
 
 class SessionAlert(TutorCommonMethods):

@@ -15,7 +15,6 @@ from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH, Login_Credentials, Hamburger_Options
 import logging
 import pytest
-from conftest import driver
 # from POM_Pages.ConceptSummaryScreen import CommonMethods
 # from Utilities.interrupt import click_on_back_button
 

@@ -2,14 +2,10 @@ import logging
 import pytest
 from time import sleep
 from Constants.load_json import *
-from appium.webdriver.common.touch_action import TouchAction
 from Utilities.common_methods import CommonMethods
 from Constants.constants import CONFIG_PATH, Login_Credentials
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from appium.webdriver.common.touch_action import TouchAction
-from POM_Pages.locators import video
-from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 from io import BytesIO
 import random

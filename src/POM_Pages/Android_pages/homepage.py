@@ -72,8 +72,6 @@ class HomePage():
     register_page_mobile_num_field = (By.ID, "com.byjus.thelearningapp.premium:id/etPhoneNumber")
     register_page_email_txt_bx = (By.ID, "com.byjus.thelearningapp.premium:id/etEmail")
     register_page_register_btn = (By.ID, "com.byjus.thelearningapp.premium:id/btnRegister")
-    global platform
-    platform = str(getdata('../../config/config.json', 'platform_details', 'platform'))
 
     def __init__(self, driver):
         self.driver = driver

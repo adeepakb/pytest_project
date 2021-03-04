@@ -11,6 +11,8 @@ import logging
 from time import sleep
 from appium import webdriver
 from appium.webdriver.appium_service import AppiumService
+
+from Constants.platform import Platform
 from Utilities.BasePage import BaseClass
 from Utilities.common_methods import CommonMethods
 from Utilities.pre_execution import BuildFeatureJob
@@ -21,37 +23,45 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('Constants/'))
 from Constants.test_management import *
-from Constants.loadFeatureFile import fetch_featurefile
+
+# from Constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 CommonMethods = CommonMethods()
-feature_job = BuildFeatureJob()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_teardown():
-    feature_job.build_and_install_apk()
-    yield
-    # Create report on demand via  API at the end of the session
-    suitename = os.getenv('suite')
-    if suitename == 'Regression_PremiumApp_Automation':
-        report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
-        run_testrail_reports(report_id)
-    elif suitename == 'Sanity_PremiumApp_Automation':
-        report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
-        run_testrail_reports(report_id)
+# feature_job = BuildFeatureJob()
 
+
+# @pytest.fixture(scope="session", autouse=True)
+# def setup_teardown():
+#     feature_job.build_and_install_apk()
+#     yield
+#     # Create report on demand via  API at the end of the session
+#     suitename = os.getenv('suite')
+#     if suitename == 'Regression_PremiumApp_Automation':
+#         report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
+#         run_testrail_reports(report_id)
+#     elif suitename == 'Sanity_PremiumApp_Automation':
+#         report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
+#         run_testrail_reports(report_id)
+
+
+def pytest_addoption(parser):
+    parser.addoption("--platform", action="append")
 
 @pytest.fixture()
-def driver():
-    driver = baseClass.driverSetup()
-    feature_job.lock_or_unlock_device('lock')
-    serial = feature_job.connect_adb_api()
-    feature_job.connect_to_adb(serial)
-    yield driver
-    subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT).communicate()
-    driver.quit()
+def driver(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        android_driver = baseClass.setup_android()
+        yield android_driver
+        android_driver.quit()
+    elif Platform.WEB.name in platform_list:
+        chrome_driver = baseClass.setup_browser()
+        yield chrome_driver
+        chrome_driver.quit()
+
 
 # ---------------------------testrail updation--------------------
 testrail_file = CONFIG_PATH
@@ -171,9 +181,9 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     '''
     data = None
     #     ProjectID = test_management.get_project_id("Learning App")
-    suitename = os.getenv('suite')
-
-    # suitename = 'Regression_PremiumApp_Automation'
+    # suitename = os.getenv('suite')
+    # suitename = "Byju's Classes"
+    suitename = 'Regression_PremiumApp_Automation'
     data = get_run_and_case_id_of_a_scenario(suitename, scenario.name, "13", "160")
     e_type, value, tb = sys.exc_info()
     summaries = traceback.format_exception(e_type, value, tb)

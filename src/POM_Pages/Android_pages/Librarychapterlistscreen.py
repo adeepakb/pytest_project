@@ -1,20 +1,12 @@
-import sys
-import os
-from appium import webdriver
-from selenium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
-import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-from pyparsing import Char
-from selenium.webdriver.support.wait import WebDriverWait
 
 from Utilities.common_methods import CommonMethods
-from Constants.load_json import getdata
 
-from POM_Pages.personalizedChapterList import PersonalizedChapterList
+from POM_Pages.Android_pages.personalizedChapterList import PersonalizedChapterList
 featureFileName = "Library chapter list screen"
 CommonMethods = CommonMethods()
 

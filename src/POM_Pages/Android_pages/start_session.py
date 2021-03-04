@@ -1,17 +1,10 @@
-import re
-import time
-
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import InvalidElementStateException, StaleElementReferenceException
-import requests
-import json
 
-from POM_Pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
 from Utilities.common_methods import CommonMethods
-from POM_Pages.LoginAndroid import Login
-from POM_Pages.session_data import SessionData
-import xml.etree.ElementTree as ET
+from POM_Pages.Android_pages.login_android import Login
+from POM_Pages.Android_pages.session_data import SessionData
 from Utilities.tutor_common_methods import TutorCommonMethods
 
 CommonMethods = CommonMethods()

@@ -1,22 +1,12 @@
-import sys
-import os
-from appium import webdriver
-from selenium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
-import inspect
 from selenium.webdriver.common.by import By
 import logging
-import pytest
-from pyparsing import Char
-from selenium.webdriver.support.wait import WebDriverWait
 # from nose.config import flag
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 from Utilities.common_methods import CommonMethods
-from POM_Pages.Journeymapscreen import JourneyMapScreen
+from POM_Pages.Android_pages.Journeymapscreen import JourneyMapScreen
 from builtins import int
 
 

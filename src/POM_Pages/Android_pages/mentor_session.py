@@ -1,7 +1,7 @@
 import time
 import logging
 from selenium import webdriver
-from selenium.webdriver import ActionChains, TouchActions
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,11 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, \
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
-from subprocess import getoutput
 
 from Constants.constants import Login_Credentials
-from Utilities.common_methods import CommonMethods
-from POM_Pages.staging_tlms import Stagingtlms
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
 from Constants.load_json import getdata
 from Utilities.tutor_common_methods import TutorCommonMethods
 

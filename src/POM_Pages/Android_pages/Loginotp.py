@@ -464,7 +464,6 @@ class Loginoptscreen():
             CommonMethods.noSuchEleExcept(driver,featureFileName,'tap_resend_btn')    
         except:
             CommonMethods.exception(driver, featureFileName, 'tap_resend_btn')
-    
-        
+
     def click_on_next(self,driver):
         CommonMethods.elementClick(driver,self.Btn_next_id)

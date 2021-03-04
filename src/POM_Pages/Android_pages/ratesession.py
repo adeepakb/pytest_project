@@ -2,17 +2,13 @@ import time
 
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException
-import logging
-
-from selenium.webdriver import ActionChains
 
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.session_completed import SessionComplete
-from POM_Pages.session_data import SessionData
-from POM_Pages.LoginAndroid import Login
-from POM_Pages.scroll_cards import ScrollCards
-from POM_Pages.student_session import StudentSession
+from POM_Pages.Android_pages.session_completed import SessionComplete
+from POM_Pages.Android_pages.session_data import SessionData
+from POM_Pages.Android_pages.login_android import Login
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.student_session import StudentSession
 from Utilities.common_methods import CommonMethods
 import re
 

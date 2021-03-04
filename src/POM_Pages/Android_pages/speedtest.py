@@ -2,9 +2,8 @@ import time
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import InvalidElementStateException, StaleElementReferenceException
 import requests
-import json
 from Utilities.common_methods import CommonMethods
-from POM_Pages.LoginAndroid import Login
+from POM_Pages.Android_pages.login_android import Login
 import xml.etree.ElementTree as ET
 from Utilities.tutor_common_methods import TutorCommonMethods
 

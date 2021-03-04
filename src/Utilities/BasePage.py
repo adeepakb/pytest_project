@@ -2,16 +2,17 @@ import logging
 import datetime
 from Constants.constants import CONFIG_PATH
 from Constants.load_json import *
-from appium import webdriver
-
+from appium import webdriver as AppiumDriver
+from selenium import webdriver as ChromeDriver
+from selenium.webdriver.chrome.options import Options
 
 '''this class is used for starting appium and  launching App & getting the  Appium driver for all the test files '''
 
+
 class BaseClass:
-    
-    '''this will start appium server automatically'''   
-    
-    def driverSetup(self):
+    '''this will start appium server automatically'''
+
+    def setup_android(self):
         desired_caps = {}
 
         desiredCap = CONFIG_PATH
@@ -31,12 +32,18 @@ class BaseClass:
         # "uiautomator2ServerInstallTimeout": 60000,
         # "uiautomator2ServerLaunchTimeout": 30000,
         desired_caps['noReset'] = getdata(desiredCap, 'desired_cap', 'noReset')
-        driver = webdriver.Remote(getdata(desiredCap, 'desired_cap', 'url'), desired_caps)
+        driver = AppiumDriver.Remote(getdata(desiredCap, 'desired_cap', 'url'), desired_caps)
         driver.implicitly_wait(getdata(desiredCap, 'desired_cap', 'implicitWait'))
         return driver
 
-    def setupLogs(self,featureFileName):
+    def setup_browser(self):
+        chrome_options = Options()
+        driver = ChromeDriver.Chrome(options=chrome_options)
+        return driver
+
+    def setupLogs(self, featureFileName):
         date_Time = datetime.datetime.now()
         dateTime = date_Time.strftime("%d-%m-%y, %H-%M-%S")
-        #logging.basicConfig(filename='App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
-        logging.basicConfig(filename='../../App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+        # logging.basicConfig(filename='App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+        logging.basicConfig(filename='../../App_logs/TestLogs/' + featureFileName + " " + dateTime + ".log",
+                            filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)

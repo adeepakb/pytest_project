@@ -1,20 +1,9 @@
-import sys
-import os
-import time
-from io import BytesIO
-import math
-#import numpy as np 
-import re
-from appium import webdriver
-from selenium import webdriver
+#import numpy as np
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-import logging
-import pytest
-from selenium.webdriver.support.wait import WebDriverWait
 from Utilities.common_methods import CommonMethods
-from POM_Pages.homescreen import HomeScreen
+from POM_Pages.Android_pages.homescreen import HomeScreen
 from Utilities.interrupt import *
 from Utilities.Image_methods import *
 

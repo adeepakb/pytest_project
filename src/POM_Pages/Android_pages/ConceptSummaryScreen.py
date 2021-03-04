@@ -1,15 +1,9 @@
-import sys
-import os
-from appium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import logging
-import pytest
-from selenium.webdriver.support.wait import WebDriverWait
-from Utilities.interrupt import *
 from Utilities.common_methods import CommonMethods
-from POM_Pages.revisitScreen import RevisitScreen
+from POM_Pages.Android_pages.revisitScreen import RevisitScreen
 
 featureFileName = "Concept Summary Screen"
 CommonMethods = CommonMethods()

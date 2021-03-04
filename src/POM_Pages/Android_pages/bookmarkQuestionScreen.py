@@ -5,7 +5,6 @@ from Utilities.interrupt import *
 from selenium.common.exceptions import NoSuchElementException
 import logging
 import pytest
-from conftest import driver
 from Constants.load_json import *
 from Constants.constants import CONFIG_PATH, Login_Credentials
 import re

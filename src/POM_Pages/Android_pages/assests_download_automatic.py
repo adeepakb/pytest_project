@@ -1,14 +1,11 @@
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-from POM_Pages.staging_tlms import Stagingtlms
-from POM_Pages.session_data import SessionData
-from POM_Pages.LoginAndroid import Login
-from POM_Pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.staging_tlms import Stagingtlms
+from POM_Pages.Android_pages.session_data import SessionData
+from POM_Pages.Android_pages.login_android import Login
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
 from Utilities.tutor_common_methods import TutorCommonMethods
-from conftest import driver
 
 
 class AutomaticAssetDownload:

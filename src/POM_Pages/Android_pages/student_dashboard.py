@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 from time import strptime
 import pytest
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.session_popup import SessionAlert
+from POM_Pages.Android_pages.session_popup import SessionAlert
 from selenium.common.exceptions import NoSuchElementException
-from POM_Pages.session_data import SessionData
-from POM_Pages.scroll_cards import ScrollCards
-from POM_Pages.LoginAndroid import Login
+from POM_Pages.Android_pages.session_data import SessionData
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.login_android import Login
 
 
 class StudentDashboard(TutorCommonMethods):

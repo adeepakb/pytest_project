@@ -7,11 +7,10 @@ import pytest
 from selenium.common.exceptions import NoSuchElementException
 
 from Utilities.tutor_common_methods import TutorCommonMethods
-from src.POM_Pages.session_popup import SessionAlert
-from src.POM_Pages.session_data import SessionData
-from src.POM_Pages.scroll_cards import ScrollCards
-from src.POM_Pages.LoginAndroid import Login
-from src.Constants.load_json import getdata
+from POM_Pages.Android_pages.session_popup import SessionAlert
+from POM_Pages.Android_pages.session_data import SessionData
+from POM_Pages.Android_pages.scroll_cards import ScrollCards
+from POM_Pages.Android_pages.login_android import LoginAndroid
 
 
 class ChooseTopic(TutorCommonMethods):

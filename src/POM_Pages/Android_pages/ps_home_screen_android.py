@@ -5,16 +5,16 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 from POM_Pages.Android_pages.staging_tlms import Stagingtlms
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.LoginAndroid import Login
+from POM_Pages.Android_pages.login_android import LoginAndroid
 from Utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
 
-class PS_Homescreen:
+class PS_Homescreen_Android:
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.driver = driver
         self.action = TouchAction(driver)
         self.ps_tabs = 'androidx.appcompat.app.ActionBar$Tab'
