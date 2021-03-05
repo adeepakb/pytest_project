@@ -1,15 +1,12 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-
-from Constants.platform import Platform
-from POM_Pages.Android_pages.login_android import LoginAndroid
-from POM_Pages.Android_pages.student_session import StudentSession
-from POM_Pages.Android_pages.session_popup import SessionAlert
-from POM_Pages.Android_pages.mentor_session import MentorSession
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
-from POM_Pages.Android_pages.homepage import HomePage, Login_Credentials, getdata
-from POM_Pages.Factory.login import LoginFactory
-from POM_Pages.Factory.student_session import StudentSessionFactory
+from pom_pages.android_pages.session_popup import SessionAlert
+from pom_pages.android_pages.mentor_session import MentorSession
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from pom_pages.android_pages.homepage import HomePage, Login_Credentials, getdata
+from pom_pages.factory.login import LoginFactory
+from pom_pages.factory.student_session import StudentSessionFactory
+from constants.platform import Platform
 
 scenarios('../features/Session Flow.feature')
 
@@ -59,7 +56,7 @@ def tap_on_premium_card(login_in):
 
 @given("navigate to one to mega homescreen")
 def navigate_to_one_to_mega_homescreen(login_in):
-    login_in.click_on_link('Premium School')
+    login_in.click_on_link("Byju's classes")
 
 
 @then(parsers.parse('verify "{text}" option is enabled for the current day session on your session has started card'))

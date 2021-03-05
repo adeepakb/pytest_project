@@ -1,7 +1,7 @@
 import pytest
 from pytest_bdd import scenarios, given, then, when, parsers
-from Constants.platform import Platform
-from POM_Pages.Factory.login import LoginFactory
+from constants.platform import Platform
+from pom_pages.factory.login import LoginFactory
 
 scenarios('../features/Login.feature')
 

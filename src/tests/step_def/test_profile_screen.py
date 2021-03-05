@@ -2,12 +2,12 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 from time import sleep
 
-from POM_Pages.Android_pages.homepage import HomePage
-from Utilities.BasePage import BaseClass
-from POM_Pages.Android_pages.homescreen import HomeScreen
-from POM_Pages.Android_pages.profileScreen import ProfileScreen
-from Utilities.interrupt import *
-from Utilities.API_methods import *
+from pom_pages.android_pages.homepage import HomePage
+from utilities.BasePage import BaseClass
+from pom_pages.android_pages.homescreen import HomeScreen
+from pom_pages.android_pages.profileScreen import ProfileScreen
+from utilities.interrupt import *
+from utilities.API_methods import *
 
 driver = fixture = 'driver'
 baseClass = BaseClass()

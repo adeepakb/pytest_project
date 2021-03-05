@@ -1,9 +1,9 @@
 from pytest_bdd import scenarios, given, when, then, parsers
-from POM_Pages.Android_pages.videopage import VideoPage
-from Utilities.BasePage import BaseClass
-from Utilities.common_methods import CommonMethods
+from pom_pages.android_pages.videopage import VideoPage
+from utilities.BasePage import BaseClass
+from utilities.common_methods import CommonMethods
 from time import sleep
-# from Utilities.API_methods import *
+# from utilities.API_methods import *
 
 driver = fixture = 'driver'
 

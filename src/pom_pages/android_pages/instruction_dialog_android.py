@@ -1,10 +1,13 @@
+import math, operator
 from datetime import datetime,timedelta
 import re
 from appium.webdriver.common.touch_action import TouchAction
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
+from POM_Pages.staging_tlms import Stagingtlms
 from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.login_android import LoginAndroid
+from POM_Pages.application_login import Login
 from Utilities.common_methods import CommonMethods
+import numpy as np
+from PIL import Image, ImageChops
 
 CommonMethods = CommonMethods()
 
@@ -24,7 +27,7 @@ class InstructionDialog:
         self.exit_assessment = 'android:id/button1'
         self.requisite_list = 'com.byjus.thelearningapp.premium:id/requisite_item_list'
         self.begin_assessment = '//*[@resource-id = "begin-assessment"]'
-        self.exit_assessment_button = '//android.view.View[@text="Exit Assessment"]'
+        self.exit_assessment_button = '//android.view.View[@content-desc="Exit Assessment"]/android.widget.TextView'
 
     def is_close_instruction_displayed(self):
         return self.obj.is_element_present('xpath', self.close_instruction)
@@ -48,7 +51,7 @@ class InstructionDialog:
         self.obj.click_back()
 
     def is_user_in_ps_page(self):
-        return (self.obj.get_element('id', self.home_page_title).text == 'Premium School' and
+        return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
                 self.obj.get_element('id', self.home_tabs).is_displayed())
 
     def end_test(self):

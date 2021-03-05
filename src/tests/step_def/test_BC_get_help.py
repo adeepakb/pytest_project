@@ -1,9 +1,10 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from Constants.platform import Platform
-from POM_Pages.Factory.login import LoginFactory
-from POM_Pages.Android_pages.homepage import HomePage
-from POM_Pages.Factory.ps_home_screen import PSHomescreenFactory
+from constants.platform import Platform
+from pom_pages.factory.login import LoginFactory
+from pom_pages.android_pages.homepage import HomePage
+from pom_pages.factory.ps_home_screen import PSHomescreenFactory
+from pom_pages.factory.student_session import StudentSessionFactory
 
 scenarios('../features/Get Help.feature')
 
@@ -17,6 +18,7 @@ def login_in(request, driver):
     elif Platform.WEB.name in platform_list:
         login_in = LoginFactory().get_page(driver, Platform.WEB.value)
         yield login_in
+
 
 @fixture()
 def home_screen(request, driver):
@@ -54,6 +56,7 @@ def verify_text(login_in, text):
 def tap_device_back(home_screen):
     home_screen.click_back()
 
+
 @then('verify get help button is responsive')
 @then('tap on "Get help" button')
 def tap_on_get_help(home_screen):
@@ -73,7 +76,6 @@ def close_get_help(home_screen):
 @then('Verify that quick help bottom sheet goes off')
 def verify_bottom_sheet_not_present(home_screen):
     assert not home_screen.is_bottom_sheet_present(), "quick help bottom sheet did not go off"
-
 
 
 @then(parsers.parse('verify "{text}" button'))

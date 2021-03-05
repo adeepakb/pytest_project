@@ -1,23 +1,34 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.Factory.login import LoginFactory
-from POM_Pages.Android_pages.ps_home_screen_android import PS_Homescreen
-from POM_Pages.Android_pages.homepage import HomePage
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
+from constants.platform import Platform
+from pom_pages.factory.login import LoginFactory
+from pom_pages.android_pages.homepage import HomePage
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from pom_pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Premium School Home Screen.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = LoginFactory().get_page(driver,'Android')
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
 
-@fixture
-def home_screen(driver):
-    home_screen = PS_Homescreen(driver)
-    yield home_screen
+@fixture()
+def home_screen(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.ANDROID.value)
+        yield home_screen
+    elif Platform.WEB.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.WEB.value)
+        yield home_screen
 
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
