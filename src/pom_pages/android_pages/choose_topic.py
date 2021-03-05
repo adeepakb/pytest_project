@@ -6,11 +6,11 @@ from time import strptime
 import pytest
 from selenium.common.exceptions import NoSuchElementException
 
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.session_popup import SessionAlert
-from POM_Pages.Android_pages.session_data import SessionData
-from POM_Pages.Android_pages.scroll_cards import ScrollCards
-from POM_Pages.Android_pages.login_android import LoginAndroid
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.session_popup import SessionAlert
+from pom_pages.android_pages.session_data import SessionData
+from pom_pages.android_pages.scroll_cards import ScrollCards
+from pom_pages.android_pages.login_android import LoginAndroid
 
 
 class ChooseTopic(TutorCommonMethods):

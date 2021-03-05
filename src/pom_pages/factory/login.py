@@ -1,6 +1,6 @@
-from POM_Pages.Android_pages.login_android import LoginAndroid
-from POM_Pages.Web_pages.login_web import LoginWeb
-from Constants.platform import Platform
+from pom_pages.android_pages.login_android import LoginAndroid
+from pom_pages.web_pages.login_web import LoginWeb
+from constants.platform import Platform
 
 
 class LoginFactory():

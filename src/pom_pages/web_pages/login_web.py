@@ -1,9 +1,9 @@
 import logging
 import time
 from selenium.common.exceptions import NoSuchElementException
-from Constants.load_json import getdata
-from POM_Pages.Base_Pages.LoginBase import LoginBase
-from Constants.constants import Login_Credentials
+from constants.load_json import getdata
+from pom_pages.base_pages.login_base import LoginBase
+from constants.constants import Login_Credentials
 
 
 class LoginWeb(LoginBase):

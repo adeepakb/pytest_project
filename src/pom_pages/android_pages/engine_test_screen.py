@@ -1,13 +1,13 @@
 from time import sleep
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from Utilities.common_methods import CommonMethods
-from Utilities.interrupt import *
+from utilities.common_methods import CommonMethods
+from utilities.interrupt import *
 from selenium.common.exceptions import NoSuchElementException
 import logging
 import pytest
-from Constants.load_json import *
-from Constants.constants import CONFIG_PATH, Login_Credentials, Test_data
+from constants.load_json import *
+from constants.constants import CONFIG_PATH, Login_Credentials, Test_data
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
 import re
@@ -21,9 +21,9 @@ CommonMethods = CommonMethods()
 data_file = CONFIG_PATH
 
 # uncomment below line while executing via cmd
-# f = open("../../Test_data/featureFileName.txt", "r")
+# f = open("../../test_data/featureFileName.txt", "r")
 # uncomment below line while executing via unit test
-# f = open("Test_data/featureFileName.txt","r")
+# f = open("test_data/featureFileName.txt","r")
 featureFileName = "Question Screen"
 
 

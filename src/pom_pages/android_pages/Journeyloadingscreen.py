@@ -13,10 +13,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # from appium.webdriver.webelement import MobileBy
-from Utilities.interrupt import *
-from Utilities.common_methods import CommonMethods
+from utilities.interrupt import *
+from utilities.common_methods import CommonMethods
 
-# from Constants.load_json import getdata
+# from constants.load_json import getdata
 featureFileName = "Journey loading screen"
 CommonMethods = CommonMethods()
 

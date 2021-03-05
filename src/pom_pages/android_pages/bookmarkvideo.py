@@ -7,13 +7,13 @@ from selenium.webdriver.common.by import By
 import logging
 import json
 import logging
-from Constants.constants import CONFIG_PATH
-from Constants.load_json import *
-from Constants.constants import Hamburger_Options
-from Utilities.interrupt import *
+from constants.constants import CONFIG_PATH
+from constants.load_json import *
+from constants.constants import Hamburger_Options
+from utilities.interrupt import *
 
-from Utilities.common_methods import CommonMethods
-from Constants.constants import CONFIG_PATH,Login_Credentials,Hamburger_Options
+from utilities.common_methods import CommonMethods
+from constants.constants import CONFIG_PATH,Login_Credentials,Hamburger_Options
 import logging
 import pytest
 from conftest import driver

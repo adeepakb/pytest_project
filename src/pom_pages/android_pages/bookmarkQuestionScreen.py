@@ -1,12 +1,12 @@
 from time import sleep
 from selenium.webdriver.common.by import By
-from Utilities.common_methods import CommonMethods
-from Utilities.interrupt import *
+from utilities.common_methods import CommonMethods
+from utilities.interrupt import *
 from selenium.common.exceptions import NoSuchElementException
 import logging
 import pytest
-from Constants.load_json import *
-from Constants.constants import CONFIG_PATH, Login_Credentials
+from constants.load_json import *
+from constants.constants import CONFIG_PATH, Login_Credentials
 import re
 from PIL import Image
 from io import BytesIO

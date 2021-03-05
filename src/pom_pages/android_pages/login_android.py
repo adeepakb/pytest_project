@@ -1,17 +1,17 @@
 import re
 from appium.webdriver.common.touch_action import TouchAction
 
-from Constants.constants import Login_Credentials
-from POM_Pages.Base_Pages.LoginBase import LoginBase
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.scroll_cards import ScrollCards
+from constants.constants import Login_Credentials
+from pom_pages.base_pages.login_base import LoginBase
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from subprocess import Popen
 from json import load
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
+from pom_pages.android_pages.staging_tlms import Stagingtlms
 import logging
-from Constants.load_json import getdata
-from Utilities.common_methods import CommonMethods
+from constants.load_json import getdata
+from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
@@ -68,7 +68,7 @@ class LoginAndroid(LoginBase):
                                                                                                               self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
-            raise LoginException("Premium School card might not be displayed!")
+            raise Exception("Premium School card might not be displayed!")
 
     def select_premium_school(self):
         device = CommonMethods.get_device_type(self.driver)

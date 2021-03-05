@@ -2,8 +2,8 @@ from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import logging
-from Utilities.common_methods import CommonMethods
-from POM_Pages.Android_pages.revisitScreen import RevisitScreen
+from utilities.common_methods import CommonMethods
+from pom_pages.android_pages.revisitScreen import RevisitScreen
 
 featureFileName = "Concept Summary Screen"
 CommonMethods = CommonMethods()

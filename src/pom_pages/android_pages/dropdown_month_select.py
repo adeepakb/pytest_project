@@ -2,7 +2,7 @@ import datetime
 import random
 from selenium.common.exceptions import NoSuchElementException
 from appium.webdriver.common.touch_action import TouchAction
-from Utilities.tutor_common_methods import TutorCommonMethods
+from utilities.tutor_common_methods import TutorCommonMethods
 
 
 class DropDownSelect(TutorCommonMethods):

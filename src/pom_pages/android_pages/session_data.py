@@ -1,5 +1,5 @@
 from selenium.common.exceptions import NoSuchElementException
-from Utilities.tutor_common_methods import TutorCommonMethods
+from utilities.tutor_common_methods import TutorCommonMethods
 
 
 class SessionData:

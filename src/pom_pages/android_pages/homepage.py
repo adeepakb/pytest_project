@@ -12,10 +12,10 @@ import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-from Utilities.API_methods import *
-from Utilities.common_methods import CommonMethods
-from Constants.constants import CONFIG_PATH, Login_Credentials
-from Constants.load_json import getdata
+from utilities.API_methods import *
+from utilities.common_methods import CommonMethods
+from constants.constants import CONFIG_PATH, Login_Credentials
+from constants.load_json import getdata
 
 CommonMethods = CommonMethods()
 

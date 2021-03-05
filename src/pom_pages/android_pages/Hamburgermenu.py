@@ -3,16 +3,16 @@ from selenium.webdriver.common.by import By
 import json
 
 import logging
-from Constants.constants import CONFIG_PATH
-from Constants.load_json import *
-from Constants.constants import Hamburger_Options
+from constants.constants import CONFIG_PATH
+from constants.load_json import *
+from constants.constants import Hamburger_Options
 from selenium.common.exceptions import NoSuchElementException
-from Utilities.common_methods import CommonMethods
-from Constants.constants import CONFIG_PATH, Login_Credentials, Hamburger_Options
+from utilities.common_methods import CommonMethods
+from constants.constants import CONFIG_PATH, Login_Credentials, Hamburger_Options
 import logging
 import pytest
 
-# from POM_Pages.videopage import data_file
+# from pom_pages.videopage import data_file
 # fp = open(r'C:\Users\Mural\OneDrive\Desktop\application_data.json','r')
 # fp=  open(r'C:\EclipseWorkspaces\csse120\Pytest_BDD\src/test_data/application_data.json','r')
 # my_dict = json.loads(fp.read())
@@ -25,8 +25,8 @@ import pytest
 # sys.path.append(PATH('./loginpage/'))
 # from login import BaseSetup
 
-# sys.path.append(PATH('../../../Utilities/'))
-# from POM_Pages.Hamburgermenu import Hamburger
+# sys.path.append(PATH('../../../utilities/'))
+# from pom_pages.Hamburgermenu import Hamburger
 
 
 page_value = None

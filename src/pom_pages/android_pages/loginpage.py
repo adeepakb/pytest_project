@@ -4,8 +4,8 @@ from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import logging
-from Constants.load_json import *
-from Utilities.common_methods import CommonMethods
+from constants.load_json import *
+from utilities.common_methods import CommonMethods
 
 
 featureFileName = "LoginScenarios"
@@ -89,7 +89,7 @@ class LoginPage():
             CommonMethods.exception(driver, featureFileName, 'navigateToLoginPage')
     
     def enterMobileNo(self,driver):
-        CommonMethods.enterText(self, driver,getdata(PATH('../Test_data/login_data.json'),"login_details","mob_no"), self.txt_phoneNum_id, "id")
+        CommonMethods.enterText(self, driver,getdata(PATH('../test_data/login_data.json'),"login_details","mob_no"), self.txt_phoneNum_id, "id")
  
         
     def click_on_next(self,driver):
@@ -202,7 +202,7 @@ class LoginPage():
                  
     def verifyGccCountriesList(self,driver):
         try:
-            countryList = getdata(PATH('../Test_data/login_data.json'),"login_details","mob_no")
+            countryList = getdata(PATH('../test_data/login_data.json'),"login_details","mob_no")
             check = CommonMethods.scrollToElement(self,driver,self.loginPageVerify_id1,"id")
          
             if check == True:
@@ -294,9 +294,9 @@ class LoginPage():
  
     def verifyInvalidMobNoMessage(self,driver):
         try:
-#             expected=getdata(PATH('../Test_data/login_data.json'),"login_details","invalid_mobno_msg")
+#             expected=getdata(PATH('../test_data/login_data.json'),"login_details","invalid_mobno_msg")
             actual=CommonMethods.getTextOfElement(self,driver,self.invalidMobNo_Message_id,"id")
-            check=CommonMethods.verifyTwoText(self,actual,getdata(PATH('../Test_data/login_data.json'),"login_details","invalid_mobno_msg"))
+            check=CommonMethods.verifyTwoText(self,actual,getdata(PATH('../test_data/login_data.json'),"login_details","invalid_mobno_msg"))
              
             if check == True:
                 logging.info('Invalid message is correct')

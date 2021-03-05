@@ -10,10 +10,10 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 
-from Constants.constants import Login_Credentials
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
-from Constants.load_json import getdata
-from Utilities.tutor_common_methods import TutorCommonMethods
+from constants.constants import Login_Credentials
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from constants.load_json import getdata
+from utilities.tutor_common_methods import TutorCommonMethods
 
 
 class MentorSession:
@@ -21,8 +21,8 @@ class MentorSession:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.tlms = Stagingtlms(driver)
         self.byjus_icon = "//img[contains(@src,'data:image/png')]"

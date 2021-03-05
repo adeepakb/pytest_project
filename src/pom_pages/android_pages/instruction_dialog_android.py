@@ -2,21 +2,21 @@ import math, operator
 from datetime import datetime,timedelta
 import re
 from appium.webdriver.common.touch_action import TouchAction
-from POM_Pages.staging_tlms import Stagingtlms
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.application_login import Login
-from Utilities.common_methods import CommonMethods
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.login_android import LoginAndroid
+from utilities.common_methods import CommonMethods
 import numpy as np
 from PIL import Image, ImageChops
-
+from pom_pages.base_pages.instruction_dialog_base import InstructionDialogBase
 CommonMethods = CommonMethods()
 
 
-class InstructionDialog:
+class InstructionDialogAndroid(InstructionDialogBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.action = TouchAction(driver)
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.close_instruction = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/ivCloseInstruction"]'

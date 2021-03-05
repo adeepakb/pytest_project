@@ -1,6 +1,6 @@
-from POM_Pages.Android_pages.ps_home_screen_android import PS_Homescreen_Android
-from POM_Pages.Web_pages.ps_home_screen_web import PSHomescreenWeb
-from Constants.platform import Platform
+from pom_pages.android_pages.ps_home_screen_android import PS_Homescreen_Android
+from pom_pages.web_pages.ps_home_screen_web import PSHomescreenWeb
+from constants.platform import Platform
 
 
 class PSHomescreenFactory():

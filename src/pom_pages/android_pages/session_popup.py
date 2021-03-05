@@ -1,7 +1,7 @@
 import logging
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.student_session import StudentSession
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.student_session import StudentSessionAndroid
 
 
 class SessionAlert(TutorCommonMethods):
@@ -9,7 +9,7 @@ class SessionAlert(TutorCommonMethods):
     def __init__(self, driver):
         super().__init__(driver)
         self.driver = driver
-        self.studentsession = StudentSession(driver)
+        self.studentsession = StudentSessionAndroid(driver)
         self.title_download_popup = '//*[contains(@resource-id, "txt_title_popup")]'
         self.download_btn = '//*[contains(@resource-id, "download_button")]'
         self.cancel_download_btn = '//*[contains(@resource-id, "CancelDownload")]'

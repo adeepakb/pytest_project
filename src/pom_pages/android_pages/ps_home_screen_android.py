@@ -3,15 +3,15 @@ import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.login_android import LoginAndroid
-from Utilities.common_methods import CommonMethods
-
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.login_android import LoginAndroid
+from utilities.common_methods import CommonMethods
+from pom_pages.base_pages.ps_home_screen_base import PSHomeScreenBase
 CommonMethods = CommonMethods()
 
 
-class PS_Homescreen_Android:
+class PS_Homescreen_Android(PSHomeScreenBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.login = LoginAndroid(driver)

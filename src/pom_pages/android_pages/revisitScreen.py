@@ -7,8 +7,8 @@ from selenium.webdriver.common.by import By
 import logging
 import pytest
 from selenium.webdriver.support.wait import WebDriverWait
-from Utilities.interrupt import *
-from Utilities.common_methods import CommonMethods
+from utilities.interrupt import *
+from utilities.common_methods import CommonMethods
 
 featureFileName = "Revisit Screen"
 CommonMethods = CommonMethods()

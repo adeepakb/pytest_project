@@ -7,13 +7,13 @@ import logging
 
 from selenium.webdriver import ActionChains
 
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.session_completed import SessionComplete
-from POM_Pages.session_data import SessionData
-from POM_Pages.application_login import Login
-from POM_Pages.scroll_cards import ScrollCards
-from POM_Pages.student_session import StudentSession
-from Utilities.common_methods import CommonMethods
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.session_completed import SessionComplete
+from pom_pages.session_data import SessionData
+from pom_pages.application_login import Login
+from pom_pages.scroll_cards import ScrollCards
+from pom_pages.student_session import StudentSession
+from utilities.common_methods import CommonMethods
 import re
 
 CommonMethods = CommonMethods()

@@ -2,8 +2,8 @@ import time
 from appium.webdriver.common.touch_action import TouchAction
 from time import sleep
 from selenium.webdriver.common.by import By
-from Utilities.common_methods import CommonMethods
-from Utilities.interrupt import *
+from utilities.common_methods import CommonMethods
+from utilities.interrupt import *
 from selenium.common.exceptions import NoSuchElementException
 import logging
 import re
@@ -13,8 +13,8 @@ import pytest
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 from conftest import driver
-from Constants.load_json import *
-from Constants.constants import Registration_data
+from constants.load_json import *
+from constants.constants import Registration_data
 
 
 

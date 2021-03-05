@@ -1,6 +1,6 @@
 import json
-from POM_Pages.Android_pages.session_data import SessionData
-from POM_Pages.Android_pages.scroll_cards import ScrollCards
+from pom_pages.android_pages.session_data import SessionData
+from pom_pages.android_pages.scroll_cards import ScrollCards
 
 
 class SessionComplete:

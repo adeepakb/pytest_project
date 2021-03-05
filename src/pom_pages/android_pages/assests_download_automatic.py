@@ -1,11 +1,11 @@
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from POM_Pages.Android_pages.staging_tlms import Stagingtlms
-from POM_Pages.Android_pages.session_data import SessionData
-from POM_Pages.Android_pages.login_android import Login
-from POM_Pages.Android_pages.scroll_cards import ScrollCards
-from Utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.staging_tlms import Stagingtlms
+from pom_pages.android_pages.session_data import SessionData
+from pom_pages.android_pages.login_android import Login
+from pom_pages.android_pages.scroll_cards import ScrollCards
+from utilities.tutor_common_methods import TutorCommonMethods
 
 
 class AutomaticAssetDownload:

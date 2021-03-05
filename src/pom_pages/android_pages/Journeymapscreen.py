@@ -14,8 +14,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from Utilities.interrupt import *
-from Utilities.common_methods import CommonMethods
+from utilities.interrupt import *
+from utilities.common_methods import CommonMethods
 
 featureFileName = "Journey map screen"
 CommonMethods = CommonMethods()

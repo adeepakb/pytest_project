@@ -1,10 +1,10 @@
 import requests
 import json
-from Constants.load_json import *
-from Constants.constants import CONFIG_PATH, Login_Credentials
+from constants.load_json import *
+from constants.constants import CONFIG_PATH, Login_Credentials
 import threading
 import random
-from Utilities.common_methods import CommonMethods
+from utilities.common_methods import CommonMethods
 from selenium.webdriver.common.by import By
 import logging
 import subprocess

@@ -2,10 +2,10 @@
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from Utilities.common_methods import CommonMethods
-from POM_Pages.Android_pages.homescreen import HomeScreen
-from Utilities.interrupt import *
-from Utilities.Image_methods import *
+from utilities.common_methods import CommonMethods
+from pom_pages.android_pages.homescreen import HomeScreen
+from utilities.interrupt import *
+from utilities.Image_methods import *
 
 featureFileName = "Profile Screen"
 CommonMethods = CommonMethods()

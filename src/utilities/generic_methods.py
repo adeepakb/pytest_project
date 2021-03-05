@@ -1,11 +1,11 @@
 import logging
-from Utilities.common_methods import CommonMethods
+from utilities.common_methods import CommonMethods
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
 CommonMethods = CommonMethods()
-f = open("../../Test_data/featureFileName.txt","r")
-# f = open("C:/EclipseWorkspaces/csse120/K12_master/src/Test_data/featureFileName.txt","r")
+f = open("../../test_data/featureFileName.txt","r")
+# f = open("C:/EclipseWorkspaces/csse120/K12_master/src/test_data/featureFileName.txt","r")
 featureFileName = f.read()
 
 

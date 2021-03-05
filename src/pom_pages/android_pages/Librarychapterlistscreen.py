@@ -4,9 +4,9 @@ from selenium.webdriver.common.by import By
 import logging
 import pytest
 
-from Utilities.common_methods import CommonMethods
+from utilities.common_methods import CommonMethods
 
-from POM_Pages.Android_pages.personalizedChapterList import PersonalizedChapterList
+from pom_pages.android_pages.personalizedChapterList import PersonalizedChapterList
 featureFileName = "Library chapter list screen"
 CommonMethods = CommonMethods()
 

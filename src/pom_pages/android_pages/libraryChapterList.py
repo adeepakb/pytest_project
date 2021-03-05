@@ -10,15 +10,15 @@ import pytest
 from pyparsing import Char
 from selenium.webdriver.support.wait import WebDriverWait
 # from appium.webdriver.webelement import MobileBy
-from Utilities.common_methods import CommonMethods
-from Constants.load_json import getdata
+from utilities.common_methods import CommonMethods
+from constants.load_json import getdata
 
 featureFileName = "Personalized chapter list screen"
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 
-sys.path.append(PATH("../Constants/"))
+sys.path.append(PATH("../constants/"))
 
 # import load_json
 # from load_json import getdata

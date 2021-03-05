@@ -2,9 +2,9 @@ import datetime
 import os
 import sys
 from enum import Enum
-from Constants.testrail import *
-from Constants.constants import *
-from Constants.load_json import *
+from constants.testrail import *
+from constants.constants import *
+from constants.load_json import *
 import json
 import glob
 from ntpath import split

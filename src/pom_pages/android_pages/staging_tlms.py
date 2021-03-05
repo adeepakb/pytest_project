@@ -9,12 +9,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Constants.load_json import getdata
+from constants.load_json import getdata
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime,timedelta
 import time
 
-from Utilities.tutor_common_methods import TutorCommonMethods
+from utilities.tutor_common_methods import TutorCommonMethods
 
 
 class Stagingtlms:
@@ -23,8 +23,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def login_to_staging(self):

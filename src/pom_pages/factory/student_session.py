@@ -1,8 +1,8 @@
-from POM_Pages.Android_pages.ps_home_screen_android import PS_Homescreen_Android
-from POM_Pages.Web_pages.ps_home_screen_web import PSHomescreenWeb
-from Constants.platform import Platform
-from POM_Pages.Web_pages.student_session_web import StudentSessionWeb
-from POM_Pages.Android_pages.student_session import StudentSession
+from pom_pages.android_pages.ps_home_screen_android import PS_Homescreen_Android
+from pom_pages.web_pages.ps_home_screen_web import PSHomescreenWeb
+from constants.platform import Platform
+from pom_pages.web_pages.student_session_web import StudentSessionWeb
+from pom_pages.android_pages.student_session import StudentSessionAndroid
 
 
 class StudentSessionFactory():
@@ -11,5 +11,5 @@ class StudentSessionFactory():
         if platform == Platform.WEB.value:
             student_session = StudentSessionWeb(driver)
         elif platform == Platform.ANDROID.value:
-            student_session = StudentSession(driver)
+            student_session = StudentSessionAndroid(driver)
         return student_session

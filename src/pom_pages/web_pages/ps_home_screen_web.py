@@ -1,11 +1,6 @@
-import logging
-import time
-from selenium.common.exceptions import NoSuchElementException
-from Constants.load_json import getdata
-from POM_Pages.Base_Pages.LoginBase import LoginBase
-from Constants.constants import Login_Credentials
+from pom_pages.base_pages.ps_home_screen_base import PSHomeScreenBase
 
 
-class PSHomescreenWeb(LoginBase):
+class PSHomescreenWeb(PSHomeScreenBase):
     def __init__(self, chrome_driver):
         self.driver = chrome_driver

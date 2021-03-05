@@ -1,7 +1,7 @@
 import logging
 import datetime
-from Constants.constants import CONFIG_PATH
-from Constants.load_json import *
+from constants.constants import CONFIG_PATH
+from constants.load_json import *
 from appium import webdriver as AppiumDriver
 from selenium import webdriver as ChromeDriver
 from selenium.webdriver.chrome.options import Options

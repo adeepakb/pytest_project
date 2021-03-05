@@ -5,8 +5,8 @@ import logging
 # from nose.config import flag
 
 
-from Utilities.common_methods import CommonMethods
-from POM_Pages.Android_pages.Journeymapscreen import JourneyMapScreen
+from utilities.common_methods import CommonMethods
+from pom_pages.android_pages.Journeymapscreen import JourneyMapScreen
 from builtins import int
 
 

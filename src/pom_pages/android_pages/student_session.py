@@ -1,19 +1,20 @@
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
-from Utilities.tutor_common_methods import TutorCommonMethods
-from POM_Pages.Android_pages.login_android import LoginAndroid
-from Utilities.common_methods import CommonMethods
+from pom_pages.base_pages.student_session_base import StudentSessionBase
+from utilities.tutor_common_methods import TutorCommonMethods
+from pom_pages.android_pages.login_android import LoginAndroid
+from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
 featureFileName = "Session Flow"
 
 
-class StudentSession:
+class StudentSessionAndroid(StudentSessionBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.action = TouchAction(driver)
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.driver = driver
         self.dots_icon = '//*[contains(@resource-id, "loadingDots")]'
         self.tutor_icon = '//*[contains(@resource-id, "llTopicLyt")]/android.widget.ImageView'

@@ -1,17 +1,17 @@
 import logging
 import pytest
 from time import sleep
-from Constants.load_json import *
-from Utilities.common_methods import CommonMethods
-from Constants.constants import CONFIG_PATH, Login_Credentials
+from constants.load_json import *
+from utilities.common_methods import CommonMethods
+from constants.constants import CONFIG_PATH, Login_Credentials
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 from io import BytesIO
 import random
-from Utilities.generic_methods import GenericMethods
+from utilities.generic_methods import GenericMethods
 
-f = open("../../Test_data/featureFileName.txt", "r")
+f = open("../../test_data/featureFileName.txt", "r")
 featureFileName = f.read()
 
 CommonMethods = CommonMethods()
