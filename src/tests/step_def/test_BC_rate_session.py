@@ -2,9 +2,9 @@ from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
 from pom_pages.android_pages.homepage import HomePage
-from pom_pages.android_pages.mentor_session import MentorSession
+from utilities.mentor_session import MentorSession
 from pom_pages.android_pages.session_popup import SessionAlert
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 from pom_pages.factory.login import LoginFactory
 from pom_pages.factory.ps_home_screen import PSHomescreenFactory
 from pom_pages.factory.rate_session import RateSession
@@ -98,7 +98,7 @@ def tap_on_okay_button(dashboard):
 
 @then(parsers.parse('verify "{text}" button is displayed'))
 def verify_button(dashboard, text):
-    dashboard.verify_button(text)
+    assert dashboard.verify_button(text),"button is not displayed"
 
 
 # @then('tap on "Join Now" button')
@@ -133,9 +133,11 @@ def verify_session_details(driver):
     details_dict = session_pop.verify_session_card_details_loaded()
 
 
+@then(parsers.parse('verify text "{text}" is present'))
 @then(parsers.parse('verify text "{text}" on Rate Session card'))
 def verify_text(dashboard, text):
-    dashboard.text_match(text)
+    is_present = dashboard.text_match(text)
+    assert is_present is True, "%s is not present" %text
 
 
 @then(parsers.parse('verify feedback option "{index}"- "{text}" with a checkbox is present'))
@@ -180,7 +182,7 @@ def verify_rate_session_card(dashboard):
 
 @then("Verify Cancel button")
 def verify_rate_session_cancel_button(dashboard):
-    dashboard.verify_rate_session_close_button()
+    assert dashboard.verify_rate_session_close_button(),"Cancel button is not present"
 
 
 @then("tap on close button")
@@ -230,7 +232,7 @@ def verify_button_a(dashboard, text):
 
 
 @then("tap on any previous session card")
-def tap_on_any_session_card(driver):
+def tap_on_any_session_card(login_in):
     login_in.click_on_session_card(1)
 
 

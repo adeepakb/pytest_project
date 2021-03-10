@@ -1,7 +1,7 @@
 import time
 import logging
 from selenium import webdriver
-from selenium.webdriver import ActionChains
+from selenium.webdriver import ActionChains, TouchActions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,8 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, \
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
-
+from subprocess import getoutput
 from constants.constants import Login_Credentials
+from utilities.common_methods import CommonMethods
 from pom_pages.android_pages.staging_tlms import Stagingtlms
 from constants.load_json import getdata
 from utilities.tutor_common_methods import TutorCommonMethods
@@ -45,6 +46,7 @@ class MentorSession:
         self.reply_button = "//*[@class='replyBtn']"
         self.approve_message = "//*[@id='approve_svg__b']"
         self.reject_message = "//*[@id='reject_svg__b']"
+        self.exo_overlay = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_overlay"]'
 
     def is_byjus_icon_present(self):
         self.wait_for_locator_webdriver(self.byjus_icon)
@@ -162,8 +164,8 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
-    def start_tutor_session(self):
-        url = self.tlms.get_tutor_url()
+    def start_tutor_session(self, course='primary'):
+        url = self.tlms.get_tutor_url(course)
         self.login_as_tutor()
         self.wait_for_locator_webdriver("//li[@id='mentoring']")
         self.chrome_driver.get(url)
@@ -172,8 +174,20 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
         return url
 
+    # def wait_for_reset_buffer_time_to_complete(self):
+    #     WebDriverWait(self.chrome_driver, 120).until(EC.invisibility_of_element_located((By.XPATH, )))
+
     def wait_for_reset_buffer_time_to_complete(self):
-        WebDriverWait(self.chrome_driver, 120).until(EC.invisibility_of_element_located((By.XPATH, "//div[@class='endPopupContainer']")))
+        # keeping appium driver alive while waiting for session to start during buffer time
+        for i in range(10):
+            try:
+                video_present =self.driver.find_element_by_xpath(self.exo_overlay).is_displayed()
+                endpopup_present =self.chrome_driver.find_element_by_xpath("//div[@class='endPopupContainer']").is_displayed()
+                if endpopup_present or (not video_present) :
+                    time.sleep(10)
+            except (NoSuchElementException,TimeoutException):
+                break
+
 
     def verify_tutor_unable_to_join_session_again(self):
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
@@ -203,9 +217,11 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath(self.chat_icon).click()
         self.wait_for_locator_webdriver(self.live_chat_header)
         time.sleep(3)
-        assert self.chrome_driver.find_element_by_xpath(self.live_chat_header).is_displayed(), "Live chat header is not present"
+        assert self.chrome_driver.find_element_by_xpath(
+            self.live_chat_header).is_displayed(), "Live chat header is not present"
         self.wait_for_locator_webdriver(self.live_chat_close)
-        assert self.chrome_driver.find_element_by_xpath( self.live_chat_close).is_displayed(), "chat close icon is not present"
+        assert self.chrome_driver.find_element_by_xpath(
+            self.live_chat_close).is_displayed(), "chat close icon is not present"
         self.verify_type_something_text()
         assert self.chrome_driver.find_element_by_xpath(self.type_something_inputcard).is_enabled(), \
             "text field is not enabled.No cursor in the text field"
@@ -283,10 +299,10 @@ class MentorSession:
         elements = self.chrome_driver.find_elements_by_xpath("//*[@class='action']")
         elements[1].click()
 
-    def is_message_present_for_tutor(self,text):
+    def is_message_present_for_tutor(self, text):
         try:
             self.wait_for_locator_webdriver("//*[@class='text' and text()='" + text + "']")
-            self.chrome_driver.find_element_by_xpath("//*[@class='text' and text()='"+text+"']").is_displayed()
+            self.chrome_driver.find_element_by_xpath("//*[@class='text' and text()='" + text + "']").is_displayed()
             return True
-        except (NoSuchElementException,StaleElementReferenceException):
+        except (NoSuchElementException, StaleElementReferenceException):
             return False

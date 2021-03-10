@@ -4,7 +4,6 @@ from constants.platform import Platform
 from pom_pages.factory.login import LoginFactory
 from pom_pages.android_pages.homepage import HomePage
 from pom_pages.factory.ps_home_screen import PSHomescreenFactory
-from pom_pages.factory.student_session import StudentSessionFactory
 
 scenarios('../features/Get Help.feature')
 

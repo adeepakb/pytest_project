@@ -1,9 +1,11 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
+from constants.load_json import getdata
+from constants.constants import Login_Credentials
 from pom_pages.android_pages.session_popup import SessionAlert
-from pom_pages.android_pages.mentor_session import MentorSession
-from pom_pages.android_pages.staging_tlms import Stagingtlms
-from pom_pages.android_pages.homepage import HomePage, Login_Credentials, getdata
+from utilities.mentor_session import MentorSession
+from utilities.staging_tlms import Stagingtlms
+from pom_pages.android_pages.homepage import HomePage
 from pom_pages.factory.login import LoginFactory
 from pom_pages.factory.student_session import StudentSessionFactory
 from constants.platform import Platform
@@ -485,9 +487,9 @@ def login_as_student2_and_verify_approved_msg(student_session, text):
 
 @then('login as another student who attends same session')
 def login_as_student2(driver, login_in):
-    HomePage(driver).login_as_another_one_mega_user(driver)
+    HomePage(driver).login_as_another_one_mega_user(driver,'login_detail1')
     login_in.click_on_premium_school()
-    login_in.click_on_link('Premium School')
+    login_in.click_on_link("Byju's classes")
 
 
 @then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))

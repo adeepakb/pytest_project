@@ -3,7 +3,7 @@ from pytest import fixture
 from constants.platform import Platform
 from pom_pages.factory.login import LoginFactory
 from pom_pages.android_pages.homepage import HomePage
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 from pom_pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Premium School Home Screen.feature')
