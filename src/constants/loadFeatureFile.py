@@ -15,5 +15,4 @@ if suite_name == 'Regression_PremiumApp_Automation':
 elif suite_name == 'Sanity_PremiumApp_Automation':
     fetch_featurefile("160", "13", "256")
 elif suite_name == "Byju's Classes":
-    # fetch_featurefile("160", "13", "246")
-    fetch_featurefile("160", "13", "256")
+    fetch_featurefile("160", "13", "246")
