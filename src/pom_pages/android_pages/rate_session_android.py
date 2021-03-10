@@ -8,11 +8,11 @@ import logging
 from selenium.webdriver import ActionChains
 
 from utilities.tutor_common_methods import TutorCommonMethods
-from pom_pages.session_completed import SessionComplete
-from pom_pages.session_data import SessionData
-from pom_pages.application_login import Login
-from pom_pages.scroll_cards import ScrollCards
-from pom_pages.student_session import StudentSession
+from pom_pages.android_pages.session_completed import SessionComplete
+from pom_pages.android_pages.session_data import SessionData
+from pom_pages.android_pages.login_android import LoginAndroid
+from pom_pages.android_pages.scroll_cards import ScrollCards
+from pom_pages.android_pages.student_session import StudentSessionAndroid
 from utilities.common_methods import CommonMethods
 import re
 
@@ -25,7 +25,7 @@ class Dashboard:
         self.sessioncomplete = SessionComplete(driver)
         self.sessiondata = SessionData(driver)
         self.action = TouchAction(driver)
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.scrollcards = ScrollCards(driver)
         self.driver = driver
         self.card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/card"]'
@@ -74,10 +74,10 @@ class Dashboard:
         self.action.press(x=tapAt, y= y_axis).release().perform()
 
     def text_match(self, expected_text):
-        self.obj.is_text_match(expected_text)
+        return self.obj.is_text_match(expected_text)
 
     def verify_button(self, text):
-        self.obj.is_button_displayed(text)
+        return self.obj.is_button_displayed(text)
 
     def tap_on_join_now(self):
         self.obj.wait_for_locator('id', self.join_now)
@@ -104,7 +104,7 @@ class Dashboard:
         card.click()
 
     def verify_rate_session_close_button(self):
-        self.obj.is_element_present("xpath", self.rate_session_close_button)
+        return self.obj.is_element_present("xpath", self.rate_session_close_button)
 
     def tap_rate_session_close_button(self):
         self.obj.element_click("xpath", self.rate_session_close_button)
@@ -124,7 +124,7 @@ class Dashboard:
             self.verify_star_rating(self.feedback_rating_bar, str(i) + '.0')
 
     def deselect_selected_stars_and_verify(self):
-        for i in range(4, 1):
+        for i in range(5, 1):
             self.tap_on_star(i)
             self.verify_star_rating(self.feedback_rating_bar, str(i) + '.0')
 

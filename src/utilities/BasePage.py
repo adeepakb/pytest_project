@@ -27,10 +27,6 @@ class BaseClass:
         desired_caps['eventTimings'] = getdata(desiredCap, 'desired_cap', 'eventTimings')
         desired_caps['autoAcceptAlerts'] = getdata(desiredCap, 'desired_cap', 'autoAcceptAlerts')
         desired_caps['newCommandTimeout'] = getdata(desiredCap, 'desired_cap', 'newCommandTimeout')
-        # desired_caps['uiautomator2ServerInstallTimeout'] = getdata(desiredCap, 'desired_cap', 'uiautomator2ServerInstallTimeout')
-        # desired_caps['uiautomator2ServerLaunchTimeout'] = getdata(desiredCap, 'desired_cap', 'uiautomator2ServerLaunchTimeout')
-        # "uiautomator2ServerInstallTimeout": 60000,
-        # "uiautomator2ServerLaunchTimeout": 30000,
         desired_caps['noReset'] = getdata(desiredCap, 'desired_cap', 'noReset')
         driver = AppiumDriver.Remote(getdata(desiredCap, 'desired_cap', 'url'), desired_caps)
         driver.implicitly_wait(getdata(desiredCap, 'desired_cap', 'implicitWait'))

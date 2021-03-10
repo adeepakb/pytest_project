@@ -18,12 +18,13 @@
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
 		"eventTimings": true,
 		"noReset": true,
-		"url": "http://127.0.0.1:4723/wd/hub",
+   		"udid": "R9BN703T85J",
+		"url": "https://dev-in-blr-0.headspin.io:7007/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
 		"newCommandTimeout": 300,
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"token": ""
+		"token": "3bbdfc92b3b041a5a15323eb3222d6d7"
 	},
 	"account_details":
    {

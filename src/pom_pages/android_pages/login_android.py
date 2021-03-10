@@ -8,7 +8,7 @@ from pom_pages.android_pages.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from subprocess import Popen
 from json import load
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 import logging
 from constants.load_json import getdata
 from utilities.common_methods import CommonMethods
@@ -68,16 +68,11 @@ class LoginAndroid(LoginBase):
                                                                                                               self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
+            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
+            self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image').click()
+        except:
             raise Exception("Premium School card might not be displayed!")
 
-    def select_premium_school(self):
-        device = CommonMethods.get_device_type(self.driver)
-        if device == 'tab':
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/btnPremiumSchool')
-            assert self.text_match('BYJU’S Premium School'), "text is not displayed "
-        elif device == 'mobile':
-            self.click_on_link("Byju's classes")
-            assert self.text_match("Classes"), "text is not displayed"
 
     def launch_and_navigate_to_login_page(self):
         self.obj.execute_command('adb shell pm clear com.byjus.thelearningapp.premium')
@@ -94,10 +89,6 @@ class LoginAndroid(LoginBase):
         self.obj.get_element('id', self.phone_number).send_keys(
             getdata(Login_Credentials, 'login_detail3', 'mobile_no'))
 
-    def click_on_next(self):
-        self.obj.wait_for_locator('id', self.loginBtn_id)
-        self.driver.find_element_by_id(self.loginBtn_id).click()
-
     def enter_otp(self):
         self.obj.wait_for_locator('id', self.OtpTxtBx_id)
         self.obj.get_element('id', self.OtpTxtBx_id).send_keys(getdata(Login_Credentials, 'login_detail3', 'OTP'))
@@ -105,6 +96,19 @@ class LoginAndroid(LoginBase):
         self.obj.element_click('id', self.continue_button)
         self.obj.wait_for_locator('id', self.welcome_button, 15)
         self.obj.element_click('id', self.welcome_button)
+
+    def select_premium_school(self):
+        device = CommonMethods.get_device_type(self.driver)
+        if device == 'tab':
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/btnPremiumSchool')
+            assert self.text_match('BYJU’S Premium School'), "text is not displayed "
+        elif device == 'mobile':
+            self.click_on_link("Byju's classes")
+            assert self.text_match("Classes"), "text is not displayed"
+
+    def click_on_next(self):
+        self.obj.wait_for_locator('id', self.loginBtn_id)
+        self.driver.find_element_by_id(self.loginBtn_id).click()
 
     def enter_password(self, psswd):
         self.obj.wait_for_locator('xpath', self.password)

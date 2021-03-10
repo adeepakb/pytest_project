@@ -1,7 +1,7 @@
 import time
 import logging
 from selenium import webdriver
-from selenium.webdriver import ActionChains, TouchActions
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,10 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, \
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
-from subprocess import getoutput
 from constants.constants import Login_Credentials
-from utilities.common_methods import CommonMethods
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 from constants.load_json import getdata
 from utilities.tutor_common_methods import TutorCommonMethods
 
@@ -148,7 +146,7 @@ class MentorSession:
                 logging.debug('chat is not displayed')
 
     def login_as_tutor(self):
-        path = '../../config/config.json'
+        path = '../config/config.json'
         email = str(getdata(path, 'staging_access', 'email'))
         password = str(getdata(path, 'staging_access', 'password'))
         self.chrome_driver.get('https://staging.tllms.com/admin')
@@ -183,7 +181,7 @@ class MentorSession:
             try:
                 video_present =self.driver.find_element_by_xpath(self.exo_overlay).is_displayed()
                 endpopup_present =self.chrome_driver.find_element_by_xpath("//div[@class='endPopupContainer']").is_displayed()
-                if endpopup_present or (not video_present) :
+                if endpopup_present and (not video_present) :
                     time.sleep(10)
             except (NoSuchElementException,TimeoutException):
                 break

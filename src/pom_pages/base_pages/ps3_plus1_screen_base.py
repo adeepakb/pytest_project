@@ -4,10 +4,6 @@ from abc import ABC, abstractmethod
 class PS_3Plus1ScreenBase(ABC):
 
     @abstractmethod
-    def launch_and_navigate_to_login_page(self):
-        raise NotImplemented()
-
-    @abstractmethod
     def is_calendar_with_date_present(self):
         raise NotImplemented()
 

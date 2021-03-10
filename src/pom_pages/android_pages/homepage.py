@@ -60,9 +60,12 @@ class HomePage():
     profile_name_hamburger = (By.ID, "com.byjus.thelearningapp.premium:id/home_drawer_txtvw_profile_name")
     account_details_title = (By.ID, "com.byjus.thelearningapp.premium:id/account_details_title")
     profile_mob_num = (By.ID, "com.byjus.thelearningapp.premium:id/mobile_number")
+    # allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")
+    # allow_btn_id = (By.ID, "com.android.permissioncontroller:id/permission_allow_button")
     allow_btn_id = (By.XPATH, '//*[contains(@resource-id, "permission_allow_button")]')
     none_of_the_above_id = (By.ID, "com.google.android.gms:id/cancel")
     loginPageVerify_id = (By.XPATH, "//android.widget.Button[@text='Login']")
+    cancel_join_now = (By.ID, "com.byjus.thelearningapp.premium:id/tvCancel")
     welcome_button = (By.ID, "com.byjus.thelearningapp.premium:id/welcomeButton")
 
     #    home Page Locators
@@ -143,7 +146,7 @@ class HomePage():
         except:
             logging.info('Error in verify_to_login_page method in Homepage')
 
-    def login_as_another_one_mega_user(self, driver):
+    def login_as_three_plus_one_user(self, driver):
         CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
         CommonMethods.run(
             'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
@@ -154,14 +157,14 @@ class HomePage():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail1', 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail1', 'mobile_no'), self.phone_num)
+        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail4', 'country_code'))
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail4', 'mobile_no'), self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail1', 'OTP'), self.OtpTxtBx_id)
+        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail4', 'OTP'), self.OtpTxtBx_id)
 
-        data = getdata(Login_Credentials, 'login_detail1', 'profile_one_to_many_and_mega')
+        data = getdata(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(driver, data)
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
@@ -171,6 +174,39 @@ class HomePage():
                     radio_buttons[i].click()
                     break
         CommonMethods.elementClick(driver, self.continue_button)
+        CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
+        CommonMethods.elementClick(driver, self.welcome_button)
+
+    def login_as_another_one_mega_user(self, driver,login_detail):
+        CommonMethods.run('adb shell pm clear com.byjus.thelearningapp.premium')
+        CommonMethods.run(
+            'adb shell am start -n com.byjus.thelearningapp.premium/com.byjus.app.onboarding.activity.SplashActivity')
+        CommonMethods.accept_notification(driver, self.allow_btn_id)
+        CommonMethods.wait_for_locator(driver, self.loginPageVerify_id, 5)
+        CommonMethods.elementClick(driver, self.loginPageVerify_id)
+        CommonMethods.click_none_of_the_above(driver, self.none_of_the_above_id)
+        CommonMethods.wait_for_locator(driver, self.country_Code, 5)
+        CommonMethods.elementClick(driver, self.country_Code)
+        sleep(2)
+        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, login_detail, 'country_code'))
+        CommonMethods.enterText(driver, getdata(Login_Credentials, login_detail, 'mobile_no'), self.phone_num)
+        CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
+        CommonMethods.elementClick(driver, self.loginBtn_id)
+        CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
+        CommonMethods.enterText(driver, getdata(Login_Credentials, login_detail, 'OTP'), self.OtpTxtBx_id)
+
+        data = getdata(Login_Credentials, login_detail, 'profile_one_to_many_and_mega')
+        if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
+            CommonMethods.scrollToElement(driver, data)
+            profiles = CommonMethods.getElements(driver, self.user_profile_name)
+            radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
+            for i in range(len(profiles)):
+                if profiles[i].text == data:
+                    radio_buttons[i].click()
+                    break
+        CommonMethods.elementClick(driver, self.continue_button)
+        # CommonMethods.wait_for_locator(driver, self.cancel_join_now, 15)
+        # CommonMethods.elementClick(driver, self.cancel_join_now)
         CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
         CommonMethods.elementClick(driver, self.welcome_button)
 
@@ -298,6 +334,28 @@ class HomePage():
             self.verify_user_name(driver, 'one_to_many_and_mega')
         else:
             self.reset_and_login_with_otp(driver, 'one_to_many_and_mega')
+
+    def navigate_to_three_plus_one_user(self, driver):
+        try:
+            if CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
+                CommonMethods.elementClick(driver, self.back_button_id)
+                CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
+                CommonMethods.elementClick(driver, self.profile_name_hamburger)
+                CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
+                actual_username = getdata(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
+                expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
+                if CommonMethods.verifyTwoText(expected_username, actual_username):
+                    print("---------------above")
+                    CommonMethods.click_on_device_back_btn(driver)
+                    print("----------------------below")
+                    logging.info('user name verified')
+                else:
+                    self.login_as_three_plus_one_user(driver)
+            else:
+                logging.info('user is not in Home page')
+                self.login_as_three_plus_one_user(driver)
+        except:
+            logging.info('Error in Verifing Home Page')
 
     def after_delete_the_user(self, driver, code, countrycode, mobno, otp):
         try:

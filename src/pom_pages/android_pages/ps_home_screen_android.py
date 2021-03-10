@@ -3,7 +3,7 @@ import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pom_pages.android_pages.login_android import LoginAndroid
 from utilities.common_methods import CommonMethods
@@ -113,6 +113,9 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def attach_post_requisite_with_assessement(self, driver,assessment_name):
         Stagingtlms(driver).attach_requisite(assessment_name)
+
+    def detach_post_requisite(self,driver):
+        Stagingtlms(driver).detach_requisite()
 
     def verify_completed_card_details(self):
         subject_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/subject_name').text

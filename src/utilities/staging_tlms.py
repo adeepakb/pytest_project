@@ -27,8 +27,8 @@ class Stagingtlms:
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def login_to_staging(self):
-        email = str(getdata('../../config/config.json', 'staging_access', 'email'))
-        password = str(getdata('../../config/config.json', 'staging_access', 'password'))
+        email = str(getdata('../config/config.json', 'staging_access', 'email'))
+        password = str(getdata('../config/config.json', 'staging_access', 'password'))
 
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
@@ -44,17 +44,17 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
     def get_tutor_url(self, course='primary',premium_id='primary'):
-        email = str(getdata('../../config/config.json', 'staging_access', 'email'))
+        email = str(getdata('../config/config.json', 'staging_access', 'email'))
         today = datetime.today().strftime('%Y-%m-%d')
         if course == 'primary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail3', 'course_id_primary'))
-            premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
+            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         elif course == 'secondary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail3', 'course_id_secondary'))
-            premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
+            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         elif course == 'ternary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail1', 'course_id'))
-            premium_id = str(getdata('../../config/login_data.json', 'login_detail1', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail1', 'course_id'))
+            premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -112,17 +112,17 @@ class Stagingtlms:
         return tutor_url
 
     def reset_session(self, course='primary'):
-        premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         today = datetime.today().strftime('%Y-%m-%d')
         if course == 'primary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail3', 'course_id_primary'))
-            premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
+            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         elif course == 'secondary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail3', 'course_id_secondary'))
-            premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
+            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         elif course == 'ternary':
-            session_course_id = str(getdata('../../config/login_data.json', 'login_detail1', 'course_id'))
-            premium_id = str(getdata('../../config/login_data.json', 'login_detail1', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail1', 'course_id'))
+            premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -170,14 +170,14 @@ class Stagingtlms:
 
     @staticmethod
     def get_mobile_and_ccode():
-        mobile = str(getdata('../../config/config.json', 'account_details', 'mobile'))
+        mobile = str(getdata('../config/config.json', 'account_details', 'mobile'))
         return mobile
 
     def get_otp(self, account_type='many'):
         if account_type == 'many':
             complete_mobile = self.get_mobile_and_ccode()
         elif account_type == 'asset_not_tagged_account_details':
-            complete_mobile = str(getdata('../../config/config.json', 'asset_not_tagged_account_details', 'mobile'))
+            complete_mobile = str(getdata('../config/config.json', 'asset_not_tagged_account_details', 'mobile'))
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
@@ -243,7 +243,7 @@ class Stagingtlms:
                 r = 1
 
     def select_topic_and_update_teaching_material(self, topic_id):
-        teaching_material = str(getdata('../../config/config.json', 'update_pdf_in_cms_details', 'teaching_material'))
+        teaching_material = str(getdata('../config/config.json', 'update_pdf_in_cms_details', 'teaching_material'))
 
         # Tutor is in cms topics page
         self.wait_for_locator_webdriver("//table[contains(@class,'MuiTable-root')]")
@@ -288,8 +288,8 @@ class Stagingtlms:
                 row = 1
 
     def login_to_cms_staging(self):
-        email = str(getdata('../../config/config.json', 'staging_access', 'email'))
-        password = str(getdata('../../config/config.json', 'staging_access', 'password'))
+        email = str(getdata('../config/config.json', 'staging_access', 'email'))
+        password = str(getdata('../config/config.json', 'staging_access', 'password'))
         # Login to CMS
         self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/?page=1')
         self.chrome_driver.maximize_window()
@@ -318,7 +318,7 @@ class Stagingtlms:
         self.chrome_driver.close()
 
     def is_session_present_today(self):
-        premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -344,7 +344,7 @@ class Stagingtlms:
         return flag
 
     def is_teaching_material_tagged(self):
-        premium_id = str(getdata('../../config/config.json', 'asset_not_tagged_account_details', 'premium_id'))
+        premium_id = str(getdata('../config/config.json', 'asset_not_tagged_account_details', 'premium_id'))
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -487,7 +487,7 @@ class Stagingtlms:
         assert pagination_icon.is_enabled() == True, "Page " + page_num + "is not selected"
 
     def add_role_to_user(self, role):
-        email = str(getdata('../../config/config.json', 'staging_access', 'email'))
+        email = str(getdata('../config/config.json', 'staging_access', 'email'))
         self.wait_for_clickable_element_webdriver("//a[text()='Users']")
         self.chrome_driver.find_element_by_xpath("//a[text()='Users']").click()
         self.wait_for_clickable_element_webdriver("//input[@id='q_email']")
@@ -568,7 +568,7 @@ class Stagingtlms:
         return date
 
     def attach_requisite(self, requisite_name):
-        premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -636,7 +636,7 @@ class Stagingtlms:
         self.chrome_driver.close()
 
     def detach_requisite(self):
-        premium_id = str(getdata('../../config/config.json', 'account_details', 'premium_id'))
+        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()

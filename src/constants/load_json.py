@@ -9,8 +9,7 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 
 def getdata(filename,var,key):
-    with open(filename) as f:
-      
+    with open(PATH(filename)) as f:
         return json.load(f)[var][key]
     
     

@@ -16,7 +16,7 @@ from pom_pages.android_pages.login_android import LoginAndroid
 class ChooseTopic(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.session_data = SessionData(driver)
         self.session_pop = SessionAlert(driver)
         self.scroll_card = ScrollCards(driver)

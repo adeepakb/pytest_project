@@ -14,9 +14,6 @@ class LoginWeb(LoginBase):
         self.next_btn = "//*[contains(@resource-id, 'btnNext')]"
         self.login_btn = "//*[contains(@resource-id, 'btnLogin')]"
 
-    def implicit_wait_for(self, pool):
-        self.driver.implicitly_wait(pool)
-
     def click_on_premium_school(self):
         self.driver.find_element_by_xpath("//div[@class='P-hamburger-64']").click()
         self.driver.find_element_by_xpath("//div[text()='BYJU’S Classes']").click()
@@ -33,6 +30,7 @@ class LoginWeb(LoginBase):
         self.driver.find_element_by_xpath("// div[text() = 'NEXT']").click()
 
     def select_profile(self):
+        time.sleep(2)
         elements = self.driver.find_elements_by_xpath("//input[@type='radio']")
         elements[1].click()
         self.click_on_next()

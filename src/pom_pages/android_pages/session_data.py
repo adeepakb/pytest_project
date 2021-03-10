@@ -44,7 +44,7 @@ class SessionData:
     def get_sessions_ratings(card):
         try:
             rate_status = card.find_element_by_xpath(
-                '//*[contains(@resource-id, "session_rate_bar")]').text
+                '//*[contains(@resource-id, "post_requisite_rating")]').text
         except NoSuchElementException:
             rate_status = None
         return rate_status

@@ -1,13 +1,10 @@
-import math, operator
 from datetime import datetime,timedelta
 import re
 from appium.webdriver.common.touch_action import TouchAction
-from pom_pages.android_pages.staging_tlms import Stagingtlms
+from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pom_pages.android_pages.login_android import LoginAndroid
 from utilities.common_methods import CommonMethods
-import numpy as np
-from PIL import Image, ImageChops
 from pom_pages.base_pages.instruction_dialog_base import InstructionDialogBase
 CommonMethods = CommonMethods()
 
