@@ -6,8 +6,8 @@
 	},
 	"staging_access":
     {
-      "email":"testautomation@byjus.com",
-      "password":"Byjus@54321"
+      "email":"reshma.nair@byjus.com",
+      "password":"Tnl@12345"
     },
 	"desired_cap": {
     	"automationName": "UiAutomator2",
