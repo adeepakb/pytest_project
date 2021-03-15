@@ -1,9 +1,9 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
-from pom_pages.factory.login import LoginFactory
-from pom_pages.factory.ps_3plus1screen import PS_3Plus1Screen
-from pom_pages.android_pages.homepage import HomePage
+from pages.factory.login import LoginFactory
+from pages.factory.ps_3plus1screen import PS_3Plus1Screen
+from pages.android.homepage import HomePage
 scenarios('../features/3+1.feature')
 
 

@@ -2,12 +2,12 @@ from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.load_json import getdata
 from constants.constants import Login_Credentials
-from pom_pages.android_pages.session_popup import SessionAlert
+from pages.android.session_popup import SessionAlert
 from utilities.mentor_session import MentorSession
-from utilities.staging_tlms import Stagingtlms
-from pom_pages.android_pages.homepage import HomePage
-from pom_pages.factory.login import LoginFactory
-from pom_pages.factory.student_session import StudentSessionFactory
+from utilities.staging_tllms import Stagingtlms
+from pages.android.homepage import HomePage
+from pages.factory.login import LoginFactory
+from pages.factory.student_session import StudentSessionFactory
 from constants.platform import Platform
 
 scenarios('../features/Session Flow.feature')

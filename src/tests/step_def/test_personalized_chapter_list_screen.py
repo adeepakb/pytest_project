@@ -1,11 +1,11 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 
-from pom_pages.android_pages.homepage import HomePage
-from utilities.BasePage import BaseClass
-from pom_pages.android_pages.personalizedChapterList import PersonalizedChapterList
-from pom_pages.android_pages.Journeyloadingscreen import JourneyLoadingScreen
-from pom_pages.android_pages.Journeymapscreen import JourneyMapScreen
-from pom_pages.android_pages.Librarychapterlistscreen import LibraryChapterListsScreen
+from pages.android.homepage import HomePage
+from utilities.base_page import BaseClass
+from pages.android.personalizedChapterList import PersonalizedChapterList
+from pages.android.Journeyloadingscreen import JourneyLoadingScreen
+from pages.android.Journeymapscreen import JourneyMapScreen
+from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
 
 driver = fixture = 'driver'
 baseClass = BaseClass()

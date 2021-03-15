@@ -1,0 +1,34 @@
+{
+  "one_to_mega": {
+    "video_0": {
+      "hls": {
+        "license_key": "J15TvWaPea1ZIb082ioQ0A",
+        "video_url": "https://byju.s.llnwi.net/d/54eab70f/q98m0v/hls/h264.m3u8"
+      },
+      "dash": {
+        "license_key": "4paQJcXr6y6wb_oGPj8agg",
+        "video_url": "https://byju.s.llnwi.net/d/54eab70f/q98m0v/dash/h264.mpd"
+      }
+    },
+    "video_1": {
+      "hls": {
+        "license_key": null,
+        "video_url": null
+      },
+      "dash": {
+        "license_key": null,
+        "video_url": null
+      },
+      "video_2": {
+        "hls": {
+          "license_key": null,
+          "video_url": null
+        },
+        "dash": {
+          "license_key": null,
+          "video_url": null
+        }
+      }
+    }
+  }
+}

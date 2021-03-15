@@ -1,8 +1,8 @@
 from pytest_bdd import scenarios, given, when, then
 
-from pom_pages.android_pages.homepage import HomePage
-from utilities.BasePage import BaseClass
-from pom_pages.android_pages.Journeyloadingscreen import JourneyLoadingScreen
+from pages.android.homepage import HomePage
+from utilities.base_page import BaseClass
+from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 
 driver = fixture = 'driver'
 baseClass = BaseClass()
