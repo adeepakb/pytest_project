@@ -1,4 +1,4 @@
-App_logs
+App_logs/*
 __pycache__/
 Constants/__pycache__/
 POM_Pages/__pycache__/
@@ -10,4 +10,3 @@ ScreenShots/
 .DS_Store
 /tests/step_def/*.png
 /tests/features/*.feature
-

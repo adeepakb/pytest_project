@@ -1,7 +1,0 @@
-2020-06-04 13:49:18,543 - INFO - The +91-9513357002 and +91-9513357002  are Matching
-2020-06-04 13:49:18,950 - INFO - home page verified
-2020-06-04 13:49:27,001 - INFO - successfully navigated to library
-2020-06-04 13:49:30,898 - INFO - video is selected
-2020-06-04 13:49:38,227 - INFO - device set to landscape
-2020-06-04 13:49:40,748 - INFO - The Landscape is present on screen
-2020-06-04 13:50:31,534 - ERROR - Failed due to Exception in Method verify_video_in_potrait

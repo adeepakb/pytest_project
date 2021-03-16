@@ -1,3 +1,0 @@
-2020-06-04 16:29:27,490 - INFO - user is not in Home page
-2020-06-04 16:29:27,503 - ERROR - Failed due to Exception in Method get_the_rgb_lst
-2020-06-04 16:29:27,509 - ERROR - Failed due to Exception in Method navigateToHomeScreen

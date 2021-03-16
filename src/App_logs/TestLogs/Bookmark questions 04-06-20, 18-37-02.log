@@ -1,4 +1,0 @@
-2020-06-04 18:37:26,137 - INFO - User is in Home screen
-2020-06-04 18:37:31,727 - INFO - User is in instruction screen
-2020-06-04 18:37:40,341 - ERROR - Instruction should be added
-2020-06-04 18:37:40,341 - ERROR - Failed due to Exception in Method istruction_found

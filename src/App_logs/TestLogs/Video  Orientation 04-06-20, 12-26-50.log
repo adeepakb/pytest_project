@@ -1,8 +1,0 @@
-2020-06-04 12:27:34,421 - INFO - The +91-7503268450 and +91-7503268450  are Matching
-2020-06-04 12:27:40,161 - INFO - home page verified
-2020-06-04 12:27:55,086 - INFO - successfully navigated to library
-2020-06-04 12:27:58,277 - INFO - video is selected
-2020-06-04 12:28:06,129 - INFO - video Loading done successfully
-2020-06-04 12:28:18,127 - INFO - Video is playing successfully
-2020-06-04 12:28:27,879 - INFO - Failed due to Element not visible in Method video_should_played
-2020-06-04 12:28:28,781 - ERROR - Failed due to Exception in Method verify_video_in_potrait

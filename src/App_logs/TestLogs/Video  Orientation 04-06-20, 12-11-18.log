@@ -1,4 +1,0 @@
-2020-06-04 12:11:50,683 - INFO - The +1-9871234 and +91-9513357002  are not Matching
-2020-06-04 12:12:20,326 - INFO - Error in Verifing Home Page
-2020-06-04 12:12:31,840 - ERROR - Failed Locator in Methodget_the_rgb_lst
-2020-06-04 12:12:33,072 - ERROR - Failed due to Exception in Method navigateToHomeScreen
