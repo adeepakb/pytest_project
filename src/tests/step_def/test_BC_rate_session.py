@@ -4,7 +4,7 @@ from constants.platform import Platform
 from pages.android.homepage import HomePage
 from utilities.mentor_session import MentorSession
 from pages.android.session_popup import SessionAlert
-from utilities.staging_tllms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from pages.factory.login import LoginFactory
 from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.factory.rate_session import RateSession
@@ -293,7 +293,7 @@ def select_feedback(dashboard):
 
 @given("reset student session and start session")
 def reset_session(driver, mentor_session):
-    Stagingtlms(driver).reset_session('secondary')
+    Stagingtllms(driver).reset_session('secondary')
     mentor_session.start_tutor_session('secondary')
 
 

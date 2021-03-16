@@ -1,0 +1,39 @@
+{
+    "Sessions in August '20": [
+        {
+            "Subject": "MATHEMATICS",
+            "Topic": "Algebra - Session 1",
+            "Schedule": "27 Jul, Monday, 8:00 AM",
+            "Status": "Not Completed",
+            "Ratings": null
+        },
+        {
+            "Subject": "MATHEMATICS",
+            "Topic": "Algebra - Session 2",
+            "Schedule": "Today 8:00 AM",
+            "Status": "UP NEXT",
+            "Ratings": null
+        },
+        {
+            "Subject": "MATHEMATICS",
+            "Topic": "Algebra - Session 3",
+            "Schedule": "Tomorrow 8:00 AM",
+            "Status": "Not Completed",
+            "Ratings": null
+        },
+        {
+            "Subject": "BIOLOGY",
+            "Topic": "The Living Organisms- Characteristics And Habitats-Session 2",
+            "Schedule": "30 Jul, Thursday, 8:00 AM",
+            "Status": "Not Completed",
+            "Ratings": null
+        },
+        {
+            "Subject": "MATHEMATICS",
+            "Topic": "Ratio And Proportion - Session 1",
+            "Schedule": "31 Jul, Friday, 8:00 AM",
+            "Status": "Not Completed",
+            "Ratings": null
+        }
+    ]
+}

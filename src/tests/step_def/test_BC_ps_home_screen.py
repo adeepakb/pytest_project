@@ -3,7 +3,7 @@ from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.android.homepage import HomePage
-from utilities.staging_tllms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Premium School Home Screen.feature')
@@ -124,7 +124,7 @@ def verify_session_card_details(home_screen):
 
 @given("reset student session if the session is incase completed")
 def reset_session(driver):
-    Stagingtlms(driver).reset_session()
+    Stagingtllms(driver).reset_session()
 
 
 @then(parsers.parse('verify "{text}" button'))

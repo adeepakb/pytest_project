@@ -3,7 +3,7 @@ import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-from utilities.staging_tllms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.login_android import LoginAndroid
 from utilities.common_methods import CommonMethods

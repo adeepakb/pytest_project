@@ -5,7 +5,6 @@ import re
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
-from _pytest.main import NoMatch
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
@@ -421,7 +420,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
                 except (NoSuchElementException, StaleElementReferenceException):
                     t -= 1
             raise NoSuchElementException
-        raise NoMatch
+        raise Exception
 
     def change_orientation(self):
         self.static_exo_player()

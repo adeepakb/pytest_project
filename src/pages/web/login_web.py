@@ -7,8 +7,8 @@ from constants.constants import Login_Credentials
 
 
 class LoginWeb(LoginBase):
-    def __init__(self, chrome_driver):
-        self.driver = chrome_driver
+    def __init__(self, driver):
+        self.driver = driver
         self.phone_number = "//*[contains(@resource-id, 'etPhoneNumber')]"
         self.password = "//*[contains(@resource-id, 'etPassword')]"
         self.next_btn = "//*[contains(@resource-id, 'btnNext')]"

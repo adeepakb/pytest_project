@@ -1,0 +1,6 @@
+2020-06-04 14:25:14,365 - INFO - The +91-9513357002 and +91-9513357002  are Matching
+2020-06-04 14:25:14,838 - INFO - home page verified
+2020-06-04 14:25:23,771 - INFO - successfully navigated to library
+2020-06-04 14:25:27,632 - INFO - video is selected
+2020-06-04 14:25:34,639 - INFO - Failed in change_orientation_landscape
+2020-06-04 14:25:34,675 - ERROR - Failed due to Exception in Method change_orientation_landscape

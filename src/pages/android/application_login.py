@@ -126,7 +126,7 @@ class Login(LoginBase, TutorCommonMethods):
             self.get_element(*self.action_layout_ignore, wait=False).click()
         except NoSuchElementException:
             pass
-        self.implicit_wait_for(15)
+        self.implicit_wait_for(5)
         self.get_element(*self.hamburger_icon).click()
         self.get_element(*self.home_drawer).click()
         profile_activity = self.wait_activity("ProfileActivity", 20)

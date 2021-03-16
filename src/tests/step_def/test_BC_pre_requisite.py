@@ -1,9 +1,16 @@
+from pytest import fixture
 from pytest_bdd import scenarios, then
+
+from utilities.staging_tllms import Stagingtllms
 
 feature_file_name = 'Pre requisites and its resource type'
 
 scenarios('../features/' + feature_file_name + '.feature')
 
+@fixture
+def tllms(driver):
+    staging = Stagingtllms(driver)
+    yield staging
 
 @then('verify the completed session card with all details')
 def step_impl(ssn_req):

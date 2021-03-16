@@ -1,7 +1,7 @@
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from utilities.staging_tllms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from pages.android.session_data import SessionData
 from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards

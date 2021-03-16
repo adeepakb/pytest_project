@@ -1,0 +1,26 @@
+2020-06-04 13:36:16,591 - INFO - The +91-9513357002 and +91-9513357002  are Matching
+2020-06-04 13:36:31,556 - INFO - home page verified
+2020-06-04 13:36:40,371 - INFO - successfully navigated to library
+2020-06-04 13:36:44,097 - INFO - video is selected
+2020-06-04 13:36:52,483 - INFO - video Loading done successfully
+2020-06-04 13:36:58,216 - INFO - video Loading done successfully
+2020-06-04 13:37:10,949 - INFO - Video is playing successfully
+2020-06-04 13:37:18,974 - INFO - Video is played successfully in portrait
+2020-06-04 13:37:21,595 - INFO - device set to landscape
+2020-06-04 13:37:23,306 - INFO - The Landscape is present on screen
+2020-06-04 13:38:04,819 - INFO - The +91-9513357002 and +91-9513357002  are Matching
+2020-06-04 13:38:05,297 - INFO - home page verified
+2020-06-04 13:38:14,636 - INFO - successfully navigated to library
+2020-06-04 13:38:18,374 - INFO - video is selected
+2020-06-04 13:38:25,441 - INFO - video Loading done successfully
+2020-06-04 13:38:34,679 - INFO - video Loading done successfully
+2020-06-04 13:38:47,483 - INFO - Video is playing successfully
+2020-06-04 13:38:54,293 - INFO - Video is played successfully in portrait
+2020-06-04 13:38:57,434 - INFO - Failed in change_orientation_landscape
+2020-06-04 13:38:57,494 - ERROR - Failed due to Exception in Method change_orientation_landscape
+2020-06-04 13:39:30,965 - INFO - The +91-9513357002 and +91-9513357002  are Matching
+2020-06-04 13:39:31,321 - INFO - home page verified
+2020-06-04 13:39:39,404 - INFO - successfully navigated to library
+2020-06-04 13:39:43,103 - INFO - video is selected
+2020-06-04 13:39:53,939 - INFO - video Loading done successfully
+2020-06-04 13:39:59,359 - INFO - video Loading done successfully

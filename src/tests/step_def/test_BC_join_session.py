@@ -4,7 +4,7 @@ from constants.load_json import getdata
 from constants.constants import Login_Credentials
 from pages.android.session_popup import SessionAlert
 from utilities.mentor_session import MentorSession
-from utilities.staging_tllms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from pages.android.homepage import HomePage
 from pages.factory.login import LoginFactory
 from pages.factory.student_session import StudentSessionFactory
@@ -395,7 +395,7 @@ def close_mentor_session_tab(mentor_session):
 
 @given("reset student session if the session is incase completed")
 def reset_session(driver):
-    Stagingtlms(driver).reset_session()
+    Stagingtllms(driver).reset_session()
 
 
 @then("verify that videoplayer should not have any controls like seek bar,pause,play icons on the screen")

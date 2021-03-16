@@ -8,7 +8,6 @@ from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
-from utilities.pre_execution import BuildFeatureJob
 
 
 def pytest_addoption(parser):
@@ -29,12 +28,6 @@ def db():
 def base_class():
     base_class = BaseClass()
     yield base_class
-
-
-@fixture(scope="session")
-def feature_job():
-    feature_job = BuildFeatureJob()
-    yield feature_job
 
 
 @fixture
@@ -116,16 +109,6 @@ def login(driver, request):
     else:
         raise NotImplementedError()
 
-
-@fixture
-def tllms(driver, request):
-    platform_list = request.config.getoption("platform")
-    from pages.factory.staging_tllms_factory import StagingtllmsFactory
-    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
-        staging = StagingtllmsFactory().get_page(driver, Platform.ANDROID.value)
-        yield staging
-    else:
-        raise NotImplementedError()
 
 
 @fixture

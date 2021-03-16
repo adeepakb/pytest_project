@@ -1,7 +1,6 @@
 import os
 from random import randint
 from selenium.webdriver import ActionChains
-
 import json
 import logging
 import pickle
@@ -21,7 +20,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 
-from pages.base.staging_tllms import StagingtllmsBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import getdata
 from selenium.webdriver.chrome.options import Options
@@ -29,14 +27,15 @@ from datetime import datetime, timedelta
 from utilities.exceptions import *
 
 
-class Stagingtllms(StagingtllmsBase, TutorCommonMethods):
+class Stagingtllms():
 
     def __init__(self, driver, staging_login=True):
         self.driver = driver
-        if staging_login:
-            self.__browser_init()
-        self.__init()
-        super().__init__(driver)
+        self.chrome_options = Options()
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument("--window-size=1600,900")
+        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def __const(self, sub_profile_type='primary'):
         self.TUTOR_PLUS_CMS_URL = 'https://tutor-plus-cms-staging.tllms.com/'
@@ -55,15 +54,6 @@ class Stagingtllms(StagingtllmsBase, TutorCommonMethods):
         self.USER = 'profile_name'
         self.PREMIUM_ID = 'premium_id'
         self.OTP = 'OTP'
-
-    def __browser_init(self):
-        chrome_options = Options()
-        chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument("--window-size=1600,900")
-        self.chrome_driver = webdriver.Chrome(options=chrome_options)
-        self.wait = WebDriverWait(self.chrome_driver, 30)
 
     def __init(self):
         self.__const()

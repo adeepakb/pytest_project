@@ -1,9 +1,17 @@
 import pytest
 from pytest_bdd import scenarios, given, when, then
-
+from constants.platform import Platform
+from utilities.staging_tllms import Stagingtllms
+from pytest import fixture
 feature_file_name = 'MasterClass'
 
 scenarios('../features/' + feature_file_name + '.feature')
+
+
+@fixture
+def tllms(driver):
+    staging = Stagingtllms(driver)
+    yield staging
 
 
 @given('verify profile for masterclass booking')

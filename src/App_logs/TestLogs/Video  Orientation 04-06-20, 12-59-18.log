@@ -1,0 +1,4 @@
+2020-06-04 13:00:56,572 - INFO - The +91-7503268450 and +91-9513357002  are not Matching
+2020-06-04 13:01:40,899 - INFO - Error in Verifing Home Page
+2020-06-04 13:01:41,037 - ERROR - Failed due to Exception in Method get_the_rgb_lst
+2020-06-04 13:01:41,085 - ERROR - Failed due to Exception in Method navigateToHomeScreen
