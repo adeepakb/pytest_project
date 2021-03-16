@@ -68,7 +68,7 @@ def verify_text(login_in, text):
                     'icon and forward Arrow button'))
 def verify_post_req_video_elements(login_in, home_screen, text1, text2):
     assert login_in.text_match(text1), "%s text is not displayed " % text1
-    assert login_in.text_match(text1), "%s text is not displayed " % text2
+    assert login_in.text_match(text2), "%s text is not displayed " % text2
     assert home_screen.verify_arrow_present_for_each_requisite(), "forward arrow is not displayed"
 
 

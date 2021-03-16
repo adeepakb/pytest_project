@@ -13,6 +13,10 @@ class LoginBase(ABC):
         raise NotImplemented('subclasses must override click_on_premium_school()!')
 
     @abstractmethod
+    def click_on_hamburger(self):
+        raise NotImplemented
+
+    @abstractmethod
     def enter_phone(self):
         raise NotImplemented('subclasses must override enter_phone()!')
 

@@ -25,6 +25,8 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.close_chat = 'com.byjus.thelearningapp.premium:id/closeChatBtn'
         self.arrow_button = 'com.byjus.thelearningapp.premium:id/arrow_btn'
         self.requisite_items = 'com.byjus.thelearningapp.premium:id/llRequisiteContentLyt'
+        self.home_tabs = 'com.byjus.thelearningapp.premium:id/premium_school_home_tabs'
+        self.home_page_title = 'com.byjus.thelearningapp.premium:id/toolbar_title'
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', self.ps_tabs)
@@ -109,7 +111,7 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
-        self.obj.is_button_enabled(text)
+        return self.obj.is_button_enabled(text)
 
     def attach_post_requisite_with_assessement(self, driver,assessment_name):
         Stagingtlms(driver).attach_requisite(assessment_name)
@@ -136,3 +138,16 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def tap_outside_dialog_layout(self):
         self.action.tap(None, x=100, y=100).release().perform()
+
+    def scroll_to_text(self, text):
+        self.login.click_on_link('See all')
+        CommonMethods.scrollToElement(self.driver, text)
+
+    def verify_three_trail_classes(self):
+        topic_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/topic_name').text
+        return len(topic_name)
+
+    def is_user_in_ps_page(self):
+        return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed())
+

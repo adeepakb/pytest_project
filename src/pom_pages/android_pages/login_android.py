@@ -73,6 +73,9 @@ class LoginAndroid(LoginBase):
         except:
             raise Exception("Premium School card might not be displayed!")
 
+    # This step is only applicable in web. Hence skipping this for android
+    def click_on_hamburger(self):
+        pass
 
     def launch_and_navigate_to_login_page(self):
         self.obj.execute_command('adb shell pm clear com.byjus.thelearningapp.premium')
