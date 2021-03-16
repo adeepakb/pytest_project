@@ -1,9 +1,9 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
-from pom_pages.factory.login import LoginFactory
-from pom_pages.android_pages.homepage import HomePage
-from pom_pages.factory.ps_home_screen import PSHomescreenFactory
+from pages.factory.login import LoginFactory
+from pages.android.homepage import HomePage
+from pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Get Help.feature')
 

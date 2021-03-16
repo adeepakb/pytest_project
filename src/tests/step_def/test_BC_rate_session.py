@@ -1,13 +1,13 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
-from pom_pages.android_pages.homepage import HomePage
+from pages.android.homepage import HomePage
 from utilities.mentor_session import MentorSession
-from pom_pages.android_pages.session_popup import SessionAlert
-from utilities.staging_tlms import Stagingtlms
-from pom_pages.factory.login import LoginFactory
-from pom_pages.factory.ps_home_screen import PSHomescreenFactory
-from pom_pages.factory.rate_session import RateSession
+from pages.android.session_popup import SessionAlert
+from utilities.staging_tllms import Stagingtlms
+from pages.factory.login import LoginFactory
+from pages.factory.ps_home_screen import PSHomescreenFactory
+from pages.factory.rate_session import RateSession
 
 scenarios('../features/Rate Session screen - Post session end.feature')
 

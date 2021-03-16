@@ -1,9 +1,9 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
-from pom_pages.android_pages.homepage import HomePage
-from pom_pages.factory.instruction_dialog import InstructionDialog
-from pom_pages.factory.login import LoginFactory
+from pages.android.homepage import HomePage
+from pages.factory.instruction_dialog import InstructionDialog
+from pages.factory.login import LoginFactory
 
 scenarios('../features/Start Test Instruction Dialog.feature')
 

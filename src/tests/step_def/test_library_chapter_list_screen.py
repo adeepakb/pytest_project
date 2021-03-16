@@ -2,10 +2,10 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 from time import sleep
 
-from pom_pages.android_pages.homepage import HomePage
-from pom_pages.android_pages.Librarychapterlistscreen import LibraryChapterListsScreen
-from utilities.BasePage import BaseClass
-from pom_pages.android_pages.personalizedChapterList import PersonalizedChapterList
+from pages.android.homepage import HomePage
+from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
+from utilities.base_page import BaseClass
+from pages.android.personalizedChapterList import PersonalizedChapterList
 
 driver = fixture = 'driver'
 baseClass = BaseClass()

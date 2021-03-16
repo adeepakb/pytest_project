@@ -10,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 from constants.constants import Login_Credentials
-from utilities.staging_tlms import Stagingtlms
+from utilities.staging_tllms import Stagingtlms
 from constants.load_json import getdata
 from utilities.tutor_common_methods import TutorCommonMethods
 

@@ -1,39 +1,79 @@
 {
-	"login_detail1": {
-		"code": "+91-",
-		"mobile_no": "9513357003",
-		"country_code": "India (+91)",
-		"profile_name": "Reshma",
-		"profile_one_to_many_and_mega": "Premium Test One",
+    "login_detail1": {
+        "code": "+91-",
+        "mobile_no": "9513357003",
+        "country_code": "India (+91)",
+        "profile_name": "Reshma",
+        "profile_one_to_many_and_mega": "Premium Test One",
 		"course_id" : "102",
-		"OTP": "1089"
-	},
-	"login_details2": {
-		"code": "+91-",
-		"mobile_no": "7503268450",
-		"country_code": "India (+91)",
-		"profile_name": "Murali Cbse",
-		"OTP": "1089"
-	},
-	"login_detail3": {
-		"code": "+91-",
-		"mobile_no": "9513357002",
-		"country_code": "India (+91)",
-		"profile_name": "Reshma Test",
-		"profile_name_one_to_many": "Test One One One Many",
-		"profile_one_to_many_and_mega": "Testone",
+        "OTP": "1089"
+    },
+    "login_details2": {
+        "code": "+91-",
+        "mobile_no": "7503268450",
+        "country_code": "India (+91)",
+        "profile_name": "Murali Cbse",
+        "OTP": "1089"
+    },
+    "login_detail3": {
+        "code": "+91-",
+        "mobile_no": "9513357002",
+        "country_code": "India (+91)",
+        "profile_name": "Reshma Test",
+        "profile_name_one_to_many": "Test One One One Many",
+        "profile_one_to_many_and_mega": "Testone",
 		"course_id_primary": "102",
 		"course_id_secondary": "168",
-		"OTP": "1089"
-	},
-	"login_detail4": {
+        "OTP": "1089"
+    },
+    "login_detail4": {
 		"code": "+91-",
 		"mobile_no": "9111117777",
 		"country_code": "India (+91)",
 		"profile_name": "Megha",
 		"profile_one_to_many_and_mega": "Megha",
 		"OTP": "1089"
-	}
+	},
+    "login_details_3": {
+        "user_1": {
+            "mobile_number": "+91-9513357003",
+            "profile_1": {
+                "profile_name": "Akshay",
+                "premium_id": "1016769503",
+                "grades": [
+                    "8"
+                ]
+            },
+            "OTP": "1089"
+        },
+        "user_2": {
+            "mobile_number": "+91-9513357006",
+            "profile_1": {
+                "profile_name": "Reshma",
+                "premium_id": "1015013498",
+                "grades": [
+                    "8"
+                ]
+            },
+            "profile_2": {
+                "profile_name": "Test",
+                "premium_id": null,
+                "grades": [
+                    "9",
+                    "10"
+                ]
+            },
+            "profile_3": {
+                "profile_name": "Divya",
+                "premium_id": "1011546336",
+                "grades": [
+                    "4",
+                    "5",
+                    "6",
+                    "7"
+                ]
+            },
+            "OTP": "1089"
+        }
+    }
 }
-
-																	
