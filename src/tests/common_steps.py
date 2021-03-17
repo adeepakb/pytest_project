@@ -10,10 +10,6 @@ from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
 
 
-def pytest_addoption(parser):
-    parser.addoption("--platform", action="append")
-
-
 class Context:
     pass
 
@@ -108,7 +104,6 @@ def login(driver, request):
         yield login_in
     else:
         raise NotImplementedError()
-
 
 
 @fixture
@@ -446,6 +441,7 @@ def step_impl(login, std_board, db):
     login.toggle_wifi_connection('on')
     login.verify_home_screen()
     login.implicit_wait_for(15)
+    db.user_profile = 'user_1'
     assert std_board.complete_last_session(rate_action='skip', db=db)
 
 

@@ -114,10 +114,10 @@ class Login(LoginBase, TutorCommonMethods):
 
     def verify_user_profile(self):
         badge_activity = "EarnedBadgeActivity"
-        badge_screen_active = self.wait_activity(badge_activity, 10)
+        badge_screen_active = self.wait_activity(badge_activity, 5)
         if badge_screen_active:
             self.get_element(*self.close_badge_reward).click()
-        self.implicit_wait_for(5)
+        self.implicit_wait_for(3)
         try:
             self.get_element(*self.action_layout_dismiss, wait=False).click()
         except NoSuchElementException:
@@ -154,7 +154,7 @@ class Login(LoginBase, TutorCommonMethods):
                 self.click_back()
                 self.switch_profile()
                 try:
-                    self.implicit_wait_for(5)
+                    self.implicit_wait_for(3)
                     self.get_element(*self.action_layout_ignore, wait=False).click()
                 except NoSuchElementException:
                     pass
@@ -166,7 +166,7 @@ class Login(LoginBase, TutorCommonMethods):
         badge_activity = "EarnedBadgeActivity"
         user_home_activity = "UserHomeActivity"
         otm_home_activity = "OneToMegaHomeActivity"
-        badge_screen_active = self.wait_activity(badge_activity, 10)
+        badge_screen_active = self.wait_activity(badge_activity, 5)
         if badge_screen_active:
             self.get_element(*self.close_badge_reward)
         self.wait_activity(home_activity)

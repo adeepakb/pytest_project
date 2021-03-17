@@ -1,13 +1,26 @@
+from pytest import fixture
 from pytest_bdd import scenarios, given, when, then
+from utilities.staging_tllms import Stagingtllms
 
 feature_file_name = 'For you Tab - Upcoming sessions'
 
 scenarios('../features/' + feature_file_name + '.feature')
 
 
+@fixture
+def tllms(driver):
+    staging_tllms = Stagingtllms(driver)
+    yield staging_tllms
+
+
 @given('delete requisite attachment')
-def detach_requisite_attachment(tllms):
-    tllms.detach_requisite_attachment()
+def detach_requisite_attachment(std_board, tllms, db):
+    tllms.detach_requisite_attachment(user_profile=db.user_profile)
+
+
+@given('verify that in "For you" tab last completed session should not be displayed')
+def step_impl(std_board):
+    assert std_board.is_completed_session_displayed() is False
 
 
 @then('verify that the "For You" tab will contain the next 6 (14 for 11-12th) upcoming sessions for the user')
@@ -33,3 +46,8 @@ def is_pr_details_displayed(std_board):
 @then('verify date, subject name and completed text should be displayed')
 def is_pr_details_displayed(std_board):
     assert std_board.is_pr_details_displayed()
+
+
+@then('verify that the last completed session should be displayed in the "Completed session" tab')
+def step_impl(std_board):
+    assert std_board.is_completed_session_displayed() is True

@@ -1,8 +1,17 @@
+from pytest import fixture
 from pytest_bdd import scenarios, when, then, parsers
+
+from utilities.staging_tllms import Stagingtllms
 
 feature_file_name = 'Student Dashboard'
 
 scenarios('../features/' + feature_file_name + '.feature')
+
+
+@fixture
+def tllms(driver):
+    staging_tllms = Stagingtllms(driver)
+    yield staging_tllms
 
 
 @when('on home screen tap on premium school card')

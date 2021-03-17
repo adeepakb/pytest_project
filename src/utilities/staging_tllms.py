@@ -27,15 +27,16 @@ from datetime import datetime, timedelta
 from utilities.exceptions import *
 
 
-class Stagingtllms():
+class Stagingtllms(TutorCommonMethods):
 
-    def __init__(self, driver, staging_login=True):
+    def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--window-size=1600,900")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
+        super().__init__(driver)
+        self.__init()
 
     def __const(self, sub_profile_type='primary'):
         self.TUTOR_PLUS_CMS_URL = 'https://tutor-plus-cms-staging.tllms.com/'
@@ -57,6 +58,7 @@ class Stagingtllms():
 
     def __init(self):
         self.__const()
+        self.wait = WebDriverWait(self.chrome_driver, timeout=30)
         self.url_session_user_wise = self.STAGING_TLLMS_URL + 'student_sessions/#scheduling-sessions-user-wise'
         try:
             self.premium_id = str(getdata('../../config/config.json', 'profile_credentials', 'premium_id'))
@@ -729,7 +731,7 @@ class Stagingtllms():
                     self.chrome_driver.find_element_by_xpath(
                         "//tr[" + str(r) + "]/td[" + str(channel_col) + "]/a[@target='_blank']").click()
                     # switch to newly opened tab to attach requisite
-                    self.chrome_driver.switch_to_window(self.chrome_driver.window_handles[1])
+                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[1])
                     self.wait_for_locator_webdriver("//a[text()='Detach Requisite Group']")
                     self.chrome_driver.find_element_by_xpath("//a[text()='Detach Requisite Group']").click()
                     try:
@@ -765,7 +767,8 @@ class Stagingtllms():
         while retry:
             session = self.saved_session()
             self.chrome_driver.quit()
-            self.__browser_init()
+            self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
+            self.__init()
             if bool(session):
                 self.chrome_driver.get(url)
                 [self.chrome_driver.add_cookie(s) for s in session]

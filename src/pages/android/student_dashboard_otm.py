@@ -861,14 +861,14 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         user_home_activity = "UserHomeActivity"
         otm_home_activity = "OneToMegaHomeActivity"
         home_activity = "HomeActivity"
-        timeout = 5
+        timeout = 3
         for _ in range(4):
             self.click_back()
             if self.wait_activity(user_home_activity, timeout):
                 self.get_element(*self.btn_premium).click()
                 break
             elif self.wait_activity(otm_home_activity, timeout):
-                timeout = 3
+                timeout = 2
             elif self.wait_activity(home_activity, timeout):
                 element = self.get_element(
                     'android_uiautomator',
@@ -876,3 +876,13 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image"))')
                 element.click()
                 break
+            else:
+                raise Exception()
+
+    def is_completed_session_displayed(self):
+        card_root = self.get_element(*self.card_root)
+        try:
+            card_root.find_element_by_id(self.pr_status_msg[-1])
+            return True
+        except NoSuchElementException:
+            return False

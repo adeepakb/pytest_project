@@ -1,18 +1,14 @@
-import os
-import sys
-# import test_management
-# from test_management import *
 from constants.test_management import *
 
 
-def fetch_featurefile(suite_ID, project_ID, run_ID):
-    create_feature_from_run(suite_ID, project_ID, run_ID)
+def fetch_feature_file(suite_id, run_id):
+    create_feature_from_run(suite_id, run_id)
 
 
-suite_name = os.getenv('suite') # suite_name = "Byju's Classes"
+suite_name = os.getenv('suite')
 if suite_name == 'Regression_PremiumApp_Automation':
-    fetch_featurefile("160", "13", "184")
+    fetch_feature_file("160", "184")
 elif suite_name == 'Sanity_PremiumApp_Automation':
-    fetch_featurefile("160", "13", "256")
+    fetch_feature_file("160", "256")
 elif suite_name == "Byju's Classes":
-    fetch_featurefile("160", "13", "246")
+    fetch_feature_file("160", "246")
