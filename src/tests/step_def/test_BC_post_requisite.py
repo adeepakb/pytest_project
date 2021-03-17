@@ -7,10 +7,12 @@ feature_file_name = 'Post Requisites and its resource type'
 
 scenarios('../features/' + feature_file_name + '.feature')
 
+
 @fixture
 def tllms(driver):
     staging = Stagingtllms(driver)
     yield staging
+
 
 @given("launch the browser and login to tutor plus staging cms")
 def step_impl(tllms):

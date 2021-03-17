@@ -771,6 +771,14 @@ class Stagingtllms(TutorCommonMethods):
             self.__init()
             if bool(session):
                 self.chrome_driver.get(url)
+                timeout = 30
+                while timeout:
+                    if self.chrome_driver.current_url == url:
+                        break
+                    timeout -= 1
+                    sleep(1)
+                else:
+                    raise Exception(f"took too long to load url '{url}'") from None
                 [self.chrome_driver.add_cookie(s) for s in session]
                 self.chrome_driver.get(url)
                 if '/users/sign_in' in self.chrome_driver.current_url:

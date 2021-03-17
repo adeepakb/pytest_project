@@ -7,10 +7,12 @@ feature_file_name = 'Pre requisites and its resource type'
 
 scenarios('../features/' + feature_file_name + '.feature')
 
+
 @fixture
 def tllms(driver):
     staging = Stagingtllms(driver)
     yield staging
+
 
 @then('verify the completed session card with all details')
 def step_impl(ssn_req):
@@ -43,5 +45,3 @@ def step_impl(ssn_req):
 @then('click on get help button and verify that user navigates to get help screen')
 def step_impl(std_board):
     assert std_board.is_live_chat_loaded()
-
-

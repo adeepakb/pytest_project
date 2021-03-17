@@ -1,7 +1,17 @@
+from pytest import fixture
 from pytest_bdd import scenarios, when, then
+
+from utilities.staging_tllms import Stagingtllms
+
 feature_file_name = "Completed Sessions"
 
 scenarios('../features/' + feature_file_name + '.feature')
+
+
+@fixture
+def tllms(driver):
+    staging = Stagingtllms(driver)
+    yield staging
 
 
 @then('verify that recently completed session should be shown first in order')
