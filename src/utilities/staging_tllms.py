@@ -773,7 +773,7 @@ class Stagingtllms(TutorCommonMethods):
                 self.chrome_driver.get(url)
                 timeout = 30
                 while timeout:
-                    if self.chrome_driver.current_url == url:
+                    if "tllms.com" in self.chrome_driver.current_url:
                         break
                     timeout -= 1
                     sleep(1)
