@@ -69,6 +69,7 @@ class Stagingtllms(TutorCommonMethods):
     def save_session(self):
         self.chrome_driver.implicitly_wait(30)
         self.chrome_driver.find_element(By.CSS_SELECTOR, 'img[src]')
+        self.chrome_driver.get_screenshot_as_file("view.png")
         with open('../../config/login.pkl', 'wb') as io_write:
             pickle.dump(self.chrome_driver.get_cookies(), io_write)
 
