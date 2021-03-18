@@ -23,13 +23,9 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('constants/'))
 from constants.test_management import *
-
 # from constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
-# CommonMethods = CommonMethods()
-
-
 feature_job = BuildFeatureJob()
 
 
@@ -53,8 +49,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture()
 def driver(request):
-    # platform_list = request.config.getoption("--platform")
-    platform_list = 'ANDROID'
+    platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         android_driver = baseClass.setup_android()
         # feature_job.lock_or_unlock_device('lock')

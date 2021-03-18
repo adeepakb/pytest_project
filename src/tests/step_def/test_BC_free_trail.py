@@ -4,14 +4,16 @@ from constants.platform import Platform
 from pom_pages.factory.login import LoginFactory
 from pom_pages.android_pages.homepage import HomePage
 from pom_pages.factory.ps_home_screen import PSHomescreenFactory
+from pom_pages.android_pages.trialclass import TrailClass
+from utilities.mentor_session import MentorSession
+from utilities.staging_tlms import Stagingtlms
 
 scenarios('../features/Multiple Free Trail Bookings.feature')
 
 
 @fixture()
 def login_in(request, driver):
-    platform_list = 'ANDROID'
-    # platform_list = request.config.getoption("--platform")
+    platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
         yield login_in
@@ -22,8 +24,7 @@ def login_in(request, driver):
 
 @fixture()
 def home_screen(request, driver):
-    platform_list = 'ANDROID'
-    # platform_list = request.config.getoption("--platform")
+    platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         home_screen = PSHomescreenFactory().get_page(driver, Platform.ANDROID.value)
         yield home_screen
@@ -32,14 +33,18 @@ def home_screen(request, driver):
         yield home_screen
 
 
-@given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
-def attach_post_requisite(home_screen, driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver, assessment_name)
+@fixture()
+def trail_class(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        trail_class = TrailClass(driver)
+        yield trail_class
 
 
 @given("Launch the app online")
 def navigate_to_one_to_many_and_mega_user(driver):
-    HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
+    # HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
+    pass
 
 
 @when("tap on premium school card")
@@ -62,29 +67,14 @@ def is_user_in_ps_page(home_screen):
     assert home_screen.is_user_in_ps_page(), "user is not in the PS screen"
 
 
-@then('verify "Recommended Classes" section is present')
-def scroll_to_text(home_screen):
-    home_screen.scroll_to_text("Recommended Classes")
-
-
 @then(parsers.parse('Verify the text "{text}"'))
 def verify_text(login_in, text):
     assert login_in.text_match(text), "%s text is not displayed " % text
 
 
-@then("Tap on device/app back button")
-def tap_device_back(home_screen):
-    home_screen.click_back()
-
-
 @then(parsers.parse('verify "{text}" button'))
 def verify_button(home_screen, text):
     assert home_screen.verify_button(text), "button is not present"
-
-
-@then('Verify App back button on left hand side of the screen')
-def is_back_nav_present(home_screen):
-    assert home_screen.is_back_nav_present(), "back navigation icon is not present"
 
 
 @then(parsers.parse('tap on "{text}" button'))
@@ -93,20 +83,28 @@ def tap_button(login_in, text):
     assert button_status is True, "Unable to find {text} button"
 
 
-@then('verify that Free trial sessions should not be displayed in recommended section')
-def is_book_button_present(home_screen):
-    assert not home_screen.verify_button("Book"), "Free trial sessions is displayed in recommended section"
+@then('verify "Recommended Classes" section is present')
+def scroll_to_text(home_screen):
+    home_screen.scroll_to_text("Recommended Classes")
 
 
-@then('verify that "3" is number of free trails to be booked')
-def verify_three_trail_classes(home_screen):
-    assert home_screen.verify_three_trail_classes() == 3, "Number of free trails to be booked is not 3"
+@then('verify that user should get book option for free trial sessions in recommended section')
+def verify_book_option_for_free_trail(trail_class):
+    assert trail_class.is_book_present_for_free_trail_classes(), "book option is not displayed for free trial sessions in recommended section"
 
-@then('verify card details')
-@then('Verify that For you tab contents are loading')
-def verify_session_card_details(home_screen):
-    home_screen.verify_card_details()
 
-@then(parsers.parse('tap on "{text}" tab'))
-def select_tab(home_screen, text):
-    home_screen.tap_on_tab(text)
+@then('verify that user booked the trial session')
+def is_trail_class_booked(trail_class):
+    is_present = trail_class.is_trail_class_booked()
+    assert is_present, "verify that user booked free trial session"
+
+
+@then('verify that until user completes session')
+def tutor_taps_on_end_session(driver):
+    MentorSession(driver).start_tutor_session()
+    MentorSession(driver).tutor_end_session()
+
+
+@when('verify and add slot for master class booking')
+def step_impl(driver):
+    Stagingtlms(driver).verify_and_add_slot()

@@ -1,4 +1,4 @@
-"""It contains all common elements and functionalities available to all pages."""
+"""It contains all common elements and functionalities available to all pom_pages."""
 import math
 import subprocess
 from subprocess import getoutput

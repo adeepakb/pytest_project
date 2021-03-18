@@ -140,7 +140,6 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.action.tap(None, x=100, y=100).release().perform()
 
     def scroll_to_text(self, text):
-        self.login.click_on_link('See all')
         CommonMethods.scrollToElement(self.driver, text)
 
     def verify_three_trail_classes(self):

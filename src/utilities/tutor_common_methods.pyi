@@ -1,4 +1,4 @@
-"""It contains all common elements and functionalities available to all pages."""
+"""It contains all common elements and functionalities available to all pom_pages."""
 
 from typing import Any, Text, List, Union, TypeVar, Optional, Tuple
 from appium.webdriver.webelement import WebElement
