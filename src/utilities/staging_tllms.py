@@ -11,7 +11,8 @@ from time import sleep
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, InvalidSessionIdException, \
-    StaleElementReferenceException, ElementNotInteractableException, SessionNotCreatedException, NoAlertPresentException
+    StaleElementReferenceException, ElementNotInteractableException, SessionNotCreatedException, \
+    NoAlertPresentException, UnableToSetCookieException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -30,8 +31,8 @@ class Stagingtllms(TutorCommonMethods):
         self.driver = driver
         self.chrome_options = Options()
         self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument(f'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                                         f'Chrome/89.0.4389.82 Safari/537.36')
+        self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                         f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         super().__init__(driver)
@@ -769,7 +770,10 @@ class Stagingtllms(TutorCommonMethods):
             self.__init()
             if bool(session):
                 self.chrome_driver.get(url)
-                [self.chrome_driver.add_cookie(s) for s in session]
+                try:
+                    [self.chrome_driver.add_cookie(s) for s in session]
+                except UnableToSetCookieException:
+                    self.chrome_driver.get_screenshot_as_file("../../test_data/view.png")
                 self.chrome_driver.get(url)
                 if '/users/sign_in' in self.chrome_driver.current_url:
                     self.login_to_staging().save_session()
