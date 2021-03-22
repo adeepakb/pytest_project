@@ -118,7 +118,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def verify_requisite_details(self, dtls=None):
         if dtls == 'forward_icons':
             icons = self.get_elements(*self.arrow_btn)
-            if len(icons) == 2:
+            if len(icons) >= 2:
                 return True
             else:
                 return False
@@ -134,11 +134,15 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def get_req_sessions(self) -> List[WebElement]:
         self.login.implicit_wait_for(2.5)
         try:
-            req = self.get_element(*self.sd_post_req_list, wait=False).find_elements(
-                By.XPATH, '*/' + self.linear_layout[-1])
+            l_value = "//*[@resource-id=\"%s\"]" % self.sd_post_req_list[-1] + "/%s" % self.linear_layout[-1]
+            req = self.get_elements('xpath', l_value)
+            if len(req) == 0:
+                raise NoSuchElementException
         except NoSuchElementException:
-            req = self.get_element(*self.sd_pre_req_list, wait=False).find_elements(
-                By.XPATH, '*/' + self.linear_layout[-1])
+            l_value = "//*[@resource-id=\"%s\"]" % self.sd_pre_req_list[-1] + "/%s" % self.linear_layout[-1]
+            req = self.get_elements('xpath', l_value)
+            if len(req) == 0:
+                raise NoSuchElementException from None
         self.login.implicit_wait_for(15)
         return req
 
@@ -248,7 +252,14 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             try:
                 time_dtls = self.get_element(*self.sd_time_desc, wait=False).text
             except NoSuchElementException:
-                time_dtls = self.get_element(*self.card_time_desc, wait=False).text
+                try:
+                    time_dtls = self.get_element(*self.card_time_desc, wait=False).text
+                except NoSuchElementException:
+                    try:
+                        time_dtls = self.get_element(*self.pre_req_time, wait=False).text
+                    except NoSuchElementException:
+                        return self.get_element(*self.pr_status_date, wait=False).is_displayed()
+            time_dtls = time_dtls.split(",")[-1]
             return self.verify_time_details(time_dtls)
         elif section == 'date':
             try:

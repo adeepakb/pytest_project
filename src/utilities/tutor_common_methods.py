@@ -315,7 +315,7 @@ class TutorCommonMethods:
         wifi_state = "adb shell settings get global wifi_on"
         wifi_on = 2
         wifi_off = 0
-        _t = timeout = 10
+        _t = timeout = 30
         mask = self.driver.mobile.network_connection.mask
         if "no devices" in _status:
             raise DeviceUnavailableException(_status)

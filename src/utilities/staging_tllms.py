@@ -2,7 +2,6 @@ import os
 from random import randint
 from selenium.webdriver import ActionChains
 import json
-import logging
 import pickle
 import random
 import re
@@ -15,11 +14,9 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
     StaleElementReferenceException, ElementNotInteractableException, SessionNotCreatedException, NoAlertPresentException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
-
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import getdata
 from selenium.webdriver.chrome.options import Options
@@ -33,6 +30,8 @@ class Stagingtllms(TutorCommonMethods):
         self.driver = driver
         self.chrome_options = Options()
         self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument(f'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                                         f'Chrome/89.0.4389.82 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         super().__init__(driver)
@@ -73,10 +72,9 @@ class Stagingtllms(TutorCommonMethods):
         with open('../../config/login.pkl', 'wb') as io_write:
             pickle.dump(self.chrome_driver.get_cookies(), io_write)
 
-    def login_to_staging(self, cms_login=None, preserve_session=False):
+    def login_to_staging(self, cms_login=None):
         email = self.EMAIL
         password = self.PASSWORD
-        self.chrome_driver.maximize_window()
         try:
             if cms_login:
                 self.chrome_driver.get(self.TUTOR_PLUS_CMS_URL)
@@ -84,7 +82,6 @@ class Stagingtllms(TutorCommonMethods):
                 self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
             else:
                 self.chrome_driver.get(self.STAGING_TLLMS_URL)
-            self.chrome_driver.maximize_window()
             self.wait_for_locator_webdriver("//input[@id='email']")
             self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
             self.wait_for_locator_webdriver("//button[@type='submit']")
@@ -664,7 +661,7 @@ class Stagingtllms(TutorCommonMethods):
                     self.chrome_driver.find_element_by_xpath(
                         "//tr[" + str(r) + "]/td[" + str(channel_col) + "]/a[@target='_blank']").click()
                     # switch to newly opened tab to attach requisite
-                    self.chrome_driver.switch_to_window(self.chrome_driver.window_handles[1])
+                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[1])
                     self.wait_for_locator_webdriver("//a[text()='Attach Requisite Group']")
                     self.chrome_driver.find_element_by_xpath("//a[text()='Attach Requisite Group']").click()
                     self.wait_for_locator_webdriver("//span[@role='presentation']")

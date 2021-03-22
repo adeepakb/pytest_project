@@ -47,6 +47,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.card_topic_name_pr = 'id', '%s/topic_name' % package_name
         self.card_time_desc = 'id', '%s/session_time' % package_name
         self.card_label_tv = 'id', '%s/tvWorkshop' % package_name
+        self.card_content = 'id', '%s/content_card' % package_name
+        self.card_content_header = 'id', '%s/session_header' % package_name
         self.see_more_tv = 'id', '%s/tvShowMoreText' % package_name
         self.requisite_card = 'id', '%s/llRequisiteContentLyt' % package_name
         self.pr_view = 'id', '%s/post_requisite_view' % package_name
@@ -95,6 +97,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
             self.card_root = 'id', '%s/card' % package_name
+            self.card_root_sub = 'id', '%s/card_root' % package_name
             self.card_strip_title = 'id', '%s/strip_title' % package_name
             self.card_strip_desc = 'id', '%s/strip_message' % package_name
             self.card_strip_btn = 'id', '%s/card_strip_btn' % package_name
@@ -437,21 +440,21 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         return False
 
     def is_up_next_displayed(self):
-        swipe_to = 3
-        self.login.implicit_wait_for(0)
-        while swipe_to:
-            session_list = self.get_element(*self.card_list)
-            session_cards = session_list.find_elements_by_class_name('android.view.ViewGroup')
-            session = None
-            for session in session_cards:
-                try:
-                    return session.find_element_by_id(self.card_time_desc[-1]).is_displayed()
-                except NoSuchElementException:
-                    pass
+        swipe = 3
+        while swipe:
+            try:
+                session = self.get_element(*self.card_root)
+                session_list = self.get_element(*self.card_list)
+                if session.find_element('id', self.pr_status_msg[-1]).text.lower() == "completed":
+                    self.scroll_cards.scroll_by_card(session, session_list)
+                    swipe -= 1
+            except NoSuchElementException:
+                return True
+        else:
+            raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
 
-            self.scroll_cards.scroll_by_card(session, session_list)
-            swipe_to -= 1
-        return False
+
+
 
     def is_post_requisite_attached(self):
         s = self.get_element(*self.pr_status_msg).text
@@ -551,15 +554,34 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
 
     def select_up_coming_card(self):
         self.login.implicit_wait_for(0)
-        session_list = self.get_element(*self.card_list)
-        session_cards = session_list.find_elements_by_class_name('android.view.ViewGroup')
-        for session in session_cards:
-            try:
-                session.find_element_by_id(self.pr_status_ico[-1])
-                continue
-            except NoSuchElementException:
-                session.click()
-                session_cards.clear()
+        swipe = 3
+        while swipe:
+            session_cards = self.get_elements(*self.card_content)
+            session_list = self.get_element(*self.card_list)
+            for session in session_cards:
+                try:
+                    try:
+                        session.find_element_by_id(self.pr_status_date[-1])
+                    except NoSuchElementException:
+                        session.find_element_by_id(self.pre_req_time[-1])
+                except NoSuchElementException:
+                    try:
+                        session.find_element_by_id(self.card_time_desc[-1])
+                    except NoSuchElementException:
+                        continue
+                try:
+                    card = session.find_element_by_id(self.card_content_header[-1])
+                except NoSuchElementException:
+                    card = session
+                try:
+                    card.find_element_by_id(self.pr_status_msg[-1])
+                except NoSuchElementException:
+                    card.click()
+                    return
+            self.scroll_cards.scroll_by_card(session_cards[-1], session_list)
+            swipe -= 1
+        else:
+            raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
 
     def last_completed_session_up_next(self, completed=None):
         self.login.implicit_wait_for(15)

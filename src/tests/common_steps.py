@@ -21,12 +21,6 @@ def db():
 
 
 @fixture
-def base_class():
-    base_class = BaseClass()
-    yield base_class
-
-
-@fixture
 def home(driver):
     home = HomePage(driver)
     yield home
@@ -376,9 +370,9 @@ def step_impl(std_board):
 
 @then('verify that for up next session pre requisites are displayed')
 def step_impl(std_board):
-    pre_req, post_req = True, True
+    pre_req, post_req = True, False
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req, session='upcoming')
-    assert pre_req is displayed and post_req is displayed
+    assert pre_req is displayed and post_req is not displayed
 
 
 @then('verify if more then two requisites are attached "see more" option is displayed')
