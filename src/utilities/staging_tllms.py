@@ -774,6 +774,7 @@ class Stagingtllms(TutorCommonMethods):
                     [self.chrome_driver.add_cookie(s) for s in session]
                 except UnableToSetCookieException:
                     self.chrome_driver.get_screenshot_as_file("../../test_data/view.png")
+                    raise
                 self.chrome_driver.get(url)
                 if '/users/sign_in' in self.chrome_driver.current_url:
                     self.login_to_staging().save_session()
