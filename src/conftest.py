@@ -11,7 +11,7 @@ from selenium.common.exceptions import InvalidSessionIdException
 from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_feature_file
+# from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 base_class = BaseClass()
@@ -41,6 +41,7 @@ def pytest_addoption(parser):
 def driver(request):
     platform_list = request.config.getoption("platform")
     if Platform.ANDROID.name.lower() == platform_list[-1].lower():
+        print(subprocess.getoutput('adb devices & adb disconnect'))
         android_driver = base_class.setup_android()
         feature_job.lock_or_unlock_device('lock')
         serial = feature_job.connect_adb_api()
@@ -52,7 +53,7 @@ def driver(request):
             android_driver.quit()
         except InvalidSessionIdException:
             """mostly socket was already hung up"""
-            pass
+            raise
     elif Platform.WEB.name.lower() == platform_list[-1].lower():
         chrome_driver = base_class.setup_browser()
         yield chrome_driver

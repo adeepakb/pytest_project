@@ -361,11 +361,18 @@ def step_impl(std_board):
     assert std_board.ps_home_page_tab("For you", check=True)
 
 
-@then('verify that for completed session both pre and post requisite are displayed')
+@then('verify that for completed session both pre and post requisites are displayed')
 def step_impl(std_board):
     pre_req, post_req = True, True
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req)
     assert pre_req is displayed and post_req is displayed
+
+
+@then('verify that for completed session post requisite is displayed')
+def step_impl(std_board):
+    pre_req, post_req = False, True
+    displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req)
+    assert pre_req is not displayed and post_req is displayed
 
 
 @then('verify that for up next session pre requisites are displayed')

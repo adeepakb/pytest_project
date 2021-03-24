@@ -3,6 +3,7 @@ from time import sleep, strftime, strptime
 from typing import List
 import re
 from appium.webdriver import WebElement
+from selenium.webdriver.common.action_chains import ActionChains
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -21,6 +22,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         self.login = Login(driver)
         self.scroll_cards = ScrollCards(driver)
         self.device_type = self.get_device_type()
+        self.action_chains = ActionChains(driver)
         self.action = TouchAction(driver)
         self.action_1 = TouchAction(driver)
         self.multi_action = MultiAction(self.driver)
@@ -404,8 +406,9 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             retry = 15
         while retry:
             try:
-                self.action_1.tap(x=lyt_x, y=lyt_y).release().perform()
+                event = self.action_1.press(x=lyt_x, y=lyt_y).perform()
                 self.get_element(*self.video_pause_ib, wait=False).click()
+                event.release()
                 retry -= retry
             except (NoSuchElementException, StaleElementReferenceException):
                 retry -= 1
@@ -436,7 +439,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def change_orientation(self):
         self.static_exo_player()
         self.get_element(*self.video_orientation_ib).click()
-        self.get_element(*self.video_play_ib).click()
+        self.get_element(*self.video_forward_iv).click()
         return self.verify_video_playing()
 
     def is_video_landscape_playable(self):

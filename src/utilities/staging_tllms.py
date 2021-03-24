@@ -1,4 +1,5 @@
 import os
+import sys
 from random import randint
 from selenium.webdriver import ActionChains
 import json
@@ -76,6 +77,8 @@ class Stagingtllms(TutorCommonMethods):
     def login_to_staging(self, cms_login=None):
         email = self.EMAIL
         password = self.PASSWORD
+        retry = 3
+        current_url = None
         try:
             if cms_login:
                 self.chrome_driver.get(self.TUTOR_PLUS_CMS_URL)
@@ -93,10 +96,19 @@ class Stagingtllms(TutorCommonMethods):
             self.wait_for_clickable_element_webdriver("//input[@type='password']")
             self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
             self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
-            return self
         except NoSuchElementException:
             self.chrome_driver.get_screenshot_as_file("failed.png")
             raise
+        while retry:
+            current_url = self.chrome_driver.current_url
+            if "tllms.com" in current_url:
+                return self
+            retry -= 1
+            sleep(0.5)
+        date_month = datetime.now().strftime("%H%M%S_%d%m%Y")
+        file_name = "../../test_data/screen_shots/failed_%s.png" % date_month
+        self.chrome_driver.get_screenshot_as_file(file_name)
+        raise InvalidSessionURL(f"unusual redirect to '{current_url}'.")
 
     def get_tutor_url(self, course='primary', premium_id='primary'):
         email = str(getdata('../config/config.json', 'staging_access', 'email'))

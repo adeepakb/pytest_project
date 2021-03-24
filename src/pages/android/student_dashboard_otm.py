@@ -414,7 +414,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         sessions = session_list.find_elements_by_class_name('android.view.ViewGroup')
         days = [_.strftime("%d %b") for _ in self.get_working_days(7)]
         self.login.implicit_wait_for(0)
-        swipe_to = 3
+        swipe_to = 5
         scroll_down = True
         while swipe_to:
             end = self.get_element(*self.card_list)
@@ -434,7 +434,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     see_more_less.click()
                     scroll_down = False
             except NoSuchElementException:
-                pass
+                self.scroll_cards.scroll_by_card(session, end)
             sessions = self.get_elements(*self.card_root)
             swipe_to -= 1
         return False

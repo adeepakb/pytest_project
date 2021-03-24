@@ -7,6 +7,10 @@ class AppBaseException(Exception):
     pass
 
 
+class TPCMSBaseException(AppBaseException):
+    pass
+
+
 class TimeOutError(AppBaseException):
 
     def __init__(self, timeout):
@@ -125,9 +129,9 @@ class ClassRoomNotFoundError(AppBaseException):
     pass
 
 
-class TPCMSBaseException(AppBaseException):
+class SlotUpdateError(TPCMSBaseException):
     pass
 
 
-class SlotUpdateError(TPCMSBaseException):
+class InvalidSessionURL(AppBaseException):
     pass
