@@ -1,4 +1,4 @@
-"""It contains all common elements and functionalities available to all pom_pages."""
+"""It contains all common elements and functionalities available to all pages."""
 
 from typing import Any, Text, List, Union, TypeVar, Optional, Tuple
 from appium.webdriver.webelement import WebElement
@@ -111,3 +111,7 @@ class TutorCommonMethods:
     def noSuchEleExcept(self, featureFileName, methodName) -> Any: ...
 
     def exception(self, featureFileName, methodName) -> Any: ...
+
+    def get_device_type(self) -> Text: ...
+
+    def wait_activity(self, activity_name: str, timeout=int) -> bool: ...

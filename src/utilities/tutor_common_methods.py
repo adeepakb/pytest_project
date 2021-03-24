@@ -1,6 +1,7 @@
-"""It contains all common elements and functionalities available to all pom_pages."""
+"""It contains all common elements and functionalities available to all pages."""
 import math
 import subprocess
+import time
 from subprocess import getoutput
 import datetime
 
@@ -437,6 +438,28 @@ class TutorCommonMethods:
         logging.error('Failed due to Exception in Method ' + methodName)
         self.takeScreenShot(featureFileName)
         pytest.fail("Failed Due to Exception in")
+
+    def get_device_type(self):
+        size = self.driver.get_window_size()
+        width = size['width']
+        height = size['height']
+        dp = self.driver.get_display_density()
+        diagonal = (math.sqrt(width ** 2 + height ** 2)) / dp
+        if diagonal >= 10:
+            return 'tab'
+        else:
+            return 'mobile'
+
+    def wait_activity(self, activity_name, timeout=30):
+        while timeout:
+            c_a = self.driver.current_activity.split('.')[-1]
+            if activity_name == c_a:
+                return True
+            else:
+                time.sleep(1)
+                timeout -= 1
+        return False
+
 
 class InValidLocatorError(Exception):
     pass

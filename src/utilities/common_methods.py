@@ -1,4 +1,4 @@
-"""It contains all common elements and functionalities available to all pom_pages."""
+"""It contains all common elements and functionalities available to all pages."""
 import pytest
 import os
 import sys

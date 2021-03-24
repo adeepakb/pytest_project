@@ -1,7 +1,7 @@
 import pytest
 import os
 from pytest_bdd import scenarios, given, when, then, parsers
-from pom_pages.android_pages.Hamburgermenu import Hamburger
+from pages.android.Hamburgermenu import Hamburger
 from utilities.BasePage import BaseClass
 
 PATH = lambda p: os.path.abspath(
@@ -12,8 +12,8 @@ PATH = lambda p: os.path.abspath(
 # from utilities.common_methods import CommonMethods
 # from utilities.BasePage import BaseClass
 # 
-# sys.path.append(PATH('../../../pom_pages/'))
-# from pom_pages.Hamburgermenu import Hamburger
+# sys.path.append(PATH('../../../pages/'))
+# from pages.Hamburgermenu import Hamburger
 
 driver = fixture = 'driver'
 base_class = BaseClass()

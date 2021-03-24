@@ -1,7 +1,7 @@
 App_logs
 __pycache__/
 constants/__pycache__/
-pom_pages/__pycache__/
+pages/__pycache__/
 tests/step_def/__pycache__/
 utilities/__pycache__/
 App_logs/SystemLogs/

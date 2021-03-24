@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from random import randint
@@ -22,8 +23,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def login_to_staging(self):
@@ -43,7 +44,7 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
-    def get_tutor_url(self, course='primary',premium_id='primary'):
+    def get_tutor_url(self, course='primary', premium_id='primary'):
         email = str(getdata('../config/config.json', 'staging_access', 'email'))
         today = datetime.today().strftime('%Y-%m-%d')
         if course == 'primary':
@@ -53,8 +54,8 @@ class Stagingtlms:
             session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
             premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
         elif course == 'ternary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail1', 'course_id'))
-            premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
+            premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
@@ -102,7 +103,13 @@ class Stagingtlms:
                     tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
                         meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
                     break
-
+                elif 'FREE' in status:
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").send_keys(email)
+                    tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
+                        meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
             except NoSuchElementException:
                 continue
 
@@ -693,3 +700,96 @@ class Stagingtlms:
             except NoSuchElementException:
                 continue
         self.chrome_driver.close()
+
+    @staticmethod
+    def booking_time(hours, minutes, day=None):
+        time_now = datetime.now()
+        if day is not None and day.lower() == 'tomorrow':
+            n_day = (time_now + timedelta(days=1)).strftime("%A")
+            return n_day, "8:00", "23:00"
+        if minutes is None:
+            mins = 32
+        else:
+            mins = 30 + int(minutes)
+        if int(time_now.strftime("%S")) >= 45:
+            time_now = datetime.now()
+            mins = 33 if minutes is None else 30 + int(minutes) + 1
+        start_time = (time_now + timedelta(hours=0, minutes=mins))
+        if hours is not None:
+            end_hour = int(hours) if int(hours) > 0 else 1
+        else:
+            end_hour = 23 - int(start_time.strftime("%H"))
+        end_time = (start_time + timedelta(hours=end_hour, minutes=0)).strftime("%H:%M")
+        c_day, ac_time = start_time.strftime('%A %H:%M').split()
+        return c_day, ac_time, end_time
+
+    # todo: change implementation
+    def _add_slot(self, booking_time=None, course_id=None):
+        def group_name(d, t):
+            return "auto_" + str(time.strptime(d, "%A").tm_wday + 1) + ''.join(t.split(":"))
+
+        # self.session_relaunch(cms=True)
+        self.chrome_driver.get(f"https://tutor-plus-cms-staging.tllms.com/courses/%s/slot_groups/new" % course_id)
+        number_of_slots = self.chrome_driver.find_elements('css selector', 'div.slotCardContainer')
+        if len(number_of_slots) == 1:
+            b_day, start_time, end_time = booking_time
+            weeks = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday", "Sunday")
+            for i, day in enumerate(weeks):
+                if day.lower() == b_day.lower():
+                    index = i
+                    break
+            else:
+                raise Exception("DayFormatException: bad day format '%s'" % b_day)
+            grp_name = group_name(b_day, start_time)
+            self.chrome_driver.find_element_by_css_selector("input.slotNameInput").send_keys(grp_name)
+            self.chrome_driver.find_element("css selector", "div.MuiInput-input").click()
+            self.chrome_driver.find_elements("css selector", "div#menu- .MuiListItem-button")[index].click()
+            self.chrome_driver.find_element("css selector",
+                                            "div.slotContent > div:nth-child(2) input.slotInput").send_keys(start_time)
+            self.chrome_driver.find_element("css selector",
+                                            "div.slotContent > div:nth-child(3) input.slotInput").send_keys(end_time)
+            self.chrome_driver.find_element("css selector", "button[type=button]").click()
+            new_slot_grp_url = self.chrome_driver.current_url
+            try:
+                self.chrome_driver.implicitly_wait(30)
+                self.chrome_driver.find_element("xpath", "//span[text()=\"Add New Slot Group\"]")
+            except NoSuchElementException:
+                pass
+            timeout = 30
+            while timeout:
+                if self.chrome_driver.current_url != new_slot_grp_url:
+                    self.chrome_driver.quit()
+                    break
+                else:
+                    timeout -= 1
+                    time.sleep(1)
+            else:
+                self.chrome_driver.quit()
+                raise Exception("Cannot update slot in 'https://tutor-plus-cms-staging.tllms.com/'")
+            return {
+                grp_name: {
+                    "slot_0": {
+                        "day": b_day,
+                        "start_time": start_time,
+                        "end_time": end_time
+                    }
+                }
+            }
+        else:
+            NotImplementedError("Booking for more than one slot is not yet implemented.")
+
+    def verify_and_add_slot(self, hours=None, minutes=None, day=None):
+        with open('../../config/course.json') as io_read:
+            course = json.load(io_read)['cbse_4']
+        course_id = course['id']
+        b_day, start_time, *_ = b_time = self.booking_time(hours, minutes, day)
+        # available_slots = self.get_available_slots(b_day, start_time)
+        # if all(available_slots) is False:
+        slot = self._add_slot(b_time, course_id)
+        with open('../../config/course.json', 'r+') as io_write:
+            course = json.load(io_write)
+            io_write.seek(0)
+            course['cbse_4']['slots'].update(slot)
+            json.dump(course, io_write, indent=2)
+        # else:
+        #     return available_slots

@@ -2,10 +2,10 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 from time import sleep
 
-from pom_pages.android_pages.homepage import HomePage
+from pages.android.homepage import HomePage
 from utilities.BasePage import BaseClass
-from pom_pages.android_pages.homescreen import HomeScreen
-from pom_pages.android_pages.profileScreen import ProfileScreen
+from pages.android.homescreen import HomeScreen
+from pages.android.profileScreen import ProfileScreen
 from utilities.interrupt import *
 from utilities.API_methods import *
 

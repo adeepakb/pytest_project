@@ -1,6 +1,6 @@
 from time import sleep
 from pytest_bdd import scenarios, given, when, then, parsers
-from pom_pages.android_pages.bookmarkQuestionScreen import BookMarkQuestionScreen
+from pages.android.bookmarkQuestionScreen import BookMarkQuestionScreen
 from utilities.BasePage import BaseClass
 driver = fixture = 'driver'
 
