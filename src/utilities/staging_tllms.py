@@ -100,13 +100,18 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.get_screenshot_as_file("failed.png")
             raise
         while retry:
+            self.chrome_driver.get("https://www.google.com/")
             current_url = self.chrome_driver.current_url
             if "tllms.com" in current_url:
                 return self
             retry -= 1
             sleep(0.5)
+        try:
+            os.mkdir("screenshots")
+        except FileExistsError:
+            pass
         date_month = datetime.now().strftime("%H%M%S_%d%m%Y")
-        file_name = "../../test_data/screen_shots/failed_%s.png" % date_month
+        file_name = "../../test_data/screenshots/failed_%s.png" % date_month
         self.chrome_driver.get_screenshot_as_file(file_name)
         raise InvalidSessionURL(f"unusual redirect to '{current_url}'.")
 
