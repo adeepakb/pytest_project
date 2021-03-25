@@ -100,7 +100,6 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.get_screenshot_as_file("failed.png")
             raise
         while retry:
-            self.chrome_driver.get("https://www.google.com/")
             current_url = self.chrome_driver.current_url
             if "tllms.com" in current_url:
                 return self
