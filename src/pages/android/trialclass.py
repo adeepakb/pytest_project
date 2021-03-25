@@ -37,7 +37,7 @@ class TrailClass():
         self.card_icon_iv = 'id', '%s/cIvSessionImage' % package_name
         self.card_topic_tv = 'id', '%s/tvSessionTopicName' % package_name
         self.rc_card_schedule_tv = 'id', '%s/tvSessionTime' % package_name
-        self.rounded_nav_button = 'id', '%s/roundedNavButton"' % package_name
+        self.rounded_nav_button = 'id', '%s/roundedNavButton' % package_name
 
 
     def scroll_rc_in_view(self):
@@ -91,11 +91,14 @@ class TrailClass():
                     time.sleep(2)
                     prev_cards = cards_root
                     self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
-                    if prev_cards == cards_root:
+                    cards_root = self.obj.get_elements(*self.rc_card_root)
+                    prev_card_subject =prev_cards[2].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSessionTopicName').text
+                    card_subject = cards_root[2].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSessionTopicName').text
+                    if prev_card_subject == card_subject:
                         return False
                     time.sleep(2)
                     i = 1
-                    cards_root = self.obj.get_elements(*self.rc_card_root)
+
 
     def is_master_class_present(self):
         self.scroll_rc_in_view()
@@ -189,15 +192,15 @@ class TrailClass():
         up_next_title = up_next_session.find_element_by_id('com.byjus.thelearningapp.premium:id/session_title').text
         up_next_subject = up_next_session.find_element_by_id('com.byjus.thelearningapp.premium:id/subject_name').text
         self.tap_on_tab('Completed')
+        self.driver.implicitly_wait(2)
         completed_cards = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
-        completed_session_title = completed_cards[0].find_element_by_id(
-            'com.byjus.thelearningapp.premium:id/session_title').text
+        if len(completed_cards) == 0:
+            return False
+        completed_session_title = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/session_title').text
         try:
-            completed_subject = completed_cards[0].find_element_by_id(
-                'com.byjus.thelearningapp.premium:id/tvWorkshop').text
+            completed_subject = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/tvWorkshop').text
         except NoSuchElementException:
-            completed_subject = completed_cards[0].find_element_by_id(
-                'com.byjus.thelearningapp.premium:id/subject_name').text
+            completed_subject = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/subject_name').text
         if completed_subject == up_next_subject and completed_session_title == up_next_title:
             return True
         else:
@@ -215,11 +218,14 @@ class TrailClass():
             for element in elements:
                 if section_name == 'up next':
                     try:
-                        subject = element.find_element_by_id('com.byjus.thelearningapp.premium:id/subject_name').text
-                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
-                            return element
+                        element.find_element_by_id('com.byjus.thelearningapp.premium:id/tvWorkshop')
                     except NoSuchElementException:
-                        return False
+                        try:
+                            subject = element.find_element_by_id('com.byjus.thelearningapp.premium:id/subject_name').text
+                            if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                                return element
+                        except NoSuchElementException:
+                            return False
                 elif section_name == 'recommended classes':
                     return False
 
@@ -281,11 +287,17 @@ class TrailClass():
     def delete_completed_sessions():
         url = "https://api.tllms.com/internal/staging/tutor_plus/internal_api/one_to_mega/v1/courses_subscriptions/bulk_delete"
         headers = {'Content-Type': 'application/json'}
-        mobile_num = str(getdata('../config/config.json', 'account_details', 'mobile'))
-        payload = {"mobile": mobile_num}
-        r = requests.put(url, json=payload, headers=headers)
+        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        payload = {"premium_account_id": premium_id}
+        r = requests.delete(url, json=payload, headers=headers)
         print(r.status_code)
         return r.status_code
 
     def back_navigation(self):
-        self.obj.element_click(*self.rounded_nav_button)
+        self.obj.get_element(*self.rounded_nav_button).click()
+
+    def book_special_master_class(self):
+        return self.master.book_special_master_class()
+
+    def is_master_class_booked(self):
+        return self.master.is_master_class_booked()

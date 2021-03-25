@@ -70,6 +70,7 @@ def login_as_expired_user(driver):
 
 
 @when("tap on premium school card")
+@then("tap on premium school card")
 def tap_on_premium_card(login_in):
     login_in.click_on_premium_school()
 
@@ -106,8 +107,9 @@ def tap_button(login_in, text):
 
 
 @then("tap on back navigation icon")
-def tap_device_back(dashboard):
-    dashboard.back_navigation()
+def tap_device_back(trial_class):
+    trial_class.back_navigation()
+
 
 @then('verify "Recommended Classes" section is present')
 def scroll_to_text(home_screen):
@@ -138,6 +140,7 @@ def start_tutor_session(mentor_session):
 @then('user completes the session')
 def tutor_taps_on_end_session(mentor_session):
     mentor_session.tutor_end_session()
+
 
 @given('verify and add slot for trial class booking')
 def step_impl(driver):
@@ -170,6 +173,11 @@ def is_master_class_present(trial_class):
     assert trial_class.is_master_class_present(), "Masterclasses are scheduled not displayed in recommended section"
 
 
+@then('verify that no master card available to book')
+def is_master_class_present(trial_class):
+    assert not trial_class.is_master_class_present(), "Masterclasses are scheduled are displayed"
+
+
 @then('verify that user missed booked session')
 def verify_user_missed_session(trial_class):
     assert trial_class.verify_user_missed_session(), "No missed booked session present"
@@ -179,6 +187,11 @@ def verify_user_missed_session(trial_class):
 @then('Verify that user can book multiple masterclass sessions')
 def book_multiple_master_class(trial_class, db):
     assert trial_class.book_master_class(db), "Master class was not booked"
+
+
+@then('book special master class')
+def book_special_master_class(trial_class):
+    trial_class.book_special_master_class()
 
 
 @then('verify that user should get Rebook option')

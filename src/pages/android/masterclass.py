@@ -264,6 +264,19 @@ class MasterClass(TutorCommonMethods):
                 displayed_status.append(self.get_element(*element).is_displayed())
             assert all(displayed_status)
 
+    def book_special_master_class(self):
+        self.login.implicit_wait_for(2)
+        sessions = self.get_elements(*self.rc_card_root)
+        for session in sessions:
+            try:
+                session.find_element_by_id(self.card_book_btn[-1]).click()
+                sessions.clear()
+                self.get_element(*self.book_primary_btn).click()
+                self.get_element(*self.bs_okay_btn).click()
+                return True
+            except NoSuchElementException:
+                return False
+
     def book_master_class(self, new_session=False, validate=False, ff_tag=True, error_validate=True, **kwargs):
         if not self.is_master_class_booked() or new_session:
             db = kwargs['db']
