@@ -16,7 +16,7 @@ Scenario: Verify that the last completed session card and 1 upcoming card will b
 	When verify for you sessions tab is highlighted
 	And verify completed session cards should be displayed
 	Then verify if more then two requisites are attached "see more" option is displayed
-	verify that for completed session post requisite is displayed
+	And verify that for completed session post requisite is displayed
 	And tap on app back button
 	And verify up next session is displayed
 	And verify if more then two requisites are attached "see more" option is displayed
