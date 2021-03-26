@@ -211,7 +211,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.implicit_wait_for(15)
 
     def click_on_premium_school(self):
-        timeout = 30
+        timeout = 3
         element = None
         while timeout:
             try:
@@ -222,6 +222,8 @@ class Login(LoginBase, TutorCommonMethods):
                 break
             except NoSuchElementException:
                 timeout -= 1
+                if timeout == 1:
+                    self.driver.launch_app()
                 sleep(1)
         if not timeout:
             raise LoginException("Premium School card might not be displayed!")
@@ -249,9 +251,8 @@ class Login(LoginBase, TutorCommonMethods):
         self.wait_for_locator('xpath', self.password)
         self.driver.find_element_by_xpath(self.password).send_keys(psswd)
 
-    @staticmethod
-    def switch_back_to_app():
-        Popen('adb shell monkey -p com.byjus.tutorplus -c android.intent.category.LAUNCHER 1').wait()
+    def switch_back_to_app(self):
+        Popen('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % self.package_name).wait()
 
     def is_app_icon_displayed(self) -> bool:
         """press home button"""

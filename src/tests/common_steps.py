@@ -439,7 +439,7 @@ def step_impl(ssn_req):
 @given('last session should be ended and should not be rated')
 def step_impl(login, std_board, db):
     login.toggle_wifi_connection('on')
-    login.verify_home_screen()
+    # login.verify_home_screen()
     login.implicit_wait_for(15)
     db.user_profile = 'user_1'
     assert std_board.complete_last_session(rate_action='skip', db=db)

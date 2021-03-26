@@ -406,9 +406,8 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             retry = 15
         while retry:
             try:
-                event = self.action_1.press(x=lyt_x, y=lyt_y).perform()
+                self.action_1.press(x=lyt_x, y=lyt_y).release().perform()
                 self.get_element(*self.video_pause_ib, wait=False).click()
-                event.release()
                 retry -= retry
             except (NoSuchElementException, StaleElementReferenceException):
                 retry -= 1

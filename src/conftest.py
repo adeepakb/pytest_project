@@ -11,7 +11,7 @@ from utilities.base_page import BaseClass
 from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-# from constants.loadFeatureFile import fetch_feature_file
+from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 base_class = BaseClass()
