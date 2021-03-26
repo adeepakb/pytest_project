@@ -237,6 +237,8 @@ class HomePage():
             data = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
         elif account_type == 'one_to_many_and_mega':
             data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        elif account_type == 'free':
+            data = getdata(Login_Credentials, 'login_detail3', 'profile_free_user')
 
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(driver, data)
@@ -257,8 +259,6 @@ class HomePage():
                 CommonMethods.elementClick(driver, self.back_button_id)
                 CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
                 CommonMethods.elementClick(driver, self.profile_name_hamburger)
-                CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
-                CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
                 actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')

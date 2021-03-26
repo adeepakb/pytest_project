@@ -23,8 +23,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
 
     def login_to_staging(self):
@@ -114,7 +114,6 @@ class Stagingtlms:
                 continue
 
         self.chrome_driver.find_element_by_xpath("//button[contains(text(),'Submit')]").click()
-        self.chrome_driver.save_screenshot("image1.png")
         self.chrome_driver.close()
         return tutor_url
 
@@ -132,13 +131,10 @@ class Stagingtlms:
             premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
 
         self.login_to_staging()
-        self.chrome_driver.save_screenshot("image.png")
         self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
         self.chrome_driver.find_element_by_xpath("//*[text()='Mentoring']").click()
-        self.chrome_driver.save_screenshot("image1.png")
         self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
         self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-        self.chrome_driver.save_screenshot("image2.png")
 
         self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
         self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()

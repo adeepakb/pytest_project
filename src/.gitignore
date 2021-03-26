@@ -10,3 +10,4 @@ ScreenShots/
 .DS_Store
 /tests/step_def/*.png
 /tests/features/*.feature
+/tests/step_def/.DS_Store

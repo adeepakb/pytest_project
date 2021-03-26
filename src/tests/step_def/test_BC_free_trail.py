@@ -2,13 +2,22 @@ from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
-from pages.android.homepage import HomePage
 from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.android.trialclass import TrailClass
 from utilities.mentor_session import MentorSession
 from utilities.staging_tlms import Stagingtlms
 
 scenarios('../features/Multiple Free Trail Bookings.feature')
+
+
+class Context:
+    pass
+
+
+@fixture
+def db():
+    context = Context()
+    yield context
 
 
 @fixture()
@@ -20,16 +29,6 @@ def login_in(request, driver):
     elif Platform.WEB.name in platform_list:
         login_in = LoginFactory().get_page(driver, Platform.WEB.value)
         yield login_in
-
-
-class Context:
-    pass
-
-
-@fixture
-def db():
-    context = Context()
-    yield context
 
 
 @fixture()
@@ -57,16 +56,14 @@ def mentor_session(driver):
     yield mentor_session
 
 
-@given("Launch the application online")
-def navigate_to_one_to_many_and_mega_user(driver):
-    HomePage(driver).navigate_to_home_screen(driver)
-    # HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
+@given("launch the application online")
+def navigate_to_one_to_many_and_mega_user(login_in):
+    login_in.navigate_to_home_screen()
 
 
 @given("launch the application online and login as expired user")
-def login_as_expired_user(driver):
-    # HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
-    pass
+def login_as_expired_user(login_in):
+    login_in.login_as_free_user()
 
 
 @when("tap on premium school card")
@@ -207,3 +204,8 @@ def is_autobook_present(trial_class):
 @given('reset completed free trial and masterclass sessions')
 def delete_completed_sessions(trial_class):
     assert trial_class.delete_completed_sessions() == 200, "free trial sessions reset is unsuccessful"
+
+
+@given('expire free trail subscriptions for user')
+def expire_free_trail_subscriptions(trial_class):
+    assert trial_class.expire_free_trail_subscriptions() == 200, "free trial subscription expire is unsuccessful"

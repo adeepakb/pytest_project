@@ -27,3 +27,11 @@ class LoginBase(ABC):
     @abstractmethod
     def verify_home_page_loaded(self):
         raise NotImplemented('subclasses must override verify_home_page_loaded()!')
+
+    @abstractmethod
+    def navigate_to_home_screen(self):
+        raise NotImplemented()
+
+    @abstractmethod
+    def login_as_free_user(self):
+        raise NotImplemented()

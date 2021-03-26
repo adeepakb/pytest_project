@@ -2,13 +2,14 @@ import re
 from appium.webdriver.common.touch_action import TouchAction
 
 from constants.constants import Login_Credentials
+from pages.android.homepage import HomePage
 from pages.base.login_base import LoginBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from subprocess import Popen
 from json import load
-from utilities.staging_tlms import Stagingtlms
+# from utilities.staging_tlms import Stagingtlms
 import logging
 from constants.load_json import getdata
 from utilities.common_methods import CommonMethods
@@ -531,3 +532,9 @@ class LoginAndroid(LoginBase):
 
     def verify_home_page_loaded(self):
         return self.text_match("Byju's Classes")
+
+    def navigate_to_home_screen(self):
+        HomePage(self.driver).navigate_to_home_screen(self.driver)
+
+    def login_as_free_user(self):
+        HomePage(self.driver).reset_and_login_with_otp(self.driver, "free")

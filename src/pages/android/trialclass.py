@@ -39,7 +39,6 @@ class TrailClass():
         self.rc_card_schedule_tv = 'id', '%s/tvSessionTime' % package_name
         self.rounded_nav_button = 'id', '%s/roundedNavButton' % package_name
 
-
     def scroll_rc_in_view(self):
         # self.driver.implicitly_wait(30)
         session_list = self.obj.get_element(*self.card_list)
@@ -92,18 +91,20 @@ class TrailClass():
                     prev_cards = cards_root
                     self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
                     cards_root = self.obj.get_elements(*self.rc_card_root)
-                    prev_card_subject =prev_cards[2].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSessionTopicName').text
+                    prev_card_subject = prev_cards[2].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSessionTopicName').text
                     card_subject = cards_root[2].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSessionTopicName').text
                     if prev_card_subject == card_subject:
                         return False
                     time.sleep(2)
                     i = 1
 
-
     def is_master_class_present(self):
+        rc_section = self.obj.get_elements(*self.section_name)[-1]
+        if 'Recommended Classes' not in rc_section.text:
+            return False
         self.scroll_rc_in_view()
-        i = 0
         cards_root = self.obj.get_elements(*self.rc_card_root)
+        i = 0
         while True:
             for card in cards_root:
                 try:
@@ -196,11 +197,14 @@ class TrailClass():
         completed_cards = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
         if len(completed_cards) == 0:
             return False
-        completed_session_title = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/session_title').text
+        completed_session_title = completed_cards[0].find_element_by_id(
+            'com.byjus.thelearningapp.premium:id/session_title').text
         try:
-            completed_subject = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/tvWorkshop').text
+            completed_subject = completed_cards[0].find_element_by_id(
+                'com.byjus.thelearningapp.premium:id/tvWorkshop').text
         except NoSuchElementException:
-            completed_subject = completed_cards[0].find_element_by_id('com.byjus.thelearningapp.premium:id/subject_name').text
+            completed_subject = completed_cards[0].find_element_by_id(
+                'com.byjus.thelearningapp.premium:id/subject_name').text
         if completed_subject == up_next_subject and completed_session_title == up_next_title:
             return True
         else:
@@ -290,6 +294,16 @@ class TrailClass():
         premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         payload = {"premium_account_id": premium_id}
         r = requests.delete(url, json=payload, headers=headers)
+        print(r.status_code)
+        return r.status_code
+
+    @staticmethod
+    def expire_free_trail_subscriptions():
+        url = "https://api.tllms.com/internal/staging/tutor_plus/internal_api/one_to_mega/v1/courses_subscriptions/bulk_expire"
+        headers = {'Content-Type': 'application/json'}
+        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        payload = {"premium_account_id": premium_id}
+        r = requests.post(url, json=payload, headers=headers)
         print(r.status_code)
         return r.status_code
 
