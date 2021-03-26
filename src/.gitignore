@@ -9,4 +9,4 @@ ScreenShots/
 /Test_data/session_completed_data.json
 .DS_Store
 /tests/step_def/*.png
-
+/tests/features/*.feature
