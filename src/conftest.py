@@ -7,7 +7,7 @@ import subprocess
 import logging
 
 from selenium.common.exceptions import InvalidSessionIdException
-
+from utilities.base_page import BaseClass
 from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *

@@ -3,7 +3,6 @@ from pytest import fixture
 from pytest_bdd import given, when, then, parsers
 from constants.platform import Platform
 from pages.android.homepage import HomePage
-from utilities.base_page import BaseClass
 from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen

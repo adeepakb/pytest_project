@@ -13,7 +13,7 @@ Scenario: Verify the elements in premium school home page
 	And verify for you sessions tab is highlighted
 	And verify the toggle sessions for you and completed sessions
 	And verify the completed session card with all details
-	And verify that for completed session both pre and post requisite are displayed
+	And verify that for completed session both pre and post requisites are displayed
 	And verify the up next session card with all details
 	And verify that for up next session pre requisites are displayed
 	And verify the future session card with all details

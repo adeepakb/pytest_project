@@ -147,7 +147,7 @@ Scenario: verify user should be able to see pre and post requisites in completed
 	When tap on completed tab
 	And verify completed session cards should be displayed
 	And tap on any completed session card
-	Then verify that for completed session both pre and post requisite are displayed
+	Then verify that for completed session both pre and post requisites are displayed
 
 @BVT 
 Scenario: verify user should be able to see pre requisites assignment for tomorrow sessions
