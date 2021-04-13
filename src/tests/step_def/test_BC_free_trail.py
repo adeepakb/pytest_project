@@ -159,7 +159,8 @@ def is_master_class_present(trial_class):
 
 @then('verify that user missed booked session')
 def verify_user_missed_session(trial_class):
-    assert trial_class.verify_user_missed_session(), "No missed booked session present"
+    details = trial_class.verify_user_missed_session()
+    assert details.result, details.reason
 
 
 @then('book masterclass session')
@@ -180,7 +181,8 @@ def is_rebook_option_available(home_screen):
 
 @then('verify that user should get autobook option')
 def is_autobook_present(trial_class):
-    assert trial_class.is_autobook_present(), "autobook option is not present"
+    details = trial_class.is_autobook_present()
+    assert details.result, details.reason
 
 
 @given('reset completed free trial and masterclass sessions')

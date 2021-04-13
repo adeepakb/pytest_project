@@ -88,6 +88,20 @@ class TutorCommonMethods:
         except NoSuchElementException:
             logging.info("Cannot click on the element with locator: " + locator_value)
 
+        # this method is use to click on the element
+
+    def child_element_by_id(self,element,id_locator_value):
+        return element.find_element_by_id(id_locator_value)
+
+    def child_element_click_by_id(self,element,id_locator_value):
+        element.find_element_by_id(id_locator_value).click()
+
+    def child_element_text(self,element,id_locator_value):
+        return element.find_element_by_id(id_locator_value).text
+
+    def child_element_displayed(self,element,id_locator_value):
+        return element.find_element_by_id(id_locator_value).is_displayed()
+
     # this method first clear the data then enter the text in given element
     def enter_text(self, data, locator_type, locator_value):
         element = self.get_element(locator_type, locator_value)

@@ -4,11 +4,6 @@ from abc import ABC, abstractmethod
 class LoginBase(ABC):
 
     @abstractmethod
-    def launch_and_navigate_to_login_page(self):
-        raise NotImplemented('subclasses must override launch_and_navigate_to_login_page()!')
-
-
-    @abstractmethod
     def click_on_premium_school(self):
         raise NotImplemented('subclasses must override click_on_premium_school()!')
 

@@ -7,7 +7,7 @@ import sys
 import os
 from appium import webdriver
 from time import sleep
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import inspect
 from selenium.webdriver.common.by import By
 import logging
@@ -249,8 +249,11 @@ class HomePage():
                     radio_buttons[i].click()
                     break
         CommonMethods.elementClick(driver, self.continue_button)
-        CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
-        CommonMethods.elementClick(driver, self.welcome_button)
+        try:
+            CommonMethods.wait_for_locator(driver, self.welcome_button, 15)
+            CommonMethods.elementClick(driver, self.welcome_button)
+        except (NoSuchElementException,TimeoutException):
+            pass
 
     def verify_home_page(self, driver):
         print("------------------------method")

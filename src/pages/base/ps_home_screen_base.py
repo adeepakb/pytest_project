@@ -70,3 +70,7 @@ class PSHomeScreenBase(ABC):
     @abstractmethod
     def tap_outside_dialog_layout(self):
         raise NotImplemented()
+
+    @abstractmethod
+    def is_user_in_ps_page(self):
+        raise NotImplemented()

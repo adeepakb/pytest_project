@@ -27,6 +27,10 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.requisite_items = 'com.byjus.thelearningapp.premium:id/llRequisiteContentLyt'
         self.home_tabs = 'com.byjus.thelearningapp.premium:id/premium_school_home_tabs'
         self.home_page_title = 'com.byjus.thelearningapp.premium:id/toolbar_title'
+        self.design_bottom_sheet = 'com.byjus.thelearningapp.premium:id/design_bottom_sheet'
+        self.bottom_sheet_book = 'com.byjus.thelearningapp.premium:id/bt_primaryAction'
+        self.bottom_sheet_dismiss ='com.byjus.thelearningapp.premium:id/tv_secondaryAction'
+        self.byjus_classes_banner= 'com.byjus.thelearningapp.premium:id/ivMarketingBannerTop'
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', self.ps_tabs)
@@ -139,14 +143,15 @@ class PS_Homescreen_Android(PSHomeScreenBase):
     def tap_outside_dialog_layout(self):
         self.action.tap(None, x=100, y=100).release().perform()
 
-    def scroll_to_text(self, text):
-        CommonMethods.scrollToElement(self.driver, text)
-
-    def verify_three_trail_classes(self):
-        topic_name = self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/topic_name').text
-        return len(topic_name)
-
     def is_user_in_ps_page(self):
         return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
                 self.obj.get_element('id', self.home_tabs).is_displayed())
 
+    def verify_bottom_sheet(self):
+        return (self.obj.get_element('id','com.byjus.thelearningapp.premium:id/tv_title').text == "BYJU's Classes" and
+                self.obj.get_element('id', self.bottom_sheet_book).text == 'Book a Free Trial' and
+                self.obj.get_element('id', self.bottom_sheet_dismiss).text == 'Dismiss' and
+                self.obj.get_element('id', self.design_bottom_sheet).is_displayed())
+
+    def verify_banner(self):
+        return self.obj.get_element('id',self.byjus_classes_banner)

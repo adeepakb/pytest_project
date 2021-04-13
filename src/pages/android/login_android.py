@@ -64,13 +64,12 @@ class LoginAndroid(LoginBase):
         # true)).scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
         try:
             self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout').click()
-            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
-                                                                                                              self.permission_container_tab):
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
+            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
             self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
-            self.obj.get_element('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image').click()
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
         except:
             raise Exception("Premium School card might not be displayed!")
 

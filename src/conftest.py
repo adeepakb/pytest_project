@@ -11,7 +11,6 @@ import logging
 from time import sleep
 from appium import webdriver
 from appium.webdriver.appium_service import AppiumService
-
 from constants.platform import Platform
 from utilities.BasePage import BaseClass
 from utilities.common_methods import CommonMethods
@@ -138,7 +137,12 @@ def pytest_bdd_step_error(step):
     py_test.failed_step_name = step.name
 
 
-def pytest_bdd_after_scenario(feature, scenario):
+def capture_screenshot(request):
+    driver = request.getfixturevalue("driver")
+    driver.save_screenshot("Failure_screenshot.png")
+
+
+def pytest_bdd_after_scenario(request, feature, scenario):
     """
     Called after scenario is executed even if one of steps has failed.
 
@@ -161,7 +165,8 @@ def pytest_bdd_after_scenario(feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
-    suite_name = os.getenv('suite')
+    # suite_name = os.getenv('suite')
+    suite_name = "Byju's Classes"
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
@@ -175,6 +180,7 @@ def pytest_bdd_after_scenario(feature, scenario):
         _exception.insert(0, trc)
         _exception.append(summaries[-1])
         _exception = "".join(_exception)
+        capture_screenshot(request)
         if not value:
             step_name = py_test.__getattribute__('failed_step_name')
         else:
@@ -189,6 +195,7 @@ def pytest_bdd_after_scenario(feature, scenario):
         )
         sys.stderr.writelines(stdout_err)
         update_testrail(data[1], data[0], False, step_name, _exception)
+        add_attachment_to_result(data[0], data[1],'Failure_screenshot.png')
     else:
         msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, msg_body, 'passed')
