@@ -99,35 +99,38 @@ class TrailClass():
                     i = 1
 
     def is_master_class_present(self):
-        rc_section = self.obj.get_elements(*self.section_name)[-1]
-        if 'Recommended Classes' not in rc_section.text:
-            return False
-        self.scroll_rc_in_view()
-        cards_root = self.obj.get_elements(*self.rc_card_root)
-        i = 0
-        while True:
-            for card in cards_root:
-                try:
-                    cards_root[i].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSubjectName')
-                except NoSuchElementException:
+        try:
+            rc_section = self.obj.get_elements(*self.section_name)[-1]
+            if 'Recommended Classes' not in rc_section.text:
+                return False
+            self.scroll_rc_in_view()
+            cards_root = self.obj.get_elements(*self.rc_card_root)
+            i = 0
+            while True:
+                for card in cards_root:
                     try:
-                        subject = cards_root[i].find_element_by_id(
-                            'com.byjus.thelearningapp.premium:id/tvWorkshop').text
-                        if subject == 'WORKSHOP' and card.find_element_by_id(
-                                'com.byjus.thelearningapp.premium:id/btBookSession').is_displayed():
-                            return True
+                        cards_root[i].find_element_by_id('com.byjus.thelearningapp.premium:id/tvSubjectName')
                     except NoSuchElementException:
-                        return False
-                i += 1
-                if i == 3:
-                    time.sleep(2)
-                    prev_cards = cards_root
-                    self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
-                    if prev_cards == cards_root:
-                        return False
-                    time.sleep(2)
-                    i = 1
-                    cards_root = self.obj.get_elements(*self.rc_card_root)
+                        try:
+                            subject = cards_root[i].find_element_by_id(
+                                'com.byjus.thelearningapp.premium:id/tvWorkshop').text
+                            if subject == 'WORKSHOP' and card.find_element_by_id(
+                                    'com.byjus.thelearningapp.premium:id/btBookSession').is_displayed():
+                                return True
+                        except NoSuchElementException:
+                            return False
+                    i += 1
+                    if i == 3:
+                        time.sleep(2)
+                        prev_cards = cards_root
+                        self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
+                        if prev_cards == cards_root:
+                            return False
+                        time.sleep(2)
+                        i = 1
+                        cards_root = self.obj.get_elements(*self.rc_card_root)
+        except Exception:
+            return False
 
     def is_sessions_under_rc_displayed(self):
         self.scroll_rc_in_view()

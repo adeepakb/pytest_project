@@ -154,3 +154,18 @@ def is_back_nav_present(home_screen):
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
     assert button_status is True, "Unable to find {text} button"
+
+
+@when("verify user is in BYJU's Classes pop up screen")
+def verify_bottom_sheet(home_screen):
+    assert home_screen.verify_bottom_sheet(), "user is not in BYJU's Classes pop up screen"
+
+
+@then('verify byjus classes banner is present')
+def verify_banner(home_screen):
+    home_screen.verify_banner(), "byjus classes banner is not present"
+
+
+@given('clear cache and login')
+def reset_and_login_with_otp(driver):
+    HomePage(driver).reset_and_login_with_otp(driver)
