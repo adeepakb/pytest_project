@@ -44,6 +44,20 @@
                     "8"
                 ]
             },
+            "profile_2": {
+                "profile_name": "Premium Test",
+                "premium_id": null,
+                "grades": [
+                    "8"
+                ]
+            },
+            "profile_3": {
+                "profile_name": "Parity User",
+                "premium_id": "1018822559",
+                "grades": [
+                    "8"
+                ]
+            },
             "OTP": "1089"
         },
         "user_2": {
@@ -71,6 +85,15 @@
                     "5",
                     "6",
                     "7"
+                ]
+            },
+            "profile_4": {
+                "profile_name": "Prajwal",
+                "premium_id": null,
+                "grades": [
+                    "8",
+                    "9",
+                    "10"
                 ]
             },
             "OTP": "1089"

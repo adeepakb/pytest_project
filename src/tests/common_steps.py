@@ -142,6 +142,8 @@ def launch_and_nav_to_home(login):
 
 
 @given('navigate to one to mega home screen')
+@when('navigate to one to mega home screen')
+@given("navigate to byju's classes home screen")
 def nav_to_mega_home(login):
     login.click_on_premium_school()
 

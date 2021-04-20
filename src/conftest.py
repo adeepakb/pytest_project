@@ -11,7 +11,7 @@ from utilities.base_page import BaseClass
 from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_feature_file
+# from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 base_class = BaseClass()
@@ -136,7 +136,7 @@ def pytest_bdd_step_error(step):
     py_test.failed_step_name = step.name
 
 
-def pytest_bdd_after_scenario(feature, scenario):
+def pytest_bdd_after_scenario(request, feature, scenario):
     """
     Called after scenario is executed even if one of steps has failed.
 
@@ -159,8 +159,8 @@ def pytest_bdd_after_scenario(feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
-    suite_name = os.getenv('suite')
-    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
+    # suite_name = os.getenv('suite')
+    # data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -186,10 +186,16 @@ def pytest_bdd_after_scenario(feature, scenario):
                 "=" * 100 + "Failures" + "=" * 100
         )
         sys.stderr.writelines(stdout_err)
-        update_testrail(data[1], data[0], False, step_name, _exception)
+
+        # update_testrail(data[1], data[0], False, step_name, _exception)
     else:
         msg_body = "all steps are passed"
-        update_testrail(data[1], data[0], True, msg_body, 'passed')
+        # update_testrail(data[1], data[0], True, msg_body, 'passed')
+    file = '../../config/chrome_session.json'
+    try:
+        os.unlink(file)
+    except FileNotFoundError:
+        pass
 
 
 def pytest_sessionfinish():

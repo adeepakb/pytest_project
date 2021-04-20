@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException, \
     ElementNotSelectableException
 from appium.webdriver.common.mobileby import MobileBy
-from constants.load_json import getdata
+from constants.load_json import get_data
 from utilities.exceptions import DeviceUnavailableException, ConnectionTimeoutError, DateError
 
 
@@ -88,6 +88,24 @@ class TutorCommonMethods:
             element.click()
         except NoSuchElementException:
             logging.info("Cannot click on the element with locator: " + locator_value)
+
+        # this method is use to click on the element
+
+    @staticmethod
+    def child_element_by_id(element, id_locator_value):
+        return element.find_element_by_id(id_locator_value)
+
+    @staticmethod
+    def child_element_click_by_id(element, id_locator_value):
+        element.find_element_by_id(id_locator_value).click()
+
+    @staticmethod
+    def child_element_text(element, id_locator_value):
+        return element.find_element_by_id(id_locator_value).text
+
+    @staticmethod
+    def child_element_displayed(element, id_locator_value):
+        return element.find_element_by_id(id_locator_value).is_displayed()
 
     # this method first clear the data then enter the text in given element
     def enter_text(self, data, locator_type, locator_value):
@@ -210,6 +228,7 @@ class TutorCommonMethods:
                 logging.info(attribute)
                 list_of_elements[element].is_enabled()
                 list_of_elements[element].click()
+                break
 
     def scroll_to_element(self, text):
         try:
@@ -433,7 +452,15 @@ class TutorCommonMethods:
 
     def clear_app_from_recents(self):
         self.execute_command('adb shell input keyevent KEYCODE_APP_SWITCH')
-        self.execute_command('adb shell input keyevent DEL')
+        screen_size = self.driver.get_window_size()
+        orientation = self.driver.orientation
+        if orientation == "LANDSCAPE":
+            x, y = screen_size['height'], screen_size['width']
+        else:
+            x, y = screen_size['width'], screen_size['height']
+        start_x, start_y = x // 2, y // 2
+        end_x, end_y = start_x, 5
+        self.driver.swipe(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y, duration=3000)
 
     def get_device_type(self):
         size = self.driver.get_window_size()
@@ -458,7 +485,7 @@ class TutorCommonMethods:
 
     @staticmethod
     def is_holiday(day=datetime.today()):
-        h_days = getdata('../../config/holidays.json', 'local')
+        h_days = get_data('../../config/holidays.json', 'local')
         c_date = day.strftime("%m/%d/%Y")
         if c_date in h_days:
             return True

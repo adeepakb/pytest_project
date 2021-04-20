@@ -1,0 +1,182 @@
+import re
+import sys
+import time
+import warnings
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from constants.load_json import get_data
+from utilities.staging_tllms import Stagingtllms
+from selenium.common.exceptions import NoAlertPresentException, NoSuchElementException, TimeoutException, \
+    StaleElementReferenceException
+from utilities.exceptions import *
+
+
+class StagingTutorPlus(Stagingtllms):
+
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.__init_locators()
+        self.__const()
+        self.login_profile, self.user_profile, self.sub_profile, self.day = None, None, None, None
+
+    def __init_locators(self):
+        self.channel_input_box = "css selector", "input.inputSearch"
+        self.convert_session_btn = "xpath", "//span[text()=\"Convert to Assessment Session\"]"
+        self.confirmation_dialog = "css selector", ".confirmation-wrapper"
+        self.dialog_ok_btn = "xpath", "//button/span[text()=\"Yes\"]"
+        self.dialog_cancel_btn = "xpath", "//button/span[text()=\"Cancel\"]"
+        self.assessment_text = "xpath", "//*[text()=\"Assessment Session\"]"
+
+    def __const(self, *args):
+        self.TUTOR_PLUS_STAGING_URL = "https://tutor-plus-staging.tllms.com/"
+
+    def set_user(self, login_profile='login_details_3', user_profile='user_1', sub_profile='profile_1', day="today"):
+        self.login_profile, self.user_profile, self.sub_profile, self.day = login_profile, user_profile, sub_profile, day
+        return self
+
+    def convert_video_session(self, day="today"):
+        session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
+        self.chrome_driver.implicitly_wait(10)
+        channel_id = session_details["channel"]
+        uri = "studentSessions/%s" % channel_id
+        self.chrome_driver.get(self.TUTOR_PLUS_STAGING_URL + uri)
+        self.chrome_driver.find_element("xpath", "//span[text()=\"LOGIN\"]").click()
+        try:
+            assert self.chrome_driver.find_element(*self.assessment_text).text.lower() == "assessment session"
+            return
+        except NoSuchElementException:
+            self._session_user_wise(session=self.day, user_profile=self.user_profile, sub_profile=self.sub_profile)
+            self.__reset_session(session_details)
+        self.chrome_driver.implicitly_wait(10)
+        self.chrome_driver.get(self.TUTOR_PLUS_STAGING_URL + uri)
+        self.chrome_driver.find_element("xpath", "//span[text()=\"LOGIN\"]").click()
+        self.chrome_driver.find_element("xpath", "//*[text()=\"Attach Requisite Group\"]").click()
+        self.chrome_driver.find_element("css selector", "div.selectedValue").click()
+        req_grp = get_data("../../config/ps_requisite.json", "monthly_test_all")
+        for char in req_grp:
+            self.chrome_driver.find_element("css selector", "input.dropdownSearch").send_keys(char)
+            time.sleep(0.1)
+        grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
+        # if not grp_names:
+        #     time.sleep(1)
+        #     grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
+        retry = 2
+        while retry:
+            try:
+                for grp_name in grp_names:
+                    if grp_name.text == req_grp:
+                        grp_name.click()
+                        retry = 0
+                        break
+                else:
+                    raise RequisiteException("Test", f"\"{req_grp}\"")
+            except StaleElementReferenceException:
+                grp_names.clear()
+                grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
+                retry -= 1
+        self.chrome_driver.find_element("css selector", "button[type=button]").click()
+        try:
+            self.chrome_driver.switch_to.alert.accept()
+        except NoAlertPresentException:
+            pass
+        try:
+            success_msg = self.chrome_driver.find_element("css selector", "#message-id").text
+            if not success_msg.lower() == "attached successfully":
+                warnings.warn(
+                    UserWarning("Requisite group attachment might not be successful or message might have been changed."
+                                )
+                )
+        except NoSuchElementException:
+            warnings.warn(UserWarning("Requisite group attachment might not be successful"))
+        self.chrome_driver.find_element(*self.convert_session_btn).click()
+        self.chrome_driver.find_element(*self.dialog_ok_btn).click()
+
+    def reset_session_otm(self, topic_name):
+        mega_sessions = self.chrome_driver.find_elements_by_xpath("//tr/td[contains(text(),'one_to_mega')]")
+        mega_session = mega_sessions[0]
+        for mega_session in mega_sessions:
+            mega_topic_name = mega_session.find_element_by_xpath("./preceding-sibling::td[4]").text
+            if topic_name.lower() in mega_topic_name.lower():
+                break
+        t = mega_session.find_element(By.XPATH, "./preceding-sibling::td/b/..").text
+        date_time = t.split('\n')
+        session_date, session_time = date_time[0], date_time[-1]
+        struct_time = time.strptime(session_date, '%d-%b-%Y')
+        cd, cm, cy = list(map(int, time.strftime("%d %m %Y").split()))
+        sd, sm, sy = struct_time.tm_mday, struct_time.tm_mon, struct_time.tm_year
+        ch = int(time.strftime("%H"))
+        ah = int(session_time.split("-")[-1].strip().split(":")[0])
+        if sy == cy:
+            if sm == cm:
+                if sd == cd:
+                    if ah > ch:
+                        mega_session.find_element(By.XPATH, "./following-sibling::td/a[text()='Reset']").click()
+                elif sd > cd:
+                    SessionResetException("Reset-Error: 'session yet to be started.'")
+                else:
+                    SessionResetException("Reset-Error: 'session reached the end time.'")
+            else:
+                SessionResetException("Reset-Error: 'session is not in the current month.'")
+        else:
+            raise SessionResetException("Reset-Error: 'session is not in the current year.'")
+
+    def end_session_otm(self, topic_name):
+        timeout = 240
+        m_url, email_input = self._session_url(topic_name)
+        self.chrome_driver.execute_script(f"arguments[0].setAttribute('value', '{self.EMAIL}')", email_input)
+        self.chrome_driver.find_element(By.CSS_SELECTOR, '#_submit_action').click()
+        self.chrome_driver.get(m_url)
+        self.wait_for_clickable_element_webdriver('//span[text()="LOGIN"]')
+        self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
+        self.chrome_driver.implicitly_wait(0)
+        try:
+            count = 20
+            while timeout:
+                try:
+                    self.chrome_driver.find_element(By.CSS_SELECTOR, '.endPopupContainer .subText')
+                    timeout -= 1
+                    time.sleep(1)
+                    count = 0
+                except NoSuchElementException:
+                    if not count:
+                        timeout -= timeout
+                    else:
+                        count -= 1
+                        time.sleep(0.5)
+            self.wait.until(ec.presence_of_element_located((By.CSS_SELECTOR, '.session-button.timer'))).click()
+            self.chrome_driver.find_element(By.XPATH, "//div[text()='End Session Now']").click()
+            self.chrome_driver.find_element(By.CSS_SELECTOR, ".endBtn").click()
+            info = self.wait.until(ec.presence_of_element_located((By.CSS_SELECTOR, "label.Mui-error"))).text
+            if 'ended now' in info.lower():
+                return True
+            else:
+                warnings.warn("tutor session might not be ended properly")
+        except TimeoutException:
+            err_msg = self.wait.until(ec.presence_of_element_located((By.CSS_SELECTOR, "label.Mui-error"))).text
+            if 'session is ended' in err_msg.lower():
+                return True
+            elif 'not authorized' in err_msg.lower():
+                raise UnknownUserProfile(
+                    f"'{self.EMAIL}' is not a valid tutor email or not updated in 'Schedule Page'.") from None
+            else:
+                raise SessionNotEndedError('session might not be ended or could not validate the message') from None
+
+    def __reset_session(self, session_details: dict):
+        session_time = session_details["time"]
+        session_topic = session_details["session detail"]
+        s_time, e_time = re.findall(r"\d{2}:\d{2} - \d{2}:\d{2}", session_time)[-1].split(" - ")
+        sh, sm = list(map(int, s_time.split(":")))
+        eh, em = list(map(int, e_time.split(":")))
+        ch = int(time.strftime("%H"))
+        if eh > ch:
+            if ch >= (sh + 2):
+                self.reset_session_otm(session_topic)
+            else:
+                self.end_session_otm(session_topic)
+                self._session_user_wise(session=self.day, profile=self.login_profile, user_profile=self.user_profile,
+                                        sub_profile=self.sub_profile)
+                self.reset_session_otm(session_topic)
+        else:
+            raise SessionEndedError("cannot reset the already ended session.")
+
