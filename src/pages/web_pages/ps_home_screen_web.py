@@ -114,7 +114,7 @@ class PSHomescreenWeb(PSHomeScreenBase):
     def verify_session_details_card_loaded(self):
         pass
 
-    def attach_post_requisite_with_assessement(self, driver, assessment_name):
+    def attach_post_requisite(self, driver, requisite_name):
         pass
 
     def verify_completed_card_details(self):
@@ -127,7 +127,7 @@ class PSHomescreenWeb(PSHomeScreenBase):
     def click_on_join_now_btn(self):
         ele = self.driver.find_element("xpath", self.join_btn)
         if ele.is_enabled():
-            ele.click
+            ele.click()
             return True
         else:
             return False

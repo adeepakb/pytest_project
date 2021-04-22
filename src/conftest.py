@@ -1,22 +1,12 @@
 import re
 import traceback
-import os
 import pytest
-from _pytest._code.code import ExceptionInfo
-from pytest_bdd import scenarios, given, when, then, parsers, scenario
-import os
 import sys
 import subprocess
 import logging
-from time import sleep
-from appium import webdriver
-from appium.webdriver.appium_service import AppiumService
 from constants.platform import Platform
 from utilities.BasePage import BaseClass
-from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
-from utilities.interrupt import *
-from utilities import common_methods
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
@@ -55,21 +45,20 @@ def driver(request):
         serial = feature_job.connect_adb_api()
         feature_job.connect_to_adb(serial)
         yield android_driver
-        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
+        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
         chrome_driver = baseClass.setup_browser()
         yield chrome_driver
         chrome_driver.quit()
 
-# ---------------------------testrail updation--------------------
 
+# ---------------------------testrail updation--------------------
 def py_test():
     """
     Create and update the local-variable and reuse the same when required.
-
     Will not be available across the test file(s) unless imported.
-
      :returns: None
     """
     pass
@@ -78,9 +67,7 @@ def py_test():
 def pytest_bdd_before_scenario(feature):
     """
        Called before each scenario is executed.
-
        Initialize the ``exception`` variable in ``py_test`` method.
-
        :returns: None
        """
     py_test.exception = None
@@ -100,10 +87,7 @@ def pytest_bdd_before_step(step):
 def pytest_bdd_step_func_lookup_error(step):
     """
     Called when step lookup failed.
-
     Update the value ``True`` of ``py_test.exception`` as exception occurred.
-
-
     :type step: Step
     :returns: None
     """
@@ -114,9 +98,7 @@ def pytest_bdd_step_func_lookup_error(step):
 def pytest_bdd_step_validation_error(step):
     """
     Called when step failed to validate.
-
     Update the value ``True`` of ``py_test.exception`` as exception occurred.
-
     :type step: Step
     :returns: None
     """
@@ -126,10 +108,8 @@ def pytest_bdd_step_validation_error(step):
 
 def pytest_bdd_step_error(step):
     """
-     Called when step function failed to execute.
-
-      Update the value ``True`` of ``py_test.exception`` as exception occurred.
-
+    Called when step function failed to execute.
+    Update the value ``True`` of ``py_test.exception`` as exception occurred.
     :type step: Step
     :returns: None
     """
@@ -145,18 +125,14 @@ def capture_screenshot(request):
 def pytest_bdd_after_scenario(request, feature, scenario):
     """
     Called after scenario is executed even if one of steps has failed.
-
     Occurred exceptions during test execution is written to ``sys.stderr``
     with appropriate information, the same will be written on console.
-
     The exit status is updated with valid message to the
     `testrail <https://tnl.testrail.com/index.php?/dashboard>`_
-
     :type scenario: Scenario
     :type feature: Feature
     :var str suite_name: Name of the `TestSuite`
     :return: None
-
     .. note:: If there occurs an exception during the testrail update,
         the results might not reflect on the testrail.
     """
@@ -165,9 +141,9 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
-    # suite_name = os.getenv('suite')
-    suite_name = "Byju's Classes"
-    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
+    suite_name = os.getenv('suite')
+    # suite_name = "Byju's Classes"
+    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -195,7 +171,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         )
         sys.stderr.writelines(stdout_err)
         update_testrail(data[1], data[0], False, step_name, _exception)
-        add_attachment_to_result(data[0], data[1],'Failure_screenshot.png')
+        add_attachment_to_result(data[0], data[1], 'Failure_screenshot.png')
     else:
         msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, msg_body, 'passed')

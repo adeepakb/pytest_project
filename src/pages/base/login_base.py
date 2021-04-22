@@ -28,5 +28,9 @@ class LoginBase(ABC):
         raise NotImplemented()
 
     @abstractmethod
+    def navigate_to_one_to_many_and_mega_user(self):
+        raise NotImplemented()
+
+    @abstractmethod
     def login_as_free_user(self):
         raise NotImplemented()

@@ -33,7 +33,7 @@ def home_screen(request, driver):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen, driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver, assessment_name)
+    home_screen.attach_post_requisite(driver, assessment_name)
 
 
 @given("Launch the app online")

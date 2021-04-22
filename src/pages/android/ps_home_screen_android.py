@@ -117,8 +117,8 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.obj.is_button_displayed(text)
         return self.obj.is_button_enabled(text)
 
-    def attach_post_requisite_with_assessement(self, driver,assessment_name):
-        Stagingtlms(driver).attach_requisite(assessment_name)
+    def attach_post_requisite(self, driver, requisite_name):
+        Stagingtlms(driver).attach_requisite(requisite_name)
 
     def detach_post_requisite(self,driver):
         Stagingtlms(driver).detach_requisite()

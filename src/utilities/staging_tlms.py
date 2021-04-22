@@ -307,12 +307,10 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
-        self.wait_for_locator_webdriver("//span[contains(text(),'Next')]")
-        self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]").click()
+        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
-        self.wait_for_locator_webdriver("//span[contains(text(),'Next')]")
-        self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]").click()
+        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
     def update_teaching_material(self, course_details):
         print(course_details)
@@ -695,6 +693,69 @@ class Stagingtlms:
                     self.chrome_driver.switch_to_window(self.chrome_driver.window_handles[0])
             except NoSuchElementException:
                 continue
+        self.chrome_driver.close()
+
+    def upload_class_note(self, filename):
+        tnl_cohort_id = str(getdata('../config/login_data.json', 'login_detail3', 'tnl_cohort_id'))
+        self.wait_for_clickable_element_webdriver("//div[text()='Class Notes']")
+        self.chrome_driver.find_element_by_xpath("//div[text()='Class Notes']").click()
+        self.wait_for_clickable_element_webdriver("//div[text()='Upload']")
+        self.chrome_driver.find_element_by_xpath("//div[text()='Upload']").click()
+
+        note_name = 'Class_note_' + str(randint(1, 100000))
+        self.chrome_driver.find_element_by_xpath("//input[@id='name']").send_keys(note_name)
+        input_element = self.chrome_driver.find_element_by_xpath("//input[@type='file']")
+        current_location = os.path.dirname(os.path.abspath(__file__))
+        location = os.path.normpath(os.path.join(current_location, "../../files/" + filename + ""))
+        input_element.send_keys(location)
+
+        self.chrome_driver.find_element_by_xpath("//*[contains(@class,'MuiInputBase-formControl MuiInput-formControl')]").click()
+        time.sleep(2)
+        self.chrome_driver.find_element_by_xpath("//*[@role='option' and text()='" + tnl_cohort_id + "']").click()
+        self.chrome_driver.find_element_by_xpath("//span[text()='Submit']").click()
+        return note_name
+
+    def verify_classnote_upload_error(self):
+        self.wait_for_locator_webdriver("//span[@id='message-id']")
+        if self.chrome_driver.find_element_by_xpath("//span[@id='message-id']").text == 'file size should not be more than 15MB':
+            return True
+
+    def incorrect_note_format_error(self):
+        self.wait_for_locator_webdriver("//span[@id='message-id']")
+        if self.chrome_driver.find_element_by_xpath("//span[@id='message-id']").text == 'File type is invalid':
+            return True
+
+    def update_post_requisite_class_note(self, requisite_name, class_note_id):
+        self.login_to_cms_staging()
+        self.wait_for_locator_webdriver("//div[text()='Requisite Groups']")
+        self.chrome_driver.find_element_by_xpath("//div[text()='Requisite Groups']").click()
+        self.wait_for_locator_webdriver("//span[text()='Un Publish']")
+        self.chrome_driver.find_element_by_xpath("//span[text()='Un Publish']").click()
+
+        id_col = requisite_name_col = None
+        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/tbody/tr"))
+        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/thead/tr/th"))
+        for i in range(1, cols):
+            header = self.chrome_driver.find_elements_by_xpath(
+                "//table[contains(@class,'MuiTable-root table')]/thead/tr/th[" + str(i) + "]")[0].text
+            if header == 'ID':
+                id_col = i
+            elif header == 'Requisite':
+                requisite_name_col = i
+        for r in range(1, rows + 1):
+            name = self.chrome_driver.find_element_by_xpath(
+                "//tr[" + str(r) + "]/td[" + str(requisite_name_col) + "]").text
+            if name == requisite_name:
+                self.chrome_driver.find_element_by_xpath(
+                    "//tr[" + str(r) + "]/td[" + str(id_col) + "]/div/span").click()
+                break
+
+        self.wait_for_locator_webdriver("//input[@id='class_note_id']")
+        self.chrome_driver.find_element_by_xpath("//input[@id='class_note_id']").clear()
+        self.chrome_driver.find_element_by_xpath("//input[@id='class_note_id']").send_keys(class_note_id)
+        self.chrome_driver.find_element_by_xpath("//span[text()='Update']").click()
+        self.wait_for_clickable_element_webdriver("//span[text()='Publish']")
+        self.chrome_driver.find_element_by_xpath("//span[text()='Publish']").click()
         self.chrome_driver.close()
 
     @staticmethod

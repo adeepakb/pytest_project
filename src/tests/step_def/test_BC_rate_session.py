@@ -152,7 +152,7 @@ def verify_badge_text(dashboard, text):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen,driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver,assessment_name)
+    home_screen.attach_post_requisite(driver, assessment_name)
 
 
 @given('detach post requisite for latest session')

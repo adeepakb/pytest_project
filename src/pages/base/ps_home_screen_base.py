@@ -60,7 +60,7 @@ class PSHomeScreenBase(ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def attach_post_requisite_with_assessement(self, driver, assessment_name):
+    def attach_post_requisite(self, driver, requisite_name):
         raise NotImplemented()
 
     @abstractmethod
