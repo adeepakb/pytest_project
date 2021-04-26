@@ -63,8 +63,8 @@ class ClassNotesAndroid(ClassNotesBase):
         card.click()
 
     def is_requisite_list(self):
-        self.obj.wait_for_locator('id', self.requisite_list)
         try:
+            self.obj.wait_for_locator('id', self.requisite_list)
             if self.obj.is_element_present('id', self.requisite_list):
                 return ReturnType(True, 'requisite is displayed')
         except NoSuchElementException:
@@ -94,22 +94,23 @@ class ClassNotesAndroid(ClassNotesBase):
                 return ReturnType(False, 'Downloaded material is not in pdf format')
 
     def all_tagged_resource_types(self):
-        self.obj.is_text_match('Session Details')
-        self.obj.is_text_match('Revision Material')
-        sessions = self.obj.get_elements('id', self.post_req_session)
-        titles = self.obj.get_elements('id', self.title)
-        items = ["ClassNote", "K12 video", "Journey"]
-        for title in titles:
-            print(title.text)
-        count = 0
-        for i in range(0, 3):
-            title = titles[i].text
-            if (title == items[i]) and sessions[i].is_enabled():
-                count += 1
-        if count == 3:
-            return ReturnType(True, 'All 3 tagged resources are present in app')
-        else:
-            return ReturnType(False, "3 resources are tagged in cms, but only %d resources are present" % count)
+        try:
+            sessions = self.obj.get_elements('id', self.post_req_session)
+            titles = self.obj.get_elements('id', self.title)
+            items = ["ClassNote", "K12 video", "Journey"]
+            for title in titles:
+                print(title.text)
+            count = 0
+            for i in range(0, 3):
+                title = titles[i].text
+                if (title == items[i]) and sessions[i].is_enabled():
+                    count += 1
+            if count == 3:
+                return ReturnType(True, 'All 3 tagged resources are present in app')
+            else:
+                return ReturnType(False, "3 resources are tagged in cms, but only %d resources are present" % count)
+        except NoSuchElementException:
+            return ReturnType(False, 'post requisite sessions are not present')
 
     def verify_classnotes_present_to_download(self):
         titles = self.obj.get_elements('id', self.requisite_title)
@@ -123,18 +124,21 @@ class ClassNotesAndroid(ClassNotesBase):
                               'Class Note card is not present and Pdf size displayed below the down Arrow Button')
 
     def verify_forward_icon_present(self):
-        req_cards = self.obj.get_elements('id', self.req_content)
-        for card in req_cards:
-            try:
-                if self.obj.child_element_by_id(card, self.arrow_btn).is_enabled():
-                    return ReturnType(True, 'Forward icon is present for downloaded class notes')
-            except NoSuchElementException:
-                return ReturnType(False, 'Forward icon is not present for downloaded class notes')
+        try:
+            req_cards = self.obj.get_elements('id', self.req_content)
+            for card in req_cards:
+                try:
+                    if self.obj.child_element_by_id(card, self.arrow_btn).is_enabled():
+                        return ReturnType(True, 'Forward icon is present for downloaded class notes')
+                except NoSuchElementException:
+                    return ReturnType(False, 'Forward icon is not present for downloaded class notes')
+        except NoSuchElementException:
+            return ReturnType(False, 'Card with post requisite is not present')
 
     def verify_or_select_pdf_viewer(self):
-        self.obj.wait_for_locator('id', self.sem_title)
-        panel_title = self.obj.get_element('id', self.sem_title).text
         try:
+            self.obj.wait_for_locator('id', self.sem_title)
+            panel_title = self.obj.get_element('id', self.sem_title).text
             open_with_apps = self.obj.get_elements('id', self.app_name)
             for app in open_with_apps:
                 if panel_title == 'Open with':
@@ -148,24 +152,29 @@ class ClassNotesAndroid(ClassNotesBase):
         except NoSuchElementException:
             return ReturnType(False, 'Select pdf viewer panel is not present')
 
-
     def verify_pdf_viewer_options(self):
-        req_contents = self.obj.get_elements('id', self.req_content)
-        for card in req_contents:
-            self.obj.child_element_by_id(card, self.arrow_btn).click()
-            break
-        return self.verify_or_select_pdf_viewer()
+        try:
+            req_contents = self.obj.get_elements('id', self.req_content)
+            for card in req_contents:
+                self.obj.child_element_by_id(card, self.arrow_btn).click()
+                break
+            return self.verify_or_select_pdf_viewer()
+        except NoSuchElementException:
+            return ReturnType(False, 'Card with post requisite is not present')
 
     def tap_classnotes_forward_icon_and_verify(self):
-        req_contents = self.obj.get_elements('id', self.req_content)
-        for card in req_contents:
-            self.obj.child_element_by_id(card, self.arrow_btn).click()
-            self.verify_or_select_pdf_viewer()
-            try:
-                self.obj.is_element_present('id', self.pdf_view)
-                return ReturnType(True, 'pdf file did open')
-            except NoSuchElementException:
-                return ReturnType(False, 'pdf file did not open')
+        try:
+            req_contents = self.obj.get_elements('id', self.req_content)
+            for card in req_contents:
+                self.obj.child_element_by_id(card, self.arrow_btn).click()
+                self.verify_or_select_pdf_viewer()
+                try:
+                    self.obj.is_element_present('id', self.pdf_view)
+                    return ReturnType(True, 'pdf file did open')
+                except NoSuchElementException:
+                    return ReturnType(False, 'pdf file did not open')
+        except NoSuchElementException:
+            return ReturnType(False, 'Card with post requisite is not present')
 
     def click_on_pdf_download_option(self):
         self.obj.wait_for_locator('xpath', self.more_options)
@@ -180,33 +189,38 @@ class ClassNotesAndroid(ClassNotesBase):
         for app in share_apps:
             if app.text == "Save to Drive":
                 app.click()
-                self.obj.wait_for_locator('id',self.save_to_drive_title)
+                self.obj.wait_for_locator('id', self.save_to_drive_title)
                 self.driver.back()
                 self.obj.element_click('id', self.save_button)
                 message = self.obj.get_element('id', 'android:id/message').text
                 if not self.obj.is_element_present('id', self.save_button) or (message == "Preparing to upload 1 file"):
                     return ReturnType(True, 'pdf share file successful')
                 else:
-                    return ReturnType(False, 'pdf share file not successful with toast message %s'% message)
+                    return ReturnType(False, 'pdf share file not successful with toast message %s' % message)
 
     def verify_no_pdf_viewer_message(self):
-        req_contents = self.obj.get_elements('id', self.req_content)
-        for card in req_contents:
-            self.obj.child_element_by_id(card, self.arrow_btn).click()
-            break
-        if (self.obj.is_element_present('id', self.dialog_layout) and
-                self.obj.get_element_text('id', self.dialog_title) == 'No application available to open this file' and
-                self.obj.is_button_displayed('Go to Play Store') and
-                self.obj.is_text_match('Cancel')):
-            return ReturnType(True, 'Message displayed when no pdf viewer is present to open file')
-        elif not (self.obj.is_element_present('id', self.dialog_layout)):
-            return ReturnType(False, 'Dialog layout is not present when no pdf viewer app is present in the device')
-        elif not (self.obj.get_element_text('id', self.dialog_title) == 'No application available to open this file'):
-            return ReturnType(False, 'No application available to open this file message is not displayed')
-        elif not (self.obj.is_button_displayed('Go to Play Store')):
-            return ReturnType(False, 'Go to Play Store message is not displayed')
-        elif not (self.obj.is_text_match('Cancel')):
-            return ReturnType(False, 'Cancel button is not present in the panel')
+        try:
+            req_contents = self.obj.get_elements('id', self.req_content)
+            for card in req_contents:
+                self.obj.child_element_by_id(card, self.arrow_btn).click()
+                break
+            if (self.obj.is_element_present('id', self.dialog_layout) and
+                    self.obj.get_element_text('id',
+                                              self.dialog_title) == 'No application available to open this file' and
+                    self.obj.is_button_displayed('Go to Play Store') and
+                    self.obj.is_text_match('Cancel')):
+                return ReturnType(True, 'Message displayed when no pdf viewer is present to open file')
+            elif not (self.obj.is_element_present('id', self.dialog_layout)):
+                return ReturnType(False, 'Dialog layout is not present when no pdf viewer app is present in the device')
+            elif not (
+                    self.obj.get_element_text('id', self.dialog_title) == 'No application available to open this file'):
+                return ReturnType(False, 'No application available to open this file message is not displayed')
+            elif not (self.obj.is_button_displayed('Go to Play Store')):
+                return ReturnType(False, 'Go to Play Store message is not displayed')
+            elif not (self.obj.is_text_match('Cancel')):
+                return ReturnType(False, 'Cancel button is not present in the panel')
+        except NoSuchElementException:
+            return ReturnType(False, 'Card with post requisite is not present')
 
     def login_to_cms_staging(self):
         self.tlms.login_to_cms_staging()
@@ -246,6 +260,6 @@ class ClassNotesAndroid(ClassNotesBase):
         if "Success" not in output:
             raise Exception("Failed to install app due to error %s" % output)
 
-    def install_pdf_reader_apps(self):
-        self.install_app('com.microsoft.skydrive.apk')
-        self.install_app('com.trustedapp.pdfreaderpdfviewer.apk')
+    # def install_pdf_reader_apps(self):
+    #     self.install_app('com.microsoft.skydrive.apk')
+    #     self.install_app('com.trustedapp.pdfreaderpdfviewer.apk')
