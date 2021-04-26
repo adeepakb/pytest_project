@@ -67,7 +67,7 @@ class TutorCommonMethods:
     def take_screen_shot(self, feature_filename):
         screen_shot = datetime.datetime.now()
         file_name = screen_shot.strftime("%d-%m-%y, %H-%M-%S")
-        self.driver.get_screenshot_as_file("../../ScreenShots/" + feature_filename + " " + file_name + ".png")
+        self.driver.get_screenshot_as_file(feature_filename + " " + file_name + ".png")
 
     def get_element(self, locator_type, locator_value):
         self.wait_for_locator(locator_type, locator_value)
@@ -405,7 +405,7 @@ class TutorCommonMethods:
     @staticmethod
     def get_text_from_image(imagefilename):
         img = cv2.imread(imagefilename + '.png')
-        text = pytesseract.image_to_string(img)
+        text = pytesseract.image_to_string(img,lang='eng')
         return text
 
     # This method takes cropped screenshot and return all the colors present w.r.t provided webelement

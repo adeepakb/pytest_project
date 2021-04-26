@@ -17,10 +17,6 @@ class TrialClassBase(ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def is_sessions_under_rc_displayed(self):
-        raise NotImplemented()
-
-    @abstractmethod
     def is_see_all_link_displayed(self):
         raise NotImplemented()
 
@@ -66,10 +62,6 @@ class TrialClassBase(ABC):
 
     @abstractmethod
     def book_special_master_class(self):
-        raise NotImplemented()
-
-    @abstractmethod
-    def is_master_class_booked(self):
         raise NotImplemented()
 
     @abstractmethod

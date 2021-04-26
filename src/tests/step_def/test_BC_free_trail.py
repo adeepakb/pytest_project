@@ -93,7 +93,8 @@ def tap_device_back(trial_class):
 
 @then('verify "Recommended Classes" section is present')
 def scroll_to_text(trial_class):
-    trial_class.verify_rcmnded_section_ispresent()
+    details = trial_class.verify_rcmnded_section_ispresent()
+    assert details.result, details.reason
 
 
 @then('verify that user should get book option for free trial sessions in recommended section')
@@ -110,8 +111,8 @@ def verify_book_option_for_multiple(trial_class):
 
 @then('verify that user booked the trial session')
 def is_trial_class_booked(trial_class):
-    is_present = trial_class.is_trial_class_booked()
-    assert is_present, "verify that user booked free trial session"
+    details = trial_class.is_trial_class_booked()
+    assert details.result, details.reason
 
 
 @given('ensure tutor has started the session')
@@ -142,7 +143,8 @@ def is_upnext_trial_class_completed(trial_class):
 
 @then('verify that free trail completed card should displayed in For you section')
 def verify_completed_trial_cards(trial_class):
-    assert trial_class.verify_completed_trial_cards(), "completed trial card message is not displayed"
+    details = trial_class.verify_completed_trial_cards()
+    assert details.result, details.reason
 
 
 @then('verify that masterclasses are scheduled should be displayed in recommended section')
@@ -166,7 +168,8 @@ def verify_user_missed_session(trial_class):
 @then('book masterclass session')
 @then('Verify that user can book multiple masterclass sessions')
 def book_multiple_master_class(trial_class, db):
-    assert trial_class.book_master_class(db), "Master class was not booked"
+    details = trial_class.book_master_class(db)
+    assert details.result, details.reason
 
 
 @then('book special master class')
@@ -187,7 +190,8 @@ def is_autobook_present(trial_class):
 
 @given('reset completed free trial and masterclass sessions')
 def delete_completed_sessions(trial_class):
-    assert trial_class.delete_completed_sessions() == 200, "free trial sessions reset is unsuccessful"
+    details = trial_class.delete_completed_sessions()
+    assert details.result, details.reason
 
 
 @given("launch the application online and login as expired user")
@@ -197,12 +201,14 @@ def login_as_expired_user(login_in):
 
 @given('expire free trail subscriptions for user')
 def expire_free_trail_subscriptions(trial_class):
-    assert trial_class.expire_free_trail_subscriptions() == 200, "free trial subscription expire is unsuccessful"
+    details = trial_class.expire_free_trail_subscriptions()
+    assert details.result, details.reason
 
 
 @then('verify expected message is shown once user reaches maximum free trail class limit')
 def verify_free_trial_message(trial_class):
-    assert trial_class.verify_free_trial_message(), "expected message is not displayed"
+    details = trial_class.verify_free_trial_message()
+    assert details.result, details.reason
 
 # @then(parsers.parse('Verify the text "{text}"'))
 # def verify_text(login_in, text):

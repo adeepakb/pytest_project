@@ -39,15 +39,23 @@ class ClassNotesAndroid(ClassNotesBase):
         self.pdf_view = 'com.google.android.apps.docs:id/pdf_view'
         self.app_name = 'android:id/text1'
         self.sem_title = 'android:id/sem_title_default'
-        self.toast = '//android.widget.Toast'
+        self.toast = 'android.widget.Toast'
         self.dialog_layout = f'{package_name}/dialog_layout'
         self.dialog_title = f'{package_name}/dialog_title'
+        self.save_button = 'android:id/button1'
+        self.save_to_drive_title = "com.google.android.apps.docs:id/title"
 
     def is_classnote_icon_present(self):
-        return self.obj.is_element_present('id', self.classNotesImg)
+        if self.obj.is_element_present('id', self.classNotesImg):
+            return ReturnType(True, 'classnote icon beside class-note text is present')
+        else:
+            return ReturnType(False, 'classnote icon beside class-note text is not present')
 
     def is_download_icon_present(self):
-        return self.obj.is_element_present('id', self.arrow_btn)
+        if self.obj.is_element_present('id', self.arrow_btn):
+            return ReturnType(True, 'classnote Download button is present')
+        else:
+            return ReturnType(False, 'classnote Download button is not present')
 
     def tap_on_first_session_card(self):
         session_cards_list = self.obj.get_elements('id', self.session_header)
@@ -56,7 +64,11 @@ class ClassNotesAndroid(ClassNotesBase):
 
     def is_requisite_list(self):
         self.obj.wait_for_locator('id', self.requisite_list)
-        return self.obj.is_element_present('id', self.requisite_list)
+        try:
+            if self.obj.is_element_present('id', self.requisite_list):
+                return ReturnType(True, 'requisite is displayed')
+        except NoSuchElementException:
+            return ReturnType(False, 'requisite is not displayed')
 
     def click_on_download(self):
         self.obj.wait_for_locator('id', self.arrow_btn)
@@ -65,14 +77,20 @@ class ClassNotesAndroid(ClassNotesBase):
 
     def classnote_processing(self):
         self.obj.wait_for_locator('id', self.processing)
-        return self.obj.is_element_present('id', self.processing)
+        if self.obj.is_element_present('id', self.processing):
+            return ReturnType(True, 'File is processing')
+        else:
+            return ReturnType(False, 'File is not processing')
 
     def is_assets_in_pdf_format(self):
         files = self.obj.execute_command('adb shell ls /storage/emulated/0/Download')[0]
+        print(len(files))
+        if len(files) is 0:
+            return ReturnType(False, 'Class note was not downloaded')
         for file in files.split(b'\n')[:-1]:
             if file.endswith(b'.pdf'):
                 return ReturnType(True, 'Downloaded material is in pdf format')
-            else:
+            elif not file.endswith(b'.pdf'):
                 return ReturnType(False, 'Downloaded material is not in pdf format')
 
     def all_tagged_resource_types(self):
@@ -89,9 +107,9 @@ class ClassNotesAndroid(ClassNotesBase):
             if (title == items[i]) and sessions[i].is_enabled():
                 count += 1
         if count == 3:
-            return ReturnType(True, 'Verify all tagged resources are present')
+            return ReturnType(True, 'All 3 tagged resources are present in app')
         else:
-            return ReturnType(False, 'Verify all tagged resources are not present')
+            return ReturnType(False, "3 resources are tagged in cms, but only %d resources are present" % count)
 
     def verify_classnotes_present_to_download(self):
         titles = self.obj.get_elements('id', self.requisite_title)
@@ -116,13 +134,20 @@ class ClassNotesAndroid(ClassNotesBase):
     def verify_or_select_pdf_viewer(self):
         self.obj.wait_for_locator('id', self.sem_title)
         panel_title = self.obj.get_element('id', self.sem_title).text
-        open_with_apps = self.obj.get_elements('id', self.app_name)
-        for app in open_with_apps:
-            if app.text in ["Drive PDF Viewer", "OneDrive PDF Viewer"] and panel_title == 'Open with':
-                app.click()
-                return ReturnType(True, 'User was asked to select pdf viewer to open')
-            else:
-                return ReturnType(False, 'User was not asked to select pdf viewer to open')
+        try:
+            open_with_apps = self.obj.get_elements('id', self.app_name)
+            for app in open_with_apps:
+                if panel_title == 'Open with':
+                    if app.text in ["Drive PDF Viewer", "OneDrive PDF Viewer"]:
+                        app.click()
+                        return ReturnType(True, 'User was asked to select pdf viewer from options to open file')
+                    else:
+                        return ReturnType(False, 'PDF viewer options are not shown to user')
+                else:
+                    return ReturnType(False, '"Open with" title is not present in the panel')
+        except NoSuchElementException:
+            return ReturnType(False, 'Select pdf viewer panel is not present')
+
 
     def verify_pdf_viewer_options(self):
         req_contents = self.obj.get_elements('id', self.req_content)
@@ -150,15 +175,19 @@ class ClassNotesAndroid(ClassNotesBase):
     def verify_share_file_options(self):
         self.obj.element_click('xpath', self.more_options)
         self.obj.click_link('Send file…')
+        self.obj.wait_for_locator('id', self.app_name)
         share_apps = self.obj.get_elements('id', self.app_name)
         for app in share_apps:
             if app.text == "Save to Drive":
                 app.click()
-                self.obj.button_click('Save')
-                if self.obj.get_element('xpath', self.toast).text == "Your 1 file is being uploaded to: My Drive":
+                self.obj.wait_for_locator('id',self.save_to_drive_title)
+                self.driver.back()
+                self.obj.element_click('id', self.save_button)
+                message = self.obj.get_element('id', 'android:id/message').text
+                if not self.obj.is_element_present('id', self.save_button) or (message == "Preparing to upload 1 file"):
                     return ReturnType(True, 'pdf share file successful')
                 else:
-                    return ReturnType(False, 'pdf share file not successful')
+                    return ReturnType(False, 'pdf share file not successful with toast message %s'% message)
 
     def verify_no_pdf_viewer_message(self):
         req_contents = self.obj.get_elements('id', self.req_content)
@@ -170,8 +199,14 @@ class ClassNotesAndroid(ClassNotesBase):
                 self.obj.is_button_displayed('Go to Play Store') and
                 self.obj.is_text_match('Cancel')):
             return ReturnType(True, 'Message displayed when no pdf viewer is present to open file')
-        else:
-            return ReturnType(False, 'No message displayed when no pdf viewer is present to open file')
+        elif not (self.obj.is_element_present('id', self.dialog_layout)):
+            return ReturnType(False, 'Dialog layout is not present when no pdf viewer app is present in the device')
+        elif not (self.obj.get_element_text('id', self.dialog_title) == 'No application available to open this file'):
+            return ReturnType(False, 'No application available to open this file message is not displayed')
+        elif not (self.obj.is_button_displayed('Go to Play Store')):
+            return ReturnType(False, 'Go to Play Store message is not displayed')
+        elif not (self.obj.is_text_match('Cancel')):
+            return ReturnType(False, 'Cancel button is not present in the panel')
 
     def login_to_cms_staging(self):
         self.tlms.login_to_cms_staging()

@@ -172,23 +172,15 @@ def create_feature_file(suite_id, project_id):
     print('Number of feature file created = ' + str(count))
 
 
-def create_feature_from_run(suite_id, run_id):
-    """
-    Create the feature file(s) for the given *suite_id* and *run_id*
-
-    :param suite_id: ID of the suite. Example: `S123`
-    :param run_id: ID of the run which belongs to same suite. Example: `R123`
-    :type suite_id: str
-    :type run_id: str
-    :return: None
-    """
+# this method is used to fetch the feature files from test run
+def create_feature_from_run(suite_ID, project_ID, run_ID):
     delete_feature_files()
     client = APIClient('https://tnl.testrail.io/')
     client.user = testrail_username
     client.password = testrail_password
-    suite = client.send_get('get_suite/' + suite_id)
+    suite = client.send_get('get_suite/' + suite_ID)
     feature_name = suite['name'].replace(" ", "_")
-    cases = client.send_get('get_tests/' + run_id)
+    cases = client.send_get('get_tests/' + run_ID)
     print(cases)
 
     currenttime = datetime.datetime.now()
@@ -202,7 +194,7 @@ def create_feature_from_run(suite_id, run_id):
     count = 0
     no_of_featrure_files = 0
     for case in cases:
-        if case['custom_automation_type'] == TestingType.AUTOMATION.value:
+        if case['custom_automation_type'] == 2:
             case_suite = client.send_get('get_case/' + str(case['case_id']))
             section_id_1 = section_id_2
             section_id_2 = case_suite['section_id']

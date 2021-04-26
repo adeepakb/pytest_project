@@ -5,5 +5,5 @@ from pages.base.student_session_base import StudentSessionBase
 
 
 class StudentSessionWeb(StudentSessionBase):
-    def __init__(self, chrome_driver):
-        self.driver = chrome_driver
+    def __init__(self, driver):
+        self.driver = driver

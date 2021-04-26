@@ -1,4 +1,5 @@
 import re
+import os
 import traceback
 import pytest
 import sys
@@ -117,9 +118,12 @@ def pytest_bdd_step_error(step):
     py_test.failed_step_name = step.name
 
 
-def capture_screenshot(request):
+def capture_screenshot(request,feature_name):
     driver = request.getfixturevalue("driver")
-    driver.save_screenshot("Failure_screenshot.png")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
+    screenshot_filename = feature_name + " " + timestamp + ".png"
+    driver.get_screenshot_as_file(screenshot_filename)
+    return screenshot_filename
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
@@ -156,7 +160,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         _exception.insert(0, trc)
         _exception.append(summaries[-1])
         _exception = "".join(_exception)
-        capture_screenshot(request)
+        screenshot_filename = capture_screenshot(request,feature_name)
         if not value:
             step_name = py_test.__getattribute__('failed_step_name')
         else:
@@ -171,7 +175,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         )
         sys.stderr.writelines(stdout_err)
         update_testrail(data[1], data[0], False, step_name, _exception)
-        add_attachment_to_result(data[0], data[1], 'Failure_screenshot.png')
+        add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
         msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, msg_body, 'passed')

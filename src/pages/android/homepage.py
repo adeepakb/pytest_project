@@ -359,6 +359,7 @@ class HomePage():
                 self.login_as_three_plus_one_user(driver)
         except:
             logging.info('Error in Verifing Home Page')
+            pytest.fail("failed in navigate_to_three_plus_one_user due to exception")
 
     def after_delete_the_user(self, driver, code, countrycode, mobno, otp):
         try:

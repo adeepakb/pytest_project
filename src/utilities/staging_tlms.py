@@ -731,6 +731,7 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//div[text()='Requisite Groups']").click()
         self.wait_for_locator_webdriver("//span[text()='Un Publish']")
         self.chrome_driver.find_element_by_xpath("//span[text()='Un Publish']").click()
+        self.wait_for_element_not_present_webdriver("//span[text()='Un Publish']")
 
         id_col = requisite_name_col = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/tbody/tr"))
@@ -743,11 +744,10 @@ class Stagingtlms:
             elif header == 'Requisite':
                 requisite_name_col = i
         for r in range(1, rows + 1):
-            name = self.chrome_driver.find_element_by_xpath(
-                "//tr[" + str(r) + "]/td[" + str(requisite_name_col) + "]").text
+            name = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(requisite_name_col) + "]").text
             if name == requisite_name:
-                self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(id_col) + "]/div/span").click()
+                req_id_element = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(id_col) + "]/div/span")
+                self.chrome_driver.execute_script("arguments[0].click();", req_id_element)
                 break
 
         self.wait_for_locator_webdriver("//input[@id='class_note_id']")

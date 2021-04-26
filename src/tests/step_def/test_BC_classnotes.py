@@ -108,12 +108,14 @@ def attach_post_requisite(home_screen, driver, requisite_name):
 
 @then('verify classnote icon beside class-note text is present')
 def is_classnote_icon_present(classnotes):
-    assert classnotes.is_classnote_icon_present(), "classnote icon beside class-note text is not present"
+    details = classnotes.is_classnote_icon_present()
+    assert details.result, details.reason
 
 
 @then('verify Download button is present')
 def is_download_icon_present(classnotes):
-    assert classnotes.is_download_icon_present(), "classnote Download button is not present"
+    details = classnotes.is_download_icon_present()
+    assert details.result, details.reason
 
 
 @then("tap on completed session card")
@@ -128,7 +130,8 @@ def verify_text(login_in, text):
 
 @then('verify that in the Completed tab, post requisite card is present')
 def is_requisite_list(classnotes):
-    assert classnotes.is_requisite_list(), "requisite is not displayed"
+    details = classnotes.is_requisite_list()
+    assert details.result, details.reason
 
 
 @then(parsers.parse('tap on "{text}"'))
@@ -209,7 +212,8 @@ def click_on_pdf_download_option(classnotes):
 
 @then('verify that loader keeps loading the file')
 def classnote_progressing(classnotes):
-    assert classnotes.classnote_processing(), 'File is not processing'
+    details = classnotes.classnote_processing()
+    assert details.result, details.reason
 
 
 @given("login to tutor-plus-cms-staging")
