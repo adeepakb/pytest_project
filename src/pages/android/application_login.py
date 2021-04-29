@@ -11,7 +11,7 @@ from subprocess import Popen
 from json import load
 from utilities.staging_tllms import Stagingtllms
 import logging
-from constants.load_json import getdata
+from constants.load_json import get_data
 from constants.constants import *
 
 
@@ -69,7 +69,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.driver.implicitly_wait(pool)
 
     def set_user_profile(self, login_profile='login_details_3', user_profile='user_1', sub_profile='profile_1'):
-        self.login_data = getdata(Login_Credentials, login_profile)
+        self.login_data = get_data(Login_Credentials, login_profile)
         self.user_mobile = self.login_data[user_profile]["mobile_number"]
         self.profile_name = self.login_data[user_profile][sub_profile]["profile_name"]
         self.otp = self.login_data[user_profile]["OTP"]
@@ -564,7 +564,7 @@ class Login(LoginBase, TutorCommonMethods):
                 break
 
     def enter_passwd(self):
-        psswd = str(getdata('../../config/config.json', 'account_with_password', 'password'))
+        psswd = str(get_data('../../config/config.json', 'account_with_password', 'password'))
         self.enter_password(psswd)
 
     def login_with_otp(self):
@@ -639,7 +639,7 @@ class Login(LoginBase, TutorCommonMethods):
                 self.get_element('xpath', '//*[contains(@resource-id, "ClassroomAvatarImg")]').click()
                 expected_mobile_number = self.get_element('xpath', '//*[contains(@resource-id, "mobile_number")]').text
                 account_details = '../../config/config.json'
-                actual_mobile_number = str(getdata(account_details, 'account_details', 'mobile'))
+                actual_mobile_number = str(get_data(account_details, 'account_details', 'mobile'))
                 if expected_mobile_number == actual_mobile_number:
                     logging.info('classroom page verified')
                     self.get_element('xpath', self.profile_back_button).click()

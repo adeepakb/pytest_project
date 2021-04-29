@@ -1,7 +1,7 @@
 import logging
 import time
 from selenium.common.exceptions import NoSuchElementException
-from constants.load_json import getdata
+from constants.load_json import get_data
 from pages.base.login_base import LoginBase
 from constants.constants import Login_Credentials
 
@@ -24,7 +24,7 @@ class LoginWeb(LoginBase):
         self.driver.find_element_by_xpath("//span[text() = 'LOGIN']").click()
 
     def enter_phone(self):
-        self.driver.find_element_by_xpath("//input[@id='enterNumber']").send_keys(getdata(Login_Credentials, 'login_detail3', 'mobile_no'))
+        self.driver.find_element_by_xpath("//input[@id='enterNumber']").send_keys(get_data(Login_Credentials, 'login_detail3', 'mobile_no'))
 
     def click_on_next(self):
         self.driver.find_element_by_xpath("// div[text() = 'NEXT']").click()
@@ -38,7 +38,7 @@ class LoginWeb(LoginBase):
     def enter_otp(self):
         self.select_profile()
         time.sleep(10)
-        self.driver.find_element_by_xpath("//input[@class='inputEleOTP']").send_keys(getdata(Login_Credentials, 'login_detail3', 'OTP'))
+        self.driver.find_element_by_xpath("//input[@class='inputEleOTP']").send_keys(get_data(Login_Credentials, 'login_detail3', 'OTP'))
         self.click_on_next()
 
     def verify_home_page_loaded(self):

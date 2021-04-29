@@ -11,7 +11,7 @@ from pyparsing import Char
 from selenium.webdriver.support.wait import WebDriverWait
 # from appium.webdriver.webelement import MobileBy
 from utilities.common_methods import CommonMethods
-from constants.load_json import getdata
+from constants.load_json import get_data
 
 featureFileName = "Personalized chapter list screen"
 

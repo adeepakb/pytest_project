@@ -81,11 +81,11 @@ class RegOtpScreen():
     def navigate_to_reg_otp_screen(self,driver):
         try:
             if CommonMethods.isElementPresent(driver,self.nametextfield):
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'name'), self.nametextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'mobile'), self.phonetextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'name'), self.nametextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'mobile'), self.phonetextfield)
                 self.countrycode = CommonMethods.getAttributeOfElement(driver,'text', self.countrycodedrop_down_text_view)
                 self.reg_phone_number=CommonMethods.getAttributeOfElement(driver,'text', self.phonetextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'email'), self.emailtextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'email'), self.emailtextfield)
                 actual_text =CommonMethods.getAttributeOfElement(driver,'text', self.citytextfield)
                 check = CommonMethods.verifyTextMatch(actual_text, 'City / Nearest location')
                 if check == True:

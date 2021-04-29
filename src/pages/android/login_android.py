@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from subprocess import Popen
 from json import load
 import logging
-from constants.load_json import getdata
+from constants.load_json import get_data
 from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
@@ -86,11 +86,11 @@ class LoginAndroid(LoginBase):
     def enter_phone(self):
         self.obj.wait_for_locator('id', self.phone_number)
         self.obj.get_element('id', self.phone_number).send_keys(
-            getdata(Login_Credentials, 'login_detail3', 'mobile_no'))
+            get_data(Login_Credentials, 'login_detail3', 'mobile_no'))
 
     def enter_otp(self):
         self.obj.wait_for_locator('id', self.OtpTxtBx_id)
-        self.obj.get_element('id', self.OtpTxtBx_id).send_keys(getdata(Login_Credentials, 'login_detail3', 'OTP'))
+        self.obj.get_element('id', self.OtpTxtBx_id).send_keys(get_data(Login_Credentials, 'login_detail3', 'OTP'))
         self.select_profile()
         self.obj.element_click('id', self.continue_button)
         self.obj.wait_for_locator('id', self.welcome_button, 15)
@@ -114,7 +114,7 @@ class LoginAndroid(LoginBase):
         self.driver.find_element_by_xpath(self.password).send_keys(psswd)
 
     def select_profile(self):
-        data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        data = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
         self.obj.wait_for_locator('id', self.multiple_accounts_dialog)
         if self.obj.is_element_present('id', self.multiple_accounts_dialog):
             # CommonMethods.scrollToElement(driver, data)
@@ -321,7 +321,7 @@ class LoginAndroid(LoginBase):
         if account_type == 'many':
             data = Stagingtlms(self.driver).get_mobile_and_ccode()
         elif account_type == 'personal':
-            data = str(getdata('../../config/config.json', 'account_with_password', 'mobile'))
+            data = str(get_data('../../config/config.json', 'account_with_password', 'mobile'))
         mobile_and_code = data.split('-')
         self.select_country_code(mobile_and_code[0])
         self.enter_phone(mobile_and_code[1])
@@ -450,7 +450,7 @@ class LoginAndroid(LoginBase):
                 break
 
     def enter_passwd(self):
-        psswd = str(getdata('../../config/config.json', 'account_with_password', 'password'))
+        psswd = str(get_data('../../config/config.json', 'account_with_password', 'password'))
         self.enter_password(psswd)
 
     def reset_and_login_with_otp(self):
@@ -483,7 +483,7 @@ class LoginAndroid(LoginBase):
                                                               '//*[contains(@resource-id, "mobile_number")]').text
 
                 account_details = '../../config/config.json'
-                actual_mobile_number = str(getdata(account_details, 'account_details', 'mobile'))
+                actual_mobile_number = str(get_data(account_details, 'account_details', 'mobile'))
                 if expected_mobile_number == actual_mobile_number:
                     logging.info('classroom page verified')
                     self.obj.get_element('xpath', self.profile_back_button).click()

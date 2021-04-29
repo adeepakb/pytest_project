@@ -15,7 +15,7 @@ class VerifyPage():
         self.verify_pag = "com.byjus.thelearningapp:id/touch_outside"
         self.txt_otp = "com.byjus.thelearningapp:id/etOTP"
         self.verifyText_xpath = "//android.widget.TextView[@text='Verify']"
-        self.otp1 = getdata(PATH('../test_data/login_data.json'), "login_details", "OTP")
+        self.otp1 = get_data(PATH('../test_data/login_data.json'), "login_details", "OTP")
         
     def clickOnVerifyPage(self, driver):
         driver.find_element_by_id(self.verify_pag).click()

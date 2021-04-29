@@ -144,7 +144,7 @@ class Bookmark_filter():
                 account_text = CommonMethods.getTextOfElement(driver, self.account_details_title)
                 CommonMethods.scrollToElement(driver, account_text)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials3', 'mobileNum')
+                actual_mob_num = get_data(data_file, 'profile_credentials3', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     CommonMethods.elementClick(driver, self.back_button_id)
                     pass
@@ -158,13 +158,13 @@ class Bookmark_filter():
                     CommonMethods.wait_for_locator(driver,self.country_Code,15)
                     CommonMethods.elementClick(driver,self.country_Code)
                     sleep(2)
-                    CommonMethods.scrollToElementAndClick(driver,getdata(Login_Credentials,'login_detail3'
-                                                                          , 'country_code'))
-                    CommonMethods.enterText(driver,getdata(Login_Credentials,'login_detail3','mobile_no'),self.phone_num)
+                    CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
+                                                                           , 'country_code'))
+                    CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
                     CommonMethods.wait_for_locator(driver,self.loginBtn_id,15)
                     CommonMethods.elementClick(driver,self.loginBtn_id)
                     CommonMethods.wait_for_locator(driver,self.OtpTxtBx_id,15)
-                    CommonMethods.enterText(driver, getdata(Login_Credentials,'login_detail3','OTP'), self.OtpTxtBx_id)
+                    CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
                     sleep(15)
                     return True
             else:
@@ -181,14 +181,14 @@ class Bookmark_filter():
             CommonMethods.wait_for_locator(driver,self.country_Code,15)
             CommonMethods.elementClick(driver,self.country_Code)
             sleep(1)
-            CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+            CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3', 'country_code'))
+            CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
             # CommonMethods.scrollToElementAndClick(driver, 'Canada (+1)')
             # CommonMethods.enterText(driver, "9871234", self.profile_mob_num)
             CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
             CommonMethods.elementClick(driver, self.loginBtn_id)
             CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
+            CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
         else:
             logging.info('User verified Login page')
          

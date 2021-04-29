@@ -1,8 +1,8 @@
 {
 	"testrail": {
 		"url": "https://tnl.testrail.io/",
-		"userName": "suguresh.soppimath@byjus.com",
-		"password": "3CRKdQcRN37MESsa5Dgb-Si8tWcvSIx4jEANizT4a"
+		"userName": "deepak.sharma11@byjus.com",
+		"password": "Deepak1!"
 	},
 	"staging_access":
    {
@@ -18,13 +18,12 @@
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
 		"eventTimings": true,
 		"noReset": true,
-   		"udid": "R9BN703T85J",
-		"url": "https://dev-in-blr-0.headspin.io:7007/v0/82db318b421645049293e7c34fe67e09/wd/hub",
+		"url": "http://localhost:4723/wd/hub",
 		"newCommandTimeout": 300,
 		"implicitWait": 10
 	},
 	"adb_connect": {
-		"token": "82db318b421645049293e7c34fe67e09"
+		"token": ""
 	},
 	"account_details":
    {

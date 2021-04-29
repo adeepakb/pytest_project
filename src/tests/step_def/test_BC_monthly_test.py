@@ -73,3 +73,8 @@ def step_impl(m_test):
 def step_impl(m_test):
     assert m_test.verify_session_card_details(detail="start test button"), \
         "Session 'Start Test' button might not be displayed."
+
+
+@given('The session should be converted to a unit test')
+def step_impl(m_test):
+    print('deepak')

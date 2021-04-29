@@ -20,9 +20,9 @@ from constants.load_json import *
 import glob
 
 fp = '../../config/config.json'
-testrail_url = getdata(fp, 'testrail', 'url')
-testrail_username = getdata(fp, 'testrail', 'userName')
-testrail_password = getdata(fp, 'testrail', 'password')
+testrail_url = get_data(fp, 'testrail', 'url')
+testrail_username = get_data(fp, 'testrail', 'userName')
+testrail_password = get_data(fp, 'testrail', 'password')
 custom_Tag_Dict = {1: 'Video', 2: 'Sanity', 3: 'BVT'}
 custom_Tag_List = [1, 2, 3]
 

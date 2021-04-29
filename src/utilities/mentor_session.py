@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from selenium.webdriver.chrome.options import Options
 from constants.constants import Login_Credentials
 from utilities.staging_tllms import Stagingtlms
-from constants.load_json import getdata
+from constants.load_json import get_data
 from utilities.tutor_common_methods import TutorCommonMethods
 
 
@@ -147,8 +147,8 @@ class MentorSession:
 
     def login_as_tutor(self):
         path = '../config/config.json'
-        email = str(getdata(path, 'staging_access', 'email'))
-        password = str(getdata(path, 'staging_access', 'password'))
+        email = str(get_data(path, 'staging_access', 'email'))
+        password = str(get_data(path, 'staging_access', 'password'))
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
@@ -225,7 +225,7 @@ class MentorSession:
             "text field is not enabled.No cursor in the text field"
 
     def verify_student_name_present(self):
-        user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
         assert self.chrome_driver.find_element_by_xpath(
             "//*[text()='" + user_name + "']").is_displayed(), "student name is not present"
 
@@ -280,7 +280,7 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath(self.ban).click()
         self.chrome_driver.find_element_by_xpath(self.ban_student_ban).click()
         try:
-            user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+            user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
             self.chrome_driver.find_element_by_xpath("//*[text()='" + user_name + "']").is_displayed()
         except NoSuchElementException:
             print("banned student messages are not present")
