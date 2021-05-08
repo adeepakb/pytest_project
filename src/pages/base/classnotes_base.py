@@ -98,7 +98,3 @@ class ClassNotesBase(ABC):
     @abstractmethod
     def install_app(self, apk):
         raise NotImplemented()
-
-    @abstractmethod
-    def install_pdf_reader_apps(self):
-        raise NotImplemented()

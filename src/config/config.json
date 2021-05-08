@@ -1,44 +1,6 @@
 {
-	"testrail": {
-		"url": "https://tnl.testrail.io/",
-		"userName": "reshma.nair@byjus.com",
-		"password": "Tnl@123456"
-	},
-	"staging_access":
-    {
-      "email":"testautomation@byjus.com",
-      "password":"Byjus@54321"
-    },
-	"desired_cap": {
-    	"automationName": "UiAutomator2",
-		"platformName": "Android",
-		"deviceName": "device",
-		"autoAcceptAlerts": true,
-		"appPackage": "com.byjus.thelearningapp.premium",
-		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",
-		"eventTimings": true,
-		"noReset": true,
-		"udid": "R9BN703T85J",
-		"url": "https://dev-in-blr-0.headspin.io:7007/v0/3bbdfc92b3b041a5a15323eb3222d6d7/wd/hub",
-		"newCommandTimeout": 300,
-		"implicitWait": 10
-	},
-	"adb_connect": {
-		"token": "3bbdfc92b3b041a5a15323eb3222d6d7"
-	},
-	"account_details":
-   {
-       "mobile" : "+91-9513357002",
-       "premium_id" : "1018670043"
-   },
-	"profile_credentials": {
-		"mobileNum": "+91-9513357002",
-		"grade": "6"
-	},
-	"API_credentials": {
-		"url": "https://staging.tllms.com/_/graphql",
-		"key": "610c88099b12f67dbc6ab605730f7fa3",
-		"secret": "17baef418c002ddd7f22c8aa898c64dc6e677583"
+	"encrypted_data": {
+		"token": "gAAAAABgkmREvOjRDv3Ar0mDElijLAqqcTyzUVu0vMty59MQisFtpl19amgGDjf_IFDBkM5YbCoIWsv52OfVboO7_q2_4xS-39a_rsQhVmHh9BYdsWnVWa7W5rNKvtcOrQLmc4J1WUmhg1xg33oNXPehu2WRrwvJlBi_g7Iq2cGDYV05BHsF_fcYRzeuvQ7gRa4dhEuv35HnC3CO_GILOSbjQJ_Ms8KfCakZUL2GfRmPo-LunJowzlHlGdZ_ZIVasLaDLye42dGVaKW23s-6vAzMPsbpQ4U_Svfu8zHYC8FCX2ocUE4Ywqlk-jueDoPUd1lfcgelpu7lrgnYARX0yWiefvlHvhWKtDX-ap0zIbscbcnFgJIntKHONHXbVw_XF25OFyf2oa-xpZS7tW0WL8lKylHJ6TxC3lpzqBj4rhSccdznd03sI2XBPXcbYQ0Azphw7xoQXuGR3bma3LQEexHFX99-xEvpKvGrLNEKgkK_Em5EMXE-hES-Uomec0_uCXpZR5361-xqPmVcEjWtj1pm3YABxmTGunerPv4JPuafpN2RblksqQZ2NraiuwL0fO6620CFOjC5yNWVOxB8VD7VGUg_TrqP0kvUjInTUxSDtxNKfjWK-G0Xo4SEF-qfu1BMR1iCqAAMRnlFL9iXyo1DU_KGm7sdHk-GYJGD9mk8LJ-ZTsFg1xzFhmqJPnn0hHUfbteSf3UvcglZznhrlN8NcxEblOnsls101CxVqd7IKMdfP1GI_IrP-4FW8wmVcT57zJCa3IYx2FK3qgkC10jeT7XwWQjOeFPkblaAl7axcB09IBdyLzMqqnfpVELNJWq4UPldPZIgT00BfXG1_z_58t6thSa8fBzZIg-C16uJGHYkaDOPuL6KKQJ65SE7olO_eEA8kEOww6uJq7GVkUJWDYcq8MJA2DfSi4y4eXMmvBFfOnj84rrhkK2lMjkai6ZH7bq6MG7e6JARHSatnDcKFz5HZh9jtny8GwBdL0EgwJCg6yxtt0P0JC5s3CX41wNYvQwJXr8jEg_cVIT9L-SYkgIG7LjmL-PqqmtkWn6yUIJ6n6bPFV4vjgY2nDSAIuDTViakM7DY3kRNLe80xuAXOrE0KYqK59-x9rcjwa9y1LUf-zYezEOoeshRw4WG6gteOqtlaVVcUlVJmnK4rXU5O67tLdsbxRvjasuYaXGh6uexYlulwmFg1wUawRuQIY0oPjslHoYuEkeBYZUT4aaancZVwFyXzvtKiX62B17d6QtgfLMpulQ-1m_57A8ciHfMfwVzjiOf"
 	}
 }
 	

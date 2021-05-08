@@ -13,7 +13,7 @@ or API token are all fetched from the JSON (config.json) file.
 """
 import datetime
 from enum import Enum
-
+from cryptography.fernet import Fernet
 from constants.testrail import *
 from constants.constants import *
 from constants.load_json import *
@@ -22,10 +22,14 @@ import glob
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 
-testrail_file = CONFIG_PATH
-testrail_url = getdata(testrail_file, 'testrail', 'url')
-testrail_username = getdata(testrail_file, 'testrail', 'userName')
-testrail_password = getdata(testrail_file, 'testrail', 'password')
+key = os.getenv('SECRET')
+f = Fernet(key)
+encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+testrail_url = decrypted_data['testrail']['url']
+testrail_username = decrypted_data['testrail']['userName']
+testrail_password = decrypted_data['testrail']['password']
+
 custom_Tag_Dict = {1: 'Video', 2: 'Sanity', 3: 'BVT'}
 custom_Tag_List = [1, 2, 3]
 
@@ -361,6 +365,25 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
             case_suite = client.send_get('get_case/' + str(case['case_id']))
             data.append(str(case_suite['id']))
             return data
+
+
+# returns a list of API available reports by project
+def get_testrail_reports(project_ID, report_name):
+    client = get_testrail_client()
+    reports = client.send_get('get_reports/' + str(project_ID))
+    report_id = None
+    for report in reports:
+        if report['name'] == report_name:
+            report_id = report['id']
+    return report_id
+
+
+# executes the report identified using the report_id parameter and returns URLs for accessing the reports
+def run_testrail_reports(report_id):
+    client = get_testrail_client()
+    report = client.send_get('/run_report/' + str(report_id))
+    report_url = report['report_url']
+    return report_url
 
 
 # to fetch latest result id

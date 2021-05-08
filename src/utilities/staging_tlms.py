@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from cryptography.fernet import Fernet
 from random import randint
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
@@ -26,11 +27,14 @@ class Stagingtlms:
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
     def login_to_staging(self):
-        email = str(getdata('../config/config.json', 'staging_access', 'email'))
-        password = str(getdata('../config/config.json', 'staging_access', 'password'))
-
+        email = self.decrypted_data['staging_access']['email']
+        password = self.decrypted_data['staging_access']['password']
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
@@ -44,28 +48,15 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
-    def get_tutor_url(self, course='primary', premium_id='primary'):
-        email = str(getdata('../config/config.json', 'staging_access', 'email'))
+    def navigate_to_student_sessions(self, premium_id):
         today = datetime.today().strftime('%Y-%m-%d')
-        if course == 'primary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
-            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
-        elif course == 'secondary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
-            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
-        elif course == 'ternary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
-            premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
-
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
         self.chrome_driver.find_element_by_xpath("//*[text()='Mentoring']").click()
         self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
         self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-
         self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
         self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
         self.wait_for_locator_webdriver("//input[@id ='target_date']")
         self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
         self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
@@ -73,6 +64,19 @@ class Stagingtlms:
         self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
         self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
 
+    def get_tutor_url(self, course='primary'):
+        email = self.decrypted_data['staging_access']['email']
+        session_course_id = premium_id = None
+        if course == 'primary':
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
+            premium_id = self.decrypted_data['account_details']['premium_id']
+        elif course == 'secondary':
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
+            premium_id = self.decrypted_data['account_details']['premium_id']
+        elif course == 'ternary':
+            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
+            premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        self.navigate_to_student_sessions(premium_id)
         tutor_url = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
         cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
@@ -118,14 +122,14 @@ class Stagingtlms:
         return tutor_url
 
     def reset_session(self, course='primary'):
-        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+        premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
         if course == 'primary':
             session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
-            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+            premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'secondary':
             session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
-            premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+            premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'ternary':
             session_course_id = str(getdata('../config/login_data.json', 'login_detail1', 'course_id'))
             premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
@@ -174,16 +178,15 @@ class Stagingtlms:
                 continue
         self.chrome_driver.close()
 
-    @staticmethod
-    def get_mobile_and_ccode():
-        mobile = str(getdata('../config/config.json', 'account_details', 'mobile'))
+    def get_mobile_and_ccode(self):
+        mobile = self.decrypted_data['account_details']['mobile']
         return mobile
 
     def get_otp(self, account_type='many'):
         if account_type == 'many':
             complete_mobile = self.get_mobile_and_ccode()
         elif account_type == 'asset_not_tagged_account_details':
-            complete_mobile = str(getdata('../config/config.json', 'asset_not_tagged_account_details', 'mobile'))
+            complete_mobile = self.decrypted_data['asset_not_tagged_account_details']['mobile']
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
@@ -249,8 +252,7 @@ class Stagingtlms:
                 r = 1
 
     def select_topic_and_update_teaching_material(self, topic_id):
-        teaching_material = str(getdata('../config/config.json', 'update_pdf_in_cms_details', 'teaching_material'))
-
+        teaching_material = self.decrypted_data['update_pdf_in_cms_details']['teaching_material']
         # Tutor is in cms topics page
         self.wait_for_locator_webdriver("//table[contains(@class,'MuiTable-root')]")
         topic_table_rows = len(
@@ -294,8 +296,9 @@ class Stagingtlms:
                 row = 1
 
     def login_to_cms_staging(self):
-        email = str(getdata('../config/config.json', 'staging_access', 'email'))
-        password = str(getdata('../config/config.json', 'staging_access', 'password'))
+        email = self.decrypted_data['staging_access']['email']
+        password = self.decrypted_data['staging_access']['password']
+
         # Login to CMS
         self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/?page=1')
         self.chrome_driver.maximize_window()
@@ -311,6 +314,7 @@ class Stagingtlms:
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
+        self.wait_for_locator_webdriver("//img[@alt='titleLogo']")
 
     def update_teaching_material(self, course_details):
         print(course_details)
@@ -322,7 +326,7 @@ class Stagingtlms:
         self.chrome_driver.close()
 
     def is_session_present_today(self):
-        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+        premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -347,7 +351,7 @@ class Stagingtlms:
         return flag
 
     def is_teaching_material_tagged(self):
-        premium_id = str(getdata('../config/config.json', 'asset_not_tagged_account_details', 'premium_id'))
+        premium_id = self.decrypted_data['asset_not_tagged_account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -490,7 +494,7 @@ class Stagingtlms:
         assert pagination_icon.is_enabled() == True, "Page " + page_num + "is not selected"
 
     def add_role_to_user(self, role):
-        email = str(getdata('../config/config.json', 'staging_access', 'email'))
+        email = self.decrypted_data['staging_access']['email']
         self.wait_for_clickable_element_webdriver("//a[text()='Users']")
         self.chrome_driver.find_element_by_xpath("//a[text()='Users']").click()
         self.wait_for_clickable_element_webdriver("//input[@id='q_email']")
@@ -571,7 +575,7 @@ class Stagingtlms:
         return date
 
     def attach_requisite(self, requisite_name):
-        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+        premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -639,7 +643,7 @@ class Stagingtlms:
         self.chrome_driver.close()
 
     def detach_requisite(self):
-        premium_id = str(getdata('../config/config.json', 'account_details', 'premium_id'))
+        premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
@@ -709,7 +713,8 @@ class Stagingtlms:
         location = os.path.normpath(os.path.join(current_location, "../../files/" + filename + ""))
         input_element.send_keys(location)
 
-        self.chrome_driver.find_element_by_xpath("//*[contains(@class,'MuiInputBase-formControl MuiInput-formControl')]").click()
+        self.chrome_driver.find_element_by_xpath(
+            "//*[contains(@class,'MuiInputBase-formControl MuiInput-formControl')]").click()
         time.sleep(2)
         self.chrome_driver.find_element_by_xpath("//*[@role='option' and text()='" + tnl_cohort_id + "']").click()
         self.chrome_driver.find_element_by_xpath("//span[text()='Submit']").click()
@@ -717,7 +722,8 @@ class Stagingtlms:
 
     def verify_classnote_upload_error(self):
         self.wait_for_locator_webdriver("//span[@id='message-id']")
-        if self.chrome_driver.find_element_by_xpath("//span[@id='message-id']").text == 'file size should not be more than 15MB':
+        if self.chrome_driver.find_element_by_xpath(
+                "//span[@id='message-id']").text == 'file size should not be more than 15MB':
             return True
 
     def incorrect_note_format_error(self):
@@ -734,8 +740,10 @@ class Stagingtlms:
         self.wait_for_element_not_present_webdriver("//span[text()='Un Publish']")
 
         id_col = requisite_name_col = None
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/tbody/tr"))
-        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/thead/tr/th"))
+        rows = len(
+            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/tbody/tr"))
+        cols = len(
+            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/thead/tr/th"))
         for i in range(1, cols):
             header = self.chrome_driver.find_elements_by_xpath(
                 "//table[contains(@class,'MuiTable-root table')]/thead/tr/th[" + str(i) + "]")[0].text
@@ -744,9 +752,11 @@ class Stagingtlms:
             elif header == 'Requisite':
                 requisite_name_col = i
         for r in range(1, rows + 1):
-            name = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(requisite_name_col) + "]").text
+            name = self.chrome_driver.find_element_by_xpath(
+                "//tr[" + str(r) + "]/td[" + str(requisite_name_col) + "]").text
             if name == requisite_name:
-                req_id_element = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(id_col) + "]/div/span")
+                req_id_element = self.chrome_driver.find_element_by_xpath(
+                    "//tr[" + str(r) + "]/td[" + str(id_col) + "]/div/span")
                 self.chrome_driver.execute_script("arguments[0].click();", req_id_element)
                 break
 
@@ -781,19 +791,20 @@ class Stagingtlms:
         return c_day, ac_time, end_time
 
     # todo: change implementation
-    def _add_slot(self, booking_time=None, course_id=None):
+    def _add_slot(self, booking_time=None, course_id=None,num_slots=1):
         def group_name(d, t):
             return "auto_" + str(time.strptime(d, "%A").tm_wday + 1) + ''.join(t.split(":"))
-
         # self.session_relaunch(cms=True)
         self.chrome_driver.get(f"https://tutor-plus-cms-staging.tllms.com/courses/%s/slot_groups/new" % course_id)
-        number_of_slots = self.chrome_driver.find_elements('css selector', 'div.slotCardContainer')
-        if len(number_of_slots) == 1:
+        self.wait_for_locator_webdriver("//div[@class='subheader--title']")
+        if num_slots == 1:
+            for i in range(2):
+                self.chrome_driver.find_element_by_xpath("//div[text()='-']").click()
             b_day, start_time, end_time = booking_time
             weeks = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday", "Sunday")
             for i, day in enumerate(weeks):
                 if day.lower() == b_day.lower():
-                    index = i
+                    index = i+1
                     break
             else:
                 raise Exception("DayFormatException: bad day format '%s'" % b_day)
@@ -801,28 +812,15 @@ class Stagingtlms:
             self.chrome_driver.find_element_by_css_selector("input.slotNameInput").send_keys(grp_name)
             self.chrome_driver.find_element("css selector", "div.MuiInput-input").click()
             self.chrome_driver.find_elements("css selector", "div#menu- .MuiListItem-button")[index].click()
-            self.chrome_driver.find_element("css selector",
-                                            "div.slotContent > div:nth-child(2) input.slotInput").send_keys(start_time)
-            self.chrome_driver.find_element("css selector",
-                                            "div.slotContent > div:nth-child(3) input.slotInput").send_keys(end_time)
+            self.chrome_driver.find_element("css selector","div.slotContent > div:nth-child(2)> div:nth-child(2) input.slotDateInput").send_keys(start_time)
+            self.chrome_driver.find_element("css selector","div.slotContent > div:nth-child(2)> div:nth-child(3) input.slotDateInput").send_keys(end_time)
             self.chrome_driver.find_element("css selector", "button[type=button]").click()
-            new_slot_grp_url = self.chrome_driver.current_url
             try:
-                self.chrome_driver.implicitly_wait(30)
-                self.chrome_driver.find_element("xpath", "//span[text()=\"Add New Slot Group\"]")
+                self.wait_for_locator_webdriver("//button[text()='Create New Slot Group']")
+                self.chrome_driver.find_element("xpath", "//button[text()='Create New Slot Group']")
             except NoSuchElementException:
-                pass
-            timeout = 30
-            while timeout:
-                if self.chrome_driver.current_url != new_slot_grp_url:
-                    self.chrome_driver.quit()
-                    break
-                else:
-                    timeout -= 1
-                    time.sleep(1)
-            else:
-                self.chrome_driver.quit()
-                raise Exception("Cannot update slot in 'https://tutor-plus-cms-staging.tllms.com/'")
+                raise Exception("Cannot update slot in cms")
+            self.chrome_driver.close()
             return {
                 grp_name: {
                     "slot_0": {
@@ -850,3 +848,62 @@ class Stagingtlms:
             json.dump(course, io_write, indent=2)
         # else:
         #     return available_slots
+
+    def get_free_course_details(self):
+        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        self.navigate_to_student_sessions(premium_id)
+        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
+        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
+        session_detail_col = status_col = topic_details = None
+        for i in range(1, cols):
+            header = self.chrome_driver.find_elements_by_xpath(
+                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
+            if header == 'Status':
+                status_col = i
+            elif header == 'Session Detail':
+                session_detail_col=i
+
+        for r in range(1, rows + 1):
+            try:
+                status = self.chrome_driver.find_element_by_xpath("//tr["+str(r)+"]/td["+str(status_col)+"]").text
+                if 'FREE' in status:
+                    topic_details = self.chrome_driver.find_element_by_xpath("//tr["+str(r)+"]/td["+str(session_detail_col)+"]").text
+                    print(topic_details)
+            except NoSuchElementException:
+                continue
+        self.chrome_driver.close()
+        return topic_details
+
+    # operation : Activate/ Deactivate
+    def deactivate_or_activate_all_slot_groups(self, operation,course_id):
+        self.login_to_cms_staging()
+        self.wait_for_locator_webdriver("//div[text()='Courses']")
+        self.chrome_driver.find_element_by_xpath("//div[text()='Courses']").click()
+        self.wait_for_locator_webdriver("//input[@type='text']")
+        self.chrome_driver.find_element_by_xpath("//input[@type='text']").send_keys(course_id)
+        self.wait_for_locator_webdriver("//a[text()='"+course_id+"']")
+        self.chrome_driver.find_element_by_xpath("//a[text()='"+course_id+"']").click()
+        self.wait_for_locator_webdriver("//span[text()='Slot Groups']")
+        self.chrome_driver.find_element_by_xpath("//span[text()='Slot Groups']").click()
+        action_col = 4
+        while True:
+            rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root table')]/tbody/tr"))
+            for r in range(1, rows + 1):
+                self.wait_for_locator_webdriver("//tr[" + str(r) + "]/td[" + str(action_col) + "]")
+                name = self.chrome_driver.find_element_by_xpath("//tr["+str(r)+"]/td["+str(action_col)+"]").text
+                if name == operation:
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(action_col) + "]/div/span").click()
+                    self.wait_for_clickable_element_webdriver('//span[text()="Confirm"]')
+                    self.chrome_driver.find_element_by_xpath('//span[text()="Confirm"]').click()
+            svg_icons = self.chrome_driver.find_elements_by_css_selector('.MuiButton-root')
+            length = len(svg_icons)
+            if svg_icons[length - 1].get_attribute('disabled') is not None:
+                break
+            svg_icons[length - 1].click()
+
+    def login_and_add_slot(self,hours=None, minutes=None, day=None, course_id= None):
+        self.login_to_cms_staging()
+        b_day, start_time, *_ = b_time = self.booking_time(hours, minutes, day)
+        self._add_slot(b_time, course_id,num_slots=1)
+        d = datetime.strptime(start_time, "%H:%M")
+        return d.strftime("%-I:%M %p")

@@ -6,6 +6,7 @@ from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.factory.trial_class import TrialClassFactory
 from utilities.mentor_session import MentorSession
 from utilities.staging_tlms import Stagingtlms
+import pytest_check as check
 
 scenarios('../features/Multiple Free Trail Bookings.feature')
 
@@ -86,6 +87,7 @@ def tap_button(login_in, text):
     assert button_status is True, "Unable to find {text} button"
 
 
+@when("tap on back navigation icon")
 @then("tap on back navigation icon")
 def tap_device_back(trial_class):
     trial_class.back_navigation()
@@ -97,6 +99,7 @@ def scroll_to_text(trial_class):
     assert details.result, details.reason
 
 
+@then('Verify that book option should display for free trial session')
 @then('verify that user should get book option for free trial sessions in recommended section')
 def verify_book_option_for_free_trail(trial_class):
     details = trial_class.is_book_present_for_free_trail_classes()
@@ -109,6 +112,9 @@ def verify_book_option_for_multiple(trial_class):
     assert not details.result, details.reason
 
 
+@then('Verify that class is booked and user lands back on schedule/session page if booking is successful')
+@then('Verify that user is able to book the session 30 mins before the session starts')
+@then('Verify that user is able to book from available slots')
 @then('verify that user booked the trial session')
 def is_trial_class_booked(trial_class):
     details = trial_class.is_trial_class_booked()
@@ -123,11 +129,6 @@ def start_tutor_session(mentor_session):
 @then('user completes the session')
 def tutor_taps_on_end_session(mentor_session):
     mentor_session.tutor_end_session()
-
-
-@given('verify and add slot for trial class booking')
-def step_impl(driver):
-    Stagingtlms(driver).verify_and_add_slot()
 
 
 @then('user book one trial class')
@@ -210,11 +211,157 @@ def verify_free_trial_message(trial_class):
     details = trial_class.verify_free_trial_message()
     assert details.result, details.reason
 
-# @then(parsers.parse('Verify the text "{text}"'))
-# def verify_text(login_in, text):
-#     assert login_in.text_match(text), "%s text is not displayed " % text
-#
-#
-# @then(parsers.parse('verify "{text}" button'))
-# def verify_button(home_screen, text):
-#     assert home_screen.verify_button(text), "button is not present"
+
+@when('User in booking screen page')
+def verify_booking_page(home_screen):
+    details = home_screen.verify_booking_page()
+    assert details.result, details.reason
+
+
+
+@then('Verify that the free classes should available under regular class section.')
+@then('Verift that free trial classes are availabe under Regular Classes section under booking screen')
+def verify_free_trial_message(trial_class):
+    details = trial_class.is_free_trial_class_present_under_reg_class()
+    assert details.result, details.reason
+
+
+@then('Verift that master classes are availabe under Master Classes section under booking screen')
+def is_master_class_present_under_master_class_section(trial_class):
+    details = trial_class.is_master_class_present_under_master_class_section()
+    assert details.result, details.reason
+
+
+@then('Verify that all availabe slots for subject/topic are listed on the tile as per zeplin UI')
+@then('Verify that subject name and subject title should display in free regular class title')
+@then('verify that Free class subject name, title name , time ,date, duration , other slots time , day should display.')
+def verify_free_trial_class_details(trial_class):
+    details = trial_class.is_free_trial_class_details_present_under_reg_class()
+    assert details.result, details.reason
+
+
+@then('Verify that subject name and subject title should display in Master class title')
+def verify_subname_subtitle_of_master_class(trial_class):
+    details = trial_class.is_master_class_details_present_under_master_class()
+    assert details.result, details.reason
+
+
+@when('Click on Book option for a regular class')
+@when('try to book the session 30 mins before the session starts')
+def click_on_book_option_for_reg_class(trial_class):
+    trial_class.click_on_book_btn_reg_class()
+
+
+@then('verify that class date and time selection popup should display when user click on book option.')
+def verify_the_date_and_time_popup(trial_class):
+    details = trial_class.is_date_and_time_popup_present()
+    assert details.result, details.reason
+
+
+@then("verify that 'confirm & book' and cancel option should display in the selection popup")
+def verify_select_date_time_buttons(trial_class):
+    details = trial_class.verify_select_date_time_buttons()
+    assert details.result, details.reason
+
+
+@when("click on 'Confirm & Book' button in the selection popup")
+def click_on_confirm_and_book_btn(trial_class):
+    trial_class.click_on_confirm_n_book_btn()
+
+
+@when(parsers.parse("click on '{text}' button"))
+def click_on_link(login_in, text):
+    login_in.click_on_link(text)
+
+
+@then('Verify that class is not booked and user lands back on booking page if cancel button is selected')
+def trial_class_not_booked(trial_class):
+    details = trial_class.is_trial_class_booked()
+    assert not details.result, details.reason
+
+
+@when('close the application')
+def close_the_browser(trial_class):
+    trial_class.close_application()
+
+
+@when('re-login to application')
+def re_login(login_in):
+    login_in.navigate_to_home_screen()
+
+
+@when('dismiss byjus classes book a free trail bottom sheet')
+def dismiss_trail_popup(trial_class):
+    trial_class.dismiss_trail_popup()
+
+
+@when('book regular trial session')
+def book_regular_trial_class(login_in, trial_class):
+    trial_class.click_on_book_btn_reg_class()
+    login_in.button_click("Confirm & Book")
+
+
+@then('Verify that confirmation message should display when user book a session')
+def verify_trial_class_confirmation_msg(trial_class):
+    details = trial_class.verify_trial_class_confirmation_msg()
+    assert details.result, details.reason
+
+
+@then('Verify that session title , date , day , time should display.')
+def verify_booking_screen(trial_class):
+    details = trial_class.verify_booking_screen()
+    assert details.result, details.reason
+
+
+@then('Verify that timer should display in confirmation page , when user book a session.')
+@then('Verify that session starts in time should display')
+def verify_timer(trial_class):
+    details = trial_class.verify_timer()
+    assert details.result, details.reason
+
+
+@then('Verify that okay button should display')
+def verify_okay_button_present(trial_class):
+    details = trial_class.verify_okay_button_present()
+    assert details.result, details.reason
+
+
+@then('verify that the the timer should display in HH.MM.SS format')
+def verify_timer_format(trial_class):
+    details = trial_class.verify_timer_format()
+    assert details.result, details.reason
+
+
+@then('Verify the slot avaliblity indicator(Filling Fast)')
+def is_filling_fast_present(trial_class):
+    details = trial_class.is_filling_fast_present()
+    assert details.result, details.reason
+
+
+@then('All unique sessions should have only one session card listed and should not be any duplicate session cards '
+      'with same session name')
+def is_card_unique_in_booking_page(trial_class):
+    details = trial_class.is_trial_card_unique_in_booking_page()
+    assert details.result, details.reason
+
+
+@given('get current slot details from backend')
+def get_free_course_details(driver):
+    global course_details
+    course_details = Stagingtlms(driver).get_free_course_details()
+
+
+@then('Verify that correct slot is displayed on regular class date and time selection pop-up')
+def verify_upnext_free_class_details(trial_class):
+    trial_class.verify_upnext_free_class_details(course_details)
+
+
+@given('add slot in backend which starts in less than 30 mins')
+def add_slot(driver):
+    global added_slot_time
+    added_slot_time = Stagingtlms(driver).login_and_add_slot(minutes=-5, course_id=294)
+
+
+@then('Verify that user is unable to book the session less than 30 mins before the session starts')
+def is_free_trial_card_not_present(trial_class):
+    trial_class.is_free_trial_card_not_present(added_slot_time)

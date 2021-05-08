@@ -8,3 +8,5 @@ selenium~=3.141.0
 opencv-python~=4.1.2.30
 pytesseract~=0.3.6
 python-jenkins==1.7.0
+cryptography==3.4.7
+pytest-check==1.0.1
