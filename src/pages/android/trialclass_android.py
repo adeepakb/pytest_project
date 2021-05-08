@@ -35,7 +35,6 @@ class TrailClassAndroid(TrialClassBase):
         self.see_more_tv = 'id', '%s/tvShowMoreText' % package_name
         self.card_schedule_tv = 'id', '%s/session_time' % package_name
         self.card_icon_iv = 'id', '%s/cIvSessionImage' % package_name
-        self.rc_card_schedule_tv = 'id', '%s/tvSessionTime' % package_name
         self.rounded_nav_button = 'id', '%s/roundedNavButton' % package_name
         self.card_topic_tv = '%s/tvSessionTopicName' % package_name
         self.card_book_btn = '%s/btBookSession' % package_name  # com.byjus.thelearningapp:id/tvSessionTopicName
@@ -46,29 +45,34 @@ class TrailClassAndroid(TrialClassBase):
         self.card = '%s/card' % package_name
 
     def scroll_rc_in_view(self):
-        session_list = self.obj.get_element(*self.card_list)
-        self.scroll_cards.scroll_by_card(session_list, session_list)
-        rc_text = 'recommended classes'
-        rc_section = self.obj.get_elements(*self.section_name)[-1]
-        if rc_section.text.lower() == 'recommended classes':
+        try:
             session_list = self.obj.get_element(*self.card_list)
-            self.scroll_cards.scroll_by_card(rc_section, session_list)
-        elif rc_section.text.lower() == 'up next':
-            self.obj.get_element(
-                'android_uiautomator',
-                'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
-                f'scrollTextIntoView("{rc_text.title()}")'
-            )
+            self.scroll_cards.scroll_by_card(session_list, session_list)
+            rc_text = 'recommended classes'
             rc_section = self.obj.get_elements(*self.section_name)[-1]
-            session_list = self.obj.get_element(*self.card_list)
-            self.scroll_cards.scroll_by_card(rc_section, session_list)
-        else:
-            raise Exception("'Recommended Classes' section could not be located on the page.")
+            if rc_section.text.lower() == 'recommended classes':
+                session_list = self.obj.get_element(*self.card_list)
+                self.scroll_cards.scroll_by_card(rc_section, session_list)
+            elif rc_section.text.lower() == 'up next':
+                self.obj.get_element(
+                    'android_uiautomator',
+                    'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
+                    f'scrollTextIntoView("{rc_text.title()}")'
+                )
+                rc_section = self.obj.get_elements(*self.section_name)[-1]
+                session_list = self.obj.get_element(*self.card_list)
+                self.scroll_cards.scroll_by_card(rc_section, session_list)
+            else:
+                raise Exception("'Recommended Classes' section could not be located on the page.")
+        except NoSuchElementException:
+            pass  # skip if not found. reusing same method for book a free class trial classes
 
     def is_book_present_for_free_trail_classes(self):
         self.scroll_rc_in_view()
         i = 0
         cards_root = self.obj.get_elements(*self.rc_card_root)
+        if len(cards_root) == 0:
+            return ReturnType(False, 'No cards present recommended classes')
         while True:
             for card in cards_root:
                 try:
@@ -102,6 +106,8 @@ class TrailClassAndroid(TrialClassBase):
                 return ReturnType(False, 'Recommended Classes section is not present')
             self.scroll_rc_in_view()
             cards_root = self.obj.get_elements(*self.rc_card_root)
+            if len(cards_root) == 0:
+                return ReturnType(False, 'No cards present recommended classes')
             i = 0
             while True:
                 for card in cards_root:
@@ -149,7 +155,7 @@ class TrailClassAndroid(TrialClassBase):
         self.driver.implicitly_wait(2)
         completed_cards = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
         if len(completed_cards) == 0:
-            return ReturnType(False, 'No completed session present under Completed tab')
+            return ReturnType(False, 'No cards present under Completed tab')
         completed_session_title = self.obj.child_element_text(completed_cards[0], self.card_topic)
         try:
             completed_subject = self.obj.child_element_text(completed_cards[0], self.workshop_label)
@@ -165,28 +171,45 @@ class TrailClassAndroid(TrialClassBase):
                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
 
     def get_up_next_trial_class_session(self):
-        list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
-        section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
-        elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
-        while True:
-            for element in elements:
-                if section_name == 'up next':
-                    try:
-                        self.obj.child_element_by_id(element, self.workshop_label)
-                    except NoSuchElementException:
+        try:
+            list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
+            if len(list_content) == 0:
+                raise Exception("No trial cards present in booking page For you tab")
+            section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
+            elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
+            if len(elements) == 0:
+                raise Exception('No cards present in booking page For you tab')
+            while True:
+                for element in elements:
+                    if section_name == 'Up Next':
                         try:
-                            subject = self.obj.child_element_text(element, self.upnext_subject_name)
-                            if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
-                                return element
+                            self.obj.child_element_by_id(element, self.workshop_label)
                         except NoSuchElementException:
-                            return False
+                            try:
+                                subject = self.obj.child_element_text(element, self.upnext_subject_name)
+                                if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                                    return element
+                            except NoSuchElementException:
+                                return False
+        except:
+            return False
 
     def is_trial_class_booked(self):
         up_next_session = self.get_up_next_trial_class_session()
-        if up_next_session.is_displayed():
-            return ReturnType(True, 'Booked trial class is present under up next section')
-        elif up_next_session is False:
-            return ReturnType(True, 'Booked trial class is not present under up next section')
+        try:
+            if up_next_session.is_displayed():
+                return ReturnType(True, 'Booked trial class is present under up next section')
+        except:
+            return ReturnType(False, 'Booked trial class is not present under up next section')
+
+    def verify_upnext_free_class_details(self, tllms_topic_details):
+        up_next_session = self.get_up_next_trial_class_session()
+        app_trial_subject = self.obj.child_element_text(up_next_session, self.upnext_subject_name)
+        app_topic_name = self.obj.child_element_text(up_next_session, self.card_topic)
+        if app_trial_subject.lower().capitalize() in tllms_topic_details and app_topic_name in tllms_topic_details:
+            return ReturnType(True, 'Free class details in app is same as shown in staging')
+        else:
+            return ReturnType(False, "Free class details in app subject "+app_trial_subject+" topic "+app_topic_name+"is not same as shown in staging" +tllms_topic_details)
 
     def book_master_class(self, db):
         flag = self.master.book_master_class(new_session=True, ff_tag=False, validate=True, error_validate=False, db=db)
@@ -215,8 +238,10 @@ class TrailClassAndroid(TrialClassBase):
             return ReturnType(False, 'User missed booked session message is not present')
 
     def book_trial_class(self):
-        self.master.scroll_rc_in_view()
+        self.scroll_rc_in_view()
         elements = self.obj.get_elements(*self.rc_card_root)
+        if len(elements) == 0:
+            raise Exception('No cards present under recommended classes')
         i = 0
         while True:
             for element in elements:
