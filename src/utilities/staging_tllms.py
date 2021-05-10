@@ -34,7 +34,7 @@ class Stagingtllms(TutorCommonMethods):
         # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                                          f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
-        self.chrome_options.add_argument("--window-size=1600,900")
+        # self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:
                 chrome_session = json.load(fp)
@@ -82,13 +82,13 @@ class Stagingtllms(TutorCommonMethods):
         self.today = datetime.today().strftime('%Y-%m-%d')
 
     def save_session(self):
-        self.chrome_driver.implicitly_wait(30)
         self.chrome_driver.find_element(By.CSS_SELECTOR, 'img[src]')
         self.chrome_driver.get_screenshot_as_file("view.png")
         with open('../../config/login.pkl', 'wb') as io_write:
             pickle.dump(self.chrome_driver.get_cookies(), io_write)
 
     def login_to_staging(self, cms_login=None):
+        self.chrome_driver.implicitly_wait(30)
         email = self.EMAIL
         password = self.PASSWORD
         retry = 3
@@ -788,7 +788,7 @@ class Stagingtllms(TutorCommonMethods):
                     return c
         except (EOFError, FileNotFoundError):
             self.login_to_staging().save_session()
-            return False
+            return list()
 
     def session_relaunch(self, cms=False):
         retry = 3
@@ -817,7 +817,7 @@ class Stagingtllms(TutorCommonMethods):
                         self.chrome_driver.find_element("css selector", "img[src]")
                     except NoSuchElementException:
                         pass
-                    if self.chrome_driver.current_url == self.TUTOR_PLUS_CMS_URL:
+                    if self.TUTOR_PLUS_CMS_URL in self.chrome_driver.current_url:
                         self.save_session()
                         break
                     else:
@@ -1289,7 +1289,7 @@ class Stagingtllms(TutorCommonMethods):
         topics_uri = 'courses/%s/topics?page=%s'
         items_per_page = 10
         topic_id = int(topic_id)
-        self.chrome_driver.get("https://tutor-plus-cms-staging.tllms.com/%s?" % topics_uri % (course_id, 1))
+        self.chrome_driver.get("https://tutor-plus-cms-staging.tllms.com/%s" % topics_uri % (course_id, 1))
         try:
             self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
         except NoSuchElementException:
@@ -1334,7 +1334,7 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.find_element_by_xpath('//a[text()="Edit"]').click()
 
     @staticmethod
-    def booking_time(hours, minutes, day=None):
+    def booking_time(hours, minutes, end_hour=None, end_minutes=0, day=None):
         time_now = datetime.now()
         if day is not None and day.lower() == 'tomorrow':
             n_day = (time_now+timedelta(days=1)).strftime("%A")
@@ -1347,11 +1347,12 @@ class Stagingtllms(TutorCommonMethods):
             time_now = datetime.now()
             mins = 33 if minutes is None else 30 + int(minutes) + 1
         start_time = (time_now + timedelta(hours=0, minutes=mins))
-        if hours is not None:
-            end_hour = int(hours) if int(hours) > 0 else 1
-        else:
-            end_hour = 23 - int(start_time.strftime("%H"))
-        end_time = (start_time + timedelta(hours=end_hour, minutes=0)).strftime("%H:%M")
+        if end_hour is None:
+            if hours is not None:
+                end_hour = int(hours) if int(hours) > 0 else 1
+            else:
+                end_hour = 23 - int(start_time.strftime("%H"))
+        end_time = (start_time + timedelta(hours=end_hour, minutes=end_minutes)).strftime("%H:%M")
         c_day, ac_time = start_time.strftime('%A %H:%M').split()
         return c_day, ac_time, end_time
 
@@ -1447,34 +1448,43 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.quit()
             raise SlotUpdateError("Cannot update slot in 'https://tutor-plus-cms-staging.tllms.com/'")
 
-    def verify_and_add_slot(self, cohort, course_tag, hours=None, minutes=None, day=None):
+    def verify_and_add_slot(self, cohort, course_tag, hours=None, minutes=None, end_hour=None, end_minutes=0, day=None):
+        """
+        Example:
+        cohort - 14 (for 8th CBSE)
+        course_tag - free trial or masterclass
+        """
         with open('../../config/course.json') as io_read:
             course = json.load(io_read)["cbse"][cohort][course_tag]
         course_id = course['id']
-        b_day, start_time, *_ = b_time = self.booking_time(hours, minutes, day)
+        b_day, start_time, *_ = b_time = self.booking_time(
+            hours=hours, minutes=minutes, day=day, end_hour=end_hour, end_minutes=end_minutes)
         # available_slots = self.get_available_slots(b_day, start_time)
         # if all(available_slots) is False:
         slot = self._add_slot(b_time, course_id)
-        with open('../../config/course.json', 'r+') as io_write:
-            course = json.load(io_write)
-            io_write.seek(0)
-            course['cbse_4']['slots'].update(slot)
-            json.dump(course, io_write, indent=2)
+        # with open('../../config/slots.json', 'r+') as io_write:
+        #     course = json.load(io_write)
+        #     io_write.seek(0)
+        #     course['cbse_4']['slots'].update(slot)
+        #     json.dump(course, io_write, indent=2)
         # else:
         #     return available_slots
 
     def student_session_details(self, days, profile, user_profile, sub_profile):
-        self.attach_session_video(profile, user_profile, sub_profile, session=days)
+        # self.attach_session_video(profile, user_profile, sub_profile, session=days)
         self._session_user_wise(session=days, profile=profile, user_profile=user_profile, sub_profile=sub_profile)
         headers = self.chrome_driver.find_elements("css selector", "thead > tr > th")
         content_rows = self.chrome_driver.find_elements("css selector", "tbody > tr")
         session_details = dict()
-        for row in content_rows:
-            contents_row = row.find_elements("css selector", "td")
-            for i, header in enumerate(headers):
-                if header.text.strip() != "":
-                    session_details.update({header.text.strip().lower(): contents_row[i].text.strip()})
-        return session_details
+        session_list = list()
+        for j, row in enumerate(content_rows, 1):
+            if j % 2 != 0:
+                contents_row = row.find_elements("css selector", "td")
+                for i, header in enumerate(headers):
+                    if header.text.strip() != "":
+                        session_details.update({header.text.strip().lower(): contents_row[i].text.strip()})
+                session_list.append(session_details.copy())
+        return session_list
 
     def modify_test_requisite_assessment(self, channel_id, field, day, status):
         """

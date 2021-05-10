@@ -35,15 +35,16 @@ class StagingTutorPlus(Stagingtllms):
         self.TUTOR_PLUS_STAGING_URL = "https://tutor-plus-staging.tllms.com/"
 
     def set_user(self, login_profile='login_details_3', user_profile='user_1', sub_profile='profile_1', day="today"):
-        self.login_profile, self.user_profile, self.sub_profile, self.day = login_profile, user_profile, sub_profile, day
+        self.login_profile, self.user_profile = login_profile, user_profile
+        self.sub_profile, self.day = sub_profile, day
         return self
 
     def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test",**kwargs):
         db = kwargs['db']
         session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
+        subject_name, topic_name = subject_topic_name
         db.sd = session_details
         self.chrome_driver.implicitly_wait(10)
-        subject_name, topic_name = subject_topic_name
         if subject_name is None and topic_name is None:
             with open("../../test_data/classroom_details.json") as fd:
                 s_detail = json.load(fd)
@@ -205,10 +206,23 @@ class StagingTutorPlus(Stagingtllms):
         sh, sm = list(map(int, s_time.split(":")))
         eh, em = list(map(int, e_time.split(":")))
         ch = int(time.strftime("%H"))
-        if eh >= ch:
+        cm = int(time.strftime("%M"))
+        if eh > ch:
             if ch >= (sh + 2):
                 self.reset_session_otm(session_topic)
+            elif sh > ch:
+                return
+            elif sh == ch and sm > cm:
+                return
             else:
+                self.end_session_otm(session_topic)
+                self._session_user_wise(session=self.day, profile=self.login_profile, user_profile=self.user_profile,
+                                        sub_profile=self.sub_profile)
+                self.reset_session_otm(session_topic)
+        elif eh == ch:
+            if sm > cm:
+                return
+            elif sm <= cm < em:
                 self.end_session_otm(session_topic)
                 self._session_user_wise(session=self.day, profile=self.login_profile, user_profile=self.user_profile,
                                         sub_profile=self.sub_profile)
@@ -261,3 +275,5 @@ class StagingTutorPlus(Stagingtllms):
             self.chrome_driver.find_element("css selector", "input[name=commit]").click()
         else:
             raise NotImplementedError()
+
+
