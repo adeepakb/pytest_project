@@ -1,5 +1,5 @@
 import requests
-import json
+from cryptography.fernet import Fernet
 from constants.load_json import *
 from constants.constants import CONFIG_PATH, Login_Credentials
 import threading
@@ -12,11 +12,12 @@ import sys
 
 CommonMethods = CommonMethods()
 
-data_file = CONFIG_PATH
-
-url = getdata(data_file, "API_credentials", "url")
-params = {'key': getdata(data_file, "API_credentials", "key") , 'secret': getdata(data_file, "API_credentials", "secret")}
-
+key = os.getenv('SECRET')
+f = Fernet(key)
+encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+url = decrypted_data['API_credentials']['url']
+params = {'key': decrypted_data["API_credentials"]["key"], 'secret': decrypted_data["API_credentials"]["secret"]}
 
 skipBtn_id = (By.ID, "com.byjus.thelearningapp:id/buttonSkip")
 allow_btn_id = (By.ID, "com.android.packageinstaller:id/permission_allow_button")

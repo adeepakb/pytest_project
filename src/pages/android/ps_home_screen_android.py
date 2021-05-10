@@ -10,6 +10,10 @@ from utilities.common_methods import CommonMethods
 from pages.base.ps_home_screen_base import PSHomeScreenBase
 CommonMethods = CommonMethods()
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
 
 class PS_Homescreen_Android(PSHomeScreenBase):
     def __init__(self, driver):
@@ -155,3 +159,9 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def verify_banner(self):
         return self.obj.get_element('id',self.byjus_classes_banner)
+
+    def verify_booking_page(self):
+        if self.obj.is_text_match('Book a free class'):
+            return ReturnType(True, 'User is in Book a free class page')
+        else:
+            return ReturnType(False,'User is not in Book a free class page')

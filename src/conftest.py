@@ -19,18 +19,18 @@ baseClass = BaseClass()
 feature_job = BuildFeatureJob()
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def setup_teardown():
-#     feature_job.build_and_install_apk()
-#     yield
-#     # Create report on demand via  API at the end of the session
-#     suitename = os.getenv('suite')
-#     if suitename == 'Regression_PremiumApp_Automation':
-#         report_id = get_testrail_reports(13, 'Regression Run (Summary) %date%')
-#         run_testrail_reports(report_id)
-#     elif suitename == 'Sanity_PremiumApp_Automation':
-#         report_id = get_testrail_reports(13, 'Sanity Run (Summary) %date%')
-#         run_testrail_reports(report_id)
+@pytest.fixture(scope="session", autouse=True)
+def setup_teardown():
+    feature_job.build_and_install_apk()
+    yield
+    # Create report on demand via  API at the end of the session
+    suitename = os.getenv('suite')
+    if suitename == "Byju's Classes":
+        report_id = get_testrail_reports(24, 'Regression Run (Summary) %date%')
+        run_testrail_reports(report_id)
+    elif suitename == 'Sanity_PremiumApp_Automation':
+        report_id = get_testrail_reports(24, 'Sanity Run (Summary) %date%')
+        run_testrail_reports(report_id)
 
 
 def pytest_addoption(parser):

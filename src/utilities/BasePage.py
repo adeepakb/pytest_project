@@ -1,6 +1,6 @@
 import logging
 import datetime
-from constants.constants import CONFIG_PATH
+from cryptography.fernet import Fernet
 from constants.load_json import *
 from appium import webdriver as AppiumDriver
 from selenium import webdriver as ChromeDriver
@@ -13,23 +13,26 @@ class BaseClass:
     '''this will start appium server automatically'''
 
     def setup_android(self):
-        desired_caps = {}
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
-        desiredCap = CONFIG_PATH
-        desired_caps['platformName'] = getdata(desiredCap, 'desired_cap', 'platformName')
+        desired_caps = {}
+        desired_caps['platformName'] = decrypted_data['desired_cap']['platformName']
         try:
-            desired_caps['udid'] = getdata(desiredCap, 'desired_cap', 'udid')
+            desired_caps['udid'] = decrypted_data['desired_cap']['udid']
         except KeyError:
             pass
-        desired_caps['deviceName'] = getdata(desiredCap, 'desired_cap', 'deviceName')
-        desired_caps['appPackage'] = getdata(desiredCap, 'desired_cap', 'appPackage')
-        desired_caps['appActivity'] = getdata(desiredCap, 'desired_cap', 'appActivity')
-        desired_caps['eventTimings'] = getdata(desiredCap, 'desired_cap', 'eventTimings')
-        desired_caps['autoAcceptAlerts'] = getdata(desiredCap, 'desired_cap', 'autoAcceptAlerts')
-        desired_caps['newCommandTimeout'] = getdata(desiredCap, 'desired_cap', 'newCommandTimeout')
-        desired_caps['noReset'] = getdata(desiredCap, 'desired_cap', 'noReset')
-        driver = AppiumDriver.Remote(getdata(desiredCap, 'desired_cap', 'url'), desired_caps)
-        driver.implicitly_wait(getdata(desiredCap, 'desired_cap', 'implicitWait'))
+        desired_caps['deviceName'] = decrypted_data['desired_cap']['deviceName']
+        desired_caps['appPackage'] = decrypted_data['desired_cap']['appPackage']
+        desired_caps['appActivity'] = decrypted_data['desired_cap']['appActivity']
+        desired_caps['eventTimings'] = decrypted_data['desired_cap']['eventTimings']
+        desired_caps['autoAcceptAlerts'] = decrypted_data['desired_cap']['autoAcceptAlerts']
+        desired_caps['newCommandTimeout'] = decrypted_data['desired_cap']['newCommandTimeout']
+        desired_caps['noReset'] = decrypted_data['desired_cap']['noReset']
+        driver = AppiumDriver.Remote(decrypted_data['desired_cap']['url'], desired_caps)
+        driver.implicitly_wait(decrypted_data['desired_cap']['implicitWait'])
         return driver
 
     def setup_browser(self):

@@ -1,5 +1,8 @@
+import json
+import os
 import time
 import logging
+from cryptography.fernet import Fernet
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -45,6 +48,12 @@ class MentorSession:
         self.approve_message = "//*[@id='approve_svg__b']"
         self.reject_message = "//*[@id='reject_svg__b']"
         self.exo_overlay = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_overlay"]'
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+        self.email = decrypted_data['staging_access']['email']
+        self.password = decrypted_data['staging_access']['password']
 
     def is_byjus_icon_present(self):
         self.wait_for_locator_webdriver(self.byjus_icon)
@@ -146,20 +155,17 @@ class MentorSession:
                 logging.debug('chat is not displayed')
 
     def login_as_tutor(self):
-        path = '../config/config.json'
-        email = str(getdata(path, 'staging_access', 'email'))
-        password = str(getdata(path, 'staging_access', 'password'))
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
-        self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
+        self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(self.email)
         self.wait_for_locator_webdriver("//button[@type='submit']")
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
-        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
+        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(self.email)
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
-        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
+        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(self.password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
     def start_tutor_session(self, course='primary'):
