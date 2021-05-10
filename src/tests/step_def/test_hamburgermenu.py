@@ -1,24 +1,19 @@
 import pytest
-import sys
 import os
-import subprocess
-from time import sleep
-from pytest_bdd import scenarios, given, when, then, parsers, scenario
-from selenium.webdriver.common import keys
-from appium import webdriver
-from POM_Pages.Hamburgermenu import Hamburger
-from Utilities.BasePage import BaseClass
+from pytest_bdd import scenarios, given, when, then, parsers
+from pages.android.Hamburgermenu import Hamburger
+from utilities.BasePage import BaseClass
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)
 )
 
-# sys.path.append(PATH('./Utilities/'))
-# from Utilities.common_methods import CommonMethods
-# from Utilities.BasePage import BaseClass
+# sys.path.append(PATH('./utilities/'))
+# from utilities.common_methods import CommonMethods
+# from utilities.BasePage import BaseClass
 # 
-# sys.path.append(PATH('../../../POM_Pages/'))
-# from POM_Pages.Hamburgermenu import Hamburger
+# sys.path.append(PATH('../../../pages/'))
+# from pages.Hamburgermenu import Hamburger
 
 driver = fixture = 'driver'
 base_class = BaseClass()

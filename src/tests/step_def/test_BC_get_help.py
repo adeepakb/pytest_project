@@ -1,22 +1,33 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.ps_home_screen import PS_Homescreen
-from POM_Pages.homepage import HomePage
+from constants.platform import Platform
+from pages.factory.login import LoginFactory
+from pages.android.homepage import HomePage
+from pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Get Help.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = Login(driver)
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
 
-@fixture
-def home_screen(driver):
-    home_screen = PS_Homescreen(driver)
-    yield home_screen
+@fixture()
+def home_screen(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.ANDROID.value)
+        yield home_screen
+    elif Platform.WEB.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.WEB.value)
+        yield home_screen
 
 
 @given("Launch the app online")
@@ -44,6 +55,7 @@ def verify_text(login_in, text):
 def tap_device_back(home_screen):
     home_screen.click_back()
 
+
 @then('verify get help button is responsive')
 @then('tap on "Get help" button')
 def tap_on_get_help(home_screen):
@@ -63,7 +75,6 @@ def close_get_help(home_screen):
 @then('Verify that quick help bottom sheet goes off')
 def verify_bottom_sheet_not_present(home_screen):
     assert not home_screen.is_bottom_sheet_present(), "quick help bottom sheet did not go off"
-
 
 
 @then(parsers.parse('verify "{text}" button'))

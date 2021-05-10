@@ -1,28 +1,39 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.ps_home_screen import PS_Homescreen
-from POM_Pages.homepage import HomePage
-from POM_Pages.staging_tlms import Stagingtlms
+from constants.platform import Platform
+from pages.factory.login import LoginFactory
+from pages.android.homepage import HomePage
+from utilities.staging_tlms import Stagingtlms
+from pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Premium School Home Screen.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = Login(driver)
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
 
-@fixture
-def home_screen(driver):
-    home_screen = PS_Homescreen(driver)
-    yield home_screen
+@fixture()
+def home_screen(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.ANDROID.value)
+        yield home_screen
+    elif Platform.WEB.name in platform_list:
+        home_screen = PSHomescreenFactory().get_page(driver, Platform.WEB.value)
+        yield home_screen
 
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen, driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver, assessment_name)
+    home_screen.attach_post_requisite(driver, assessment_name)
 
 
 @given("Launch the app online")
@@ -57,7 +68,7 @@ def verify_text(login_in, text):
                     'icon and forward Arrow button'))
 def verify_post_req_video_elements(login_in, home_screen, text1, text2):
     assert login_in.text_match(text1), "%s text is not displayed " % text1
-    assert login_in.text_match(text1), "%s text is not displayed " % text2
+    assert login_in.text_match(text2), "%s text is not displayed " % text2
     assert home_screen.verify_arrow_present_for_each_requisite(), "forward arrow is not displayed"
 
 
@@ -143,3 +154,18 @@ def is_back_nav_present(home_screen):
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
     assert button_status is True, "Unable to find {text} button"
+
+
+@when("verify user is in BYJU's Classes pop up screen")
+def verify_bottom_sheet(home_screen):
+    assert home_screen.verify_bottom_sheet(), "user is not in BYJU's Classes pop up screen"
+
+
+@then('verify byjus classes banner is present')
+def verify_banner(home_screen):
+    home_screen.verify_banner(), "byjus classes banner is not present"
+
+
+@given('clear cache and login')
+def reset_and_login_with_otp(driver):
+    HomePage(driver).reset_and_login_with_otp(driver)

@@ -1,13 +1,7 @@
 from time import sleep
-import subprocess
-from selenium.webdriver.common import keys
-from appium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from pytest_bdd import scenarios, given, when, then, parsers,scenario
-from POM_Pages.engine_test_screen import EngineTestScreen
-import pytest
-import logging
-from Utilities.BasePage import BaseClass
+from pytest_bdd import scenarios, given, when, then, parsers
+from pages.android.engine_test_screen import EngineTestScreen
+from utilities.BasePage import BaseClass
 driver = fixture = 'driver'
 
 

@@ -1,25 +1,38 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from POM_Pages.application_login import Login
-from POM_Pages.student_session import StudentSession
-from POM_Pages.session_popup import SessionAlert
-from POM_Pages.mentor_session import MentorSession
-from POM_Pages.staging_tlms import Stagingtlms
-from POM_Pages.homepage import HomePage, Login_Credentials, getdata
+from constants.load_json import getdata
+from constants.constants import Login_Credentials
+from pages.android.session_popup import SessionAlert
+from utilities.mentor_session import MentorSession
+from utilities.staging_tlms import Stagingtlms
+from pages.android.homepage import HomePage
+from pages.factory.login import LoginFactory
+from pages.factory.student_session import StudentSessionFactory
+from constants.platform import Platform
 
 scenarios('../features/Session Flow.feature')
 
 
-@fixture
-def login_in(driver):
-    login_in = Login(driver)
-    yield login_in
+@fixture()
+def login_in(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.ANDROID.value)
+        yield login_in
+    elif Platform.WEB.name in platform_list:
+        login_in = LoginFactory().get_page(driver, Platform.WEB.value)
+        yield login_in
 
 
 @fixture
-def student_session(driver):
-    student_session = StudentSession(driver)
-    yield student_session
+def student_session(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student_session = StudentSessionFactory().get_page(driver, Platform.ANDROID.value)
+        yield student_session
+    elif Platform.WEB.name in platform_list:
+        student_session = StudentSessionFactory().get_page(driver, Platform.WEB.value)
+        yield student_session
 
 
 @fixture
@@ -45,7 +58,7 @@ def tap_on_premium_card(login_in):
 
 @given("navigate to one to mega homescreen")
 def navigate_to_one_to_mega_homescreen(login_in):
-    login_in.click_on_link('Premium School')
+    login_in.click_on_link("Byju's classes")
 
 
 @then(parsers.parse('verify "{text}" option is enabled for the current day session on your session has started card'))
@@ -418,7 +431,6 @@ def tap_ban_icon(mentor_session):
     mentor_session.tap_ban_icon()
 
 
-
 @then('Verify that "Ban the student" pop-up should be shown with the options as "Inappropriate Content",'
       '"Abusive Language","Content Sharing" and "Others" along with radio button and "Cancel" and "Ban" buttons')
 def verify_ban_options_and_buttons(mentor_session):
@@ -475,9 +487,9 @@ def login_as_student2_and_verify_approved_msg(student_session, text):
 
 @then('login as another student who attends same session')
 def login_as_student2(driver, login_in):
-    HomePage(driver).login_as_another_one_mega_user(driver)
+    HomePage(driver).login_as_another_one_mega_user(driver,'login_detail1')
     login_in.click_on_premium_school()
-    login_in.click_on_link('Premium School')
+    login_in.click_on_link("Byju's classes")
 
 
 @then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))

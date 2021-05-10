@@ -5,6 +5,7 @@
 		"country_code": "India (+91)",
 		"profile_name": "Reshma",
 		"profile_one_to_many_and_mega": "Premium Test One",
+		"course_id" : "102",
 		"OTP": "1089"
 	},
 	"login_details2": {
@@ -21,8 +22,38 @@
 		"profile_name": "Reshma Test",
 		"profile_name_one_to_many": "Test One One One Many",
 		"profile_one_to_many_and_mega": "Testone",
-		"course_id": "102",
+		"profile_free_user": "Reshma 5th",
+		"course_id_primary": "102",
+		"course_id_secondary": "168",
+		"course_id_ternary": "867",
+		"tnl_cohort_id":"14-tllms08marketing-8th Grade Marketing",
+		"free_user_premium_id": "1594549333",
 		"OTP": "1089"
+	},
+	"login_detail4": {
+		"code": "+91-",
+		"mobile_no": "9111117777",
+		"country_code": "India (+91)",
+		"profile_name": "Megha",
+		"profile_one_to_many_and_mega": "Megha",
+		"OTP": "1089"
+	},
+	"login_detail5": {
+		"code": "+91-",
+		"mobile_no": "9030158274",
+		"free_user_premium_id": "1012264874",
+		"country_code": "India (+91)",
+		"profile_name": "Prasanth",
+		"OTP": "1729"
+	},
+	"login_detail6": {
+		"code": "+91-",
+		"mobile_no": "7008348097",
+		"free_user_premium_id": "1010325016",
+		"country_code": "India (+91)",
+		"profile_name": "Priyanka",
+		"OTP": "1729"
 	}
 }
+
 																	

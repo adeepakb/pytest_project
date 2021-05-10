@@ -1,24 +1,13 @@
-import pytest
-from pytest_bdd import scenarios, given, when, then, parsers, scenario
+from pytest_bdd import scenarios, given, when, then, parsers
 
-import os
-import sys
-import subprocess
-import logging
 from time import sleep
 
-from appium import webdriver
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-
-from POM_Pages.homepage import HomePage
-from Utilities.BasePage import BaseClass
-from POM_Pages.homescreen import HomeScreen
-from POM_Pages.profileScreen import ProfileScreen
-from Utilities.interrupt import *
-from Constants.constants import CONFIG_PATH, Login_Credentials
-from Constants.load_json import getdata
-from Utilities.API_methods import *
+from pages.android.homepage import HomePage
+from utilities.BasePage import BaseClass
+from pages.android.homescreen import HomeScreen
+from pages.android.profileScreen import ProfileScreen
+from utilities.interrupt import *
+from utilities.API_methods import *
 
 driver = fixture = 'driver'
 baseClass = BaseClass()
