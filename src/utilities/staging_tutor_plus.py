@@ -1,7 +1,9 @@
+import json
 import re
 import sys
 import time
 import warnings
+from datetime import datetime, timedelta
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -13,6 +15,7 @@ from utilities.exceptions import *
 
 
 class StagingTutorPlus(Stagingtllms):
+    sd= None
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -35,10 +38,33 @@ class StagingTutorPlus(Stagingtllms):
         self.login_profile, self.user_profile, self.sub_profile, self.day = login_profile, user_profile, sub_profile, day
         return self
 
-    def convert_video_session(self, day="today"):
+    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test",**kwargs):
+        db = kwargs['db']
         session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
+        db.sd = session_details
         self.chrome_driver.implicitly_wait(10)
-        channel_id = session_details["channel"]
+        subject_name, topic_name = subject_topic_name
+        if subject_name is None and topic_name is None:
+            with open("../../test_data/classroom_details.json") as fd:
+                s_detail = json.load(fd)
+            channel_id = s_detail["channel"]
+        elif subject_name.lower() == "monthly test" or subject_name.lower() == "unit test" or \
+                subject_name.lower() == "half yearly test":
+            with open("../../test_data/classroom_details.json") as fd:
+                s_detail = json.load(fd)
+            channel_id = s_detail["channel"]
+        else:
+            session_details = session_details[::-1]
+            for session_detail in session_details:
+                session_detail_desc = session_detail["session detail"]
+                if subject_name.lower() in session_detail_desc.lower() or topic_name.lower() in session_detail_desc.lower():
+                    with open("../../test_data/classroom_details.json", "w") as fd:
+                        json.dump(session_detail, fd)
+                    channel_id = session_detail["channel"]
+                    s_detail = session_detail
+                    break
+            else:
+                raise Exception("Expected channel id not found.")
         uri = "studentSessions/%s" % channel_id
         self.chrome_driver.get(self.TUTOR_PLUS_STAGING_URL + uri)
         self.chrome_driver.find_element("xpath", "//span[text()=\"LOGIN\"]").click()
@@ -47,20 +73,30 @@ class StagingTutorPlus(Stagingtllms):
             return
         except NoSuchElementException:
             self._session_user_wise(session=self.day, user_profile=self.user_profile, sub_profile=self.sub_profile)
-            self.__reset_session(session_details)
+            self.__reset_session(s_detail)
         self.chrome_driver.implicitly_wait(10)
         self.chrome_driver.get(self.TUTOR_PLUS_STAGING_URL + uri)
         self.chrome_driver.find_element("xpath", "//span[text()=\"LOGIN\"]").click()
         self.chrome_driver.find_element("xpath", "//*[text()=\"Attach Requisite Group\"]").click()
         self.chrome_driver.find_element("css selector", "div.selectedValue").click()
-        req_grp = get_data("../../config/ps_requisite.json", "monthly_test_all")
+        if assessment_type == 'unit test':
+            req_grp = get_data("../../config/ps_requisite.json", "unit_test_all")
+        elif assessment_type == 'monthly test':
+            req_grp = get_data("../../config/ps_requisite.json", "monthly_test_all")
+        else:
+            raise NotImplementedError("assessment type other 'unit test' and 'monthly test' is not yet implemented.")
         for char in req_grp:
             self.chrome_driver.find_element("css selector", "input.dropdownSearch").send_keys(char)
-            time.sleep(0.1)
+            time.sleep(0.02)
         grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
-        # if not grp_names:
-        #     time.sleep(1)
-        #     grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
+        retry = 4
+        while retry:
+            time.sleep(1)
+            grp_names = self.chrome_driver.find_elements("css selector", ".dropdownListItem")
+            if grp_names:
+                retry = 0
+            else:
+                retry -= 1
         retry = 2
         while retry:
             try:
@@ -169,7 +205,7 @@ class StagingTutorPlus(Stagingtllms):
         sh, sm = list(map(int, s_time.split(":")))
         eh, em = list(map(int, e_time.split(":")))
         ch = int(time.strftime("%H"))
-        if eh > ch:
+        if eh >= ch:
             if ch >= (sh + 2):
                 self.reset_session_otm(session_topic)
             else:
@@ -180,3 +216,48 @@ class StagingTutorPlus(Stagingtllms):
         else:
             raise SessionEndedError("cannot reset the already ended session.")
 
+    def modify_test_requisite_assessment(self, channel_id, field, day, status):
+        """
+        """
+        if channel_id is None:
+            self.session_relaunch()
+            with open("../../test_data/classroom_details.json") as fd:
+                channel_id = json.load(fd)["channel"]
+        self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
+        self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
+        self.chrome_driver.implicitly_wait(15)
+        asset_id = self.chrome_driver.find_element("xpath",
+                                                   "//*[text()=\"OneToMany::TestRequisite\"]/../..//*[text("
+                                                   ")=\"ASSESSMENT_ID\"]/following-sibling::td").text
+        self.chrome_driver.get("https://staging.tllms.com/admin/assessments/%s/edit" % asset_id)
+        if status == "expire":
+            if day == "yesterday":
+                date_time = (datetime.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
+            elif day == "today":
+                date_time = (datetime.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
+            else:
+                raise NotImplementedError()
+            date_time_list = date_time.split(":")
+            minutes = date_time_list.pop()
+            date_time_list.append("00" if int(minutes) <= 5 else "10")
+            date_time = ":".join(date_time_list)
+            if field.lower() == "start_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_starting").click()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_starting").send_keys(date_time)
+            elif field.lower() == "end_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").click()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").send_keys(date_time)
+            elif field.lower() == "result_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_send_results_at").clear()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_send_results_at").send_keys(date_time)
+            else:
+                raise NotImplementedError()
+            self.chrome_driver.find_element("css selector", "input[name=commit]").click()
+        else:
+            raise NotImplementedError()

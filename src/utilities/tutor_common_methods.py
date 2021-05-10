@@ -80,6 +80,7 @@ class TutorCommonMethods:
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
+
     # this method is use to click on the element
     def element_click(self, locator_type=None, locator_value=None, element=None):
         if element is None:

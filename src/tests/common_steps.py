@@ -462,4 +462,3 @@ def step_impl(db, std_board):
 @then('verify that user is able to access all post requisites attached to the session')
 def step_impl(std_board):
     assert std_board.is_all_post_requisite_accessible()
-# ------------------------------------------------------------------------

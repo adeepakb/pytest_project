@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 from datetime import datetime
@@ -93,6 +94,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.assessment_start = 'id', '%s/test_start_button' % package_name
         self.assessment_submit_btn = 'id', '%s/rectangleNavButton' % package_name
         self.instruction_start_btn = 'id', '%s/btStartButton' % package_name
+        self.requisite_item_list='id', '%s/requisite_item_list' % package_name
         if device_type != 'tab':
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
@@ -908,3 +910,28 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             return True
         except NoSuchElementException:
             return False
+
+
+    def do_action_on_post_requisite(self):
+        elements =self.get_elements(self.sd_req_typ_title[0],self.sd_req_typ_title[1])
+        try:
+            elements[0].click()
+        except NoSuchElementException:
+            logging.error('no element in post requisite card')
+            raise NoSuchElementException
+        self.click_back()
+        self.driver.swipe(470, 1400, 470, 400, 400)
+        try:
+            self.get_elements(self.sd_req_typ_title[0], self.sd_req_typ_title[1])[0].click()
+        except:
+            logging.error('no element in post requisite card')
+            raise NoSuchElementException
+        self.click_back()
+
+
+    def verify_test_status(self, expected=None):
+        buttons = self.get_elements(*self.pr_status_msg)
+        for button  in buttons:
+            if expected  in button.text.lower():
+                return True
+        return False
