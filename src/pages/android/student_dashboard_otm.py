@@ -95,6 +95,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.assessment_submit_btn = 'id', '%s/rectangleNavButton' % package_name
         self.instruction_start_btn = 'id', '%s/btStartButton' % package_name
         self.requisite_item_list='id', '%s/requisite_item_list' % package_name
+        self.arrow_buton ='id', '%s/arrow_btn' % package_name
         if device_type != 'tab':
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
@@ -913,6 +914,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
 
 
     def do_action_on_post_requisite(self):
+        r = self.get_element(*self.card_root)
+        r.find_element_by_id(self.pr_status_ico[-1]).click()
         elements =self.get_elements(self.sd_req_typ_title[0],self.sd_req_typ_title[1])
         try:
             elements[0].click()

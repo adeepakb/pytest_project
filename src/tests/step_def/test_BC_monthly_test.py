@@ -6,11 +6,18 @@ from pages.factory.monthly_test import MonthlyTestFactory
 from pytest import fixture
 import time
 from utilities.staging_tutor_plus import *
+from datetime import datetime as dt, timedelta
 
 
 feature_file_name = 'Monthly Test'
 
 scenarios('../features/' + feature_file_name + '.feature')
+
+
+@fixture
+def tllms(driver):
+    staging = Stagingtllms(driver)
+    yield staging
 
 
 
@@ -43,7 +50,7 @@ def home_screen(request, driver):
 
 @given("The session should be converted to a monthly test")
 def step_impl(m_test, staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db)
+    staging_tutor_plus.set_user().convert_video_session(db=db,subject_topic_name=("",""))
 
 
 @given("login as user with not completed assessment")
@@ -97,7 +104,7 @@ def step_impl(m_test):
 
 @given('The session should be converted to a unit test')
 def step_impl(m_test,staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(test_type = 'unit test',db=db)
+    staging_tutor_plus.set_user().convert_video_session(test_type = 'unit test',db=db,subject_topic_name=("",""))
 
 
 @given('give a delay of “120” seconds')
@@ -109,7 +116,7 @@ def step_impl(m_test):
 @given("login as user with unit test scheduled")
 def step_impl(login):
     login.toggle_wifi_connection('on')
-    login.set_user_profile(user_profile='user_1', sub_profile='profile_2').verify_user_profile()
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
 
 
 @then('user should not see the assessment session joining pop up')
@@ -130,10 +137,10 @@ def step_impl(m_test, text):
 
 @then('validate elements of monthly session card')
 def step_impl(m_test,staging_tutor_plus):
-    m_test.verify_session_card_details('subject title')
-    m_test.verify_session_card_details('topic_name_for_pre_post')
-    m_test.verify_session_card_details('status')
-    m_test.verify_session_card_details('heading')
+    m_test.verify_session_details('subject title')
+    #m_test.verify_session_details('topic_name_for_pre_post')
+    m_test.verify_session_details('status')
+    m_test.verify_session_details('heading')
 
 
 
@@ -145,6 +152,7 @@ def step_impl(m_test):
 @then('user should be able to view post requisites')
 def step_impl(std_board):
     assert std_board.is_pre_post_requisite_displayed(post= True,session='completed')
+    std_board.driver.back()
 
 
 @then('user is able to do action on post requisites')
@@ -205,8 +213,22 @@ def step_impl(m_test, staging_tutor_plus, db):
 
 
 @given("The session should be converted to a monthly test with session end time lesser than test end time")
-def step_impl(m_test, staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db, subject_topic_name=("monthly test",""))
+def step_impl(m_test, tllms,staging_tutor_plus, db):
+    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
+    sd = db.sd
+    time_of_interest=sd[0]['time']
+    time_of_interest = time_of_interest.split("\n")[1].split("-")[1]
+    time_list = sd[0]['time'].replace("\n", " ").split(" - ")
+    date = time_list[0].split(" ")[0]
+    new_timelist = []
+    new_timelist.append(date)
+    new_timelist.append(" " + time_list[1])
+    new_time = "".join(new_timelist)
+    time_required = dt.strptime(new_time, '%d-%b-%Y %H:%M')
+    import datetime
+    two_minute = datetime.timedelta(minutes=2)
+    time_required_new = time_required + two_minute
+    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
 
 
 @given("login as user with expired assessment")
@@ -214,8 +236,40 @@ def step_impl(login):
     login.toggle_wifi_connection('on')
     login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
 
+@given('login as user with "ending assessment time"')
+def step_impl(login):
+    login.toggle_wifi_connection('on')
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
+
 
 @then(parsers.parse('verify that student has test card with "{text}" assessment'))
 def step_impl(std_board, text):
-    assert std_board.verify_test_status(expected=text.lower())
+    assert std_board.verify_test_status(expected=text.lower()), "expired text was not found on any card"
+
+
+@given("The session should be converted to a monthly test with test time lesser than current time")
+def step_impl(m_test,tllms ,staging_tutor_plus, db):
+    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
+    sd = db.sd
+    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
+    import datetime
+    two_minute = datetime.timedelta(minutes=2)
+    time_required_new = time_required - two_minute
+    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
+
+
+@given("The session should be converted to a monthly test with post requisite")
+def step_impl(m_test, staging_tutor_plus, db):
+    staging_tutor_plus.set_user().convert_video_session(db=db,subject_topic_name=("",""),assessment_type="pre-post")
+
+
+@given("The session should be converted to a monthly test with ending assessment time")
+def step_impl(m_test, tllms, staging_tutor_plus, db):
+    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
+    sd = db.sd
+    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
+    import datetime
+    two_minute = datetime.timedelta(minutes=2)
+    time_required_new = time_required - two_minute
+    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
 
