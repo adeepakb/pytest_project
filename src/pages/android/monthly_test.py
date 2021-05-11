@@ -137,16 +137,16 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             completed_text = self.get_element(*self.completed_msg).text.lower()
             completed_icon = self.get_element(*self.completed_icon).is_displayed()
             return completed_text == "completed" and completed_icon
-        elif detail=='topic_name_for_pre_post':
-            return self.get_element(*self.topic_name_for_pre_post).is_displayed()
-        elif detail == 'status':
-            return self.get_element(*self.status).is_displayed()
-        elif detail == 'heading':
-            return self.get_element(*self.heading).is_displayed()
-
-
 
     def is_test_card_displayed(self):
+        cards = self.get_elements(*self.card_root)
+        for card in cards:
+            try:
+                title = card.find_element(*self.subject_name).text.lower()
+            except NoSuchElementException:
+                title = card.find_element(*self.master_class.card_label_tv).text.lower()
+            if "test" in title:
+                return True
         cards = self.get_elements(*self.card_root)
         for card in cards:
             try:
