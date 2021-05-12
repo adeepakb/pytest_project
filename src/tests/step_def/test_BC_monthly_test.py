@@ -177,7 +177,7 @@ def step_impl(login):
 
 @given('user has not started the test session')
 def step_impl(m_test, **kwargs):
-    assert m_test.is_button_displayed(button_name='Start Test') ," Start Test button not found"
+    assert m_test.is_button_displayed_with_text(button_name='Start Test') ," Start Test button not found"
 
 
 @given(parsers.parse('verify that the text "{button}" button should be present on the card'))
@@ -247,4 +247,3 @@ def step_impl(m_test, tllms, staging_tutor_plus, db):
                                                         subject_topic_name=("", ""))
     sd = db.sd
     tllms.change_assessment_time(db, minutes_to_add=-2, current=True)
-
