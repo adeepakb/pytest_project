@@ -22,8 +22,9 @@ from selenium.webdriver.support.ui import Select
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import get_data
 from selenium.webdriver.chrome.options import Options
-from datetime import datetime, timedelta
 from utilities.exceptions import *
+from datetime import datetime , timedelta
+
 
 
 class Stagingtllms(TutorCommonMethods):
@@ -1583,3 +1584,26 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.find_element("css selector", "input[name=commit]").click()
         else:
             raise NotImplementedError()
+
+
+    def change_assessment_time(self,db,minutes_to_add=0,current=True):
+        sd = db.sd
+        if current:
+            time_required = datetime.strptime(datetime.now().strftime('%d-%b-%Y %H:%M'), '%d-%b-%Y %H:%M')
+            two_minute = timedelta(minutes_to_add=2)
+            time_required_new = time_required + two_minute
+        else:
+            # time_of_interest = sd[0]['time']
+            # time_of_interest = time_of_interest.split("\n")[1].split("-")[1]
+            time_list = sd[0]['time'].replace("\n", " ").split(" - ")
+            date = time_list[0].split(" ")[0]
+            new_timelist = []
+            new_timelist.append(date)
+            new_timelist.append(" " + time_list[1])
+            new_time = "".join(new_timelist)
+            time_required = datetime.strptime(new_time, '%d-%b-%Y %H:%M')
+            two_minute = timedelta(minutes=2)
+            time_required_new = time_required + two_minute
+
+        self.modify_test_requisite_assessment(sd[0]['channel'], field="end_time", day='today', status='expire',
+                                          time=time_required_new)

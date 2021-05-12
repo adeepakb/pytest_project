@@ -15,7 +15,6 @@ from utilities.exceptions import *
 
 
 class StagingTutorPlus(Stagingtllms):
-    sd= None
 
     def __init__(self, driver):
         super().__init__(driver)

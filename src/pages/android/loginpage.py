@@ -294,7 +294,7 @@ class LoginPage():
  
     def verifyInvalidMobNoMessage(self,driver):
         try:
-#             expected=getdata(PATH('../test_data/login_data.json'),"login_details","invalid_mobno_msg")
+#             expected=get_data(PATH('../test_data/login_data.json'),"login_details","invalid_mobno_msg")
             actual=CommonMethods.getTextOfElement(self,driver,self.invalidMobNo_Message_id,"id")
             check=CommonMethods.verifyTwoText(self, actual, get_data(PATH('../test_data/login_data.json'), "login_details", "invalid_mobno_msg"))
              

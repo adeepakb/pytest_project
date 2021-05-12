@@ -24,7 +24,7 @@ class VerifyPage():
 #         sleep(15)
 #         run("adb shell input text "+otp+"")
 # #         otpcode=driver.find_element_by_id(self.txt_otp)
-# #         otpcode.send_keys(getdata(PATH('../test_data/login_data.json'),"login_details","OTP"))
+# #         otpcode.send_keys(get_data(PATH('../test_data/login_data.json'),"login_details","OTP"))
 # 
 #     def demo(self):
 #         Pass

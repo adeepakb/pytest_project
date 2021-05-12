@@ -428,7 +428,7 @@ class Login(LoginBase, TutorCommonMethods):
         # if account_type == 'many':
         #     # data = Stagingtllms(self.driver, staging_login=False).get_mobile_and_ccode()
         # elif account_type == 'personal':
-        #     data = str(getdata('../../config/config.json', 'account_with_password', 'mobile'))
+        #     data = str(get_data('../../config/config.json', 'account_with_password', 'mobile'))
         mobile_and_code = data.split('-')
         self.select_country_code(mobile_and_code[0])
         self.enter_phone(mobile_and_code[1])

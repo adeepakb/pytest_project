@@ -913,23 +913,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             return False
 
 
-    def do_action_on_post_requisite(self):
-        r = self.get_element(*self.card_root)
-        r.find_element_by_id(self.pr_status_ico[-1]).click()
-        elements =self.get_elements(self.sd_req_typ_title[0],self.sd_req_typ_title[1])
-        try:
-            elements[0].click()
-        except NoSuchElementException:
-            logging.error('no element in post requisite card')
-            raise NoSuchElementException
-        self.click_back()
-        self.driver.swipe(470, 1400, 470, 400, 400)
-        try:
-            self.get_elements(self.sd_req_typ_title[0], self.sd_req_typ_title[1])[0].click()
-        except:
-            logging.error('no element in post requisite card')
-            raise NoSuchElementException
-        self.click_back()
+
 
 
     def verify_test_status(self, expected=None):
