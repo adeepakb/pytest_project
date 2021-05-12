@@ -1590,7 +1590,6 @@ class Stagingtllms(TutorCommonMethods):
         sd = db.sd
         if current:
             time_required = datetime.strptime(datetime.now().strftime('%d-%b-%Y %H:%M'), '%d-%b-%Y %H:%M')
-
             two_minute = timedelta(minutes_to_add=2)
             time_required_new = time_required + two_minute
         else:

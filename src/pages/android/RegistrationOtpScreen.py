@@ -95,7 +95,7 @@ class RegOtpScreen():
                         self.tap_on_location_icon(driver)
                     sleep(3)
 #                 else: 
-#                     CommonMethods.enterText(driver,get_   data(data_file, 'user_details', 'city'), self.citytextfield)
+#                     CommonMethods.enterText(driver,get_data(data_file, 'user_details', 'city'), self.citytextfield)
                 
                 CommonMethods.elementClick(driver, self.btnRegister)
                 CommonMethods.wait_for_locator(driver, self.otp_header_layout, 20)
