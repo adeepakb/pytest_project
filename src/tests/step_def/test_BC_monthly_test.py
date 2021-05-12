@@ -247,29 +247,5 @@ def step_impl(std_board, text):
     assert std_board.verify_test_status(expected=text.lower()), "expired text was not found on any card"
 
 
-@given("The session should be converted to a monthly test with test time lesser than current time")
-def step_impl(m_test,tllms ,staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
-    sd = db.sd
-    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
-    import datetime
-    two_minute = datetime.timedelta(minutes=2)
-    time_required_new = time_required - two_minute
-    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
 
-
-@given("The session should be converted to a monthly test with post requisite")
-def step_impl(m_test, staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db,subject_topic_name=("",""),assessment_type="pre-post")
-
-
-@given("The session should be converted to a monthly test with ending assessment time")
-def step_impl(m_test, tllms, staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
-    sd = db.sd
-    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
-    import datetime
-    two_minute = datetime.timedelta(minutes=2)
-    time_required_new = time_required - two_minute
-    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
 
