@@ -21,7 +21,7 @@ PATH = lambda p: os.path.abspath(
 sys.path.append(PATH("../constants/"))
 
 # import load_json
-# from load_json import getdata
+# from load_json import get_data
 
 # CommonMethods = CommonMethods()
 

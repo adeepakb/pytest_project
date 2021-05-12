@@ -22,8 +22,9 @@ from selenium.webdriver.support.ui import Select
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import get_data
 from selenium.webdriver.chrome.options import Options
-from datetime import datetime, timedelta
 from utilities.exceptions import *
+from datetime import datetime as dt, timedelta
+
 
 
 class Stagingtllms(TutorCommonMethods):
@@ -79,7 +80,7 @@ class Stagingtllms(TutorCommonMethods):
             self.premium_id = str(get_data('../../config/config.json', 'profile_credentials', 'premium_id'))
         except KeyError:
             pass
-        self.today = datetime.today().strftime('%Y-%m-%d')
+        self.today = dt.today().strftime('%Y-%m-%d')
 
     def save_session(self):
         self.chrome_driver.find_element(By.CSS_SELECTOR, 'img[src]')
@@ -123,14 +124,14 @@ class Stagingtllms(TutorCommonMethods):
             os.mkdir("screenshots")
         except FileExistsError:
             pass
-        date_month = datetime.now().strftime("%H%M%S_%d%m%Y")
+        date_month = dt.now().strftime("%H%M%S_%d%m%Y")
         file_name = "../../test_data/screenshots/failed_%s.png" % date_month
         self.chrome_driver.get_screenshot_as_file(file_name)
         raise InvalidSessionURL(f"unusual redirect to '{current_url}'.")
 
     def get_tutor_url(self, course='primary', premium_id='primary'):
         email = str(get_data('../config/config.json', 'staging_access', 'email'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
         if course == 'primary':
             session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_primary'))
             premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
@@ -198,7 +199,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def reset_session(self, course='primary'):
         premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
         if course == 'primary':
             session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_primary'))
             premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
@@ -406,7 +407,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def is_session_present_today(self):
         premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -431,7 +432,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def is_teaching_material_tagged(self):
         premium_id = str(get_data('../config/config.json', 'asset_not_tagged_account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -655,7 +656,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def attach_requisite(self, requisite_name):
         premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -723,7 +724,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def detach_requisite(self):
         premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
+        today = dt.today().strftime('%Y-%m-%d')
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
@@ -873,8 +874,8 @@ class Stagingtllms(TutorCommonMethods):
 
     def working_day(self, days=None):
         for d in range(1, 6):
-            if not self.is_holiday(datetime.now() + timedelta(days)):
-                date = datetime.now() + timedelta(days)
+            if not self.is_holiday(dt.now() + timedelta(days)):
+                date = dt.now() + timedelta(days)
                 break
             days += d
         else:
@@ -928,7 +929,7 @@ class Stagingtllms(TutorCommonMethods):
                     current_month = time.strftime('%b')
                     if month == current_month:
                         days = int(date) - int(time.strftime('%d'))
-                        working_day = datetime.now() + timedelta(days)
+                        working_day = dt.now() + timedelta(days)
                         return working_day
                     else:
                         raise DateError(
@@ -1335,7 +1336,7 @@ class Stagingtllms(TutorCommonMethods):
 
     @staticmethod
     def booking_time(hours, minutes, end_hour=None, end_minutes=0, day=None):
-        time_now = datetime.now()
+        time_now = dt.now()
         if day is not None and day.lower() == 'tomorrow':
             n_day = (time_now+timedelta(days=1)).strftime("%A")
             return n_day, "8:00", "23:00"
@@ -1344,7 +1345,7 @@ class Stagingtllms(TutorCommonMethods):
         else:
             mins = 30 + int(minutes)
         if int(time_now.strftime("%S")) >= 45:
-            time_now = datetime.now()
+            time_now = dt.now()
             mins = 33 if minutes is None else 30 + int(minutes) + 1
         start_time = (time_now + timedelta(hours=0, minutes=mins))
         if end_hour is None:
@@ -1502,9 +1503,9 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.get("https://staging.tllms.com/admin/assessments/%s/edit" % asset_id)
         if status == "expire":
             if day == "yesterday":
-                date_time = (datetime.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
+                date_time = (dt.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
             elif day == "today":
-                date_time = (datetime.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
+                date_time = (dt.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
             else:
                 raise NotImplementedError()
             date_time_list = date_time.split(":")
@@ -1549,9 +1550,9 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.get("https://staging.tllms.com/admin/assessments/%s/edit" % asset_id)
         if status == "expire":
             if day == "yesterday":
-                date_time = (datetime.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
+                date_time = (dt.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
             elif day == "today":
-                date_time = (datetime.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
+                date_time = (dt.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
             else:
                 raise NotImplementedError()
             date_time_list = date_time.split(":")
@@ -1583,3 +1584,28 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.find_element("css selector", "input[name=commit]").click()
         else:
             raise NotImplementedError()
+
+
+    def change_assessment_time(self,db,minutes_to_add=0,current=True):
+        sd = db.sd
+        if current:
+            time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'), '%d-%b-%Y %H:%M')
+            import datetime
+            two_minute = datetime.timedelta(minutes_to_add=2)
+            time_required_new = time_required + two_minute
+        else:
+            # time_of_interest = sd[0]['time']
+            # time_of_interest = time_of_interest.split("\n")[1].split("-")[1]
+            time_list = sd[0]['time'].replace("\n", " ").split(" - ")
+            date = time_list[0].split(" ")[0]
+            new_timelist = []
+            new_timelist.append(date)
+            new_timelist.append(" " + time_list[1])
+            new_time = "".join(new_timelist)
+            time_required = dt.strptime(new_time, '%d-%b-%Y %H:%M')
+            import datetime
+            two_minute = datetime.timedelta(minutes=2)
+            time_required_new = time_required + two_minute
+
+        self.modify_test_requisite_assessment(sd[0]['channel'], field="end_time", day='today', status='expire',
+                                          time=time_required_new)

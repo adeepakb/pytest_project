@@ -121,7 +121,7 @@ def step_impl(login):
 
 @then('user should not see the assessment session joining pop up')
 def step_impl(home_screen):
-    assert  home_screen.click_on_dissmiss() == False
+    assert  home_screen.click_on_dissmiss() is False
 
 
 @when('the user is in For you Tab')
@@ -141,12 +141,6 @@ def step_impl(m_test,staging_tutor_plus):
     #m_test.verify_session_details('topic_name_for_pre_post')
     m_test.verify_session_details('status')
     m_test.verify_session_details('heading')
-
-
-
-@given('The session should be converted to a monthly test1')
-def step_impl(m_test):
-    print('deepak')
 
 
 @then('user should be able to view post requisites')
@@ -172,24 +166,23 @@ def step_impl(std_board, resume):
 
 @when(parsers.parse('click on "{button}" button'))
 def step_impl(m_test,button):
-    m_test.click_on_button(button)
+    m_test.button_click(button)
 
 
-@given('login as user with “incomplested assessment”')
+@given('login as user with “incompleted assessment”')
 def step_impl(login):
     login.toggle_wifi_connection('on')
     login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
 
 
 @given('user has not started the test session')
-def step_impl(login, **kwargs):
-    login.toggle_wifi_connection('on')
-    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
+def step_impl(m_test, **kwargs):
+    assert m_test.is_button_displayed(button_name='Start Test') ," Start Test button not found"
 
 
 @given(parsers.parse('verify that the text "{button}" button should be present on the card'))
 def step_impl(m_test,button):
-    m_test.is_button_displayed(button_name=button)
+    m_test.is_button_displayed_with_text(button_name=button)
 
 
 @given('verify that student can take test from completed tab')
@@ -204,7 +197,7 @@ def step_impl(m_test):
 
 @when('verify whether there is any interruption when the session has reached end time while student is still taking the assessment')
 def step_impl(m_test):
-    assert m_test.check_no_interruption_in_assignment()==True
+    assert m_test.check_no_interruption_in_assignment() is True
 
 
 @given("The session should be converted to a monthly test with test end time greater than session end time")
@@ -216,19 +209,7 @@ def step_impl(m_test, staging_tutor_plus, db):
 def step_impl(m_test, tllms,staging_tutor_plus, db):
     staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
     sd = db.sd
-    time_of_interest=sd[0]['time']
-    time_of_interest = time_of_interest.split("\n")[1].split("-")[1]
-    time_list = sd[0]['time'].replace("\n", " ").split(" - ")
-    date = time_list[0].split(" ")[0]
-    new_timelist = []
-    new_timelist.append(date)
-    new_timelist.append(" " + time_list[1])
-    new_time = "".join(new_timelist)
-    time_required = dt.strptime(new_time, '%d-%b-%Y %H:%M')
-    import datetime
-    two_minute = datetime.timedelta(minutes=2)
-    time_required_new = time_required + two_minute
-    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
+    tllms.change_assessment_time(db,minutes_to_add=+2,current=False)
 
 
 @given("login as user with expired assessment")
@@ -249,13 +230,10 @@ def step_impl(std_board, text):
 
 @given("The session should be converted to a monthly test with test time lesser than current time")
 def step_impl(m_test,tllms ,staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
+    staging_tutor_plus.set_user().convert_video_session(db=db, assessment_type="monthly test",
+                                                        subject_topic_name=("", ""))
     sd = db.sd
-    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
-    import datetime
-    two_minute = datetime.timedelta(minutes=2)
-    time_required_new = time_required - two_minute
-    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
+    tllms.change_assessment_time(db, minutes_to_add=-2, current=True)
 
 
 @given("The session should be converted to a monthly test with post requisite")
@@ -265,11 +243,8 @@ def step_impl(m_test, staging_tutor_plus, db):
 
 @given("The session should be converted to a monthly test with ending assessment time")
 def step_impl(m_test, tllms, staging_tutor_plus, db):
-    staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
+    staging_tutor_plus.set_user().convert_video_session(db=db, assessment_type="monthly test",
+                                                        subject_topic_name=("", ""))
     sd = db.sd
-    time_required = dt.strptime(dt.now().strftime('%d-%b-%Y %H:%M'),'%d-%b-%Y %H:%M')
-    import datetime
-    two_minute = datetime.timedelta(minutes=2)
-    time_required_new = time_required - two_minute
-    tllms.modify_test_requisite_assessment(sd[0]['channel'],field="end_time",day = 'today',status='expire',time=time_required_new)
+    tllms.change_assessment_time(db, minutes_to_add=-2, current=True)
 
