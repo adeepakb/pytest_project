@@ -241,7 +241,7 @@ class StagingTutorPlus(Stagingtllms):
                 channel_id = json.load(fd)["channel"]
         try:
             assert self.chrome_driver.find_element(*self.assessment_text).text.lower() == "assessment session"
-        except:
+        except NoSuchElementException:
             self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
             self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
 
