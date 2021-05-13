@@ -109,7 +109,7 @@ def step_impl(m_test,staging_tutor_plus, db):
 
 @given('give a delay of “120” seconds')
 def step_impl(m_test):
-    time.sleep(0)
+    time.sleep(120)
 
 
 

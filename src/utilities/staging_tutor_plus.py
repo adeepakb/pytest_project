@@ -232,4 +232,54 @@ class StagingTutorPlus(Stagingtllms):
             raise SessionEndedError("cannot reset the already ended session.")
 
 
+    def modify_test_requisite_assessment(self, channel_id, field, day, status,time=None):
+        """
+        """
+        if channel_id is None:
+            self.session_relaunch()
+            with open("../../test_data/classroom_details.json") as fd:
+                channel_id = json.load(fd)["channel"]
+        if not self.chrome_driver.find_element(*self.assessment_text).text.lower() == "assessment session":
+            self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
+            self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
+        self.chrome_driver.implicitly_wait(15)
+        asset_id = self.chrome_driver.find_element("xpath",
+                                                   "//*[text()=\"OneToMany::TestRequisite\"]/../..//*[text("
+                                                   ")=\"ASSESSMENT_ID\"]/following-sibling::td").text
+        self.chrome_driver.get("https://staging.tllms.com/admin/assessments/%s/edit" % asset_id)
+        if status == "expire":
+            if day == "yesterday":
+                date_time = (datetime.now() + timedelta(days=-1)).strftime("%d-%m-%Y %H:%M")
+            elif day == "today":
+                date_time = (datetime.now() + timedelta(minutes=-2)).strftime("%d-%m-%Y %H:%M")
+            else:
+                raise NotImplementedError()
+            date_time_list = date_time.split(":")
+            minutes = date_time_list.pop()
 
+            date_time_list.append("00" if int(minutes) <= 5 else "10")
+            date_time = ":".join(date_time_list)
+            if time is not None:
+                date_time = time.strftime("%d-%m-%Y %H:%M")
+            if field.lower() == "start_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_starting").click()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_starting").send_keys(date_time)
+            elif field.lower() == "end_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").click()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").clear()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").send_keys(date_time)
+            elif field.lower() == "result_time":
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_send_results_at").clear()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_send_results_at").send_keys(date_time)
+            else:
+                raise NotImplementedError()
+            self.chrome_driver.find_element("css selector", "input[name=commit]").click()
+        else:
+            raise NotImplementedError()
