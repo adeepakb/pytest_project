@@ -5,7 +5,7 @@ from utilities.staging_tllms import Stagingtllms
 from pages.factory.monthly_test import MonthlyTestFactory
 from pytest import fixture
 import time
-from utilities.staging_tutor_plus import *
+from utilities.staging_tutor_plus import StagingTutorPlus
 from datetime import datetime as dt, timedelta
 
 
@@ -138,7 +138,6 @@ def step_impl(m_test, text):
 @then('validate elements of monthly session card')
 def step_impl(m_test,staging_tutor_plus):
     m_test.verify_session_details('subject title')
-    #m_test.verify_session_details('topic_name_for_pre_post')
     m_test.verify_session_details('status')
     m_test.verify_session_details('heading')
 
@@ -177,7 +176,7 @@ def step_impl(login):
 
 @given('user has not started the test session')
 def step_impl(m_test, **kwargs):
-    assert m_test.is_button_displayed_with_text(button_name='Start Test') ," Start Test button not found"
+    assert m_test.is_button_displayed_with_text(button_name='Start Test'), " Start Test button not found"
 
 
 @given(parsers.parse('verify that the text "{button}" button should be present on the card'))
@@ -208,8 +207,7 @@ def step_impl(m_test, staging_tutor_plus, db):
 @given("The session should be converted to a monthly test with session end time lesser than test end time")
 def step_impl(m_test, tllms,staging_tutor_plus, db):
     staging_tutor_plus.set_user().convert_video_session(db=db,assessment_type="monthly test", subject_topic_name=("",""))
-    sd = db.sd
-    tllms.change_assessment_time(db,minutes_to_add=+2,current=False)
+    staging_tutor_plus.change_assessment_time(db,minutes_to_add=+2,current=False)
 
 
 @given("login as user with expired assessment")
@@ -233,8 +231,7 @@ def step_impl(std_board, text):
 def step_impl(m_test,tllms ,staging_tutor_plus, db):
     staging_tutor_plus.set_user().convert_video_session(db=db, assessment_type="monthly test",
                                                         subject_topic_name=("", ""))
-    sd = db.sd
-    tllms.change_assessment_time(db, minutes_to_add=-2, current=True)
+    staging_tutor_plus.change_assessment_time(db, minutes_to_add=-2, current=True)
 
 
 @given("The session should be converted to a monthly test with post requisite")
@@ -246,7 +243,6 @@ def step_impl(m_test, staging_tutor_plus, db):
 def step_impl(m_test, tllms, staging_tutor_plus, db):
     staging_tutor_plus.set_user().convert_video_session(db=db, assessment_type="monthly test",
                                                         subject_topic_name=("", ""))
-    sd = db.sd
-    tllms.change_assessment_time(db, minutes_to_add=-2, current=True)
+    staging_tutor_plus.change_assessment_time(db, minutes_to_add=-2, current=True)
 
 
