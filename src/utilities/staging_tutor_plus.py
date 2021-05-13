@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
-from constants.load_json import get_dddata
+from constants.load_json import get_data
 from utilities.staging_tllms import Stagingtllms
 from selenium.common.exceptions import NoAlertPresentException, NoSuchElementException, TimeoutException, \
     StaleElementReferenceException
