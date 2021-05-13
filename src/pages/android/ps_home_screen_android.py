@@ -25,6 +25,10 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.close_chat = 'com.byjus.thelearningapp.premium:id/closeChatBtn'
         self.arrow_button = 'com.byjus.thelearningapp.premium:id/arrow_btn'
         self.requisite_items = 'com.byjus.thelearningapp.premium:id/llRequisiteContentLyt'
+        self.pop_up='com.byjus.thelearningapp.premium:id/tv_secondaryAction'
+
+
+
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', self.ps_tabs)
@@ -136,3 +140,11 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def tap_outside_dialog_layout(self):
         self.action.tap(None, x=100, y=100).release().perform()
+
+    def click_on_dissmiss(self):
+        try:
+            self.obj.get_element('id', self.pop_up).click()
+            return True
+        except:
+            return False
+

@@ -1,6 +1,6 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from constants.load_json import getdata
+from constants.load_json import get_data
 from constants.constants import Login_Credentials
 from pages.android.session_popup import SessionAlert
 from utilities.mentor_session import MentorSession
@@ -88,7 +88,7 @@ def tap_button(login_in, student_session, text):
 @then(parsers.parse('verify "{text}" bottom sheet dialog should be shown'))
 @then(parsers.parse('verify text "{text}" on welcome screen'))
 def verify_text(login_in, text):
-    profile_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    profile_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     text = text.format(username=profile_name).encode('utf-8').decode('unicode_escape')
     assert login_in.text_match(text), "%s text is not displayed" % text
 
@@ -480,7 +480,7 @@ def tap_on_reject_message(mentor_session):
 
 @then(parsers.parse('verify that approved message "{text}" is shown in the other student chat window'))
 def login_as_student2_and_verify_approved_msg(student_session, text):
-    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
     assert student_session.verify_message_at_student_side(expected_text), "approved message is not present"
 
@@ -494,7 +494,7 @@ def login_as_student2(driver, login_in):
 
 @then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))
 def verify_rejected_msg(student_session, text):
-    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
     assert not student_session.verify_message_at_student_side(expected_text), "rejected message is  present"
 

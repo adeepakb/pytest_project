@@ -254,7 +254,7 @@ class VideoPage:
     def login_the_user(self, driver, count):
         if count == False:
             self.reset_app()
-            GenericMethods.navigate_to_login_page(driver, getdata(Login_Credentials, 'login_details', 'grade'))
+            GenericMethods.navigate_to_login_page(driver, get_data(Login_Credentials, 'login_details', 'grade'))
             self.login_to_home_page(driver)
             logging.info("successfully App resgistered with new number")
             count = True
@@ -282,21 +282,21 @@ class VideoPage:
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3'
-                                                              , 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'),
                                 self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
             radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
             for profile in profiles:
                 for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                    if profile.text == get_data(Login_Credentials, 'login_detail3', 'profile_name'):
                         button.click()
                         break
         CommonMethods.elementClick(driver, self.continue_button)
@@ -315,7 +315,7 @@ class VideoPage:
                 CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
+                actual_mob_num = get_data(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)
@@ -339,13 +339,13 @@ class VideoPage:
         if CommonMethods.wait_for_element_visible(driver, self.skipBtn_id, 5):
             CommonMethods.elementClick(driver, self.skipBtn_id)
             CommonMethods.wait_for_element_visible(driver, self.chooseCourse_Title_xpath, 7)
-            CommonMethods.elementClick(driver, getdata(data_file, 'profile_credentials', 'grade'))
+            CommonMethods.elementClick(driver, get_data(data_file, 'profile_credentials', 'grade'))
             CommonMethods.wait_for_element_visible(driver, self.noneOftheAbove_xpath, 7)
             CommonMethods.elementClick(driver, self.noneOftheAbove_xpath)
             CommonMethods.elementClick(driver, self.login_link_id)
 
     def user_registration(self, driver):
-        grade = getdata(data_file, 'profile_credentials', 'grade')
+        grade = get_data(data_file, 'profile_credentials', 'grade')
         sub_grade = (By.XPATH, "//android.widget.Button[@text=\'" + grade + "\']")
         if CommonMethods.wait_for_element_visible(driver, self.login_register_btn, 3):
             CommonMethods.elementClick(driver, self.login_register_btn)
@@ -3761,7 +3761,7 @@ class VideoPage:
             right = location['x'] + size['width']
             bottom = location['y'] + size['height']
             im = img.crop((left, top, right, bottom))
-            pix_val1 = list(dict.fromkeys(list(im.getdata())))
+            pix_val1 = list(dict.fromkeys(list(im.get_data())))
             for i in range(len(pix_val1)):
                 rgb = list(pix_val1[i])
                 try:

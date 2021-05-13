@@ -22,8 +22,9 @@ from selenium.webdriver.support.ui import Select
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import get_data
 from selenium.webdriver.chrome.options import Options
-from datetime import datetime, timedelta
 from utilities.exceptions import *
+from datetime import datetime , timedelta
+
 
 
 class Stagingtllms(TutorCommonMethods):
@@ -1485,3 +1486,4 @@ class Stagingtllms(TutorCommonMethods):
                         session_details.update({header.text.strip().lower(): contents_row[i].text.strip()})
                 session_list.append(session_details.copy())
         return session_list
+

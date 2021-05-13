@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 from datetime import datetime
@@ -93,6 +94,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.assessment_start = 'id', '%s/test_start_button' % package_name
         self.assessment_submit_btn = 'id', '%s/rectangleNavButton' % package_name
         self.instruction_start_btn = 'id', '%s/btStartButton' % package_name
+        self.requisite_item_list='id', '%s/requisite_item_list' % package_name
+        self.arrow_buton ='id', '%s/arrow_btn' % package_name
         if device_type != 'tab':
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
@@ -908,3 +911,14 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             return True
         except NoSuchElementException:
             return False
+
+
+
+
+
+    def verify_test_status(self, expected=None):
+        buttons = self.get_elements(*self.pr_status_msg)
+        for button  in buttons:
+            if expected  in button.text.lower():
+                return True
+        return False

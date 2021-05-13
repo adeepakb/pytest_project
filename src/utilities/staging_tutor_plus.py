@@ -38,9 +38,11 @@ class StagingTutorPlus(Stagingtllms):
         self.sub_profile, self.day = sub_profile, day
         return self
 
-    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test"):
+    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test", **kwargs):
+        db = kwargs['db']
         session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
         subject_name, topic_name = subject_topic_name
+        db.sd = session_details
         self.chrome_driver.implicitly_wait(10)
         if subject_name is None and topic_name is None:
             with open("../../test_data/classroom_details.json") as fd:
@@ -81,6 +83,8 @@ class StagingTutorPlus(Stagingtllms):
             req_grp = get_data("../../config/ps_requisite.json", "unit_test_all")
         elif assessment_type == 'monthly test':
             req_grp = get_data("../../config/ps_requisite.json", "monthly_test_all")
+        elif assessment_type == "pre-post":
+            req_grp = get_data("../../config/ps_requisite.json", "all_pre_post")
         else:
             raise NotImplementedError("assessment type other 'unit test' and 'monthly test' is not yet implemented.")
         for char in req_grp:
@@ -227,15 +231,18 @@ class StagingTutorPlus(Stagingtllms):
         else:
             raise SessionEndedError("cannot reset the already ended session.")
 
-    def modify_test_requisite_assessment(self, channel_id, field, day, status):
+    def modify_test_requisite_assessment(self, channel_id, field, day, status, time=None):
         """
         """
         if channel_id is None:
             self.session_relaunch()
             with open("../../test_data/classroom_details.json") as fd:
                 channel_id = json.load(fd)["channel"]
-        self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
-        self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
+        try:
+            self.chrome_driver.find_element(*self.assessment_text)
+        except NoSuchElementException:
+            self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
+            self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
         self.chrome_driver.implicitly_wait(15)
         asset_id = self.chrome_driver.find_element("xpath",
                                                    "//*[text()=\"OneToMany::TestRequisite\"]/../..//*[text("
@@ -250,8 +257,9 @@ class StagingTutorPlus(Stagingtllms):
                 raise NotImplementedError()
             date_time_list = date_time.split(":")
             minutes = date_time_list.pop()
-            date_time_list.append("00" if int(minutes) <= 5 else "10")
             date_time = ":".join(date_time_list)
+            if time is not None:
+                date_time = time.strftime("%d-%m-%Y %H:%M")
             if field.lower() == "start_time":
                 self.chrome_driver.find_element(
                     "css selector", "#assessment_available_starting").click()
@@ -260,6 +268,8 @@ class StagingTutorPlus(Stagingtllms):
             elif field.lower() == "end_time":
                 self.chrome_driver.find_element(
                     "css selector", "#assessment_available_until").click()
+                self.chrome_driver.find_element(
+                    "css selector", "#assessment_available_until").clear()
                 self.chrome_driver.find_element(
                     "css selector", "#assessment_available_until").send_keys(date_time)
             elif field.lower() == "result_time":
@@ -273,4 +283,22 @@ class StagingTutorPlus(Stagingtllms):
         else:
             raise NotImplementedError()
 
+    def change_assessment_time(self, db, minutes_to_add=0, current=True):
+        sd = db.sd
+        if current:
+            time_required = datetime.strptime(datetime.now().strftime('%d-%b-%Y %H:%M'), '%d-%b-%Y %H:%M')
+            two_minute = timedelta(minutes_to_add=2)
+            time_required_new = time_required + two_minute
+        else:
+            time_list = sd[0]['time'].replace("\n", " ").split(" - ")
+            date = time_list[0].split(" ")[0]
+            new_timelist = []
+            new_timelist.append(date)
+            new_timelist.append(" " + time_list[1])
+            new_time = "".join(new_timelist)
+            time_required = datetime.strptime(new_time, '%d-%b-%Y %H:%M')
+            two_minute = timedelta(minutes=2)
+            time_required_new = time_required + two_minute
 
+        self.modify_test_requisite_assessment(sd[0]['channel'], field="end_time", day='today', status='expire',
+                                              time=time_required_new)

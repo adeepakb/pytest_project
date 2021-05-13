@@ -14,8 +14,8 @@ CommonMethods = CommonMethods()
 
 data_file = CONFIG_PATH
 
-url = getdata(data_file, "API_credentials", "url")
-params = {'key': getdata(data_file, "API_credentials", "key") , 'secret': getdata(data_file, "API_credentials", "secret")}
+url = get_data(data_file, "API_credentials", "url")
+params = {'key': get_data(data_file, "API_credentials", "key") , 'secret': get_data(data_file, "API_credentials", "secret")}
 
 
 skipBtn_id = (By.ID, "com.byjus.thelearningapp:id/buttonSkip")

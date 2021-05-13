@@ -2,7 +2,7 @@ import json
 import pickle
 import random
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
 
 from appium.webdriver.common.touch_action import TouchAction
@@ -25,6 +25,7 @@ from utilities.exceptions import *
 
 
 class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
+
     def __init__(self, driver):
         self.driver = driver
         self.login = Login(driver)
@@ -37,6 +38,7 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         self.staging = Stagingtllms(self.driver)
         self.dashboard = StudentDashboardOneToMega(self.driver)
         self.__init_locators(self.device_type)
+        self.count=0
 
     def __init_locators(self, device_type):
         package_name = self.driver.capabilities['appPackage'] + ':id'
