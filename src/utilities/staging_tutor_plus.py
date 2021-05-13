@@ -38,7 +38,7 @@ class StagingTutorPlus(Stagingtllms):
         self.sub_profile, self.day = sub_profile, day
         return self
 
-    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test",**kwargs):
+    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test", **kwargs):
         db = kwargs['db']
         session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
         subject_name, topic_name = subject_topic_name
@@ -231,8 +231,7 @@ class StagingTutorPlus(Stagingtllms):
         else:
             raise SessionEndedError("cannot reset the already ended session.")
 
-
-    def modify_test_requisite_assessment(self, channel_id, field, day, status,time=None):
+    def modify_test_requisite_assessment(self, channel_id, field, day, status, time=None):
         """
         """
         if channel_id is None:
@@ -240,11 +239,10 @@ class StagingTutorPlus(Stagingtllms):
             with open("../../test_data/classroom_details.json") as fd:
                 channel_id = json.load(fd)["channel"]
         try:
-             self.chrome_driver.find_element(*self.assessment_text)
+            self.chrome_driver.find_element(*self.assessment_text)
         except NoSuchElementException:
             self.chrome_driver.get("https://tutor-plus-staging.tllms.com/studentSessions/%s" % channel_id)
             self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
-
         self.chrome_driver.implicitly_wait(15)
         asset_id = self.chrome_driver.find_element("xpath",
                                                    "//*[text()=\"OneToMany::TestRequisite\"]/../..//*[text("
@@ -285,7 +283,7 @@ class StagingTutorPlus(Stagingtllms):
         else:
             raise NotImplementedError()
 
-    def change_assessment_time(self,db,minutes_to_add=0,current=True):
+    def change_assessment_time(self, db, minutes_to_add=0, current=True):
         sd = db.sd
         if current:
             time_required = datetime.strptime(datetime.now().strftime('%d-%b-%Y %H:%M'), '%d-%b-%Y %H:%M')
@@ -303,4 +301,4 @@ class StagingTutorPlus(Stagingtllms):
             time_required_new = time_required + two_minute
 
         self.modify_test_requisite_assessment(sd[0]['channel'], field="end_time", day='today', status='expire',
-                                          time=time_required_new)
+                                              time=time_required_new)
