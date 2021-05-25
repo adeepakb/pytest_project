@@ -7,6 +7,8 @@ from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
+from pages.factory.know_more import KnowMoreTestFactory
+from pages.factory.monthly_test import MonthlyTestFactory
 from pages.android.Hamburgermenu import Hamburger
 
 
@@ -42,6 +44,15 @@ def journey_map(driver):
 def journey_loading(driver):
     journey_loading = JourneyLoadingScreen(driver)
     yield journey_loading
+
+@fixture
+def know_more(request, driver):
+    platform_list = request.config.getoption("platform")
+    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
+        know_more = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
+        yield std_board
+    else:
+        raise NotImplementedError()
 
 
 @fixture
@@ -298,6 +309,7 @@ def verify_content_desc(ssn_req, std_board, c_t):
 
 
 @when(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
+@then(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(std_board, tp_tm, cnt_typ):
     std_board.login.implicit_wait_for(0)
     assert ssn_req.verify_content_description(tp_tm, cnt_typ)
