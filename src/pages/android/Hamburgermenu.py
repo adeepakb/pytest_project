@@ -176,11 +176,12 @@ class Hamburger:
         except:
             CommonMethods.exception(driver, featureFileName, 'navigateToHomeScreen')
 
-    def hamburger_verify(self, driver):
+    def hamburger_verify(self, driver, click=True):
         # sleep(5)
         try:
             if CommonMethods.wait_for_element_visible(driver, self.ham_btn_id, 15):
-                CommonMethods.elementClick(driver, self.ham_btn_id)
+                if click:
+                    CommonMethods.elementClick(driver, self.ham_btn_id)
             else:
                 logging.info('Hamburger menu Not Found')
                 pytest.fail("Failed due to Hamburger Menu")
@@ -406,3 +407,5 @@ class Hamburger:
         endx = int(size["height"] * end_x)
 
         driver.swipe(startx, starty, endx, endy, 1000)
+
+

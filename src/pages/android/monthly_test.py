@@ -2,7 +2,7 @@ import json
 import pickle
 import random
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from time import sleep
 
 from appium.webdriver.common.touch_action import TouchAction
@@ -474,3 +474,89 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
                 diff -= 1
         else:
             return self.get_element(*self.start_test_btn).is_displayed()
+
+    def is_test_card_displayed(self):
+        cards = self.get_elements(*self.card_root)
+        for card in cards:
+            try:
+                title = card.find_element(*self.subject_name).text.lower()
+            except NoSuchElementException:
+                title = card.find_element(*self.master_class.card_label_tv).text.lower()
+            if "test" in title:
+                return True
+        cards = self.get_elements(*self.card_root)
+        for card in cards:
+            try:
+                title = card.find_element(*self.subject_name).text.lower()
+            except NoSuchElementException:
+                title = card.find_element(*self.master_class.card_label_tv).text.lower()
+            if "test" in title:
+                return True
+        return False
+
+    def click_on_for_you_tab(self):
+        self.get_element('xpath',
+                         self.for_you).click()
+
+    def click_on_completed_tab(self):
+        self.get_element('xpath',
+                         self.completed).click()
+
+    def get_card_detail(self):
+        card = self.get_element(*self.card_root)
+        title = card.find_element(*self.subject_name).text.lower()
+        session_time = card.find_element(*self.session_time).text
+        session_title = card.find_element(*self.topic_name).text
+        return title, session_time, session_title
+
+    def click_on_button(self, button_name):
+        btn_text = self.get_element(*self.start_test_btn).text
+        if btn_text.lower() == button_name.lower():
+            self.get_element(*self.start_test_btn).click()
+        else:
+            raise ElementNotFoundError(button_name + 'not found')
+
+    def is_status_displayed(self, status):
+        if status.lower() == 'completed':
+            try:
+                return self.get_element('xpath',
+                                        self.completed).isDisplayed()
+            except:
+                return False
+
+    def is_button_displayed(self, button_name):
+        if button_name.lower() == 'resume':
+            return self.get_element(*self.start_test_btn).is_displayed()
+
+        return False
+
+    def do_assignment(self, finish=True):
+        start_button = self.get_element('xpath', self.begin_assignment)
+        start_button_text = start_button.text
+        number = int(self.get_element('xpath', self.no_of_questions).text.split(':')[1])
+        if start_button_text.lower() == 'continue assessment' or start_button_text.lower() == 'start assessment':
+            start_button.click()
+        else:
+            raise ElementNotFoundError(
+                start_button + 'is being displayed, required continue assignment or start assignment')
+
+        for qn in range(1, number):
+            self.get_element('xpath', self.next_button).click()
+
+        if finish:
+            self.get_element('xpath', self.finish_button).click()
+
+    def check_no_interruption_in_assignment(self):
+        try:
+            time.sleep(3000)
+            if self.get_element('xpath', self.exit_assignment).is_displayed():
+                self.count += 1
+                if self.count > 20:
+                    return True
+                self.check_no_interruption_in_assignment()
+            else:
+                self.count = 0
+                return False
+        except:
+            self.count = 0
+            return False

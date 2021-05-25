@@ -912,10 +912,6 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         except NoSuchElementException:
             return False
 
-
-
-
-
     def verify_test_status(self, expected=None):
         buttons = self.get_elements(*self.pr_status_msg)
         for button  in buttons:

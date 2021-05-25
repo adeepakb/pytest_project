@@ -7,6 +7,7 @@ from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
+from pages.android.Hamburgermenu import Hamburger
 
 
 class Context:
@@ -127,6 +128,17 @@ def m_class(driver, request):
     from pages.factory.masterclass_factory import MasterClassFactory
     if Platform.ANDROID.name.lower() == platform_list[-1].lower():
         m_class = MasterClassFactory().get_page(driver, Platform.ANDROID.value)
+        yield m_class
+    else:
+        raise NotImplementedError()
+
+
+@fixture
+def know_more(driver, request):
+    platform_list = request.config.getoption("platform")
+    from pages.factory.know_more import KnowMoreTestFactory
+    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
+        m_class = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
         yield m_class
     else:
         raise NotImplementedError()
@@ -462,3 +474,30 @@ def step_impl(db, std_board):
 @then('verify that user is able to access all post requisites attached to the session')
 def step_impl(std_board):
     assert std_board.is_all_post_requisite_accessible()
+
+
+@when('Tap on the Hamburger menu at the left corner on the home screen')
+def step_impl(know_more):
+    assert know_more.click_on_hamburger(), "Hamburger not found"
+
+
+@when('verify that the Left nav is displayed')
+def ham_verify(driver):
+    Hamburg = Hamburger(driver)
+    Hamburg.hamburger_verify(driver, click=False)
+
+
+@then('Verify that in the left nav "Byjus classes-Know more" option is present')
+def step_impl(driver, know_more):
+    assert know_more.verify_know_more_displayed(), "Byjus classes-Know more is not displayed in Hamburger"
+
+
+@then('tap on the "Byjus classes-Know more" option in the left nav')
+@then('Tap on the "Byjus classes" option on the left nav')
+def step_impl(driver, know_more):
+    assert know_more.tap_on_byjus_classes_in_hamburger(), "Byjus classes-Know more is not displayed in Hamburger"
+
+
+@then('verify  "Byjus classes-Know more" option is responsive')
+def step_impl(driver, know_more):
+    assert know_more.validate_know_more(), "Byjus classes-Know more is not displayed in Hamburger"
