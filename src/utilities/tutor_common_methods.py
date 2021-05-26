@@ -134,6 +134,7 @@ class TutorCommonMethods:
         locator_type = 'xpath'
         locator_value = "//android.widget.Button"
         list_of_elements = self.get_elements(locator_type, locator_value)
+        list_of_elements = self.get_elements(locator_type, locator_value)
         for element in range(len(list_of_elements)):
             actual_text = list_of_elements[element].text
             if expected_text == actual_text:

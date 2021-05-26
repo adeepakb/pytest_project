@@ -2,11 +2,14 @@ from random import choice
 from pytest import fixture
 from pytest_bdd import given, when, then, parsers
 from constants.platform import Platform
+from pages.android.Hamburgermenu import Hamburger
 from pages.android.homepage import HomePage
 from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
+from pages.factory.know_more import KnowMoreTestFactory
+from pages.factory.monthly_test import MonthlyTestFactory
 
 
 class Context:
@@ -41,6 +44,15 @@ def journey_map(driver):
 def journey_loading(driver):
     journey_loading = JourneyLoadingScreen(driver)
     yield journey_loading
+
+@fixture
+def know_more(request, driver):
+    platform_list = request.config.getoption("platform")
+    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
+        know_more = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
+        yield know_more
+    else:
+        raise NotImplementedError()
 
 
 @fixture
@@ -132,13 +144,24 @@ def m_class(driver, request):
         raise NotImplementedError()
 
 
+@fixture
+def know_more(driver, request):
+    platform_list = request.config.getoption("platform")
+    from pages.factory.know_more import KnowMoreTestFactory
+    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
+        m_class = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
+        yield m_class
+    else:
+        raise NotImplementedError()
+
+
 @given('launch the app and navigate to home screen')
 def launch_and_nav_to_home(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.implicit_wait_for(15)
-    login.verify_home_screen()
+    #login.verify_home_screen()
 
 
 @given('navigate to one to mega home screen')
@@ -286,6 +309,7 @@ def verify_content_desc(ssn_req, std_board, c_t):
 
 
 @when(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
+@then(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(std_board, tp_tm, cnt_typ):
     std_board.login.implicit_wait_for(0)
     assert ssn_req.verify_content_description(tp_tm, cnt_typ)
@@ -462,3 +486,33 @@ def step_impl(db, std_board):
 @then('verify that user is able to access all post requisites attached to the session')
 def step_impl(std_board):
     assert std_board.is_all_post_requisite_accessible()
+
+
+@when('Tap on the Hamburger menu at the left corner on the home screen')
+def step_impl(know_more):
+    assert know_more.click_on_hamburger(), "Hamburger not found"
+
+
+@when('verify that the Left nav is displayed')
+def ham_verify(driver):
+    Hamburg = Hamburger(driver)
+    Hamburg.hamburger_verify(driver, click=False)
+
+
+@then('Verify that in the left nav "Byjus classes-Know more" option is present')
+def step_impl(driver, know_more):
+    assert know_more.verify_know_more_displayed(), "Byjus classes-Know more is not displayed in Hamburger"
+
+
+@then('tap on the "Byjus classes-Know more" option in the left nav')
+@then('Tap on the "Byjus classes" option on the left nav')
+@when('Tap on the "Byjus classes" option on the left nav')
+def step_impl(driver, know_more):
+    assert know_more.tap_on_byjus_classes_in_hamburger(), "Byjus classes-Know more is not displayed in Hamburger"
+
+
+@then('verify  "Byjus classes-Know more" option is responsive')
+def step_impl(driver, know_more):
+    assert know_more.validate_know_more(), "Byjus classes-Know more is not displayed in Hamburger"
+
+

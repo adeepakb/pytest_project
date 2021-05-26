@@ -159,8 +159,9 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
+    suite_name= "Byju's Classes"
     # suite_name = os.getenv('suite')
-    # data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
+    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -187,10 +188,10 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         )
         sys.stderr.writelines(stdout_err)
 
-        # update_testrail(data[1], data[0], False, step_name, _exception)
+        #update_testrail(data[1], data[0], False, step_name, _exception)
     else:
         msg_body = "all steps are passed"
-        # update_testrail(data[1], data[0], True, msg_body, 'passed')
+        #update_testrail(data[1], data[0], True, msg_body, 'passed')
     file = '../../config/chrome_session.json'
     try:
         os.unlink(file)

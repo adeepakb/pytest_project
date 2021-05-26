@@ -1,3 +1,5 @@
+import time
+
 from appium.webdriver.common.touch_action import TouchAction
 
 from pages.android.Hamburgermenu import Hamburger
@@ -46,8 +48,13 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             button_element = self.byjus_classes
 
         try:
-            button_element = self.get_element(*button_element)
-            button_element.click()
+            if self.verify_know_more_displayed():
+                button_element = self.get_element(*button_element)
+                button_element.click()
+            else:
+                self.click_on_hamburger()
+                button_element = self.get_element(*button_element)
+                button_element.click()
             return True
         except:
             return False
@@ -72,14 +79,48 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return False
 
     def validate_know_more_webview(self):
-        self.validate_webview_activity()
+
+        return_type = ReturnType(False, "")
+        if self.validate_webview_activity() is True:
+            return_type.result = True
+        else:
+            return_type.result = False
+            return_type.reason = "Not in know more webview"
+            return return_type
 
         if self.is_button_displayed_with_text("Book a Free Class") is True:
-            return ReturnType(True, "Book a Free Class is displayed")
+            return_type.result = True
+            return_type.reason = "Book a free class button is shown"
         else:
-            return ReturnType(False, "Book a Free Class is not displayed")
-        element_start= self.get_element()
-        ScrollCards.scroll_by_element()
+            return_type.result = False
+            return_type.reason = "Book a free class button is not shown"
+            return return_type
+        return return_type
+
+    def validate_book_a_free_class_card(self):
+        return_type = ReturnType(False, "")
+        if self.is_button_displayed_with_text("Book a Free Class") is True:
+            return_type.result = True
+            return_type.reason = "Book a free class button is shown"
+        else:
+            return_type.result = False
+            return_type.reason = "Book a free class button is not shown"
+            return return_type
+        return return_type
+
+
+    def tap_on_book_card(self):
+        return_type = ReturnType(False, "")
+        try:
+            self.button_click("Book a Free Class")
+            return_type.result = True
+            return_type.reason= "Found and clicked on Book a Free Class Button"
+        except:
+            return_type.result = False
+            return_type.reason = "Not Found and not clicked on Book a Free Class Button"
+        return return_type
+
+
 
     # def scroll_webview(self, start_element, end_element, coincide='bottom', buffer=2):
     #     action = TouchAction(self.driver)
@@ -96,13 +137,13 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         if coincide == 'top':
             start_y = self.element_location_and_size(start_element, co_ordinates='y')
         elif coincide == 'bottom':
-            start_y = self.element_location_and_size(start_element, co_ordinates='y') +\
-                    self.element_location_and_size(start_element, dimension='height') - 10
+            start_y = self.element_location_and_size(start_element, co_ordinates='y') + \
+                      self.element_location_and_size(start_element, dimension='height') - 10
         else:
             raise TypeError(f"can only coincide 'top' or 'bottom' not '{coincide}'.") from None
         end_x = self.element_location_and_size(start_element, co_ordinates='x')
         if direction == 'down':
-            end_y = self.element_location_and_size(end_element, co_ordinates='y') +\
+            end_y = self.element_location_and_size(end_element, co_ordinates='y') + \
                     self.element_location_and_size(end_element, dimension='height') - 10
         else:
             end_y = self.element_location_and_size(end_element, co_ordinates='y')
