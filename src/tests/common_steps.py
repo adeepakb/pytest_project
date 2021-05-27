@@ -1,6 +1,8 @@
 from random import choice
 from pytest import fixture
 from pytest_bdd import given, when, then, parsers
+import pytest_check as check
+
 from constants.platform import Platform
 from pages.android.Hamburgermenu import Hamburger
 from pages.android.homepage import HomePage
@@ -44,6 +46,7 @@ def journey_map(driver):
 def journey_loading(driver):
     journey_loading = JourneyLoadingScreen(driver)
     yield journey_loading
+
 
 @fixture
 def know_more(request, driver):
@@ -161,7 +164,7 @@ def launch_and_nav_to_home(login):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.implicit_wait_for(15)
-    #login.verify_home_screen()
+    # login.verify_home_screen()
 
 
 @given('navigate to one to mega home screen')
@@ -488,6 +491,7 @@ def step_impl(std_board):
     assert std_board.is_all_post_requisite_accessible()
 
 
+@when('Tap on hamburger menu')
 @when('Tap on the Hamburger menu at the left corner on the home screen')
 def step_impl(know_more):
     assert know_more.click_on_hamburger(), "Hamburger not found"
@@ -501,9 +505,18 @@ def ham_verify(driver):
 
 @then('Verify that in the left nav "Byjus classes-Know more" option is present')
 def step_impl(driver, know_more):
-    assert know_more.verify_know_more_displayed(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail = know_more.verify_know_more_displayed()
+    check.equal(detail.result, True, detail.reason)
 
 
+@then('Verify that in the left nav "Byjus classes-Know more" option is not present')
+def step_impl(driver, know_more):
+    detail = know_more.verify_know_more_displayed()
+    check.equal(detail.result, False, detail.reason)
+
+
+@when('Tap on the "Byjus classes" option on the left nav')
+@when('tap on "Byjus classes" option on the left nav')
 @then('tap on the "Byjus classes-Know more" option in the left nav')
 @then('Tap on the "Byjus classes" option on the left nav')
 @when('Tap on the "Byjus classes" option on the left nav')
@@ -516,3 +529,40 @@ def step_impl(driver, know_more):
     assert know_more.validate_know_more(), "Byjus classes-Know more is not displayed in Hamburger"
 
 
+@given('switch to offline')
+@then('switch to offline')
+@when('switch to offline')
+def step_impl(driver, know_more):
+    detail = know_more.select_online_offline_mode("offline")
+    check.equal(detail.result, True, detail.reason)
+
+
+@given('switch to online')
+@when('switch to online')
+@then('switch to online')
+def step_impl(driver, know_more):
+    detail = know_more.select_online_offline_mode("ALL_NETWORK_ON")
+    check.equal(detail.result, True, detail.reason)
+
+
+@then('verify that the user is navigated to the "Book a free class" screen')
+def step_impl(driver, know_more):
+    detail = know_more.verify_book_free_class_screen()
+    check.equal(detail.result, True, detail.reason)
+
+
+@given("login as user with free account")
+def step_impl(login):
+    login.toggle_wifi_connection('on')
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_3').verify_user_profile()
+
+
+@when('tap on "Book" button')
+@then('tap on "Book" button')
+def step_impl(know_more):
+    detail = know_more.tap_on_book_button()
+    check.equal(detail.result ,True, detail.reason)
+
+@then('verify user is able to book a session')
+def step_impl(know_more):
+    know_more.book_a_session()

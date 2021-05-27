@@ -1,5 +1,7 @@
 """It contains all common elements and functionalities available to all pages."""
 import datetime
+import time
+
 import pytest
 from PIL import Image, ImageChops
 from math import sqrt

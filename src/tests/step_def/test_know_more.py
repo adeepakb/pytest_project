@@ -2,8 +2,8 @@ import time
 
 from pytest import fixture
 from pytest_bdd import given, when, then, parsers, scenarios
-import pytest_check as check
 from constants.platform import Platform
+import pytest_check as check
 from pages.factory.know_more import KnowMoreTestFactory
 
 feature_file_name = 'BYJUS CLASSES - Know More option in left navigation'
@@ -32,19 +32,22 @@ def know_more(request, driver):
         raise NotImplementedError()
 
 
-# reshma ask
 @when('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @when('verify that web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 def step_impl(driver, know_more):
-    details= know_more.validate_know_more_webview()
+    time.sleep(10)
+    details = know_more.validate_know_more_webview()
     check.equal(details.result, True, details.reason)
 
 
+@when('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
+@then('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
 @then('Verify that "BYJUS CLASSES" web view consist of "Book a free class" card')
+@then('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
 def step_impl(driver, know_more):
-    details= know_more.validate_book_a_free_class_card()
+    details = know_more.validate_book_a_free_class_card()
     check.equal(details.result, True, details.reason)
 
 
@@ -61,8 +64,7 @@ def step_impl(driver, know_more):
 
 
 @then('verify "Book a free class" card is responsive')
-def step_impl(driver, std_board):
-     assert std_board.is_one_to_mega_screen_displayed(),"user is not navigated to student dashboard on click of 'Book a free class' in know more webview"
-
-
-
+def step_impl(driver, know_more):
+    time.sleep(5)
+    detail = know_more.verify_book_free_class_screen()
+    check.equal(detail.result,True,detail.reason)
