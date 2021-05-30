@@ -544,7 +544,7 @@ def step_impl(driver, know_more):
     detail = know_more.select_online_offline_mode("ALL_NETWORK_ON")
     check.equal(detail.result, True, detail.reason)
 
-
+@then('verify that user is navigated to "Book a free class" screen')
 @then('verify that the user is navigated to the "Book a free class" screen')
 def step_impl(driver, know_more):
     detail = know_more.verify_book_free_class_screen()
@@ -557,12 +557,22 @@ def step_impl(login):
     login.set_user_profile(user_profile='user_1', sub_profile='profile_3').verify_user_profile()
 
 
+@given("login with non booked user")
+def step_impl(login):
+    login.toggle_wifi_connection('on')
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
+
+
+
 @when('tap on "Book" button')
 @then('tap on "Book" button')
 def step_impl(know_more):
     detail = know_more.tap_on_book_button()
     check.equal(detail.result ,True, detail.reason)
 
+
 @then('verify user is able to book a session')
 def step_impl(know_more):
-    know_more.book_a_session()
+    detail = know_more.book_a_session()
+    check.equal(detail.result, True, detail.reason)
+    print()

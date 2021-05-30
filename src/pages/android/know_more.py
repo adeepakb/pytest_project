@@ -97,32 +97,38 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         if self.is_button_displayed_with_text("Book a Free Class") is True:
             return_type.result = True
             return_type.reason = "Book a free class button is shown"
-        else:
-            return_type.result = False
-            return_type.reason = "Book a free class button is not shown"
-            return return_type
-        return return_type
-
-    def validate_book_a_free_class_card(self):
-        return_type = ReturnType(False, "")
-        if self.is_button_displayed_with_text("Book a Free Class") is True:
+        elif self.is_button_displayed_with_text("View class details") is True:
             return_type.result = True
-            return_type.reason = "Book a free class button is shown"
+            return_type.reason = "View class details button is shown"
         else:
             return_type.result = False
             return_type.reason = "Book a free class button is not shown"
             return return_type
+
         return return_type
 
-    def tap_on_book_card(self):
+    def validate_book_a_free_class_card(self, text='Book a Free Class'):
+        return_type = ReturnType(False, "")
+        if self.is_button_displayed_with_text(text) is True:
+            return_type.result = True
+            return_type.reason = "{} button is shown".format(text)
+        else:
+            return_type.result = False
+            return_type.reason = "{} button is not shown".format(text)
+        return return_type
+
+
+
+
+    def tap_on_book_card(self, text='Book a Free Class'):
         return_type = ReturnType(False, "")
         try:
-            self.button_click("Book a Free Class")
+            self.button_click(text)
             return_type.result = True
-            return_type.reason = "Found and clicked on Book a Free Class Button"
+            return_type.reason = "Found and clicked on {} Button".format(text)
         except:
             return_type.result = False
-            return_type.reason = "Not Found and not clicked on Book a Free Class Button"
+            return_type.reason = "Not Found and not clicked on {} Button".format(text)
         return return_type
 
     def select_online_offline_mode(self, mode):
@@ -165,8 +171,8 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         try:
             self.element_click(*self.confirm_and_book)
             return_type.result = True
-            return_type.reason(" Clicked on confirm and book button on boking page")
+            return_type.reason=" Clicked on confirm and book button on boking page"
         except:
             return_type.result = False
-            return_type.reason(" Couldn't click on confirm and book button on boking page")
+            return_type.reason=" Couldn't click on confirm and book button on boking page"
         return return_type

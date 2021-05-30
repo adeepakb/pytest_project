@@ -1,8 +1,8 @@
 {
 	"testrail": {
 		"url": "https://tnl.testrail.io/",
-		"userName": "deepak.sharma11@byjus.com",
-		"password": "Deepak1!"
+		"userName": "",
+		"password": ""
 	},
 	"staging_access":
    {
