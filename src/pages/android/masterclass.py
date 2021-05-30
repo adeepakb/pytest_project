@@ -1,3 +1,4 @@
+import random
 import re
 from datetime import datetime, timedelta
 from time import sleep
@@ -23,7 +24,6 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
         self.scroll_cards = ScrollCards(driver)
         self.session_requisite = SessionRequisite(self.driver)
         super().__init__(driver)
-        self.device = self.get_device_type()
         self.device_type = self.get_device_type()
         self.staging = Stagingtllms(self.driver)
         self.dashboard = StudentDashboardOneToMega(self.driver)
@@ -166,7 +166,7 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
         )
         return True
 
-    def get_up_next_master_class_session(self):
+    def get_up_next_master_class_session(self, hp_tab=True):
         self.dashboard.ps_home_page_tab()
         self.click_option_see_more().reset_view()
         check, view_changed = 3, False
@@ -198,6 +198,7 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                     return False
             self.scroll_cards.scroll_by_card(list_content[-2], list_view)
             view_changed = True
+            check -= 1
 
     def get_completed_master_class_session(self):
         self.dashboard.ps_home_page_tab(tab_name='Completed')
@@ -262,17 +263,31 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                 displayed_status.append(self.get_element(*element).is_displayed())
             assert all(displayed_status)
 
-    def book_master_class(self, new_session=False, validate=False, **kwargs):
+    def book_special_master_class(self):
+        self.login.implicit_wait_for(2)
+        sessions = self.get_elements(*self.rc_card_root)
+        for session in sessions:
+            try:
+                session.find_element_by_id(self.card_book_btn[-1]).click()
+                sessions.clear()
+                self.get_element(*self.book_primary_btn).click()
+                self.get_element(*self.bs_okay_btn).click()
+                return True
+            except NoSuchElementException:
+                return False
+
+    def book_master_class(self, new_session=False, validate=False, ff_tag=True, error_validate=True, **kwargs):
         if not self.is_master_class_booked() or new_session:
             db = kwargs['db']
             self.scroll_rc_in_view()
             booking_success_activity = 'BookingSuccessActivity'
             otm_home_activity = 'OneToMegaHomeActivity'
             sessions = self.get_elements(*self.rc_card_root)
-            self.login.implicit_wait_for(0)
+            self.login.implicit_wait_for(1)
             for session in sessions:
                 try:
-                    assert session.find_element_by_id(self.card_filling_fast_label[-1]).is_displayed()
+                    if ff_tag:
+                        assert session.find_element_by_id(self.card_filling_fast_label[-1]).is_displayed()
                     db.booked_date_time = session.find_element_by_id(self.rc_card_schedule_tv[-1]).text
                     session.find_element_by_id(self.card_book_btn[-1]).click()
                     sessions.clear()
@@ -285,21 +300,22 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                 self.get_element(*self.book_primary_btn).click()
             except NoSuchElementException:
                 pass
-            error_message = None
-            try:
-                error_message = self.get_element(*self.dialog_message).text
-            except NoSuchElementException:
+            if error_validate:
+                error_message = None
                 try:
-                    error_message = self.get_element(*self.snack_bar).text
+                    error_message = self.get_element(*self.dialog_message).text
                 except NoSuchElementException:
-                    pass
-            finally:
-                if error_message is not None and self.wait_activity(otm_home_activity):
-                    return error_message
-                elif self.wait_activity(booking_success_activity):
-                    if validate:
-                        self.verify_booking_screen(booking_success_activity)
-                    self.get_element(*self.bs_okay_btn).click()
+                    try:
+                        error_message = self.get_element(*self.snack_bar).text
+                    except NoSuchElementException:
+                        pass
+                finally:
+                    if error_message is not None and self.wait_activity(otm_home_activity):
+                        return error_message
+            if self.wait_activity(booking_success_activity):
+                if validate:
+                    self.verify_booking_screen(booking_success_activity)
+                self.get_element(*self.bs_okay_btn).click()
                 assert self.wait_activity(otm_home_activity)
             return True
 
@@ -422,7 +438,7 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
         session.click()
 
     def join_master_class_session(self, screen='dashboard'):
-        self.staging.attach_session_video(profile='login_details_3', user_profile='user_2', sub_profile='profile_3')
+        self.staging.attach_session_video(grade="4", profile='login_details_3', user_profile='user_2', sub_profile='profile_3')
         self.dashboard.refresh()
         btn = self.get_master_class_join_now_button()
         if btn is None:
@@ -510,7 +526,7 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
             topic_name = session.find_element_by_id(self.pr_card_topic[-1]).text
         if req_type == 'all':
             self.staging.attach_requisite_group(user_profile='user_2',
-                                                sub_profile='profile_3', session_topic_nm=topic_name,
+                                                sub_profile='profile_3', grade="4",
                                                 days='today', req_type='pre_post_ak3_29', asset_type=asset_type.lower(),
                                                 profile='login_details_3')
         else:
@@ -577,3 +593,190 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                 elif r_hour == mc_hour and r_minutes > mc_minutes:
                     return True
         return False
+
+    def select_random_masterclass_date(self, action="cancel"):
+        self.get_element(*self.card_slots_detail_tv)
+        sessions = self.get_elements(*self.rc_card_root)
+        self.login.implicit_wait_for(1)
+        for session in sessions:
+            try:
+                session.find_element_by_id(self.card_book_btn[-1]).click()
+                sessions.clear()
+            except NoSuchElementException:
+                pass
+        self.login.implicit_wait_for(15)
+        try:
+            time_slot_view = self.get_element(*self.sd_time_slot_list)
+            time_slots = time_slot_view.find_elements_by_class_name("android.widget.RelativeLayout")
+            random.choice(time_slots).click()
+            if action == "book":
+                self.get_element(*self.book_primary_btn).click()
+            elif action == "cancel":
+                self.get_element(*self.book_secondary_btn).click()
+        except NoSuchElementException:
+            pass
+
+
+class MasterClassFuturePaid(TutorCommonMethods):
+    def __init__(self, driver):
+        self.driver = driver
+        self.login = Login(driver)
+        self.action = TouchAction(driver)
+        self.scroll_cards = ScrollCards(driver)
+        self.session_requisite = SessionRequisite(self.driver)
+        super().__init__(driver)
+        self.device_type = self.get_device_type()
+        self.staging = Stagingtllms(self.driver)
+        self.dashboard = StudentDashboardOneToMega(self.driver)
+        self.__init_locators(self.device_type)
+        self.ERROR_MESSAGE = 'Please connect to network and try again!'
+        self.join_topic_name = None
+
+    def __init_locators(self, device_type=None):
+        package_name = self.driver.capabilities['appPackage'] + ':id'
+        self.section_name = 'id', '%s/sectionName' % package_name
+        self.card_list_root = "id", "%s/root_view" % package_name
+        self.card_list = 'id', '%s/rvCourseList' % package_name
+        self.card_root = "id", "%s/cvSessionCard" % package_name
+        self.card_root_reg = "id", "%s/card_root" % package_name
+        self.card_label_tv = 'id', '%s/tvWorkshop' % package_name
+        self.card_book_btn = 'id', '%s/btBookSession' % package_name
+        self.session_header = "id", "%s/tvTitle" % package_name
+        self.toolbar = "id", "%s/toolbarView" % package_name
+        self.card_filling_fast_label = 'id', '%s/tvFillingFast' % package_name
+        self.sc_card_schedule_tv = 'id', '%s/tvSessionTime' % package_name
+        self.book_primary_btn = 'id', '%s/primaryAction' % package_name
+        self.bs_okay_btn = 'id', '%s/appButtonCtaOk' % package_name
+        self.snack_bar = 'id', '%s/snackbar_text' % package_name
+        self.dialog_message = 'id', '%s/dialog_message' % package_name
+        self.pr_date = 'id', '%s/post_requisite_date' % package_name
+        self.pr_status_msg = 'id', '%s/post_requisite_status' % package_name
+
+    def scroll_sc_in_view(self):
+        try:
+            self.get_element(
+                'android_uiautomator',
+                'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
+                f'scrollTextIntoView("Special Classes")'
+            )
+        except NoSuchElementException:
+            return self.get_element(
+                    'android_uiautomator',
+                    'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
+                    f'scrollTextIntoView("Recommended Classes")'
+                ).is_displayed()
+        toolbar = self.get_element(*self.toolbar)
+        session_headers = self.get_elements(*self.session_header)
+        for session_header in session_headers:
+            if session_header.text.lower() == "special classes":
+                start_location = session_header.location
+                end_location = toolbar.location
+                start_element_size = session_header.size
+                start_x = start_location['x'] + start_element_size["width"] // 2
+                start_y = start_location['y'] + start_element_size["height"] - 10
+                end_y = end_location['y'] + toolbar.size["height"] + 10
+                self.action.press(x=start_x, y=start_y).move_to(x=start_x, y=end_y).wait(3000).release().perform()
+                return
+
+    def is_master_class_available(self):
+        self.scroll_sc_in_view()
+        card = self.get_element(*self.card_root)
+        mc_label_text = card.find_element_by_id(self.card_label_tv[-1]).text.lower()
+        if mc_label_text == "workshop" and card.find_element_by_id(self.card_book_btn[-1]).is_displayed():
+            return True
+        return False
+
+    def book_master_class(self, ff_tag=True, error_validate=True, **kwargs):
+        db = kwargs['db']
+        self.scroll_sc_in_view()
+        booking_success_activity = 'BookingSuccessActivity'
+        otm_home_activity = 'OneToMegaHomeActivity'
+        sessions = self.get_elements(*self.card_root)
+        self.login.implicit_wait_for(1)
+        for session in sessions:
+            try:
+                if ff_tag:
+                    assert session.find_element_by_id(self.card_filling_fast_label[-1]).is_displayed()
+                db.booked_date_time = session.find_element_by_id(self.sc_card_schedule_tv[-1]).text
+                session.find_element_by_id(self.card_book_btn[-1]).click()
+                sessions.clear()
+            except NoSuchElementException:
+                pass
+        self.login.implicit_wait_for(15)
+        try:
+            self.get_element(*self.book_primary_btn).click()
+        except NoSuchElementException:
+            pass
+        if error_validate:
+            error_message = None
+            try:
+                error_message = self.get_element(*self.dialog_message).text
+            except NoSuchElementException:
+                try:
+                    error_message = self.get_element(*self.snack_bar).text
+                except NoSuchElementException:
+                    pass
+            finally:
+                if error_message is not None and self.wait_activity(otm_home_activity):
+                    return error_message
+        if self.wait_activity(booking_success_activity):
+            self.get_element(*self.bs_okay_btn).click()
+            assert self.wait_activity(otm_home_activity)
+        return True
+
+    def get_completed_master_class_session(self):
+        self.dashboard.ps_home_page_tab(tab_name='Completed')
+        sessions = self.get_elements(*self.card_root)
+        if not sessions:
+            sessions = self.get_elements(*self.card_root_reg)
+        today = datetime.now().strftime("%d %b")
+        self.login.implicit_wait_for(0)
+        for session in sessions:
+            try:
+                if session.find_element_by_id(self.card_label_tv[-1]).is_displayed() and \
+                        session.find_element_by_id(self.pr_date[-1]).text == today:
+                    return session
+            except NoSuchElementException:
+                pass
+
+    def get_up_next_master_class_session(self):
+        package_name = self.driver.capabilities['appPackage'] + ':id'
+        card_list = 'id', '%s/sessions_list' % package_name
+        self.dashboard.ps_home_page_tab()
+        check, view_changed = 3, False
+        list_view = self.get_element(*card_list)
+        list_content = self.get_elements('xpath', f'//*[@resource-id="{card_list[-1]}"]/*')
+        section_name = list_content[0].find_element_by_id(self.section_name[-1]).text.lower()
+        self.login.implicit_wait_for(0)
+        while check:
+            list_content = self.get_elements('xpath', f'//*[@resource-id="{card_list[-1]}"]/*')
+            for element in list_content:
+                if view_changed:
+                    try:
+                        section_name = element.find_element_by_id(self.section_name[-1]).text.lower()
+                    except NoSuchElementException:
+                        pass
+                if section_name == 'up next':
+                    try:
+                        if element.find_element_by_id(self.card_label_tv[-1]).is_displayed():
+                            try:
+                                if element.find_element_by_id(self.pr_status_msg[-1]).text.lower() == 'completed':
+                                    return False
+                                else:
+                                    return element
+                            except NoSuchElementException:
+                                return element
+                    except NoSuchElementException:
+                        pass
+                elif section_name == 'recommended classes' and view_changed:
+                    return False
+            self.scroll_cards.scroll_by_card(list_content[-2], list_view)
+            view_changed = True
+
+    def is_master_class_booked(self):
+        completed_session = self.get_completed_master_class_session()
+        mc_completed_session = completed_session.is_displayed() if completed_session is not None else False
+        up_next_session = self.get_up_next_master_class_session()
+        mc_up_next_session = up_next_session.is_displayed() if not isinstance(up_next_session, bool) \
+            else up_next_session
+        return any((mc_up_next_session, mc_completed_session))

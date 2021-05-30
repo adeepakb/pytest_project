@@ -134,13 +134,14 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         self.get_element(*self.nav_btn).click()
 
     def get_req_sessions(self) -> List[WebElement]:
-        self.login.implicit_wait_for(2.5)
+        self.login.implicit_wait_for(15)
         try:
             l_value = "//*[@resource-id=\"%s\"]" % self.sd_post_req_list[-1] + "/%s" % self.linear_layout[-1]
             req = self.get_elements('xpath', l_value)
             if len(req) == 0:
                 raise NoSuchElementException
         except NoSuchElementException:
+            self.login.implicit_wait_for(5)
             l_value = "//*[@resource-id=\"%s\"]" % self.sd_pre_req_list[-1] + "/%s" % self.linear_layout[-1]
             req = self.get_elements('xpath', l_value)
             if len(req) == 0:
@@ -493,7 +494,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             else:
                 assert attachment.find_element(*self.sd_req_assess)
             assert attachment.find_element(*self.sd_req_typ_desc)
-            assert attachment.find_element(*self.sd_req_next_arrow)
+            # assert attachment.find_element(*self.sd_req_next_arrow)
         if attachments:
             return True
 

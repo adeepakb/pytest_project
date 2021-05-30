@@ -1168,9 +1168,9 @@ class RegScreen():
                 
         def enter_user_phone_email_name(self,driver):
             try:
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'name'), self.nametextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'mobile'), self.phonetextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'email'), self.emailtextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'name'), self.nametextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'mobile'), self.phonetextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'email'), self.emailtextfield)
             except NoSuchElementException:
                 CommonMethods.noSuchEleExcept(driver, featureFileName, 'enter_user_phone_email_name')    
              
@@ -1179,9 +1179,9 @@ class RegScreen():
                 
         def enter_city_phone_name(self,driver):
             try:
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'name'), self.nametextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'mobile'), self.phonetextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'city'), self.citytextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'name'), self.nametextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'mobile'), self.phonetextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'city'), self.citytextfield)
             except NoSuchElementException:
                 CommonMethods.noSuchEleExcept(driver, featureFileName, 'enter_city_phone_name')    
              
@@ -1190,8 +1190,8 @@ class RegScreen():
         
         def enter_email_name(self,driver):
             try:
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'name'), self.nametextfield)
-                CommonMethods.enterText(driver,getdata(data_file, 'user_details', 'email'), self.emailtextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'name'), self.nametextfield)
+                CommonMethods.enterText(driver, get_data(data_file, 'user_details', 'email'), self.emailtextfield)
             except NoSuchElementException:
                 CommonMethods.noSuchEleExcept(driver, featureFileName, 'enter_email_name')    
              

@@ -101,10 +101,10 @@ def profile_completeness(driver):
 # scenario 3
 @given('Launch app on offline')
 def launch_offline(driver):
-    code = getdata(Login_Credentials, 'login_details2', 'code')
-    countrycode = getdata(Login_Credentials, 'login_details2', 'country_code')
-    mobno = getdata(Login_Credentials, 'login_details2', 'mobile_no')
-    otp = getdata(Login_Credentials, 'login_details2', 'OTP')
+    code = get_data(Login_Credentials, 'login_details2', 'code')
+    countrycode = get_data(Login_Credentials, 'login_details2', 'country_code')
+    mobno = get_data(Login_Credentials, 'login_details2', 'mobile_no')
+    otp = get_data(Login_Credentials, 'login_details2', 'OTP')
     home.navigate_to_home_screen(driver)
     home_screen.click_on_hamburger_menu(driver)
     profile.click_on_home_drawr_forward_icon(driver)

@@ -1,4 +1,5 @@
 import re
+import time
 import traceback
 import os
 import sys
@@ -35,6 +36,14 @@ feature_job = BuildFeatureJob()
 
 def pytest_addoption(parser):
     parser.addoption("--platform", action="append")
+
+
+def capture_screenshot(request, feature_name):
+    driver = request.getfixturevalue("driver")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
+    screenshot_filename = feature_name + " " + timestamp + ".png"
+    driver.get_screenshot_as_file(screenshot_filename)
+    return screenshot_filename
 
 
 @pytest.fixture()
@@ -83,6 +92,7 @@ def pytest_bdd_before_scenario(feature):
        :returns: None
        """
     py_test.exception = None
+    py_test.start = time.time()
     feature_name = feature.name
     if feature_name == 'Register Screen':
         subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
@@ -159,8 +169,12 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
+    app_version = base_class.get_current_app_version()
+    elapsed_time = int(time.time() - py_test.__getattribute__('start'))
+    py_test.elapsed = str(elapsed_time) + 's'
     # suite_name = os.getenv('suite')
-    # data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "13", "160")
+    suite_name = "Byju's Classes"
+    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -173,6 +187,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         _exception.insert(0, trc)
         _exception.append(summaries[-1])
         _exception = "".join(_exception)
+        screenshot_filename = capture_screenshot(request,feature_name)
         if not value:
             step_name = py_test.__getattribute__('failed_step_name')
         else:
@@ -187,10 +202,11 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         )
         sys.stderr.writelines(stdout_err)
 
-        # update_testrail(data[1], data[0], False, step_name, _exception)
+        update_testrail(data[1], data[0], False, step_name, _exception, py_test.elapsed, app_version)
+        add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
         msg_body = "all steps are passed"
-        # update_testrail(data[1], data[0], True, msg_body, 'passed')
+        update_testrail(data[1], data[0], True, msg_body, 'passed', py_test.elapsed, app_version)
     file = '../../config/chrome_session.json'
     try:
         os.unlink(file)

@@ -116,7 +116,7 @@ class MasterClassBase(ABC):
 
     @staticmethod
     @abstractmethod
-    def format_date_time():
+    def format_date_time(*args):
         raise NotImplementedError()
 
     @abstractmethod

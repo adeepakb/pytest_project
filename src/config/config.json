@@ -2,17 +2,17 @@
 	"testrail": {
 		"url": "https://tnl.testrail.io/",
 		"userName": "suguresh.soppimath@byjus.com",
-		"password": "3CRKdQcRN37MESsa5Dgb-Si8tWcvSIx4jEANizT4a"
+		"password": "2srKJR39QzxvTGu1gwOT-9Sc0/W9PCsrLZjZ8fS8T"
 	},
 	"staging_access":
    {
 	   "email":"testautomation@byjus.com",
-	   "password": "Byjus@54321"
+	   "password": "ByjusTest@123"
    },
 	"desired_cap": {
     	"automationName": "UiAutomator2",
 		"platformName": "Android",
-		"deviceName": "device",
+		"deviceName": "SM-T295",
 		"autoAcceptAlerts": true,
 		"appPackage": "com.byjus.thelearningapp.premium",
 		"appActivity": "com.byjus.app.onboarding.activity.SplashActivity",

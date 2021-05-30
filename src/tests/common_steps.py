@@ -137,17 +137,32 @@ def launch_and_nav_to_home(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
     login.verify_home_screen()
+    login.implicit_wait_for(15)
 
 
 @given('navigate to one to mega home screen')
 @when('navigate to one to mega home screen')
+@then('navigate to one to mega home screen')
 @given("navigate to byju's classes home screen")
 def nav_to_mega_home(login):
     login.click_on_premium_school()
 
 
+@then(parsers.re(
+    'attach (?P<req_type>(?:in|pre|post|all '
+    '(?:pre|post|pre and post|pre and in|in and post)|two '
+    '(?:pre|post|in))) requisites (?P<req_content>'
+    '(?:k12_video |assessment |journey |practice |k3_video |video |))for '
+    '(?P<this_day>(?:tomorrow|today|yesterday|completed|up next)) session'
+))
+@when(parsers.re(
+    'attach (?P<req_type>(?:in|pre|post|all '
+    '(?:pre|post|pre and post|pre and in|in and post)|two '
+    '(?:pre|post|in))) requisites (?P<req_content>'
+    '(?:k12_video |assessment |journey |practice |k3_video |video |))for '
+    '(?P<this_day>(?:tomorrow|today|yesterday|completed|up next)) session'
+))
 @given(parsers.re(
     'attach (?P<req_type>(?:in|pre|post|all '
     '(?:pre|post|pre and post|pre and in|in and post)|two '
@@ -171,8 +186,9 @@ def step_impl(db, tllms, req_type, req_content, this_day):
     except AttributeError:
         topic_name = None
     tllms.attach_requisite_group(
-        req_type, req_content.strip(), days=this_day, profile='login_details_3', user_profile=user_profile,
-        sub_profile='profile_1', session_topic_nm=topic_name)
+        grade="8", req_type=req_type, asset_type=req_content.strip(),
+        days=this_day, profile='login_details_3', user_profile=user_profile,
+        sub_profile='profile_1')
 
 
 @when('verify completed session cards should be displayed')

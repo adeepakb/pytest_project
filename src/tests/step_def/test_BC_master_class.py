@@ -161,13 +161,13 @@ def step_impl(m_class):
 
 @when('verify and add slot for master class booking')
 def step_impl(tllms, std_board):
-    tllms.verify_and_add_slot()
+    tllms.verify_and_add_slot(cohort="29", course_tag="masterclass")
     std_board.refresh()
 
 
 @when('add slot for master class booking post booking time')
 def step_impl(tllms, std_board):
-    tllms.verify_and_add_slot(minutes=2)
+    tllms.verify_and_add_slot(cohort="29", course_tag="masterclass", minutes=2)
     std_board.refresh()
 
 

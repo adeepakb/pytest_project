@@ -2,6 +2,9 @@ import re
 import subprocess
 from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
 
 from pages.base.application_login import LoginBase
 from utilities.tutor_common_methods import TutorCommonMethods
@@ -11,7 +14,7 @@ from subprocess import Popen
 from json import load
 from utilities.staging_tllms import Stagingtllms
 import logging
-from constants.load_json import getdata
+from constants.load_json import get_data
 from constants.constants import *
 
 
@@ -31,7 +34,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.permission_alert = '//*[contains(@resource-id,"alert")]'
         self.alert_message = '//*[contains(@resource-id,"message")]'
         self.button_cls = 'android.widget.Button'
-        self.offline_validation_layout = '//*[contains(@resource-id,"dialog_layout")]'
+        self.dialog_layout = "id", "%s:id/dialog_layout" % self.package_name
         self.country_dropdown_cls = 'android.widget.Spinner'
         self.text_view_cls = 'android.widget.TextView'
         self.otp_id = '%s:id/etOTP' % self.package_name
@@ -60,16 +63,25 @@ class Login(LoginBase, TutorCommonMethods):
         self.bottom_sheet_layout = 'id', '%s:id/design_bottom_sheet' % self.package_name
         self.action_layout_ignore = 'id', '%s:id/tvCancel' % self.package_name
         self.action_layout_dismiss = 'id', '%s:id/tv_secondaryAction' % self.package_name
+        self.expired_later_btn = 'id', "%s:id/tvLater" % self.package_name
+        self.se_call_us = 'id', "%s:id/btnCallUs" % self.package_name
+        self.expired_msg_title = 'xpath', "//*[@text=\"Subscription Expired!\"]"
+        self.bs_class_started_title = "id", "%s:id/tvClassStarted" % self.package_name
+        self.bs_subject_name = "id", "%s:id/tvSubjectName" % self.package_name
+        self.bs_topic_name = "id", "%s:id/tvSessionTitle" % self.package_name
+        self.bs_join_btn = "id", "%s:id/btnJoinNow" % self.package_name
+        self.bs_cancel_btn = "id", "%s:id/tvCancel" % self.package_name
         self.login_data, self.user_mobile, self.profile_name, self.otp, self.premium_id = None, None, None, None, None
         self.os_version_major = int(subprocess.getoutput("adb shell getprop ro.build.version.release").split(".")[0])
         self.set_user_profile()
         super().__init__(driver)
+        self.wait = WebDriverWait(driver, 30)
 
-    def implicit_wait_for(self, pool=15):
-        self.driver.implicitly_wait(pool)
+    def implicit_wait_for(self, poll=15):
+        self.driver.implicitly_wait(poll)
 
     def set_user_profile(self, login_profile='login_details_3', user_profile='user_1', sub_profile='profile_1'):
-        self.login_data = getdata(Login_Credentials, login_profile)
+        self.login_data = get_data(Login_Credentials, login_profile)
         self.user_mobile = self.login_data[user_profile]["mobile_number"]
         self.profile_name = self.login_data[user_profile][sub_profile]["profile_name"]
         self.otp = self.login_data[user_profile]["OTP"]
@@ -104,11 +116,13 @@ class Login(LoginBase, TutorCommonMethods):
     def switch_grade(self, grade=None):
         self.get_element(*self.hamburger_icon).click()
         self.get_element(*self.home_drawer).click()
+        self.get_element(*self.garde_rv_tv).click()
         for grade_view in self.get_elements(*self.grade_rv):
-            if grade in grade_view.find_element_by_id(self.grade_name_view[-1]).text:
+            if str(grade) in grade_view.find_element_by_id(self.grade_name_view[-1]).text:
                 grade_view.find_element_by_id(self.grade_radio_btn_view[-1]).click()
                 self.click_back()
                 self.clear_app_from_recents()
+                self.driver.launch_app()
                 return True
         return False
 
@@ -117,7 +131,7 @@ class Login(LoginBase, TutorCommonMethods):
         badge_screen_active = self.wait_activity(badge_activity, 5)
         if badge_screen_active:
             self.get_element(*self.close_badge_reward).click()
-        self.implicit_wait_for(3)
+        self.implicit_wait_for(5)
         try:
             self.get_element(*self.action_layout_dismiss, wait=False).click()
         except NoSuchElementException:
@@ -126,9 +140,18 @@ class Login(LoginBase, TutorCommonMethods):
             self.get_element(*self.action_layout_ignore, wait=False).click()
         except NoSuchElementException:
             pass
-        self.implicit_wait_for(5)
-        self.get_element(*self.hamburger_icon).click()
-        self.get_element(*self.home_drawer).click()
+        self.implicit_wait_for(3)
+        try:
+            self.subscription_expired()
+            self.get_element(*self.hamburger_icon).click()
+        except NoSuchElementException:
+            try:
+                self.get_element(*self.hamburger_icon).click()
+                self.get_element(*self.home_drawer).click()
+            except NoSuchElementException:
+                self.reset_and_login_with_otp()
+                self.get_element(*self.hamburger_icon).click()
+                self.get_element(*self.home_drawer).click()
         profile_activity = self.wait_activity("ProfileActivity", 20)
         grade = self.get_element(*self.garde_rv_tv).text
         if int(grade.strip(grade[grade.index("th"):])) < 6:
@@ -166,14 +189,14 @@ class Login(LoginBase, TutorCommonMethods):
         badge_activity = "EarnedBadgeActivity"
         user_home_activity = "UserHomeActivity"
         otm_home_activity = "OneToMegaHomeActivity"
-        badge_screen_active = self.wait_activity(badge_activity, 5)
+        badge_screen_active = self.wait_activity(badge_activity, 3)
         if badge_screen_active:
             self.get_element(*self.close_badge_reward)
         self.wait_activity(home_activity)
         current_activity = self.driver.current_activity.split(".")[-1]
         if user_home_activity == current_activity or otm_home_activity == current_activity:
             retry = 2
-            while not self.wait_activity(home_activity, 5) and retry:
+            while not self.wait_activity(home_activity, 3) and retry:
                 self.click_back()
                 retry -= 1
             self.verify_user_profile()
@@ -181,7 +204,7 @@ class Login(LoginBase, TutorCommonMethods):
             self.reset_and_login_with_otp()
         elif home_activity == current_activity:
             self.verify_user_profile()
-        badge_screen_active = self.wait_activity(badge_activity, 10)
+        badge_screen_active = self.wait_activity(badge_activity, 3)
         if badge_screen_active:
             self.get_element(*self.close_badge_reward)
 
@@ -400,7 +423,7 @@ class Login(LoginBase, TutorCommonMethods):
         session_cards_list[index].click()
 
     def is_offline_validation_layout_displayed(self):
-        layout = self.get_element('xpath', self.offline_validation_layout).is_displayed()
+        layout = self.get_element(*self.dialog_layout).is_displayed()
         if layout is True:
             return True
         return False
@@ -414,7 +437,7 @@ class Login(LoginBase, TutorCommonMethods):
         link.click()
 
     def wait_for_dialog_to_be_invisible(self):
-        self.wait_for_invisibility_of_element('xpath', self.offline_validation_layout)
+        self.wait_for_invisibility_of_element(*self.dialog_layout)
 
     def click_on_country_code_dropdown(self):
         self.get_element('class_name', self.country_dropdown_cls).click()
@@ -428,7 +451,7 @@ class Login(LoginBase, TutorCommonMethods):
         # if account_type == 'many':
         #     # data = Stagingtllms(self.driver, staging_login=False).get_mobile_and_ccode()
         # elif account_type == 'personal':
-        #     data = str(getdata('../../config/config.json', 'account_with_password', 'mobile'))
+        #     data = str(get_data('../../config/config.json', 'account_with_password', 'mobile'))
         mobile_and_code = data.split('-')
         self.select_country_code(mobile_and_code[0])
         self.enter_phone(mobile_and_code[1])
@@ -564,12 +587,15 @@ class Login(LoginBase, TutorCommonMethods):
                 break
 
     def enter_passwd(self):
-        psswd = str(getdata('../../config/config.json', 'account_with_password', 'password'))
+        psswd = str(get_data('../../config/config.json', 'account_with_password', 'password'))
         self.enter_password(psswd)
 
-    def login_with_otp(self):
+    def login_with_otp(self, bottom_sheet_dismiss=True):
         retry = 5
-        timeout = 20
+        if bottom_sheet_dismiss:
+            timeout = 20
+        else:
+            timeout = 0
         self.on_boarding_activity()
         verify_activity = "VerifyActivity"
         self.enter_reg_mobile_number()
@@ -605,13 +631,21 @@ class Login(LoginBase, TutorCommonMethods):
                 pass
         dialog_visible = True
         self.implicit_wait_for(0)
+        if not timeout:
+            try:
+                self.get_element(*self.welcome_btn).click()
+            except (NoSuchElementException, StaleElementReferenceException):
+                pass
         while timeout:
             try:
                 if dialog_visible:
                     dialog_layout = self.get_element(*self.bottom_sheet_layout, wait=False)
                     if dialog_layout.is_displayed():
-                        dialog_layout.find_element_by_id(self.action_layout_ignore[-1]).click()
-                        dialog_visible = False
+                        if timeout % 2 == 0:
+                            dialog_layout.find_element_by_id(self.action_layout_ignore[-1]).click()
+                            dialog_visible = False
+                        else:
+                            dialog_layout.find_element_by_id(self.action_layout_dismiss[-1]).click()
                 self.get_element(*self.welcome_btn).click()
                 timeout = 0
             except (NoSuchElementException, StaleElementReferenceException):
@@ -625,6 +659,19 @@ class Login(LoginBase, TutorCommonMethods):
         self.execute_command('adb shell pm clear %s' % self.package_name)
         self.execute_command('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % self.package_name)
         self.login_with_otp()
+        self.implicit_wait_for(3)
+        try:
+            self.subscription_expired()
+        except NoSuchElementException:
+            pass
+        try:
+            self.get_element(*self.action_layout_dismiss, wait=False).click()
+        except NoSuchElementException:
+            pass
+        try:
+            self.get_element(*self.action_layout_ignore, wait=False).click()
+        except NoSuchElementException:
+            pass
 
     def cancel_session_join(self):
         try:
@@ -639,7 +686,7 @@ class Login(LoginBase, TutorCommonMethods):
                 self.get_element('xpath', '//*[contains(@resource-id, "ClassroomAvatarImg")]').click()
                 expected_mobile_number = self.get_element('xpath', '//*[contains(@resource-id, "mobile_number")]').text
                 account_details = '../../config/config.json'
-                actual_mobile_number = str(getdata(account_details, 'account_details', 'mobile'))
+                actual_mobile_number = str(get_data(account_details, 'account_details', 'mobile'))
                 if expected_mobile_number == actual_mobile_number:
                     logging.info('classroom page verified')
                     self.get_element('xpath', self.profile_back_button).click()
@@ -686,6 +733,39 @@ class Login(LoginBase, TutorCommonMethods):
             'scrollIntoView(textMatches("%s"))' % text)
         element.click()
         re.findall(r'(?i)premium school', element.text)
+
+    def subscription_expired(self, action="dismiss"):
+        try:
+            self.get_element(*self.action_layout_dismiss, wait=False).click()
+        except NoSuchElementException:
+            pass
+        try:
+            self.get_element(*self.action_layout_ignore, wait=False).click()
+        except NoSuchElementException:
+            pass
+        expired_msg_displayed = self.get_element(*self.expired_msg_title).is_displayed()
+        if expired_msg_displayed and action.lower() == "dismiss":
+            self.get_element(*self.expired_later_btn).click()
+        elif expired_msg_displayed and action.lower() == "call us":
+            self.get_element(*self.se_call_us).click()
+        elif expired_msg_displayed:
+            raise NotImplementedError(f"Action of type \"{action}\" is not yet implemented.")
+        return expired_msg_displayed
+
+    def verify_bottom_sheet_details(self):
+        dialog_lyt_displayed = self.get_element(*self.dialog_layout).is_displayed()
+        if dialog_lyt_displayed:
+            cls_started_title_displayed = self.get_element(*self.bs_class_started_title).is_displayed()
+            subject_name_displayed = self.get_element(*self.bs_subject_name).is_displayed()
+            topic_name_displayed = self.get_element(*self.bs_topic_name).is_displayed()
+            join_btn_displayed = self.get_element(*self.bs_join_btn).is_displayed()
+            cancel_btn_displayed = self.get_element(*self.bs_cancel_btn).is_displayed()
+            return all((cls_started_title_displayed, subject_name_displayed, topic_name_displayed, join_btn_displayed,
+                       cancel_btn_displayed))
+        return False
+
+    def join_the_class_bottom_sheet(self):
+        self.wait.until(ec.element_to_be_clickable((By.ID, self.bs_join_btn[-1]))).click()
 
 
 class LoginException(Exception):

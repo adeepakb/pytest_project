@@ -20,9 +20,9 @@ from constants.load_json import *
 import glob
 
 fp = '../../config/config.json'
-testrail_url = getdata(fp, 'testrail', 'url')
-testrail_username = getdata(fp, 'testrail', 'userName')
-testrail_password = getdata(fp, 'testrail', 'password')
+testrail_url = get_data(fp, 'testrail', 'url')
+testrail_username = get_data(fp, 'testrail', 'userName')
+testrail_password = get_data(fp, 'testrail', 'password')
 custom_Tag_Dict = {1: 'Video', 2: 'Sanity', 3: 'BVT'}
 custom_Tag_List = [1, 2, 3]
 
@@ -274,20 +274,34 @@ def create_feature_from_run(suite_id, run_id):
     print('Number of test cases in feature files = ' + str(count))
 
 
-def update_testrail(case_id, run_id, result_flag, step, exc_msg):
+# to fetch latest result id
+def get_latest_result_id(run_id, case_id):
+    client = get_testrail_client()
+    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    for test_result in test_results:
+        if test_result is not None:
+            print(test_result['id'])
+            return test_result['id']
+
+
+# Add attachment to test result
+def add_attachment_to_result(run_id, case_id, attachment):
+    client = get_testrail_client()
+    result_id = get_latest_result_id(run_id, case_id)
+    response = client.send_post('add_attachment_to_result/%s' % result_id, attachment)
+    print(response)
+
+
+def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, app_version):
     """
     Update the result to testrail for the particular *run_id* and *case_id* with appropriate
     comments and status.
-
     The status will set accordingly whether or not an exception occurs during test execution.
-
-
     :param case_id: ID of the case of the particular test case. Example: `C12345`
     :param run_id: ID of the run, can be found under **Test Runs and Results**. Example: `R123`
     :param result_flag: is set True/False based on whether or not exception has occurred
     :param step: Failed step name if exception has occurred else *all steps are passed* is set.
     :param exc_msg: Exception stack trace is set if exception occurred else *passed* is set.
-
     :type case_id: str
     :type run_id: str
     :type result_flag: bool
@@ -303,7 +317,10 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg):
         exc_msg = "Failed Step Name: %s\n%s" % (step, exc_msg)
     if run_id is not None:
         result = client.send_post('add_result_for_case/%s/%s' % (run_id, case_id),
-                                  {'status_id': status_id, 'comment': exc_msg})
+                                  {'status_id': status_id,
+                                   'comment': exc_msg,
+                                   'elapsed': elapsed_time,
+                                   'version': app_version})
         print("Status: %s" % result)
         print('Updated test result for case: %s in test run: %s ' % (case_id, run_id))
     return update_flag

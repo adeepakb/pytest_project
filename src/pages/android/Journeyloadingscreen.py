@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from utilities.interrupt import *
 from utilities.common_methods import CommonMethods
 
-# from constants.load_json import getdata
+# from constants.load_json import get_data
 featureFileName = "Journey loading screen"
 CommonMethods = CommonMethods()
 

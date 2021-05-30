@@ -20,10 +20,10 @@ scenarios('../features/' + featureFileName + '.feature')
 @given('Launch the app online')
 def launch_app(driver):
     # journey_start.switch_to_wifi(driver)
-    # code = getdata(Login_Credentials,'login_details2', 'code')
-    # countrycode = getdata(Login_Credentials,'login_details2', 'country_code')
-    # mobno = getdata(Login_Credentials,'login_details2', 'mobile_no')
-    # otp = getdata(Login_Credentials,'login_details2','OTP')
+    # code = get_data(Login_Credentials,'login_details2', 'code')
+    # countrycode = get_data(Login_Credentials,'login_details2', 'country_code')
+    # mobno = get_data(Login_Credentials,'login_details2', 'mobile_no')
+    # otp = get_data(Login_Credentials,'login_details2','OTP')
     home.navigate_to_home_screen(driver)
     pass
 

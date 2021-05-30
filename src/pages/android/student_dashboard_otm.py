@@ -372,6 +372,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.get_element(*self.nav_btn).click()
 
     def tap_on_req_grp(self, req_typ=None):
+        self.login.implicit_wait_for(30)
         req_parent = self.get_element(*self.sd_pre_req_list)
         if req_parent is None:
             raise AttachmentError('no requisites available in the current screen')
@@ -452,9 +453,6 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 return True
         else:
             raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
-
-
-
 
     def is_post_requisite_attached(self):
         s = self.get_element(*self.pr_status_msg).text
@@ -584,7 +582,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
 
     def last_completed_session_up_next(self, completed=None):
-        self.login.implicit_wait_for(15)
+        self.login.implicit_wait_for(30)
         self.click_back()
         self.staging.otm_home_screen()
         check = 5
@@ -714,12 +712,14 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         else:
             user_profile = 'user_1'
         self.login.set_user_profile(user_profile=user_profile).verify_home_screen()
-        self.staging.attach_session_video(profile=profile, user_profile=user_profile, sub_profile=sub_profile)
+        self.staging.session_relaunch()
+        self.staging.attach_session_video(grade="8", profile=profile, user_profile=user_profile, sub_profile=sub_profile)
         self.login.click_on_premium_school()
         if not self.rate_session():
             join_session_topic_name = self.join_session(rate_action=rate_action)
             db.topic_name = join_session_topic_name
             self.staging.end_ongoing_session(rate_action=rate_action, topic_name=join_session_topic_name)
+            self.login.implicit_wait_for()
             self.get_element(*self.bottom_sheet_submit_btn).click()
             if rate_activity_check:
                 assert self.wait_activity('RatingActivity')
@@ -755,6 +755,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 self.get_element(*self.rating_btn_submit).click()
 
     def rate_session(self, session='today'):
+        self.login.implicit_wait_for(30)
         cst = None
         last_completed = time.strftime("%d %b")
         session_list = self.get_element(*self.card_list)
@@ -899,7 +900,15 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 element.click()
                 break
             else:
-                raise Exception()
+                self.driver.launch_app()
+                element = self.get_element(
+                    'android_uiautomator',
+                    'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
+                    'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image"))')
+                element.click()
+                if self.wait_activity(user_home_activity, timeout):
+                    self.get_element(*self.btn_premium).click()
+                break
 
     def is_completed_session_displayed(self):
         card_root = self.get_element(*self.card_root)

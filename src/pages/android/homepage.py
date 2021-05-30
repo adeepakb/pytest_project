@@ -12,10 +12,9 @@ import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-from utilities.API_methods import *
 from utilities.common_methods import CommonMethods
 from constants.constants import CONFIG_PATH, Login_Credentials
-from constants.load_json import getdata
+from constants.load_json import get_data
 
 CommonMethods = CommonMethods()
 
@@ -157,14 +156,14 @@ class HomePage():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail4', 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail4', 'mobile_no'), self.phone_num)
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail4', 'country_code'))
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail4', 'mobile_no'), self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail4', 'OTP'), self.OtpTxtBx_id)
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail4', 'OTP'), self.OtpTxtBx_id)
 
-        data = getdata(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
+        data = get_data(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(driver, data)
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
@@ -188,14 +187,14 @@ class HomePage():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, login_detail, 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, login_detail, 'mobile_no'), self.phone_num)
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, login_detail, 'country_code'))
+        CommonMethods.enterText(driver, get_data(Login_Credentials, login_detail, 'mobile_no'), self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, login_detail, 'OTP'), self.OtpTxtBx_id)
+        CommonMethods.enterText(driver, get_data(Login_Credentials, login_detail, 'OTP'), self.OtpTxtBx_id)
 
-        data = getdata(Login_Credentials, login_detail, 'profile_one_to_many_and_mega')
+        data = get_data(Login_Credentials, login_detail, 'profile_one_to_many_and_mega')
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(driver, data)
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
@@ -221,22 +220,22 @@ class HomePage():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3'
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
                                                                , 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'),
                                 self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
         data = None
         if account_type == 'personal':
-            data = getdata(Login_Credentials, 'login_detail3', 'profile_name')
+            data = get_data(Login_Credentials, 'login_detail3', 'profile_name')
         elif account_type == 'one_to_many':
-            data = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+            data = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
         elif account_type == 'one_to_many_and_mega':
-            data = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+            data = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
 
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             CommonMethods.scrollToElement(driver, data)
@@ -261,7 +260,7 @@ class HomePage():
                 CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
+                actual_mob_num = get_data(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)
@@ -286,9 +285,9 @@ class HomePage():
                 CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
                 actual_username = None
                 if account_type == 'one_to_many_and_mega':
-                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
                 elif account_type == 'one_to_many':
-                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
                 expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
                 if CommonMethods.verifyTwoText(expected_username, actual_username):
                     print("---------------above")
@@ -342,7 +341,7 @@ class HomePage():
                 CommonMethods.wait_for_locator(driver, self.profile_name_hamburger, 5)
                 CommonMethods.elementClick(driver, self.profile_name_hamburger)
                 CommonMethods.wait_for_locator(driver, self.user_name_profile_page, 5)
-                actual_username = getdata(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
+                actual_username = get_data(Login_Credentials, 'login_detail4', 'profile_one_to_many_and_mega')
                 expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
                 if CommonMethods.verifyTwoText(expected_username, actual_username):
                     print("---------------above")

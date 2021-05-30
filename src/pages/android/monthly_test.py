@@ -37,11 +37,13 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         self.staging = Stagingtllms(self.driver)
         self.dashboard = StudentDashboardOneToMega(self.driver)
         self.__init_locators(self.device_type)
+        self.wait = WebDriverWait(driver, 30)
 
     def __init_locators(self, device_type):
         package_name = self.driver.capabilities['appPackage'] + ':id'
         self.card_root = "id", "%s/card" % package_name
         self.subject_name = "id", "%s/subject_name" % package_name
+        self.subject_name_mc = "id", "%s/tvWorkshop" % package_name
         self.topic_name = "id", "%s/session_title" % package_name
         self.session_time = "id", "%s/session_time" % package_name
         self.wish_text = "id", "%s/strip_title" % package_name
@@ -49,8 +51,10 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         self.assessment_bg = "id", "%s/iv_assessment_bg" % package_name
         self.instruction_close_iv = "id", "%s/ivCloseInstruction" % package_name
         self.instruction_title = "id", "%s/tvInstructionTitle" % package_name
+        self.instruction_layout = "id", "%s/test_instruction_layout" % package_name
         self.instruction_time_details = "id", "%s/tvInstructionSubTitle" % package_name
         self.instruction_start_btn_W = "id", "%s/btStartButton" % package_name
+        self.instruction_start_btn_N = "id", "%s/test_start_button" % package_name
         self.sd_toolbar_title = "id", "%s/toolbar_title" % package_name
         self.sd_action_bar_message = "id", "%s/tvActionTitle" % package_name
         self.sd_start_btn = "id", "%s/btnAction" % package_name
@@ -117,12 +121,13 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         elif detail == "test icon":
             return self.get_element(*self.assessment_bg).is_displayed()
         elif detail == "completed status":
+            self.dashboard.ps_home_page_tab(tab_name="completed")
             completed_text = self.get_element(*self.completed_msg).text.lower()
             completed_icon = self.get_element(*self.completed_icon).is_displayed()
             return completed_text == "completed" and completed_icon
 
     def is_test_card_displayed(self):
-        cards = self.get_elements(*self.card_root)
+        cards = self.wait.until(ec.visibility_of_all_elements_located((By.ID, self.card_root[-1])))
         for card in cards:
             try:
                 title = card.find_element(*self.subject_name).text.lower()
@@ -132,25 +137,42 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
                 return True
         return False
 
-    def start_test(self):
-        self.get_element(*self.start_test_btn).click()
+    def start_test(self, screen="dashboard"):
+        if screen != "session details":
+            buttons = self.get_elements(*self.start_test_btn)
+            for btn in buttons:
+                if "start" in btn.text.lower() or "resume" in btn.text.lower():
+                    btn.click()
+        else:
+            self.get_element(*self.sd_start_btn).click()
 
     def take_test(self):
         if self.wait_activity("TestStartActivity"):
             self.get_element(*self.instruction_start_btn_N).click()
 
     def verify_test_instruction_screen(self, detail=None):
-        ins_title = self.get_element(*self.instruction_title).text.lower()
-        assert ins_title == "test instructions"
-        assert self.get_element(*self.instruction_close_iv).is_displayed()
-        assert self.get_element(*self.instruction_time_details).is_displayed()
-        if detail == "start button":
-            assert self.get_element(*self.instruction_start_btn_W).is_displayed()
+        self.login.implicit_wait_for()
+        try:
+            ins_title = self.get_element(*self.instruction_title).text.lower()
+            assert ins_title == "test instructions"
+            assert self.get_element(*self.instruction_close_iv).is_displayed()
+            assert self.get_element(*self.instruction_time_details).is_displayed()
+            if detail == "start button":
+                assert self.get_element(*self.instruction_start_btn_W).is_displayed()
+        except NoSuchElementException:
+            ins_title_layout = self.get_element(*self.instruction_layout)
+            ins_title_text = ins_title_layout.find_element(By.CLASS_NAME, "android.widget.TextView").text.lower()
+            assert ins_title_text == "instructions"
+            assert self.get_element(*self.instruction_start_btn_N).is_displayed()
 
     def click_on_test_card(self):
+        self.driver.implicitly_wait(10)
         cards = self.get_elements(*self.card_root)
         for card in cards:
-            card_title = card.find_element(*self.subject_name)
+            try:
+                card_title = card.find_element(*self.subject_name)
+            except NoSuchElementException:
+                card_title = card.find_element(*self.subject_name_mc)
             if "TEST" in card_title.text:
                 card_title.click()
                 return True
@@ -298,6 +320,9 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
     def resume_assessment_on_web(self, **kwargs):
         self.staging.session_relaunch()
         chrome_driver = self.staging.chrome_driver
+        is_headless = chrome_driver.execute_script("return navigator.plugins.length == 0")
+        if not is_headless:
+            chrome_driver.maximize_window()
         cookies = self.saved_session(kwargs["db"])
         wait = WebDriverWait(chrome_driver, 20)
         if cookies:
@@ -310,16 +335,17 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             ec.visibility_of_element_located(("xpath", "//*[text()=\"UPNEXT\"]")))
         up_next_header = chrome_driver.find_element("xpath", "//*[text()=\"UPNEXT\"]")
         chrome_driver.execute_script("arguments[0].scrollIntoView(true);", up_next_header)
+        chrome_driver.implicitly_wait(10)
         session_card = chrome_driver.find_element("xpath",
                                                   "//*[contains(text(), \"Unit Test\") or "
-                                                  "contains(text(), \"Montly Test\") or "
+                                                  "contains(text(), \"Monthly Test\") or "
                                                   "contains(text(), \"Yearly Test\")]/../../..")
         kwargs["db"].resume_btn_displayed = session_card.find_element(
             "xpath", ".//*[text()=\"RESUME\"]"
         ).is_displayed()
 
     def get_up_test_topic_name(self, session_type="regular"):
-        sessions = self.get_elements(*self.card_root)
+        sessions = self.wait.until(ec.visibility_of_all_elements_located((By.ID, self.card_root[-1])))
         for session in sessions:
             try:
                 time_details = session.find_element(*self.reg_session_time).text
@@ -357,6 +383,7 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         self.driver.switch_to.context(self.driver.contexts[-1])
         self.get_element("css_selector", '#exit-assessment').click()
         self.driver.switch_to.context(self.driver.contexts[0])
+        self.driver.implicitly_wait(10)
         try:
             msg = self.get_element(*self.pop_up_msg).text
             self.click_back()
@@ -386,12 +413,11 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         self.toggle_wifi_connection("off")
         self.driver.switch_to.context(self.driver.contexts[-1])
         self.verify_last_question(**kwargs)
-        self.driver.switch_to.context(self.driver.contexts[-1])
-        self.get_element("css_selector", "#end-assessment").click()
+        self.get_element("xpath", "//*[@resource-id='end-assessment']").click()
 
     def is_error_msg_displayed(self):
         self.driver.switch_to.context(self.driver.contexts[0])
-        self.get_element(*self.pop_up_ok).click()
+        self.wait.until(ec.element_to_be_clickable((By.ID, self.pop_up_ok[-1]))).click()
         self.driver.switch_to.context(self.driver.contexts[-1])
         message = "Unable to submit the test. Please make sure that you are connected to the internet."
         messages_inner = self.get_elements("css_selector", ".messenger-message-inner")
@@ -401,7 +427,7 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         return False
 
     def book_master_class(self, **kwargs):
-        self.staging.verify_and_add_slot(cohort="14", course_tag="masterclass", end_hour=0, end_minutes=3)
+        self.staging.verify_and_add_slot(cohort="14", course_tag="masterclass", end_hour=0, end_minutes=15)
         self.dashboard.refresh()
         self.master_class.book_master_class(new_session=True, **kwargs)
 
@@ -428,6 +454,10 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             return True
         else:
             return False
+
+    def is_result_button_displayed(self):
+        buttons = self.get_elements(*self.start_test_btn)
+        return any([b for b in buttons if b.text.lower() == "results"])
 
     def is_assessment_displayed_in_completed_tab(self):
         self.dashboard.ps_home_page_tab(tab_name="completed")
