@@ -427,7 +427,7 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         return False
 
     def book_master_class(self, **kwargs):
-        self.staging.verify_and_add_slot(cohort="14", course_tag="masterclass", end_hour=0, end_minutes=15)
+        self.staging.verify_and_add_slot(cohort="14", course_tag="masterclass", end_hour=0, end_minutes=15, minutes=3)
         self.dashboard.refresh()
         self.master_class.book_master_class(new_session=True, **kwargs)
 

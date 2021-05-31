@@ -76,7 +76,7 @@ def step_impl(db, login, m_test, staging_tutor_plus):
         login_profile=login_profile, user_profile=user_profile, sub_profile=sub_profile
     ).verify_user_profile()
     login.click_on_premium_school()
-    # m_test.book_master_class(db=db)
+    m_test.book_master_class(db=db)
     tp_name = m_test.get_up_test_topic_name(session_type="masterclass")
     staging_tutor_plus.set_user(login_profile, user_profile, sub_profile).convert_video_session(
         subject_topic_name=tp_name, assessment_type="monthly test")

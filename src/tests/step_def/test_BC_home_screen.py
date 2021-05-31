@@ -18,7 +18,7 @@ def tllms(driver):
 
 
 @fixture
-def trail_class_fp(driver):
+def trial_class_fp(driver):
     tc = TrailClassFuturePaid(driver)
     yield tc
 
@@ -71,6 +71,7 @@ def step_impl(login):
 
 
 @given("reset app and login as parity user")
+@when("reset app and login as parity user")
 def step_impl(login):
     login.execute_command('adb shell pm clear %s' % login.package_name)
     login.execute_command('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % login.package_name)
@@ -87,7 +88,7 @@ def step_impl(tllms, std_board):
 
 @given("verify and add slot for free trial booking")
 def step_impl(tllms, std_board):
-    tllms.verify_and_add_slot(cohort="14", course_tag="free_trial")
+    tllms.verify_and_add_slot(cohort="14", course_tag="free_trial", minutes=4)
     std_board.refresh()
 
 
@@ -124,8 +125,8 @@ def step_impl(login):
 
 
 @when("verify that user should be able to book free trail class")
-def step_impl(trail_class_fp, trial_class):
-    trail_class_fp.book_trial_class()
+def step_impl(trial_class):
+    trial_class.book_trial_class()
     assert trial_class.is_trial_class_booked()
 
 
@@ -136,5 +137,11 @@ def step_impl(m_class, m_class_fp):
 
 
 @then("join the free trial class from the home screen")
+@then("join the masterclass from the home screen")
 def step_impl(login):
     login.join_the_class_bottom_sheet()
+
+
+@then("verify that user lands on live session")
+def step_impl(login):
+    assert login.wait_activity("PremiumSchoolSessionActivity"), "user might not have landed on the live session screen"
