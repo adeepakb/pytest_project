@@ -494,7 +494,8 @@ def step_impl(std_board):
 @when('Tap on hamburger menu')
 @when('Tap on the Hamburger menu at the left corner on the home screen')
 def step_impl(know_more):
-    assert know_more.click_on_hamburger(), "Hamburger not found"
+    detail = know_more.click_on_hamburger()
+    check.equal(detail.result,True, detail.reason)
 
 
 @when('verify that the Left nav is displayed')
@@ -521,12 +522,14 @@ def step_impl(driver, know_more):
 @then('Tap on the "Byjus classes" option on the left nav')
 @when('Tap on the "Byjus classes" option on the left nav')
 def step_impl(driver, know_more):
-    assert know_more.tap_on_byjus_classes_in_hamburger(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail= know_more.tap_on_byjus_classes_in_hamburger()
+    check.equal(detail.result,True,detail.reason)
 
 
 @then('verify  "Byjus classes-Know more" option is responsive')
 def step_impl(driver, know_more):
-    assert know_more.validate_know_more(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail =know_more.validate_know_more()
+    check.equal(detail.result, True, detail.reason)
 
 
 @given('switch to offline')

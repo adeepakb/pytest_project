@@ -82,7 +82,6 @@ class TutorCommonMethods:
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
-
     # this method is use to click on the element
     def element_click(self, locator_type=None, locator_value=None, element=None):
         if element is None:
@@ -211,6 +210,19 @@ class TutorCommonMethods:
     def is_link_displayed(self, text):
         locator_type = 'xpath'
         locator_value = "//android.widget.TextView"
+        self.wait_for_locator(locator_type, locator_value, timeout=30)
+        list_of_elements = self.get_elements(locator_type, locator_value)
+        for element in range(len(list_of_elements)):
+            text2 = list_of_elements[element].text
+            if text2 == text:
+                list_of_elements[element].get_attribute("clickable")
+                list_of_elements[element].is_enabled()
+                return True
+        return False
+
+    def is_desired_text_displayed(self, text):
+        locator_type = 'xpath'
+        locator_value = "//android.view.View"
         self.wait_for_locator(locator_type, locator_value, timeout=30)
         list_of_elements = self.get_elements(locator_type, locator_value)
         for element in range(len(list_of_elements)):
@@ -526,6 +538,23 @@ class TutorCommonMethods:
         logging.error('Failed due to Exception in Method ' + methodName)
         self.takeScreenShot(featureFileName)
         pytest.fail("Failed Due to Exception in")
+
+    count = 0
+
+    def scroll_to_text(self, text):
+        dimension = self.driver.get_window_size()
+        scrollStart = dimension['height'] * 0.9
+        scrollEnd = dimension['height'] * 0.1
+        self.driver.swipe(100, scrollStart, 100, scrollEnd, 5000)
+        if self.is_desired_text_displayed(text):
+            self.count = 0
+            return True
+        elif self.count >= 50:
+            self.count += 1
+            self.scroll_to_text(text)
+        else:
+            self.count=0
+            return False
 
 
 class InValidLocatorError(Exception):

@@ -12,8 +12,8 @@ import pytest_check as check
 
 class ReturnType:
     def __init__(self, result, reason):
-        self.result = False
-        self.reason = ""
+        self.result = result
+        self.reason = reason
 
 
 class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
@@ -24,28 +24,30 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         package_name = self.driver.desired_capabilities['appPackage'] + ':id'
         self.hamburger_icon = "id", "%s/roundedNavButton" % package_name
         self.byjus_classes = "id", "com.byjus.thelearningapp.premium:id/home_drawer_list_item_txtvw"
-        self.know_more = "id", "com.byjus.thelearningapp.premium:id/home_drawer_list_item_txtvw_new"
+        self.know_more = "id", "%s/home_drawer_list_item_txtvw_new" % package_name
         self.confirm_and_book = "id", "%s/primaryAction" % package_name
+        self.booking_page_dropdown = "id", "%s/ivChevron" % package_name
 
     def click_on_hamburger(self):
         try:
-            self.get_element(*self.hamburger_icon).click()
-            return True
+            self.element_click(*self.hamburger_icon)
+            return ReturnType(True, "clicked on Hamburger")
         except:
-            return False
+            return ReturnType(False, "Could not click on Hamburger")
 
     def verify_know_more_displayed(self):
         return_type = ReturnType(False, "")
-        try:
-            self.get_element(*self.byjus_classes).is_displayed()
-            self.get_element(*self.know_more).is_displayed()
+
+        # deepak is_element_present
+        if self.is_element_present(*self.byjus_classes) and self.is_element_present(*self.know_more):
             return_type.result = True
             return_type.reason = "Know more is being displayed in Hamburger"
-        except:
+        else:
             return_type.result = False
             return_type.reason = "Know more is not being displayed in Hamburger"
         return return_type
 
+    # use button_click_method
     def tap_on_byjus_classes_in_hamburger(self, button='Know More'):
         button_element = None
         if button == 'Know More':
@@ -55,15 +57,13 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
 
         try:
             if self.verify_know_more_displayed().result:
-                button_element = self.get_element(*button_element)
-                button_element.click()
+                self.element_click(*button_element)
             else:
                 self.click_on_hamburger()
-                button_element = self.get_element(*button_element)
-                button_element.click()
-            return True
+                self.element_click(*button_element)
+            return ReturnType(True, "Clicked on Byjus classes homepage hamburger")
         except:
-            return False
+            return ReturnType(False, "Could not click on Byjus classes homepage hamburger")
 
     def validate_know_more(self):
         activityname = 'PremiumSchoolInfoActivity'
@@ -72,9 +72,9 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             self.click_on_hamburger()
         try:
             self.tap_on_byjus_classes_in_hamburger()
-            return True
+            return ReturnType(True, "Byjus classes know more is responsive")
         except:
-            return False
+            return ReturnType(False, "Byjus classes know more is not responsive")
 
     def validate_webview_activity(self):
         activityname = 'PremiumSchoolInfoActivity'
@@ -86,13 +86,30 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
 
     def validate_know_more_webview(self):
 
+        return_type = self.validate_webview_without_details()
+        if self.is_desired_text_displayed("Why choose BYJU'S Classes?"):
+            return_type.result = return_type.result and True
+        else:
+            return ReturnType(False, "Why choose BYJU'S Classes? is not being displayed")
+        self.scroll_to_text("Interactive online classes by India's top teachers")
+        if self.is_desired_text_displayed("Interactive online classes by India's top teachers"):
+            return_type.result = return_type.result and True
+        else:
+            return ReturnType(False, "Interactive online classes by India's top teachers is not being displayed")
+        self.scroll_to_text("Dedicated mentors to guide students")
+        if self.is_desired_text_displayed("Dedicated mentors to guide students"):
+            return_type.result = return_type.result and True
+        else:
+            return ReturnType(False, "Dedicated mentors to guide students is not being displayed")
+
+        return return_type
+
+    def validate_webview_without_details(self):
         return_type = ReturnType(False, "")
         if self.validate_webview_activity() is True:
             return_type.result = True
         else:
-            return_type.result = False
-            return_type.reason = "Not in know more webview"
-            return return_type
+            return ReturnType(False, "Not in know more webview")
 
         if self.is_button_displayed_with_text("Book a Free Class") is True:
             return_type.result = True
@@ -101,10 +118,7 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return_type.result = True
             return_type.reason = "View class details button is shown"
         else:
-            return_type.result = False
-            return_type.reason = "Book a free class button is not shown"
-            return return_type
-
+            return ReturnType(False, "Book a free class button is not shown")
         return return_type
 
     def validate_book_a_free_class_card(self, text='Book a Free Class'):
@@ -116,9 +130,6 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return_type.result = False
             return_type.reason = "{} button is not shown".format(text)
         return return_type
-
-
-
 
     def tap_on_book_card(self, text='Book a Free Class'):
         return_type = ReturnType(False, "")
@@ -155,15 +166,25 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
 
         return return_type
 
+    # deepak scroll part should be added and assertion for next page
     def tap_on_book_button(self):
         return_type = ReturnType('False', "")
         try:
             self.button_click("Book")
             return_type.result = True
             return_type.reason = "Book button found"
+
         except:
             return_type.result = False
             return_type.reason = "Book button not found on book class screen"
+
+        if self.is_element_present(*self.booking_page_dropdown):
+            return_type.result = return_type.reason and True
+            return_type.reason = return_type.reason + "and booking page found"
+        else:
+            return_type.result = return_type.reason and False
+            return_type.reason = "Booking page not found"
+
         return return_type
 
     def book_a_session(self):
@@ -171,8 +192,10 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         try:
             self.element_click(*self.confirm_and_book)
             return_type.result = True
-            return_type.reason=" Clicked on confirm and book button on boking page"
+            return_type.reason = " Clicked on confirm and book button on booking page"
+
         except:
             return_type.result = False
-            return_type.reason=" Couldn't click on confirm and book button on boking page"
+            return_type.reason = " Couldn't click on confirm and book button on booking page"
+
         return return_type

@@ -32,16 +32,21 @@ def know_more(request, driver):
         raise NotImplementedError()
 
 
-@then('Verify that "BYJUS CLASSES" consist of its elements')
+
 @when('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @when('verify that web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 def step_impl(driver, know_more):
     time.sleep(10)
-    details = know_more.validate_know_more_webview()
+    details = know_more.validate_webview_without_details()
     check.equal(details.result, True, details.reason)
 
+
+@then('Verify that "BYJUS CLASSES" consist of its elements')
+def step_impl(driver, know_more):
+    details = know_more.validate_know_more_webview()
+    check.equal(details.result, True, details.reason)
 
 @when('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
 @then('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
