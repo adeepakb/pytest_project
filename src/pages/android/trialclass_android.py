@@ -7,16 +7,11 @@ from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 from pages.base.trialclass_base import TrialClassBase
 from utilities.common_methods import CommonMethods
+from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.masterclass import MasterClass
 
 CommonMethods = CommonMethods()
-
-
-class ReturnType:
-    def __init__(self, result, reason):
-        self.result = result
-        self.reason = reason
 
 
 class TrailClassAndroid(TrialClassBase):
@@ -153,10 +148,11 @@ class TrailClassAndroid(TrialClassBase):
             'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
             f'scrollIntoView(resourceId("{self.see_more_tv[-1]}"))'
         )
-        return see_more_less.is_displayed()
+        return ReturnType(True, "All links displayed") if see_more_less.is_displayed() else ReturnType(False,
+                                                                                                       "All links are not displayed")
 
     def click_option_see_more(self, text: str = 'see all'):
-        if self.is_see_all_link_displayed():
+        if self.is_see_all_link_displayed().result:
             see_more = self.obj.get_element(*self.see_more_tv)
             if see_more.text.lower() == text:
                 see_more.click()
@@ -205,7 +201,9 @@ class TrailClassAndroid(TrialClassBase):
     def is_trial_class_booked(self):
         up_next_session = self.get_up_next_trial_class_session()
         if up_next_session.is_displayed():
-            return True
+            return ReturnType(True, "Trial class is booked")
+        else:
+            return ReturnType(False, "Trial class is not booked, could not see upnext session")
 
     def book_master_class(self, db):
         flag = self.master.book_master_class(new_session=True, ff_tag=False, validate=True, error_validate=False, db=db)
@@ -270,16 +268,23 @@ class TrailClassAndroid(TrialClassBase):
         return self.master.is_master_class_booked()
 
     def verify_completed_trial_cards(self):
-        return self.login.text_match("Completed your free trial class?") and \
-               self.login.text_match("Explore our free workshops!")
+        return ReturnType(True, "Completed card verified") if (
+                self.login.text_match("Completed your free trial class?") and \
+                self.login.text_match("Explore our free workshops!")) else ReturnType(False,
+                                                                                      "Completed card not verified, Completed your free trial class? or Explore our free workshops! not displayed ")
 
     def verify_rcmnded_section_ispresent(self):
         return CommonMethods.scrollToElement(self.driver, 'Recommended Classes')
 
     def verify_free_trial_message(self):
-        return self.login.text_match('Hope you enjoyed your trial class!'), "text is not displayed" and \
-               self.login.text_match('Our academic counsellor will reach out to you shortly to provide more '
-                                     'information on BYJU’S Classes.')
+
+        if not self.login.text_match('Hope you enjoyed your trial class!'):
+            return ReturnType(False, "hope you enjoyed your trial class! is not beind displayed")
+        elif not self.login.text_match('Our academic counsellor will reach out to you shortly to provide more '
+                                       'information on BYJU’S Classes.'):
+            return ReturnType(False, "Our academic counsellor will reach out to you shortly is not being displayed")
+        else:
+            return ReturnType(True, " free trial messages are displayed correctly")
 
     def is_free_trail_expired(self):
         try:

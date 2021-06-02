@@ -4,6 +4,7 @@ from constants.platform import Platform
 from pages.android.homepage import HomePage
 from pages.factory.instruction_dialog import InstructionDialog
 from pages.factory.login import LoginFactory
+import pytest_check as check
 
 scenarios('../features/Start Test Instruction Dialog.feature')
 
@@ -76,7 +77,7 @@ def tap_on_close_instruction(instruction_dialog, login_in):
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
-    assert button_status is True, "Unable to find {text} button"
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then(parsers.parse('verify that open the test on the web'))
@@ -91,7 +92,8 @@ def tap_device_back(instruction_dialog):
 
 @then("verify the user is navigated to the PS screen")
 def is_user_in_ps_page(instruction_dialog):
-    assert instruction_dialog.is_user_in_ps_page(), "user is not in the PS screen"
+    details = instruction_dialog.is_user_in_ps_page()
+    check.equal(details.result , True, details.reason)
 
 
 @then('end the test')

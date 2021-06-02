@@ -7,6 +7,7 @@ from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
+import pytest_check as check
 
 
 class Context:
@@ -401,22 +402,26 @@ def step_impl(std_board):
 
 @then('verify if more then two requisites are attached "see more" option is displayed')
 def step_impl(ssn_req):
-    assert ssn_req.is_see_more_option_displayed()
+    details = ssn_req.is_see_more_option_displayed()
+    check.equal(details.result,True, details.reason)
 
 
 @then('verify "see more" option is not displayed if the post requisite contain only two resource type')
 def step_impl(ssn_req):
-    assert ssn_req.is_see_more_option_displayed() is False
+    details =  ssn_req.is_see_more_option_displayed()
+    check.equal(details.result, False,details.reason)
 
 
 @when('verify post requisite is attached for completed session')
 def step_impl(std_board):
-    assert std_board.is_post_requisite_attached()
+    details = std_board.is_post_requisite_attached()
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify post requisite is attached for completed session')
 def step_impl(std_board):
-    assert std_board.is_post_requisite_attached()
+    details = std_board.is_post_requisite_attached()
+    check.equal(details.result, True, details.reason)
 
 
 @then('on tap of see more option')

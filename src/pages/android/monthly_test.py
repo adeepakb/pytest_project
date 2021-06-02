@@ -16,6 +16,7 @@ from constants.load_json import get_data
 from pages.android.application_login import Login
 from pages.android.scroll_cards import ScrollCards
 from pages.android.session_requisite import SessionRequisite
+from utilities.return_type import ReturnType
 from utilities.staging_tllms import Stagingtllms
 from pages.android.student_dashboard_otm import StudentDashboardOneToMega
 from pages.android.masterclass import MasterClass
@@ -134,8 +135,8 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             except NoSuchElementException:
                 title = card.find_element(*self.master_class.card_label_tv).text.lower()
             if "test" in title:
-                return True
-        return False
+                return ReturnType(True, "Test card is being displayed")
+        return ReturnType(False, "Test card is not being displayed")
 
     def start_test(self, screen="dashboard"):
         if screen != "session details":
@@ -175,8 +176,8 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
                 card_title = card.find_element(*self.subject_name_mc)
             if "TEST" in card_title.text:
                 card_title.click()
-                return True
-        return False
+                return ReturnType(True, "Successfully clicked on card ")
+        return ReturnType(False, "Couldn't click on card ")
 
     def is_session_details_page_displayed(self):
         self.driver.implicitly_wait(10)
@@ -184,12 +185,12 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         try:
             while retry:
                 if self.get_element(*self.sd_toolbar_title).text == "Test Details":
-                    return True
+                    return ReturnType(True, "Test Details in session detail page displayed")
                 else:
                     retry -= 1
                     sleep(1)
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Test Details in session detail page is not  displayed")
         finally:
             self.driver.implicitly_wait(5)
 
@@ -207,7 +208,8 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         q_no = int(self.get_element("css_selector", '.question_num > span').text)
         print("2. total: %s, last question: %s." % (number_of_questions, q_no))
         self.driver.switch_to.context(self.driver.contexts[0])
-        return number_of_questions == q_no
+        return ReturnType(True, " last quesion is verified") if number_of_questions == q_no else ReturnType(False,
+                                                                                                            " last quesion is not count is not as expected")
 
     def start_assessment_web(self, **kwargs):
         try:
@@ -230,14 +232,14 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         finish_submit = self.get_element("css_selector", "#end-assessment").text.lower()
         self.driver.switch_to.context(self.driver.contexts[0])
         if exit_assessment_text == "exit assessment" and finish_submit == "finish":
-            return True
-        return False
+            return ReturnType(True, "End  or finish button is displayed")
+        return ReturnType(False, "End  or finish button is not being displayed")
 
     def is_resume_button_displayed(self):
         btn_name = self.get_element(*self.start_test_btn).text
         if btn_name.lower() == "resume":
-            return True
-        return False
+            return ReturnType(True, "resume button is displayed")
+        return ReturnType(False, " Resume button is not being displayed")
 
     def select_random_question(self, view="web"):
         if view.lower() == "web":
@@ -268,7 +270,8 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         flag_btn_displayed = self.get_element(*self.flag_btn).is_displayed()
         displayed = [next_btn_displayed, previous_btn_displayed,
                      feedback_btn_displayed, flag_btn_displayed]
-        return all(displayed)
+        return ReturnType(True, "All elements in web assessment screen are correct") if all(displayed) else ReturnType(
+            False, "Some elements in web assessment screen are not correct")
 
     def saved_session(self, db):
         try:
@@ -288,7 +291,7 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         names = sibling_name.split()
         hash_sibling_name = str()
         for name in names:
-            part = name.replace(name[1:], "x"*len(name[1:])).strip()
+            part = name.replace(name[1:], "x" * len(name[1:])).strip()
             format_part = part if names.index(name) == len(names) - 1 else part + " "
             hash_sibling_name += format_part
         chrome_driver = self.staging.chrome_driver
@@ -387,9 +390,12 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         try:
             msg = self.get_element(*self.pop_up_msg).text
             self.click_back()
-            return "finish this assessment" in msg.lower()
+            return ReturnType(True,
+                              "Found finish this assessment in assessment confirmation page") if (
+                    "finish this assessment" in msg.lower()) else ReturnType(
+                False, "Couldnt find finish this assessment in assessment confirmation page")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Assessment confirmation pop up was not found")
 
     def offline_assessment(self, **kwargs):
         self.start_assessment_web(**kwargs)
@@ -401,11 +407,11 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             try:
                 self.toggle_wifi_connection("on")
                 self.get_element(*self.retry).click()
-                return True
+                return ReturnType(True, "Clicked on Retry button on offline assignment")
             except NoSuchElementException:
                 retry -= 1
                 sleep(1)
-        return False
+        return ReturnType(False, "Could not click on Retry button on offline assignment")
 
     def submit_assessment_offline(self, **kwargs):
         self.start_assessment_web(**kwargs)
@@ -423,8 +429,10 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         messages_inner = self.get_elements("css_selector", ".messenger-message-inner")
         for message_inner in messages_inner:
             if message_inner.is_displayed():
-                return message_inner.text == message
-        return False
+                if message_inner.text == message:
+                    return ReturnType(True, "Error message is correct")
+        return ReturnType(
+            False, "Error message is incorrect")
 
     def book_master_class(self, **kwargs):
         self.staging.verify_and_add_slot(cohort="14", course_tag="masterclass", end_hour=0, end_minutes=15, minutes=3)
@@ -457,7 +465,9 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
 
     def is_result_button_displayed(self):
         buttons = self.get_elements(*self.start_test_btn)
-        return any([b for b in buttons if b.text.lower() == "results"])
+        return ReturnType(True, "Results button is displayed") if any(
+            [b for b in buttons if b.text.lower() == "results"]) else ReturnType(False,
+                                                                                 "Results button is not being displayed")
 
     def is_assessment_displayed_in_completed_tab(self):
         self.dashboard.ps_home_page_tab(tab_name="completed")
@@ -468,7 +478,9 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
             subj_name = card.find_element(*self.master_class.card_label_tv).text
         date_month = card.find_element(*self.reg_pr_date).text
         cd_cm = datetime.now().strftime("%d %b")
-        return "test" in subj_name.lower() and date_month == cd_cm
+        return ReturnType(True, " assessment is being displayed") if (
+                "test" in subj_name.lower() and date_month == cd_cm) else ReturnType(False,
+                                                                                     "assessent is not being displayedx")
 
     def is_start_test_btn_displayed_at_start_time(self):
         with open("../../test_data/classroom_details.json") as fd:
@@ -494,11 +506,13 @@ class MonthlyTest(MonthlyTestBase, TutorCommonMethods):
         print(f"waiting for up to {diff} minutes.")
         while diff:
             try:
-                return self.get_element(*self.start_test_btn).is_displayed()
+                return ReturnType(True, "Start button is being displayed ") if self.get_element(
+                    *self.start_test_btn).is_displayed() else ReturnType(False, "Start button is being displayed ")
             except NoSuchElementException:
                 if diff % 20 == 0:
                     print("waiting for start button to be displayed...")
                 sleep(1)
                 diff -= 1
         else:
-            return self.get_element(*self.start_test_btn).is_displayed()
+            return ReturnType(True, "Start button is being displayed ") if self.get_element(
+                *self.start_test_btn).is_displayed() else ReturnType(False, "Start button is being displayed ")

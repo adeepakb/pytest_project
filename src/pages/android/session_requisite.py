@@ -11,9 +11,11 @@ from selenium.webdriver.common.by import By
 
 from pages.base.session_requisite import SessionRequisiteBase
 from utilities.exceptions import SessionNotFoundError
+from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.application_login import Login
 from pages.android.scroll_cards import ScrollCards
+import pytest_check as check
 
 
 class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
@@ -121,14 +123,14 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         if dtls == 'forward_icons':
             icons = self.get_elements(*self.arrow_btn)
             if len(icons) >= 2:
-                return True
+                return ReturnType(True, "Requisite details are correct")
             else:
-                return False
+                return ReturnType(False, "Requisite details are correct")
         else:
             requisites_title = self.get_elements(*self.requisite_title)
             for req_title in requisites_title:
                 if dtls in req_title.text.lower():
-                    return True
+                    return ReturnType(True, "Requisite details are correct")
 
     def click_app_back_btn(self):
         self.get_element(*self.nav_btn).click()
@@ -292,15 +294,19 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             return False
         if see_more.is_displayed() and len(req) >= 2:
             see_more.click()
-            return self.is_all_requisites_attached()
-        return False
+            return ReturnType(True,
+                              " is more option is displayed") if self.is_all_requisites_attached().result else ReturnType(
+                False, " is more option is not displayed with all requisites attatched")
+        return ReturnType(True,
+                          " is more option is not displayed")
 
     def is_all_requisites_attached(self):
         self.get_requisites_attached()
         req = self.get_requisites_attached()
         if len(req) > 2:
             self.click_app_back_btn()
-            return True
+            return ReturnType(True, "All requisites is attatched")
+        return ReturnType(False, "All requisites is not attatched")
 
     def ps_home_page_tab(self, tab_name="For you", check=False):
         action_bar_tab = self.get_element(*self.home_page_tab)
@@ -445,8 +451,8 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def is_video_landscape_playable(self):
         if self.change_orientation():
             self.click_back()
-            return True
-        return False
+            return ReturnType(True, "video is  playable in landscape")
+        return ReturnType(True, "video is not playable in landscape")
 
     def verify_video_player_elements(self):
         self.static_exo_player()
@@ -476,9 +482,11 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         for dt in details:
             assert self.verify_content_description(*dt)
         if session is None:
-            assert self.verify_requisite_details("forward_icons")
-            assert self.is_see_more_option_displayed()
-        return True
+            details = self.verify_requisite_details("forward_icons")
+            check.equal(details.result, details.reason)
+            details = self.is_see_more_option_displayed()
+            check.equal(details.result, details.reason)
+        return ReturnType(False, "Session card is not there")
 
     def future_card(self):
         session = self.get_session('future')
@@ -496,11 +504,14 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             assert attachment.find_element(*self.sd_req_typ_desc)
             # assert attachment.find_element(*self.sd_req_next_arrow)
         if attachments:
-            return True
+            return ReturnType(True, "Preequisite details are correct")
+        else:
+            return ReturnType(False, "Preequisite details are not correct")
 
     def verify_app_home_screen(self):
         home_activity = "HomeActivity"
         user_home_activity = "UserHomeActivity"
         if self.wait_activity(user_home_activity):
             self.click_back()
-        return self.wait_activity(home_activity)
+        return ReturnType(True, "Home page verified") if self.wait_activity(home_activity) else ReturnType(False,
+                                                                                                           "User was not onHome page ")

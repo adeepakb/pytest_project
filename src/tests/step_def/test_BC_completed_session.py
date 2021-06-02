@@ -1,5 +1,6 @@
 from pytest import fixture
 from pytest_bdd import scenarios, when, then
+import pytest_check as check
 
 from utilities.staging_tllms import Stagingtllms
 
@@ -16,7 +17,8 @@ def tllms(driver):
 
 @then('verify that recently completed session should be shown first in order')
 def step_impl(std_board):
-    assert std_board.is_completed_sessions_sorted(), "Sessions are not properly sorted."
+    detail = std_board.is_completed_sessions_sorted()
+    check.equal(detail.result, True, detail.reason)
 
 
 @when('tap on app back or device back button')
@@ -26,4 +28,5 @@ def tap_on_app_back(std_board):
 
 @then('verify that user navigates to premium school home page')
 def step_impl(std_board):
-    assert std_board.is_premium_school_homepage_displayed(), "home page may not be displayed."
+    detail = std_board.is_premium_school_homepage_displayed()
+    check.equal(detail.result, True, detail.reason)

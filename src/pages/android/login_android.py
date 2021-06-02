@@ -3,6 +3,7 @@ from appium.webdriver.common.touch_action import TouchAction
 
 from constants.constants import Login_Credentials
 from pages.base.login_base import LoginBase
+from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -13,6 +14,7 @@ from constants.load_json import get_data
 from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
+
 
 
 class LoginAndroid(LoginBase):
@@ -219,8 +221,8 @@ class LoginAndroid(LoginBase):
         for button in self.find_buttons():
             if button.text == text:
                 button.click()
-                return True
-        return False
+                return ReturnType(True, text+" button is clicked")
+        return  ReturnType(False, text+" button is not clicked")
 
     def is_toast_message_displayed(self, message):
         toast_msg = self.obj.get_element('xpath', '//android.widget.Toast').text

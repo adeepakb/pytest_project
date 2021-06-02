@@ -8,11 +8,19 @@ from selenium.webdriver.common.by import By
 
 from pages.android.application_login import Login
 from pages.android.scroll_cards import ScrollCards
+from utilities.return_type import ReturnType
 from utilities.staging_tllms import Stagingtllms
 from pages.android.session_requisite import SessionRequisite
 from pages.base.student_dashboard_otm import StudentDashboardBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from utilities.exceptions import *
+import pytest_check as check
+
+
+# class ReturnType():
+#     def __init__(self, result, reason):
+#         self.result = result
+#         self.reason = reason
 
 
 class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
@@ -257,7 +265,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     f'scrollIntoView(resourceId("{self.card_strip_btn[-1]}"))'
                 )
                 if ele.text == 'Join Now':
-                    return True
+                    return ReturnType(True, "Join now button is displayed")
                 else:
                     self.ps_home_page_tab(tab_name='completed')
                     try:
@@ -267,7 +275,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     self.staging.reset_session_one_to_mega(topic_name=topic_name)
                     self.refresh()
             except NoSuchElementException:
-                return False
+                return ReturnType(False, "Join now button is not being displayed")
             retry -= 1
 
     def session_join_now(self):
@@ -285,9 +293,9 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.login.implicit_wait_for(2)
         try:
             self.get_element(*self.bottom_sheet_lyt, wait=False)
-            return True
+            return ReturnType(True, "Bottom  sheet is displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Bottom  sheet is not displayed")
         finally:
             self.login.implicit_wait_for(15)
 
@@ -297,13 +305,16 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         if not verify:
             okay_btn.click()
             while timeout:
-                if self.is_bottom_sheet_displayed():
+                if self.is_bottom_sheet_displayed().result:
                     timeout -= 1
                     sleep(1)
                 else:
                     return
         else:
-            return okay_btn.is_displayed()
+            return ReturnType(True,
+                              "Bottom sheet okay button is  displayed") if okay_btn.is_displayed() else ReturnType(
+                False,
+                "Bottom sheet okay button is  displayed")
 
     def network_btn_retry(self, verify=False):
         retry = 3
@@ -322,9 +333,9 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
     def is_session_details_displayed(self):
         try:
             self.get_element(*self.sd_content_details)
-            return True
+            return ReturnType(True, "Session Details are being displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Session Details are not being displayed")
 
     def click_on_button(self, button=None):
         if button.lower() == 'okay':
@@ -393,10 +404,10 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         lm, pm = strptime(lm, '%b').tm_mon, strptime(pm, '%b').tm_mon
         if lm == pm:
             if ld > pd:
-                return True
+                return ReturnType(True, "Completed session is sorted")
         elif lm > pm:
-            return True
-        return False
+            return ReturnType(True, "Completed session is sorted")
+        return ReturnType(False, "Completed session is not sorted")
 
     def click_back_button(self):
         random.choice((self.click_back(), self.click_app_back_btn()))
@@ -408,7 +419,9 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.wait_activity(home_activity, 15)
         if user_home_activity in current_activity:
             self.click_app_back_btn()
-        return home_activity in self.driver.current_activity
+        return ReturnType(True,
+                          "Premium scholl homepage is displayed") if home_activity in self.driver.current_activity else ReturnType(
+            False, "Premium scholl homepage is not displayed")
 
     def is_all_sessions_displayed(self):
         session_list = self.get_element(*self.card_list)
@@ -424,7 +437,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 try:
                     _d = session.find_element_by_id(self.card_time_desc[-1]).text
                     if days[-1] in _d:
-                        return True
+                        return ReturnType(True, "All sessions are displayed")
                 except NoSuchElementException:
                     pass
             if scroll_down:
@@ -438,7 +451,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 self.scroll_cards.scroll_by_card(session, end)
             sessions = self.get_elements(*self.card_root)
             swipe_to -= 1
-        return False
+        return ReturnType(False, "All sessions are not displayed")
 
     def is_up_next_displayed(self):
         swipe = 3
@@ -460,34 +473,35 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             try:
                 h = self.get_element(*self.pr_heading).text
                 if h.lower() == 'revision material':
-                    return True
-                return False
+                    return ReturnType(True, "Post Requisite is attacthed checked revision material")
+                return ReturnType(False, "Either Post Requisite is not attacthed checked or revision material not shown")
             except NoSuchElementException:
                 raise RequisiteException("no 'Post' requisite has been attached")
+        return ReturnType(False, "Post requisite not found")
 
     def is_rate_now_card_displayed(self):
         try:
             t = self.get_element(*self.card_strip_btn).text
             if t.lower() == 'rate now':
-                return True
-            return False
+                return ReturnType(True, "Rate card is displayed")
+            return ReturnType(False, "Rate card is not displayed")
         except NoSuchElementException:
             raise SessionNotCompletedError("'Rate Now' button is not displayed")
 
     def is_rated_count_displayed(self):
         try:
-            return self.get_element(*self.pr_star_rating).is_displayed()
+            return ReturnType(self.get_element(*self.pr_star_rating).is_displayed(), "Rated count is displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Rated count is not  displayed")
 
     def is_pr_details_displayed(self):
         try:
             self.get_element(*self.pr_status_msg)
             self.get_element(*self.pr_status_date)
             self.get_element(*self.card_subject_name)
-            return True
+            return ReturnType(True, "Pr details are shown")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Pr details are shown")
 
     def is_pre_post_requisite_displayed(self, pre=False, post=False, session='completed'):
         r = self.get_element(*self.card_root)
@@ -713,7 +727,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             user_profile = 'user_1'
         self.login.set_user_profile(user_profile=user_profile).verify_home_screen()
         self.staging.session_relaunch()
-        self.staging.attach_session_video(grade="8", profile=profile, user_profile=user_profile, sub_profile=sub_profile)
+        self.staging.attach_session_video(grade="8", profile=profile, user_profile=user_profile,
+                                          sub_profile=sub_profile)
         self.login.click_on_premium_school()
         if not self.rate_session():
             join_session_topic_name = self.join_session(rate_action=rate_action)
@@ -782,8 +797,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         session_card = self.get_elements(*self.card_root)[0]
         status_msg = session_card.find_element_by_id(self.pr_status_msg[-1]).text
         if status_msg.lower() == 'completed':
-            return True
-        return False
+            return ReturnType(True, "First card is sompleted")
+        return ReturnType(False, "First card is not completed")
 
     def is_all_post_requisite_accessible(self, session_status='completed'):
         count = 0
@@ -836,8 +851,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         live_chat_activity = 'LiveChatActivity'
         self.get_elements(*self.get_help_btn)[-1].click()
         if self.wait_activity(live_chat_activity):
-            return True
-        return False
+            return ReturnType(True, " Live chat is loaded")
+        return ReturnType(False, " Live chat is  not loaded")
 
     def complete_assessment(self):
         retry = 3
@@ -850,17 +865,18 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             self.driver.switch_to.alert.accept()
         elif self.wait_activity('HighlightsActivity'):
             self.get_element(*self.assessment_retake).click()
-        assert self.wait_activity('TestStartActivity')
+        check.equal(self.wait_activity('TestStartActivity'), True, "test start page not displayed")
         self.get_element(*self.assessment_start).click()
         self.get_element(*self.assessment_submit_btn).click()
-        assert self.get_element(*self.bottom_sheet_lyt).is_displayed()
+        check.equal(self.get_element(*self.bottom_sheet_lyt).is_displayed(), True,
+                    "Bottom Sheet is not being displayed")
         self.get_element(*self.bottom_sheet_submit_btn).click()
-        assert self.wait_activity('HighlightsActivity')
+        check.equal(self.wait_activity('HighlightsActivity'), True, "Highlight page not shown")
         while retry:
             if not self.wait_activity('OneToMegaHomeActivity', timeout=5):
                 self.click_back()
             retry -= 1
-        return True
+        return ReturnType(True, "Session completed successfully")
 
     def verify_and_start_assessment(self):
         self.get_element(
@@ -877,8 +893,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         for ttv in all_titles:
             if "assessment" in ttv.lower():
                 self.get_element('id', 'com.byjus.thelearningapp.premium:id/tvTitle').click()
-                return True
-        raise Exception()
+                return ReturnType(True, "Assessment verified and started")
+        return ReturnType(False, "Assessment verified and started")
 
     def refresh(self):
         user_home_activity = "UserHomeActivity"
@@ -914,6 +930,6 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         card_root = self.get_element(*self.card_root)
         try:
             card_root.find_element_by_id(self.pr_status_msg[-1])
-            return True
+            return ReturnType(True, "Completed session is displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Completed session is displayed")

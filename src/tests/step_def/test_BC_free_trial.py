@@ -6,6 +6,7 @@ from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.factory.trial_class import TrialClassFactory
 from utilities.mentor_session import MentorSession
 from utilities.staging_tllms import Stagingtllms
+import pytest_check as check
 
 scenarios('../features/Multiple Free Trail Bookings.feature')
 
@@ -77,13 +78,14 @@ def click_on_hamburger_menu(login_in):
 
 @then("verify the user is navigated to the PS screen")
 def is_user_in_ps_page(home_screen):
-    assert home_screen.is_user_in_ps_page(), "user is not in the PS screen"
+    detail = home_screen.is_user_in_ps_page()
+    check.equal(detail.result, True, detail.reason)
 
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
-    assert button_status is True, "Unable to find {text} button"
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then("tap on back navigation icon")
@@ -99,19 +101,19 @@ def scroll_to_text(trial_class):
 @then('verify that user should get book option for free trial sessions in recommended section')
 def verify_book_option_for_free_trail(trial_class):
     details = trial_class.is_book_present_for_free_trail_classes()
-    assert details.result, details.reason
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify that user should not be able to book multiple free trail session at same time')
 def verify_book_option_for_multiple(trial_class):
     details = trial_class.is_book_present_for_free_trail_classes()
-    assert not details.result, details.reason
+    check.equal(details.reason, True, details.reason)
 
 
 @then('verify that user booked the trial session')
 def is_trial_class_booked(trial_class):
     is_present = trial_class.is_trial_class_booked()
-    assert is_present, "verify that user booked free trial session"
+    check.equal(is_present.result, True, is_present.reson)
 
 
 @given('ensure tutor has started the session')
@@ -137,57 +139,55 @@ def book_trial_class(trial_class):
 @then('verify free trail class should not be displayed in completed tab')
 def is_upnext_trial_class_completed(trial_class):
     details = trial_class.is_upnext_trial_class_completed()
-    assert details.result, details.reason
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify that free trail completed card should displayed in For you section')
 def verify_completed_trial_cards(trial_class):
-    assert trial_class.verify_completed_trial_cards(), "completed trial card message is not displayed"
-
-
-@then('verify that masterclasses are scheduled should be displayed in recommended section')
-def is_master_class_present(trial_class):
-    details = trial_class.is_master_class_present()
-    assert details.result, details.reason
+    detail = trial_class.verify_completed_trial_cards()
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify that no master card available to book')
+@then('verify that masterclasses are scheduled should be displayed in recommended section')
 def is_master_class_present(trial_class):
     details = trial_class.is_master_class_present()
-    assert not details.result, details.reason
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify that user missed booked session')
 def verify_user_missed_session(trial_class):
     details = trial_class.verify_user_missed_session()
-    assert details.result, details.reason
+    check.equal(details.result, True, details.reason)
 
 
 @then('book masterclass session')
 @then('Verify that user can book multiple masterclass sessions')
 def book_multiple_master_class(trial_class, db):
-    assert trial_class.book_master_class(db), "Master class was not booked"
+    check.equal(trial_class.book_master_class(db), True, "Master class was not booked")
 
 
 @then('book special master class')
 def book_special_master_class(trial_class):
-    trial_class.book_special_master_class()
+    details = trial_class.book_special_master_class()
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify that user should get Rebook option')
 def is_rebook_option_available(home_screen):
-    assert home_screen.verify_button("Rebook"), "Rebook button is not displayed"
+    check.equal(home_screen.verify_button("Rebook"), True, "Rebook button is not displayed")
 
 
 @then('verify that user should get autobook option')
 def is_autobook_present(trial_class):
     details = trial_class.is_autobook_present()
-    assert details.result, details.reason
+    check.equal(details.result, True, details.reason)
 
 
 @given('reset completed free trial and masterclass sessions')
 def delete_completed_sessions(trial_class):
-    assert trial_class.delete_completed_sessions() == 200, "free trial sessions reset is unsuccessful"
+    details = trial_class.delete_completed_sessions()
+    check.equal(details, 200, " free trial sessions reset is unsuccessful due to api call failure")
 
 
 @given("launch the application online and login as expired user")
@@ -197,12 +197,13 @@ def login_as_expired_user(login_in):
 
 @given('expire free trail subscriptions for user')
 def expire_free_trail_subscriptions(trial_class):
-    assert trial_class.expire_free_trail_subscriptions() == 200, "free trial subscription expire is unsuccessful"
+    check.equal(trial_class.expire_free_trail_subscriptions(), 200, "free trial subscription expire is unsuccessful")
 
 
 @then('verify expected message is shown once user reaches maximum free trail class limit')
 def verify_free_trial_message(trial_class):
-    assert trial_class.verify_free_trial_message(), "expected message is not displayed"
+    details = trial_class.verify_free_trial_message()
+    check.equal(details.result, True, details.reason + " expected message is not displayed")
 
 # @then(parsers.parse('Verify the text "{text}"'))
 # def verify_text(login_in, text):

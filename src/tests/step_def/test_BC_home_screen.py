@@ -5,6 +5,7 @@ from pages.android.trialclass_android import TrailClassFuturePaid, TrailClassAnd
 from pages.android.masterclass import MasterClass, MasterClassFuturePaid
 from utilities.staging_tllms import Stagingtllms
 from constants.load_json import get_data
+import pytest_check as check
 
 feature_file_name = 'Home Screen'
 
@@ -53,7 +54,7 @@ def step_impl(login, trial_class):
     if trial_class.is_free_trail_expired():
         pid = get_data("../../config/login_data.json", "login_details_3", "user_1")["profile_3"]["premium_id"]
         status = trial_class.delete_completed_sessions_api(premium_id=pid)
-        assert status == 200, "delete completed free trail class was not successful."
+        check.equal( status == 200,True, "delete completed free trail class was not successful.")
         login.clear_app_from_recents()
     pass
 
@@ -94,7 +95,9 @@ def step_impl(tllms, std_board):
 
 @when("verify master class are scheduled")
 def step_impl(m_class):
-    assert m_class.is_rc_session_card_displayed(), "'Master Class' sessions might not be loaded or scheduled."
+    details = m_class.is_rc_session_card_displayed()
+    check.equal(details.result,True, details.reason+ "Master Class' sessions might not be loaded or scheduled.")
+
 
 
 @when("click on book button and select random date and click on cancel button")
@@ -106,7 +109,7 @@ def step_impl(m_class):
 def step_impl(m_class):
     with pytest.raises(AssertionError):
         m_class.verify_booking_screen(booking_success_activity="BookingSuccessActivity")
-    assert m_class.wait_activity("OneToMegaHomeActivity")
+    check.equal(m_class.wait_activity("OneToMegaHomeActivity"), True, "OneToMegaHomeActivity is not being shown")
 
 
 @when("click on book button and select random date and click book and confirm button")
@@ -121,19 +124,21 @@ def step_impl(m_class):
 
 @then("verify details of class started bottom sheet")
 def step_impl(login):
-    assert login.verify_bottom_sheet_details(), "class started bottom sheet might not be displayed."
+    details = login.verify_bottom_sheet_details()
+    check.equal(details.result, True, details.reason)
 
 
 @when("verify that user should be able to book free trail class")
 def step_impl(trial_class):
     trial_class.book_trial_class()
-    assert trial_class.is_trial_class_booked()
+    detail = trial_class.is_trial_class_booked()
+    check.equal(detail.result, True, detail.reason)
 
 
 @when("verify that user should be able to book masterclasses")
-def step_impl(m_class, m_class_fp):
-    m_class.book_special_master_class()
-    assert m_class_fp.is_master_class_booked()
+def step_impl(m_class):
+    details = m_class.book_special_master_class()
+    check.equal(details.result, True, details.reason)
 
 
 @then("join the free trial class from the home screen")
@@ -144,4 +149,5 @@ def step_impl(login):
 
 @then("verify that user lands on live session")
 def step_impl(login):
-    assert login.wait_activity("PremiumSchoolSessionActivity"), "user might not have landed on the live session screen"
+    check.equal(login.wait_activity("PremiumSchoolSessionActivity"), True,
+                "user might not have landed on the live session screen")

@@ -2,6 +2,7 @@ from pytest_bdd import scenarios, given, then, when
 from pytest import fixture
 from pages.android.trialclass_android import TrailClassAndroid, TrailClassFuturePaid
 from pages.android.masterclass import MasterClassFuturePaid
+import pytest_check as check
 
 feature_file_name = 'Parity user support'
 
@@ -35,7 +36,8 @@ def step_impl(login):
 def step_impl(login):
     login.set_user_profile(user_profile='user_1', sub_profile='profile_2').verify_home_screen()
     login.switch_grade(grade=8)
-    assert login.subscription_expired()
+    details = login.subscription_expired()
+    check.equal(details.result, True, details.reason)
 
 
 @given("Verify that user selects the future subscribed grade")
@@ -47,14 +49,14 @@ def step_impl(login):
 @then("Verify that Free trail and master classes should be displayed in recommended section")
 @then("Parity user with Expired PS can access Free trail and masterclass in future paid cohort")
 def step_impl(m_class_future, trial_class_future):
-    assert m_class_future.is_master_class_available()
-    assert trial_class_future.is_trial_class_available()
+    details = m_class_future.is_master_class_available()
+    check.equal(details.result, True, details.reason)
 
 
 @then("verify that user should be able to book free trail and masterclasses")
 def step_impl(m_class, m_class_future, trial_class_future, trial_class):
     trial_class_future.book_trial_class()
-    m_class.book_special_master_class()
-    assert trial_class.is_trial_class_booked()
-    assert m_class_future.is_master_class_booked()
-
+    details = m_class.book_special_master_class()
+    check.equal(details.result, True, details.reason)
+    detail = trial_class.is_trial_class_booked()
+    check.equal(detail.result, True, detail.reason)

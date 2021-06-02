@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from constants.load_json import get_data
+from utilities.return_type import ReturnType
 from utilities.staging_tllms import Stagingtllms
 from selenium.common.exceptions import NoAlertPresentException, NoSuchElementException, TimeoutException, \
     StaleElementReferenceException
@@ -268,8 +269,8 @@ class StagingTutorPlus(Stagingtllms):
         s_end_h = s_end_24 if s_end_24 != 24 else 0
         ch, c_min = list(map(int, time.strftime("%H %M").split()))
         if s_end_h > ch > s_start_h or (s_end_h == ch > s_start_h and c_min < s_end_m):
-            return True
+            return ReturnType(True,"Session is setarted")
         elif ch == s_start_h <= s_end_h and c_min > int(s_start_m) < int(s_end_m):
-            return True
-        return False
+            return ReturnType(True,"Session is setarted")
+        return ReturnType(False,"Session is setarted")
 

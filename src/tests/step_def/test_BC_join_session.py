@@ -9,6 +9,7 @@ from pages.android.homepage import HomePage
 from pages.factory.login import LoginFactory
 from pages.factory.student_session import StudentSessionFactory
 from constants.platform import Platform
+import pytest_check as check
 
 scenarios('../features/Session Flow.feature')
 
@@ -81,7 +82,7 @@ def tap_on_join_now(student_session):
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, student_session, text):
     button_status = login_in.button_click(text)
-    assert button_status is True, "Unable to find {text} button"
+    check.equal(button_status.result, True, button_status.reason)
     student_session.speed_test()
 
 

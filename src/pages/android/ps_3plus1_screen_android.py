@@ -8,6 +8,10 @@ from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
+class ReturnType:
+    def __init__(self, result, reason):
+        self.result = False
+        self.reason = ""
 
 class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
     def __init__(self, driver):
@@ -32,7 +36,7 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
         self.ps_tabs = 'androidx.appcompat.app.ActionBar$Tab'
 
     def is_calendar_with_date_present(self):
-        return self.obj.is_element_present('id', self.calender_icon) and self.obj.is_element_present('id', self.date)
+        result= self.obj.is_element_present('id', self.calender_icon) and self.obj.is_element_present('id', self.date)
 
     def is_timestamp_with_time_present(self):
         return self.obj.is_element_present('id', self.time_icon) and self.obj.is_element_present('id', self.time)

@@ -1163,7 +1163,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def is_otm_session_activity(self):
         __o = self.otm_home_screen()
-        return __o.is_join_now_btn_displayed()
+        return __o.is_join_now_btn_displayed().result
 
     def get_otm_first_session_detail(
             self, profile='login_details_3', user_profile='user_1', sub_profile='profile_1', completed=None):
