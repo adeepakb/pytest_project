@@ -123,11 +123,13 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         while expected_text:
             try:
                 response = self.get_element('xpath', "//*[contains(@text, '" + expected_text + "')]").is_displayed()
-                return response
+                return ReturnType(True, "{} is displayed".format(expected_text)) if response else ReturnType(False,
+                                                                                                             "{} is not  displayed".format(
+                                                                                                                 expected_text))
             except StaleElementReferenceException:
                 pass
             except NoSuchElementException:
-                return False
+                return ReturnType(False, "{} is not  displayed".format(expected_text))
 
     def is_back_nav_btn_displayed(self):
         try:
@@ -349,15 +351,17 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.login.implicit_wait_for(20)
         try:
             displayed = self.get_element(*self.pr_view).is_displayed()
-            return displayed
+            return ReturnType(True, "Session is completed ") if displayed else ReturnType(False,
+                                                                                          "Session is not completed ")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Session is not completed ")
 
     def is_completed_check_displayed(self):
         try:
-            return self.get_element(*self.pr_status_ico).is_displayed()
+            return ReturnType(True, "completed check is displayed") if self.get_element(
+                *self.pr_status_ico).is_displayed() else ReturnType(False, "completed check is displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "completed check is displayed")
 
     def is_screen_displayed(self, title=None):
         timeout = 5
@@ -367,17 +371,17 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             for toolbar_title in toolbar_titles:
                 try:
                     if toolbar_title.text == title and self.device_type != 'tab':
-                        return True
+                        return ReturnType(True, "{} screen is displayed".format(title))
                     elif self.device_type != 'mobile':
                         self.get_element(*self.session_details, wait=False)
-                        return True
+                        return ReturnType(True, "{} screen is displayed".format(title))
                 except (NoSuchElementException, StaleElementReferenceException):
                     timeout -= 1
                     sleep(1)
             else:
                 timeout -= 1
                 sleep(1)
-        return False
+        return ReturnType(False, "{} screen is not displayed".format(title))
 
     def click_app_back_btn(self):
         self.get_element(*self.nav_btn).click()
@@ -463,9 +467,9 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     self.scroll_cards.scroll_by_card(session, session_list)
                     swipe -= 1
             except NoSuchElementException:
-                return True
+                return ReturnType(True, "Up next is being displayed")
         else:
-            raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
+            return ReturnType(False, "Up next is not being displayed")
 
     def is_post_requisite_attached(self):
         s = self.get_element(*self.pr_status_msg).text
@@ -474,7 +478,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 h = self.get_element(*self.pr_heading).text
                 if h.lower() == 'revision material':
                     return ReturnType(True, "Post Requisite is attacthed checked revision material")
-                return ReturnType(False, "Either Post Requisite is not attacthed checked or revision material not shown")
+                return ReturnType(False,
+                                  "Either Post Requisite is not attacthed checked or revision material not shown")
             except NoSuchElementException:
                 raise RequisiteException("no 'Post' requisite has been attached")
         return ReturnType(False, "Post requisite not found")
@@ -530,9 +535,11 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 raise TypeError(
                     "is_pre_post_requisite_displayed() expected at least one argument to be 'True': 'pre' or 'post'"
                 ) from None
-            return a is pre and b is post
+            flag = a is pre and b is post
+            return ReturnType(True, "Pre/post requisite is displayed") if flag else ReturnType(False,
+                                                                                               "Pre/post requisite is not displayed")
         except NoSuchElementException:
-            return False
+            return ReturnType(False, "Pre/post requisite is not displayed")
 
     def click_on_see_more(self):
         self.get_element(*self.see_more).click()

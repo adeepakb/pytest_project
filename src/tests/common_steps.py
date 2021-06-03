@@ -194,12 +194,14 @@ def step_impl(db, tllms, req_type, req_content, this_day):
 
 @when('verify completed session cards should be displayed')
 def verify_completed_session(std_board):
-    assert std_board.is_completed_sessions_displayed()
+    details = std_board.is_completed_sessions_displayed()
+    check.equal(details.result, True.details.reason)
 
 
 @then('verify completed session cards should be displayed')
 def then_verify_completed_session(std_board):
-    assert std_board.is_completed_sessions_displayed()
+    details = std_board.is_completed_sessions_displayed()
+    check.equal(details.result, True.details.reason)
 
 
 @when(parsers.re('switch (?P<state>(?:off|on)) the device wifi'))
@@ -212,14 +214,11 @@ def device_wifi_state(std_board, state):
     std_board.toggle_wifi_connection(state)
 
 
+@then('verify up next session is displayed')
 @when('verify up next session is displayed')
 def step_impl(std_board):
-    assert std_board.is_up_next_displayed()
-
-
-@then('verify up next session is displayed')
-def step_impl(std_board):
-    assert std_board.is_up_next_displayed()
+    details = std_board.is_up_next_displayed()
+    check.equal(details.result, True, details.reason)
 
 
 @then('scroll up next to the top')
@@ -263,19 +262,23 @@ def verify_one_to_mega_home_screen(std_board):
 def step_impl(std_board):
     pre_req, post_req = True, False
     displayed = std_board.is_pre_post_requisite_displayed(pre=pre_req, post=post_req, session='upcoming')
-    assert pre_req is displayed and post_req is not displayed
+    check.equal(displayed.result, True, displayed.reason)
+    flag1 = pre_req is displayed.result
+    flag2 = post_req is not displayed.result
+    check.equal(flag1, True, "Pre resuisite is not displayed")
+    check.equal(flag2, True, "Post requisites is displayed")
 
 
 @when(parsers.re('verify text "(?P<text>(.*))".*'))
 def verify_text(std_board, text):
     text_displayed = std_board.verify_is_text_displayed(text)
-    assert text_displayed is True, f'The text "{text}" is not displayed.'
+    check.equal(text_displayed, True, text_displayed + f' The text "{text}" is not displayed.')
 
 
 @then(parsers.re('verify text "(?P<text>(.*))".*'))
 def verify_text(std_board, text):
     text_displayed = std_board.verify_is_text_displayed(text)
-    assert text_displayed is True, f'The text "{text}" is not displayed.'
+    check.equal(text_displayed, True, text_displayed + f' The text "{text}" is not displayed.')
 
 
 @when(parsers.re('tap on (?:any |)(?P<t>(?:future|completed|tomorrow|up next)) session card'))
@@ -291,48 +294,49 @@ def tap_on_upcoming_card(std_board, t):
 @then(parsers.re('verify (?P<s_t>(?:subject|topic)) (?P<n_i>(?:name|icon)).*'))
 def verify_content_desc(ssn_req, std_board, s_t, n_i):
     std_board.login.implicit_wait_for(0)
-    assert ssn_req.verify_content_description(s_t, n_i)
+    check.equal(ssn_req.verify_content_description(s_t, n_i), True, "Content Description is wrong")
     std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<c_t>(?:calendar|clock)).*'))
 def verify_content_desc(ssn_req, std_board, c_t):
     std_board.login.implicit_wait_for(0)
-    assert ssn_req.verify_content_description(c_t)
+    check.equal(ssn_req.verify_content_description(c_t), True, "Calender time not verified")
     std_board.login.implicit_wait_for(15)
 
 
 @when(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(std_board, tp_tm, cnt_typ):
     std_board.login.implicit_wait_for(0)
-    assert ssn_req.verify_content_description(tp_tm, cnt_typ)
+    check.equal(ssn_req.verify_content_description(tp_tm, cnt_typ), True, "Time is worng")
     std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(ssn_req, std_board, tp_tm, cnt_typ):
     std_board.login.implicit_wait_for(15)
-    assert ssn_req.verify_content_description(tp_tm, cnt_typ)
+    check.equal(ssn_req.verify_content_description(tp_tm, cnt_typ), True,
+                " {} {} are not verified".format(tp_tm, cnt_typ))
     std_board.login.implicit_wait_for(15)
 
 
 @when(parsers.re('verify (?P<b_type>(?i:get help|app back|retry|rate now)) button.*'))
 def verify_button_displayed(std_board, b_type):
     std_board.login.implicit_wait_for(0)
-    assert std_board.is_button_displayed(b_type)
+    check.equal(std_board.is_button_displayed(b_type), True, "{} button is not being displayed".format(b_type))
     std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<b_type>(?i:get help|app back|retry|rate now)) button.*'))
 def verify_button_displayed(std_board, b_type):
     std_board.login.implicit_wait_for(0)
-    assert std_board.is_button_displayed(b_type)
+    check.equal(std_board.is_button_displayed(b_type), True, "{} button is not bring diplayed".format(b_type))
     std_board.login.implicit_wait_for(15)
 
 
 @when('tap on completed tab')
 def tap_on_completed_tab(std_board):
-    assert std_board.ps_home_page_tab('Completed')
+    check.equal(std_board.ps_home_page_tab('Completed'), True, "Could not click on completed tab")
 
 
 @when('verify user navigated to home screen')
@@ -341,42 +345,45 @@ def step_impl(login):
     home_activity = "HomeActivity"
     login.wait_activity(home_activity)
     current_activity = login.driver.current_activity.split(".")[-1]
-    assert home_activity == current_activity, "home scree might not be loaded."
+    check.equal(home_activity, current_activity, "home scree might not be loaded.")
 
 
 @then('verify tick icon')
 def verify_completed_check_mark(std_board):
-    assert std_board.is_completed_check_displayed()
+    details = std_board.is_completed_check_displayed()
+    check.equal(details.result, True, details.reason)
 
 
 @when('verify user is navigated to session details screen')
 def verify_session_details_screen(std_board):
-    assert std_board.is_screen_displayed("Session Details")
+    details = std_board.is_screen_displayed("Session Details")
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify user is navigated to session details screen')
 def then_verify_session_details_screen(std_board):
-    assert std_board.is_screen_displayed("Session Details")
+    details = std_board.is_screen_displayed("Session Details")
+    check.equal(details.result, True, details.reason)
 
 
 @when(parsers.re('verify (?P<tab_name>(?i:for you|completed))(?: sessions|) tab is highlighted'))
 def verify_completed_session_tab_highlighted(std_board, tab_name):
     tab_name = tab_name.capitalize()
-    assert std_board.ps_home_page_tab(tab_name, check=True)
+    check.equal(std_board.ps_home_page_tab(tab_name, check=True), True, "{} tab is not highlighted".format(tab_name))
 
 
 @then(parsers.re('verify (?P<tab_name>(?i:for you|completed))(?: sessions|) tab is highlighted'))
 def verify_completed_session_tab_highlighted(std_board, tab_name):
     tab_name = tab_name.capitalize()
-    assert std_board.ps_home_page_tab(tab_name, check=True)
+    check.equal(std_board.ps_home_page_tab(tab_name, check=True), True, "{} tab is not highlighted".format(tab_name))
 
 
 @then('verify the toggle sessions for you and completed sessions')
 def step_impl(std_board):
     std_board.ps_home_page_tab("Completed")
-    assert std_board.ps_home_page_tab("Completed", check=True)
+    check.equal(std_board.ps_home_page_tab("Completed", check=True), True, "Completed tab is not highlighted")
     std_board.ps_home_page_tab("For you")
-    assert std_board.ps_home_page_tab("For you", check=True)
+    check.equal(std_board.ps_home_page_tab("For you", check=True), True, "For you tab is not highlighted")
 
 
 @then('verify that for completed session both pre and post requisites are displayed')
@@ -390,26 +397,34 @@ def step_impl(std_board):
 def step_impl(std_board):
     pre_req, post_req = False, True
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req)
-    assert pre_req is not displayed and post_req is displayed
+    check.equal(displayed, True, displayed.reason)
+    flag1 = pre_req is not displayed
+    check.equal(flag1, True, displayed.reason + " Pre requisite is displayed")
+    flag2 = post_req is displayed
+    check.equal(flag2, True, displayed.reason + " Post requisite is  not  displayed")
 
 
 @then('verify that for up next session pre requisites are displayed')
 def step_impl(std_board):
     pre_req, post_req = True, False
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req, session='upcoming')
-    assert pre_req is displayed and post_req is not displayed
+    check.equal(displayed, True, displayed.reason)
+    flag1 = pre_req is displayed
+    check.equal(flag1, True, displayed.reason + " Pre requisite is not displayed")
+    flag2 = post_req is not displayed
+    check.equal(flag2, True, displayed.reason + " Post requisite is displayed")
 
 
 @then('verify if more then two requisites are attached "see more" option is displayed')
 def step_impl(ssn_req):
     details = ssn_req.is_see_more_option_displayed()
-    check.equal(details.result,True, details.reason)
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify "see more" option is not displayed if the post requisite contain only two resource type')
 def step_impl(ssn_req):
-    details =  ssn_req.is_see_more_option_displayed()
-    check.equal(details.result, False,details.reason)
+    details = ssn_req.is_see_more_option_displayed()
+    check.equal(details.result, False, details.reason)
 
 
 @when('verify post requisite is attached for completed session')
@@ -446,17 +461,18 @@ def step_impl(std_board):
 
 @then('verify the video is playing')
 def step_impl(ssn_req):
-    assert ssn_req.verify_video_playing()
+    check.equal(ssn_req.verify_video_playing(), True, "Videos is not playing")
 
 
 @then('verify user is able to complete the video')
 def step_impl(ssn_req):
-    assert ssn_req.complete_video()
+    details = ssn_req.complete_video()
+    check.equal(details.result, True, details.reason)
 
 
 @then('verify all video player elements')
 def step_impl(ssn_req):
-    assert ssn_req.verify_video_player_elements()
+    check.equal(ssn_req.verify_video_player_elements(), True, "All videos player elements are not displayed")
 
 
 @given('last session should be ended and should not be rated')
@@ -465,22 +481,26 @@ def step_impl(login, std_board, db):
     # login.verify_home_screen()
     login.implicit_wait_for(15)
     db.user_profile = 'user_1'
-    assert std_board.complete_last_session(rate_action='skip', db=db)
+    check.equal(std_board.complete_last_session(rate_action='skip', db=db), True,
+                "Last session was not ended and rating was not done")
 
 
 @given('last session should be ended and should not be rated and verify feedback screen')
 def step_impl(login, std_board, db):
     login.verify_home_screen()
-    assert std_board.complete_last_session(rate_action='skip', rate_activity_check=True, db=db)
+    check.equal(std_board.complete_last_session(rate_action='skip', rate_activity_check=True, db=db), True,
+                "Last session was not ended or rated successfully")
 
 
 @given('last session should be ended and should be rated')
 def step_impl(db, std_board):
     db.user_profile = 'user_2'
-    assert std_board.complete_last_session(rate_action='rate', db=db)
+    check.equal(std_board.complete_last_session(rate_action='rate', db=db),
+                "Last session was not ended and rated successfully")
 
 
 @then('verify that user is able to access all post requisites attached to the session')
 def step_impl(std_board):
-    assert std_board.is_all_post_requisite_accessible()
+    check.equal(std_board.is_all_post_requisite_accessible(), True,
+                "User is not able to access all post requisites attatched to the session")
 # ------------------------------------------------------------------------

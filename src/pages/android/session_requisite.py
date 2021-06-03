@@ -436,11 +436,11 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
                     tap_act = action_2.tap(element=self.get_element(*self.video_play_ib))
                     self.multi_action.add(sweep_act, tap_act)
                     self.multi_action.perform()
-                    return True
+                    return ReturnType(True," Video is completed")
                 except (NoSuchElementException, StaleElementReferenceException):
                     t -= 1
-            raise NoSuchElementException
-        raise Exception
+            return ReturnType(False," Video is not completed successfully but video was buffering")
+        return ReturnType(False," Video is not completed successfully dur to video not buffering")
 
     def change_orientation(self):
         self.static_exo_player()
