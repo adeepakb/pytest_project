@@ -27,6 +27,11 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         self.know_more = "id", "%s/home_drawer_list_item_txtvw_new" % package_name
         self.confirm_and_book = "id", "%s/primaryAction" % package_name
         self.booking_page_dropdown = "id", "%s/ivChevron" % package_name
+        self.bs_header_title = 'id', '%s/tvHeaderTittle' % package_name
+        self.booking_times = 'id', '%s/toggleButtonsGroup' % package_name
+        self.booked_screen_title = 'id', '%s/appTextView_title' % package_name
+        self.booked_screen_time = 'id', '%s/appTextViewTime' % package_name
+        self.booked_screen_ok = 'id', '%s/appButtonCtaOk' % package_name
 
     def click_on_hamburger(self):
         try:
@@ -122,80 +127,86 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         return return_type
 
     def validate_book_a_free_class_card(self, text='Book a Free Class'):
-        return_type = ReturnType(False, "")
         if self.is_button_displayed_with_text(text) is True:
-            return_type.result = True
-            return_type.reason = "{} button is shown".format(text)
+            return ReturnType(True, "{} button is shown".format(text))
         else:
-            return_type.result = False
-            return_type.reason = "{} button is not shown".format(text)
-        return return_type
+            return ReturnType(False, "{} button is not shown".format(text))
 
     def tap_on_book_card(self, text='Book a Free Class'):
-        return_type = ReturnType(False, "")
         try:
             self.button_click(text)
-            return_type.result = True
-            return_type.reason = "Found and clicked on {} Button".format(text)
+            return ReturnType(True, "Found and clicked on {} Button".format(text))
         except:
-            return_type.result = False
-            return_type.reason = "Not Found and not clicked on {} Button".format(text)
-        return return_type
+            return ReturnType(False, "Not Found and not clicked on {} Button".format(text))
+
+
 
     def select_online_offline_mode(self, mode):
-        return_type = ReturnType(False, "")
         try:
             set_connection_type(self.driver, mode)
-            return_type.result = True
-            return_type.reason = "Network mode set to {}.".format(mode)
+            return ReturnType(True, "Couldn't set network mode to {}.".format(mode))
         except:
-            return_type.result = False
-            return_type.reason = "Couldn't set network mode to {}.".format(mode)
-        return return_type
+            return ReturnType(False, "Network mode set to {}.".format(mode))
 
     def verify_book_free_class_screen(self, expected_activity='PremiumSchoolCourseActivity'):
-        return_type = ReturnType(False, "")
-
+        time.sleep(3)
         if expected_activity in self.driver.current_activity:
-            return_type.result = True
-            return_type.reason = " User is in Book a free class page {}".format(expected_activity)
+            return ReturnType(True, " User is in Book a free class page {}".format(expected_activity))
 
         else:
-            return_type.result = False
-            return_type.reason = " User is in student dashboard {}".format(expected_activity)
+            return ReturnType(False, " User is not in Book a free class page {}".format(expected_activity))
 
         return return_type
 
-    # deepak scroll part should be added and assertion for next page
     def tap_on_book_button(self):
-        return_type = ReturnType('False', "")
         try:
-            self.button_click("Book")
-            return_type.result = True
-            return_type.reason = "Book button found"
+            self.is_scrolled_and_element_clicked("Book")
 
+            if self.is_element_present(*self.booking_page_dropdown):
+                ReturnType(True, "Book button found and booking page found")
+            else:
+                ReturnType(True, "Book button not found and booking page not found")
+            return ReturnType(True, "Book button found")
         except:
-            return_type.result = False
-            return_type.reason = "Book button not found on book class screen"
-
-        if self.is_element_present(*self.booking_page_dropdown):
-            return_type.result = return_type.reason and True
-            return_type.reason = return_type.reason + "and booking page found"
-        else:
-            return_type.result = return_type.reason and False
-            return_type.reason = "Booking page not found"
+            return ReturnType(False, "Book button not found")
 
         return return_type
 
-    def book_a_session(self):
-        return_type = ReturnType(False, "")
+    def book_a_session(self, **kwargs):
+        db = kwargs['db']
+        header_text = self.get_element(*self.bs_header_title).text
+        selected_time = self.get_selected_time()
+        if selected_time:
+            db.selected_time = selected_time
+        else:
+            return ReturnType(False, " Time elements or booking screen not visible")
         try:
             self.element_click(*self.confirm_and_book)
-            return_type.result = True
-            return_type.reason = " Clicked on confirm and book button on booking page"
-
+            return ReturnType(True, "Clicked on confirm and book button on booking page")
         except:
-            return_type.result = False
-            return_type.reason = " Couldn't click on confirm and book button on booking page"
+            return ReturnType(False, "Couldn't click on confirm and book button on booking page")
 
-        return return_type
+    def get_selected_time(self):
+        try:
+            elements = self.get_elements(*self.booking_times)
+            for element in elements:
+                button_elements = element.find_elements_by_class_name("android.widget.TextView")
+                for button_element in button_elements:
+                    if button_element.is_selected():
+                        return button_element.text
+        except:
+            return None
+
+    def verify_and_close_booked_screen(self, **kwargs):
+        db = kwargs['db']
+        selected_time = db.selected_time
+        check.equal(self.get_element(*self.booked_screen_title).text, "You Successfully Booked",
+                    "Booked screen title is wrong")
+
+        check.equal(selected_time in self.get_element(*self.booked_screen_time).text, True,
+                    "Booked time is displayed correctly")
+        try:
+            self.get_element(*self.booked_screen_ok).click()
+            return ReturnType(True, "Booked successfully and booking screen is verified")
+        except:
+            return ReturnType(False, "Couldn't book successfully and booking screen is not correct")

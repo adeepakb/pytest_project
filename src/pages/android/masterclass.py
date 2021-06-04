@@ -8,11 +8,13 @@ from selenium.common.exceptions import NoSuchElementException
 from pages.android.application_login import Login
 from pages.android.scroll_cards import ScrollCards
 from pages.android.session_requisite import SessionRequisite
+from utilities.return_type import ReturnType
 from utilities.staging_tllms import Stagingtllms
 from pages.android.student_dashboard_otm import StudentDashboardOneToMega
 from pages.base.masterclass import MasterClassBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from utilities.exceptions import *
+import pytest_check as check
 
 
 class MasterClass(MasterClassBase, TutorCommonMethods):
@@ -241,17 +243,19 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
         if not booking_success_activity:
             try:
                 header_text = self.get_element(*self.bs_header_title).text
-                assert header_text.lower() == 'select date & time'
+                check.equal(header_text.lower(), 'select date & time', "Header title is not correct in booking screen")
                 try:
                     element = self.book_primary_btn[-1]
                     confirm_book = self.get_element(*self.book_primary_btn).text
                     element = self.book_secondary_btn[-1]
                     cancel_text = self.get_element(*self.book_secondary_btn).text
                 except NoSuchElementException:
-                    raise ElementNotFoundError(element, 'master class booking screen') from None
-                assert confirm_book.lower() == 'confirm & book' and cancel_text.lower() == 'cancel'
+                    return ReturnType(False, "Booking Screen details are wrong")
+                check.equal(confirm_book.lower(), 'confirm & book', "confirm and book is wrong")
+                check.equal(cancel_text.lower(), 'cancel', 'cancel display is wrong')
+                return ReturnType(True, "Booking screen details are correct")
             except NoSuchElementException:
-                pass
+                return ReturnType(False, "Booking Screen details are wrong")
         else:
             assert self.wait_activity(booking_success_activity)
             elements = [
@@ -260,7 +264,9 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
             displayed_status = list()
             for element in elements:
                 displayed_status.append(self.get_element(*element).is_displayed())
-            assert all(displayed_status)
+            check.equal(all(displayed_status), True, "Booking screen details are wrong")
+            return ReturnType(True, "Session screen details are correct") if all(displayed_status) else ReturnType(
+                False, "Booking Screen details are wrong")
 
     def book_master_class(self, new_session=False, validate=False, **kwargs):
         if not self.is_master_class_booked() or new_session:

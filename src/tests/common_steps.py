@@ -495,7 +495,7 @@ def step_impl(std_board):
 @when('Tap on the Hamburger menu at the left corner on the home screen')
 def step_impl(know_more):
     detail = know_more.click_on_hamburger()
-    check.equal(detail.result,True, detail.reason)
+    check.equal(detail.result, True, detail.reason)
 
 
 @when('verify that the Left nav is displayed')
@@ -522,13 +522,13 @@ def step_impl(driver, know_more):
 @then('Tap on the "Byjus classes" option on the left nav')
 @when('Tap on the "Byjus classes" option on the left nav')
 def step_impl(driver, know_more):
-    detail= know_more.tap_on_byjus_classes_in_hamburger()
-    check.equal(detail.result,True,detail.reason)
+    detail = know_more.tap_on_byjus_classes_in_hamburger()
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify  "Byjus classes-Know more" option is responsive')
 def step_impl(driver, know_more):
-    detail =know_more.validate_know_more()
+    detail = know_more.validate_know_more()
     check.equal(detail.result, True, detail.reason)
 
 
@@ -546,6 +546,7 @@ def step_impl(driver, know_more):
 def step_impl(driver, know_more):
     detail = know_more.select_online_offline_mode("ALL_NETWORK_ON")
     check.equal(detail.result, True, detail.reason)
+
 
 @then('verify that user is navigated to "Book a free class" screen')
 @then('verify that the user is navigated to the "Book a free class" screen')
@@ -566,16 +567,19 @@ def step_impl(login):
     login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
 
 
-
 @when('tap on "Book" button')
 @then('tap on "Book" button')
-def step_impl(know_more):
+def step_impl(know_more, m_class):
     detail = know_more.tap_on_book_button()
-    check.equal(detail.result ,True, detail.reason)
+    check.equal(detail.result, True, detail.reason)
+    detail = m_class.verify_booking_screen()
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify user is able to book a session')
-def step_impl(know_more):
-    detail = know_more.book_a_session()
+def step_impl(know_more,m_class,db):
+    detail = know_more.book_a_session(db=db)
+    check.equal(detail.result, True, detail.reason)
+    detail = know_more.verify_and_close_booked_screen(db=db)
     check.equal(detail.result, True, detail.reason)
     print()
