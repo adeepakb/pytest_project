@@ -474,6 +474,18 @@ class TutorCommonMethods:
                 timeout -= 1
         return False
 
+    def is_android_notification_present(self, expected_notification):
+        flag = False
+        self.driver.open_notifications()
+        notification_titles = self.get_elements('id', 'android:id/title')
+        print(notification_titles)
+        for title in notification_titles:
+            title_text = title.text
+            print(title_text)
+            if title_text == expected_notification:
+                flag = True
+        return flag
+
 
 class InValidLocatorError(Exception):
     pass

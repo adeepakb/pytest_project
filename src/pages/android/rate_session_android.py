@@ -1,25 +1,26 @@
 import time
-
 import pytest
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException
-import logging
-
-from selenium.webdriver import ActionChains
-
+from pages.base.rate_session_base import RateSessionBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.session_completed import SessionComplete
 from pages.android.session_data import SessionData
 from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
-from pages.android.student_session import StudentSessionAndroid
 from utilities.common_methods import CommonMethods
 import re
+import pytest_check as check
 
 CommonMethods = CommonMethods()
 
 
-class Dashboard:
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
+
+
+class Dashboard(RateSessionBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.sessioncomplete = SessionComplete(driver)
@@ -74,10 +75,16 @@ class Dashboard:
         self.action.press(x=tapAt, y= y_axis).release().perform()
 
     def text_match(self, expected_text):
-        return self.obj.is_text_match(expected_text)
+        text_matches = self.obj.is_text_match(expected_text)
+        if text_matches is True:
+            return ReturnType(True, '%s text is displayed' % expected_text)
+        return ReturnType(False, '%s text is not displayed' % expected_text)
 
     def verify_button(self, text):
-        return self.obj.is_button_displayed(text)
+        if self.obj.is_button_displayed(text):
+            return ReturnType(True, '%s button is displayed' % text)
+        else:
+            return ReturnType(False, '%s button is not displayed' % text)
 
     def tap_on_join_now(self):
         self.obj.wait_for_locator('id', self.join_now)
@@ -104,7 +111,10 @@ class Dashboard:
         card.click()
 
     def verify_rate_session_close_button(self):
-        return self.obj.is_element_present("xpath", self.rate_session_close_button)
+        if self.obj.is_element_present("xpath", self.rate_session_close_button):
+            return ReturnType(True, 'Cancel button is present')
+        else:
+            return ReturnType(False, 'Cancel button is not present')
 
     def tap_rate_session_close_button(self):
         self.obj.element_click("xpath", self.rate_session_close_button)
@@ -155,8 +165,8 @@ class Dashboard:
         data_off_icon_displayed = self.obj.get_element('xpath', self.data_off_icon).is_displayed()
         is_enabled = self.obj.get_element('xpath', self.data_off_icon).is_enabled()
         if data_off_icon_displayed and is_enabled:
-            return True
-        return False
+            return ReturnType(True, 'Data off icon is present')
+        return ReturnType(False, 'Data off icon is not present')
 
     def tap_on_each_star_and_verify_feedback(self):
         for i in range(1, 5):
@@ -239,10 +249,9 @@ class Dashboard:
         self.obj.is_text_match("Let us know how your experience was!")
         self.verify_star_rating(self.feedback_rating_bar, '0.0')
         # m = re.match("[0-3][0-9] ([A-Z]{1}[a-z]{2}), ([A-Z]{1}([a-z]{8}|[a-z]{7}|[a-z]{6}|[a-z]{5}))|[A-Z]{1}[a-z]{4}", session_date)
-        m = re.match(
-            "[0-3][0-9] (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec), (Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)|(Today)",
+        m = re.match("[0-3][0-9] (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec), (Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)|(Today)",
             session_date)
-        assert m is not None, "Session date is in DD MMM,DAY format"
+        check.equal(m is not None, True, "Session date is not in DD MMM,DAY format")
 
         self.obj.is_text_match("Not attended")
         self.obj.is_button_displayed("Submit")
@@ -252,6 +261,12 @@ class Dashboard:
                                     "Schedule Date": session_date.strip(),
                                     "Schedule Time": session_time.strip()}
 
+        item_found_count= None
         for key, value in rating_card_details_dict.items():
             expected_value = session_details_dict[key]
-            assert (expected_value in value), "Values in rate session card is not matching with session card details"
+            if expected_value in value:
+                item_found_count = +1
+        if item_found_count == 4:
+            return ReturnType(True, "Values in rate session card is matching with session card details")
+        else:
+            return ReturnType(False, "Values in rate session card is not matching with session card details")

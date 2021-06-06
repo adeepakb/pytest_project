@@ -133,3 +133,7 @@ class StudentSessionBase(ABC):
     @abstractmethod
     def is_video_progress_bar_present(self):
         raise NotImplemented()
+
+    @abstractmethod
+    def is_video_play_pause_progress_bar_present(self):
+        raise NotImplemented()

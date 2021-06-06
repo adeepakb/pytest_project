@@ -12,7 +12,7 @@ import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-from utilities.API_methods import *
+# from utilities.API_methods import *
 from utilities.common_methods import CommonMethods
 from constants.constants import CONFIG_PATH, Login_Credentials
 from constants.load_json import getdata
@@ -264,7 +264,7 @@ class HomePage():
                 CommonMethods.elementClick(driver, self.profile_name_hamburger)
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = decrypted_data['profile_credentials']['mobileNum']
+                actual_mob_num = getdata(Login_Credentials, 'login_detail3', 'code')+""+getdata(Login_Credentials, 'login_detail3', 'mobile_no')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)

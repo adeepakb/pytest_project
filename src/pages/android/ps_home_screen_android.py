@@ -21,7 +21,6 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.login = LoginAndroid(driver)
         self.driver = driver
         self.action = TouchAction(driver)
-        self.ps_tabs = 'androidx.appcompat.app.ActionBar$Tab'
         self.for_you_tab = '//androidx.appcompat.app.ActionBar.Tab[@content-desc="For you"]/android.widget.TextView'
         self.get_help = 'com.byjus.thelearningapp.premium:id/optionalNav'
         self.back_navigation = 'com.byjus.thelearningapp.premium:id/backNav'
@@ -37,11 +36,11 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.byjus_classes_banner= 'com.byjus.thelearningapp.premium:id/ivMarketingBannerTop'
 
     def verify_ps_tabs(self, expected_text):
-        text_elements = self.obj.get_elements('class_name', self.ps_tabs)
+        text_elements = self.obj.get_elements('class_name', 'android.widget.LinearLayout')
         for element in text_elements:
             if expected_text == element.get_attribute('content-desc'):
-                return True
-        return False
+                return ReturnType(True, '%s Tab is present'%expected_text)
+        return ReturnType(False, '%s Tab is not present'%expected_text)
 
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',
@@ -49,19 +48,19 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def verify_arrow_present_for_each_requisite(self):
         if len(self.obj.get_elements('id', self.requisite_items)) == len(self.obj.get_elements('id', self.arrow_button)):
-            return True
+            return ReturnType(True, 'Forward arrow is displayed for requisite')
         else:
-            return False
+            return ReturnType(False, 'Forward arrow is not displayed for requisite')
 
     def is_tab_selected(self, text):
         try:
             displayed = self.obj.get_element('xpath',
                                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').is_selected()
             if displayed:
-                return True
-            return False
+                return ReturnType(True, '%s Tab is selected'%text)
+            return ReturnType(False, '%s Tab is not selected'%text)
         except NoSuchElementException:
-            return None
+            return ReturnType(False, '%s Tab is not displayed'%text)
 
     def click_back(self):
         self.obj.click_back()
@@ -72,19 +71,31 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.obj.click_back()
 
     def is_get_help_present(self):
-        return self.obj.is_element_present('id', self.get_help)
+        if self.obj.is_element_present('id', self.get_help):
+            return ReturnType(True, 'Get help option is present')
+        else:
+            return ReturnType(False, 'Get help option is not present')
 
     def is_back_nav_present(self):
-        return self.obj.is_element_present('id', self.back_navigation)
+        if self.obj.is_element_present('id', self.back_navigation):
+            return ReturnType(True, 'back navigation icon is present')
+        else:
+            return ReturnType(False, 'back navigation icon is not present')
 
     def is_bottom_sheet_present(self):
-        return self.obj.is_element_present('id', self.bottom_sheet)
+        if self.obj.is_element_present('id', self.bottom_sheet):
+            return ReturnType(True,'quick help bottom sheet did show up')
+        else:
+            return ReturnType(False, 'quick help bottom sheet did not show up')
 
     def close_get_help(self):
         self.obj.get_element('id', self.close_chat).click()
 
     def verify_get_help_close(self):
-        return self.obj.is_element_present('id', self.close_chat)
+        if self.obj.is_element_present('id', self.close_chat):
+            return ReturnType(True, 'Cancel icon is present on chat box')
+        else:
+            return ReturnType(False, 'Cancel icon is not present on chat box')
 
     def verify_card_details(self):
         subject_name = self.driver.find_element_by_xpath(
@@ -119,7 +130,11 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
-        return self.obj.is_button_enabled(text)
+        if self.obj.is_button_enabled(text):
+            return ReturnType(True, '%s button is displayed' %text)
+        else:
+            return ReturnType(False,  '%s button is not displayed' %text)
+
 
     def attach_post_requisite(self, driver, requisite_name):
         Stagingtlms(driver).attach_requisite(requisite_name)
@@ -141,24 +156,32 @@ class PS_Homescreen_Android(PSHomeScreenBase):
             "Schedule Date": session_date,
             "Session status": session_status
         }
-        assert (all(v is not None for v in [subject_name,topic_name, session_date,session_status]) and session_status == "Completed"), "Completed Session card details not loaded"
         return details_dict
 
     def tap_outside_dialog_layout(self):
         self.action.tap(None, x=100, y=100).release().perform()
 
     def is_user_in_ps_page(self):
-        return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
-                self.obj.get_element('id', self.home_tabs).is_displayed())
+        if (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed()):
+            return ReturnType(True, 'User is in the PS screen')
+        else:
+            return ReturnType(False, 'User is not in the PS screen')
 
     def verify_bottom_sheet(self):
-        return (self.obj.get_element('id','com.byjus.thelearningapp.premium:id/tv_title').text == "BYJU's Classes" and
+        if (self.obj.get_element('id','com.byjus.thelearningapp.premium:id/tv_title').text == "BYJU's Classes" and
                 self.obj.get_element('id', self.bottom_sheet_book).text == 'Book a Free Trial' and
                 self.obj.get_element('id', self.bottom_sheet_dismiss).text == 'Dismiss' and
-                self.obj.get_element('id', self.design_bottom_sheet).is_displayed())
+                self.obj.get_element('id', self.design_bottom_sheet).is_displayed()):
+            return ReturnType(True, "User is in BYJU's Classes pop up screen")
+        else:
+            return ReturnType(False,"User is not in BYJU's Classes pop up screen")
 
     def verify_banner(self):
-        return self.obj.get_element('id',self.byjus_classes_banner)
+        if self.obj.get_element('id',self.byjus_classes_banner):
+            return ReturnType(True, 'Byjus classes banner is present')
+        else:
+            return ReturnType(False, 'Byjus classes banner is not present')
 
     def verify_booking_page(self):
         if self.obj.is_text_match('Book a free class'):

@@ -1,5 +1,6 @@
 import re
 import os
+import time
 import traceback
 import pytest
 import sys
@@ -21,15 +22,13 @@ feature_job = BuildFeatureJob()
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
-    feature_job.build_and_install_apk()
+    # feature_job.build_and_install_apk()
+    pass
     yield
     # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
-        report_id = get_testrail_reports(24, 'Regression Run (Summary) %date%')
-        run_testrail_reports(report_id)
-    elif suitename == 'Sanity_PremiumApp_Automation':
-        report_id = get_testrail_reports(24, 'Sanity Run (Summary) %date%')
+        report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
         run_testrail_reports(report_id)
 
 
@@ -73,9 +72,7 @@ def pytest_bdd_before_scenario(feature):
        """
     py_test.exception = None
     feature_name = feature.name
-    if feature_name == 'Register Screen':
-        subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
-    logging.info(feature_name)
+    py_test.start = time.time()
     # This code is used to make "No Reset" false before launching the app"
     if feature_name == 'Register Screen' or feature_name == 'Register OTP Verification Screen':
         subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
@@ -145,6 +142,10 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
+    elapsed = int(time.time() - py_test.__getattribute__('start'))
+    elapsed_time = str(elapsed) + 's'
+    testing_device = request.getfixturevalue("driver").session['deviceModel']
+    app_version = baseClass.get_current_app_version()
     suite_name = os.getenv('suite')
     # suite_name = "Byju's Classes"
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
@@ -174,16 +175,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                 "=" * 100 + "Failures" + "=" * 100
         )
         sys.stderr.writelines(stdout_err)
-        update_testrail(data[1], data[0], False, step_name, _exception)
+        update_testrail(data[1], data[0], False, step_name, _exception, elapsed_time, testing_device, app_version)
         add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
-        msg_body = "all steps are passed"
-        update_testrail(data[1], data[0], True, msg_body, 'passed')
-
-
-def pytest_sessionfinish():
-    for file in ['../../config/login.pkl', '../../config/chrome_session.json']:
-        try:
-            os.unlink(file)
-        except FileNotFoundError:
-            pass
+        msg_body = "All test steps have passed"
+        update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)

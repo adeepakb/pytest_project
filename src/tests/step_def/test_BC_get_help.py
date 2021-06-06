@@ -1,5 +1,6 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
+import pytest_check as check
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.android.homepage import HomePage
@@ -48,7 +49,8 @@ def navigate_to_one_to_mega_homescreen(login_in):
 @then(parsers.parse('Verify that user navigates to "{text}" screen'))
 @then(parsers.parse('Verify the text "{text}"'))
 def verify_text(login_in, text):
-    assert login_in.text_match(text), "%s text is not displayed " % text
+    details = login_in.text_match(text)
+    check.equal(details.result, True,details.reason)
 
 
 @then("Tap on device/app back button")
@@ -64,7 +66,8 @@ def tap_on_get_help(home_screen):
 
 @then('Verify that quick help bottom sheet opens')
 def verify_bottom_sheet(home_screen):
-    assert home_screen.is_bottom_sheet_present(), "quick help bottom sheet did not show up"
+    details = home_screen.is_bottom_sheet_present()
+    check.equal(details.result,True,details.reason)
 
 
 @then('Tap on Cancel button')
@@ -74,33 +77,37 @@ def close_get_help(home_screen):
 
 @then('Verify that quick help bottom sheet goes off')
 def verify_bottom_sheet_not_present(home_screen):
-    assert not home_screen.is_bottom_sheet_present(), "quick help bottom sheet did not go off"
+    details = home_screen.is_bottom_sheet_present()
+    check.equal(details.result, False,details.reason)
 
 
 @then(parsers.parse('verify "{text}" button'))
 def verify_button(home_screen, text):
-    home_screen.verify_button(text)
+    details = home_screen.verify_button(text)
+    check.equal(details.result,True,details.reason)
 
 
 @then('Verify that in landing screen get help link is present')
 def is_get_help_present(home_screen):
-    assert home_screen.is_get_help_present(), "Get help is not present"
+    details = home_screen.is_get_help_present()
+    check.equal(details.result,True, details.reason)
 
 
 @then('Verify App back button on left hand side of the screen')
 def is_back_nav_present(home_screen):
-    assert home_screen.is_back_nav_present(), "back navigation icon is not present"
+    details = home_screen.is_back_nav_present()
+    check.equal(details.result, True,details.reason)
 
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    button_status = login_in.button_click(text)
-    assert button_status is True, "Unable to find {text} button"
+    login_in.button_click(text)
 
 
 @then('verify cancel icon is present on chat box')
 def verify_get_help_close(home_screen):
-    assert home_screen.verify_get_help_close(), "close icon is not present"
+    details = home_screen.verify_get_help_close()
+    check.equal(details.result, True,details.reason)
 
 
 @then("tap outside chat layout")
