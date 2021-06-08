@@ -42,17 +42,11 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
 
     def verify_know_more_displayed(self):
         return_type = ReturnType(False, "")
-
-        # deepak is_element_present
         if self.is_element_present(*self.byjus_classes) and self.is_element_present(*self.know_more):
-            return_type.result = True
-            return_type.reason = "Know more is being displayed in Hamburger"
+            return ReturnType(True, "Know more is being displayed in Hamburger")
         else:
-            return_type.result = False
-            return_type.reason = "Know more is not being displayed in Hamburger"
-        return return_type
+            return ReturnType(False, "Know more is being displayed in Hamburger")
 
-    # use button_click_method
     def tap_on_byjus_classes_in_hamburger(self, button='Know More'):
         button_element = None
         if button == 'Know More':
@@ -139,14 +133,12 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         except:
             return ReturnType(False, "Not Found and not clicked on {} Button".format(text))
 
-
-
     def select_online_offline_mode(self, mode):
         try:
             set_connection_type(self.driver, mode)
-            return ReturnType(True, "Couldn't set network mode to {}.".format(mode))
+            return ReturnType(True, "Network mode set to {}.".format(mode))
         except:
-            return ReturnType(False, "Network mode set to {}.".format(mode))
+            return ReturnType(False, "Couldn't set network mode to {}.".format(mode))
 
     def verify_book_free_class_screen(self, expected_activity='PremiumSchoolCourseActivity'):
         time.sleep(3)
@@ -210,3 +202,10 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return ReturnType(True, "Booked successfully and booking screen is verified")
         except:
             return ReturnType(False, "Couldn't book successfully and booking screen is not correct")
+
+    def relaunch_app(self):
+        try:
+            self.driver.launch_app()
+            return ReturnType(True, "Relaunch the application successful")
+        except:
+            return ReturnType(False, "Relaunch the application not successful")

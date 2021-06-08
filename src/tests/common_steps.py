@@ -1,4 +1,6 @@
 from random import choice
+from time import sleep
+
 from pytest import fixture
 from pytest_bdd import given, when, then, parsers
 import pytest_check as check
@@ -164,7 +166,7 @@ def launch_and_nav_to_home(login):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.implicit_wait_for(15)
-    # login.verify_home_screen()
+    login.verify_home_screen()
 
 
 @given('navigate to one to mega home screen')
@@ -558,7 +560,7 @@ def step_impl(driver, know_more):
 @given("login as user with free account")
 def step_impl(login):
     login.toggle_wifi_connection('on')
-    login.set_user_profile(user_profile='user_1', sub_profile='profile_3').verify_user_profile()
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_3').switch_profile()
 
 
 @given("login with non booked user")
@@ -577,9 +579,16 @@ def step_impl(know_more, m_class):
 
 
 @then('verify user is able to book a session')
-def step_impl(know_more,m_class,db):
+def step_impl(know_more, m_class, db):
     detail = know_more.book_a_session(db=db)
     check.equal(detail.result, True, detail.reason)
     detail = know_more.verify_and_close_booked_screen(db=db)
     check.equal(detail.result, True, detail.reason)
     print()
+
+
+@given('relaunch the app')
+@then('relaunch the app')
+def step_impl(know_more, m_class, db):
+    detail = know_more.relaunch_app()
+    check.equal(detail.result, True, detail.reason)

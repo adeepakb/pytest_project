@@ -32,7 +32,6 @@ def know_more(request, driver):
         raise NotImplementedError()
 
 
-
 @when('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that the web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
 @then('verify that web page opened through webview which should show all the information wrt "BYJU’S CLASSES"')
@@ -47,6 +46,7 @@ def step_impl(driver, know_more):
 def step_impl(driver, know_more):
     details = know_more.validate_know_more_webview()
     check.equal(details.result, True, details.reason)
+
 
 @when('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
 @then('Verify that the "BYJUS CLASSES" web view consist of the "Book a free class" card')
@@ -63,7 +63,7 @@ def step_impl(driver, know_more):
 @then('Verify that "BYJUS CLASSES" web view consist of "view details" card')
 @when('Verify that "BYJUS CLASSES" web view consist of "view details" card')
 def step_impl(driver, know_more):
-    details = know_more.validate_book_a_free_class_card(text ="View class details")
+    details = know_more.validate_book_a_free_class_card(text="View class details")
     check.equal(details.result, True, details.reason)
 
 
@@ -71,6 +71,7 @@ def step_impl(driver, know_more):
 def step_impl(driver, know_more):
     details = know_more.validate_book_a_free_class_card(text='View class details')
     check.equal(details.result, True, details.reason)
+
 
 @when('tap of "Book a free class" card')
 @then('tap of "Book a free class" card')
@@ -90,19 +91,18 @@ def step_impl(driver, know_more):
 def step_impl(driver, know_more):
     time.sleep(5)
     detail = know_more.verify_book_free_class_screen()
-    check.equal(detail.result,True,detail.reason)
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify "View Class details" card is responsive')
 def step_impl(driver, know_more):
     time.sleep(5)
     detail = know_more.verify_book_free_class_screen(expected_activity='OneToMegaHomeActivity')
-    check.equal(detail.result,True,detail.reason)
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify that user is navigated to Premium school classroom session screen')
 def step_impl(driver, know_more):
     time.sleep(5)
     detail = know_more.verify_book_free_class_screen()
-    check.equal(detail.result,True,detail.reason)
-
+    check.equal(detail.result, True, detail.reason)
