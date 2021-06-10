@@ -157,7 +157,7 @@ def is_text_present(login_in, text):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(instruction_dialog, assessment_name):
-    instruction_dialog.attach_post_requisite(assessment_name)
+    instruction_dialog.attach_post_requisite_with_assessement(assessment_name)
 
 
 @then('reset assessment start date as today')

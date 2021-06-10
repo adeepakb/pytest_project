@@ -77,6 +77,9 @@ class LoginAndroid(LoginBase):
         except NoSuchElementException:
             self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/backToTopClick')
             element = self.obj.get_element('android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("'+self.marketing_classes_image+'"))')
+            width = element.size['width']
+            height = element.size['height']
+            self.action.press(None,element.location['x']+(width/2),height).wait(3000).move_to(x=element.location['x']+(width/2), y=2*height).release().perform()
             element.click()
 
     # This step is only applicable in web. Hence skipping this for android
