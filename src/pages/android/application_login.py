@@ -4,6 +4,7 @@ from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 
 from pages.base.application_login import LoginBase
+from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.scroll_cards import ScrollCards
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
@@ -13,6 +14,7 @@ from utilities.staging_tllms import Stagingtllms
 import logging
 from constants.load_json import get_data
 from constants.constants import *
+import pytest_check as check
 
 
 class Login(LoginBase, TutorCommonMethods):
@@ -60,8 +62,17 @@ class Login(LoginBase, TutorCommonMethods):
         self.bottom_sheet_layout = 'id', '%s:id/design_bottom_sheet' % self.package_name
         self.action_layout_ignore = 'id', '%s:id/tvCancel' % self.package_name
         self.action_layout_dismiss = 'id', '%s:id/tv_secondaryAction' % self.package_name
+        self.permission_deny_btn = 'xpath', '//*[contains(@resource-id, "permission_deny_button")]'
+        self.permission_allow_btn = 'xpath', '//*[contains(@resource-id, "permission_allow_button")]'
         self.login_data, self.user_mobile, self.profile_name, self.otp, self.premium_id = None, None, None, None, None
         self.os_version_major = int(subprocess.getoutput("adb shell getprop ro.build.version.release").split(".")[0])
+        self.premium_login_text = 'id', '%s:id/img_premium_login' % self.package_name
+        self.selected_text_view = 'id', '%s:id/selected_text_view' % self.package_name
+        self.we_will_sendotp = 'id', '%s:id/tvWeWillSendOtp' % self.package_name
+        self.register_text_on_login = 'id', '%s:id/tvRegister' % self.package_name
+        self.byju_icon = 'id', '%s:id/iv_google_play_navigation_image' % self.package_name
+
+
         self.set_user_profile()
         super().__init__(driver)
 
@@ -686,6 +697,31 @@ class Login(LoginBase, TutorCommonMethods):
             'scrollIntoView(textMatches("%s"))' % text)
         element.click()
         re.findall(r'(?i)premium school', element.text)
+
+    def navigate_to_login_screen(self):
+        print()
+        grant_permissions_activity = "GrantPermissionsActivity"
+        login_activity = "LoginActivity"
+        if grant_permissions_activity in self.driver.current_activity:
+            self.on_boarding_activity()
+        if login_activity in self.driver.current_activity:
+            return ReturnType(True, "Navigated to Login Screen")
+        else:
+            return ReturnType(False, "Couldn't navigate to Login Screen")
+        print()
+
+    def verify_login_screen_elements(self, text='', type='All'):
+        login_activity = "LoginActivity"
+        if login_activity not in self.driver.current_activity:
+            return ReturnType(True, "User not in Login Screen")
+
+        if type.lower() == 'all':
+            pass
+        else:
+            try:
+                if text == 'Premium Login':
+                    text=self.get_element(self.premium_login_text).text
+
 
 
 class LoginException(Exception):

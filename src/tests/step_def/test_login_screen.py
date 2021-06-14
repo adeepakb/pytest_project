@@ -3,7 +3,7 @@ from pytest_bdd import scenarios, given, then, when, parsers
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pytest import fixture
-scenarios('../features/Login.feature')
+scenarios('../features/Login Screen.feature')
 
 
 @pytest.fixture()
@@ -27,36 +27,6 @@ def login(driver, request):
     else:
         raise NotImplementedError()
 
-@given("Launch the platform")
-def navigate_to_one_to_many_and_mega_user(login_in):
-    login_in.launch_and_navigate_to_login_page()
-
-
-@when("enter valid mobile number in sign in page")
-def enter_phone_number(login_in):
-    login_in.enter_phone()
-
-
-@then(parsers.parse('tap on "NEXT" button'))
-def click_on_next(login_in):
-    login_in.click_on_next()
-
-
-@then("enter valid OTP in OTP field")
-def enter_otp(login_in):
-    login_in.enter_otp()
-
-
-@then('verify is navigated to byjus home page successfully')
-def verify_home_page(login_in):
-    assert login_in.verify_home_page_loaded(), "User is not in byjus home page"
-
-
-@when("Click on the Premium school card in the home page")
-def tap_on_premium_card(login_in):
-    login_in.click_on_premium_school()
-
-
 @given("Navigate to Login screen")
 @when("Navigate to Login screen")
 def tap_on_premium_card(login):
@@ -64,5 +34,12 @@ def tap_on_premium_card(login):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.implicit_wait_for(15)
-    login.verify_home_screen()
+    login.navigate_to_login_screen()
 
+
+@given('Launch the app online')
+def launch_app(login):
+    if login.toggle_wifi_connection('on'):
+        login.driver.close_app()
+        login.driver.activate_app(login.driver.capabilities['appPackage'])
+    login.implicit_wait_for(15)

@@ -1,6 +1,6 @@
 from random import choice
-from pytest import fixture
 from pytest_bdd import given, when, then, parsers
+from pytest import fixture
 from constants.platform import Platform
 from pages.android.homepage import HomePage
 from pages.android.personalizedChapterList import PersonalizedChapterList

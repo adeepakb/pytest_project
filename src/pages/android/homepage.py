@@ -307,6 +307,7 @@ class HomePage():
     def navigate_to_home_screen(self, driver):
         try:
             # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
+
             if CommonMethods.wait_for_element_visible(driver, self.homescreen_corana_dialog, 6):
                 CommonMethods.elementClick(driver, self.homescreen_corana_dialog_ok_btn)
                 self.verify_home_page(driver)
