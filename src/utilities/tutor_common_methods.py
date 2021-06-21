@@ -18,6 +18,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from appium.webdriver.common.mobileby import MobileBy
 from constants.load_json import get_data
 from utilities.exceptions import DeviceUnavailableException, ConnectionTimeoutError, DateError
+from utilities.return_type import ReturnType
 
 
 class TutorCommonMethods:
@@ -80,7 +81,6 @@ class TutorCommonMethods:
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
-
     # this method is use to click on the element
     def element_click(self, locator_type=None, locator_value=None, element=None):
         if element is None:
@@ -107,6 +107,18 @@ class TutorCommonMethods:
     @staticmethod
     def child_element_displayed(element, id_locator_value):
         return element.find_element_by_id(id_locator_value).is_displayed()
+
+    def clear_app_data(self):
+        self.execute_command('adb shell pm clear %s' % self.package_name)
+
+    def clear_app_data_and_relaunch_the_app(self):
+        try:
+            self.clear_app_data()
+            self.execute_command('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % self.package_name)
+            return ReturnType(True, "App data not cleared")
+        except:
+            return ReturnType(False,"App data not cleared")
+
 
     # this method first clear the data then enter the text in given element
     def enter_text(self, data, locator_type, locator_value):

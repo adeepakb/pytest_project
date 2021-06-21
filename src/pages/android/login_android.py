@@ -54,6 +54,8 @@ class LoginAndroid(LoginBase):
         self.loginBtn_id = "com.byjus.thelearningapp.premium:id/btnLogin"
         self.continue_button = "com.byjus.thelearningapp.premium:id/tv_submit"
 
+
+
     def implicit_wait_for(self, pool):
         self.driver.implicitly_wait(pool)
 

@@ -67,11 +67,23 @@ class Login(LoginBase, TutorCommonMethods):
         self.login_data, self.user_mobile, self.profile_name, self.otp, self.premium_id = None, None, None, None, None
         self.os_version_major = int(subprocess.getoutput("adb shell getprop ro.build.version.release").split(".")[0])
         self.premium_login_text = 'id', '%s:id/img_premium_login' % self.package_name
-        self.selected_text_view = 'id', '%s:id/selected_text_view' % self.package_name
+        self.selected_text_view = 'id', '%s:id/drop_down_text_view' % self.package_name
         self.we_will_sendotp = 'id', '%s:id/tvWeWillSendOtp' % self.package_name
         self.register_text_on_login = 'id', '%s:id/tvRegister' % self.package_name
         self.byju_icon = 'id', '%s:id/iv_google_play_navigation_image' % self.package_name
-
+        self.next_button = 'id', '%s:id/btnLogin' % self.package_name
+        self.phone_number_text_field = 'id', '%s:id/etPhoneNumber' % self.package_name
+        self.signout_button = 'id', '%s:id/signout' % self.package_name
+        self.signout_confirm_button = 'id', '%s:id/primaryAction' % self.package_name
+        self.dialog_message = 'id', '%s:id/dialog_message' % self.package_name
+        self.dialog_try = 'id', '%s:id/primaryAction' % self.package_name
+        self.dialog_contact = 'id', '%s:id/secondaryAction' % self.package_name
+        self.dialog_description = 'id', '%s:id/dialog_description' % self.package_name
+        self.sibling_profile_names = 'id', '%s:id/tv_profile_name' % self.package_name
+        self.sibling_radio = 'id', '%s:id/profile_select_radio_button' % self.package_name
+        self.sibling_continue = 'id', '%s:id/tv_submit' % self.package_name
+        self.dialer = "id", "com.android.dialer:id/digits"
+        self.welcome_text = 'id', '%s:id/welcomeTitle' % self.package_name
 
         self.set_user_profile()
         super().__init__(driver)
@@ -102,8 +114,9 @@ class Login(LoginBase, TutorCommonMethods):
             count -= 1
 
     def switch_profile(self):
-        self.get_element(*self.hamburger_icon).click()
-        self.get_element(*self.switch_profile_btn).click()
+        if "HomeActivity" in self.driver.current_activity:
+            self.get_element(*self.hamburger_icon).click()
+            self.get_element(*self.switch_profile_btn).click()
         self.get_element(
             'android_uiautomator',
             'UiScrollable(UiSelector().resourceId("com.byjus.thelearningapp.premium:id/rv_user_profile")).'
@@ -254,6 +267,10 @@ class Login(LoginBase, TutorCommonMethods):
         self.get_element('xpath', self.phone_number).clear()
         self.get_element('xpath', self.phone_number).send_keys(phone_num)
 
+    def get_text_in_mobile_number_input(self):
+        self.wait_for_locator('xpath', self.phone_number)
+        return self.get_element('xpath', self.phone_number).text
+
     def click_on_next(self):
         self.wait_for_locator('xpath', self.next_btn)
         self.driver.find_element_by_xpath(self.next_btn).click()
@@ -328,8 +345,18 @@ class Login(LoginBase, TutorCommonMethods):
         drop_down_visible = drop_down.is_displayed()
         self.action.tap(x=10, y=100).perform()
         if drop_down_visible is True:
-            return True
-        return False
+            return ReturnType(True, "Dropdown is being displayed")
+        return ReturnType(False, "Dropdown is not being displayed")
+
+    def close_dropdown(self):
+        self.action.tap(x=10, y=100).perform()
+
+    def is_dropdown_displayed_without_clicking(self):
+        drop_down = self.get_element('class_name', 'android.widget.ListView')
+        drop_down_visible = drop_down.is_displayed()
+        if drop_down_visible is True:
+            return ReturnType(True, "Dropdown is being displayed")
+        return ReturnType(False, "Dropdown is not being displayed")
 
     def mobile_number_input(self):
         input_box = self.get_element('xpath', self.phone_number).is_displayed()
@@ -362,10 +389,13 @@ class Login(LoginBase, TutorCommonMethods):
         self.get_element('xpath', self.phone_number).clear()
 
     def validate_error_msg(self, expected_text=None):
-        actual_text = self.get_element('xpath', '//*[contains(@resource-id, "PhoneError")]').text
-        if expected_text.capitalize() == actual_text:
-            return True
-        return False
+        try:
+            actual_text = self.get_element('xpath', '//*[contains(@resource-id, "PhoneError")]').text
+            if expected_text.capitalize() == actual_text:
+                return True
+            return False
+        except:
+            return False
 
     def is_app_minimized(self):
         _status = self.query_app_state('com.byjus.tutorplus')
@@ -445,6 +475,10 @@ class Login(LoginBase, TutorCommonMethods):
         self.enter_phone(mobile_and_code[1])
         return mobile_and_code[1]
 
+    def click_on_mobile_number_field(self):
+        self.wait_for_locator('xpath', self.phone_number)
+        self.get_element('xpath', self.phone_number).click()
+
     def select_country_code(self, expected_text=None):
         self.wait_for_locator('class_name', 'android.widget.ListView')
         country_codes = self.get_elements('class_name', self.text_view_cls)
@@ -458,6 +492,17 @@ class Login(LoginBase, TutorCommonMethods):
             self._scroll.scroll_by_card(country_codes[-1], drop_down)
             drop_down = self.get_element('class_name', 'android.widget.ListView')
             country_codes = self.get_elements('class_name', self.text_view_cls)
+
+    def get_country_codes_from_dropdown(self, expected_text=None):
+        if not self.is_dropdown_displayed_without_clicking().result:
+            self.click_on_country_code_dropdown()
+        self.wait_for_locator('class_name', 'android.widget.ListView')
+        country_codes = self.get_elements('class_name', self.text_view_cls)
+        drop_down = self.get_element('class_name', 'android.widget.ListView')
+        country_codes_list = []
+        for country_code in country_codes:
+            country_codes_list.append(country_code.text.replace("(", " (").replace("  (", " ("))
+        return country_codes_list
 
     def wait_for_element_not_to_be_present(self, element=None, timeout=30):
         self.driver.implicitly_wait(0)
@@ -699,29 +744,328 @@ class Login(LoginBase, TutorCommonMethods):
         re.findall(r'(?i)premium school', element.text)
 
     def navigate_to_login_screen(self):
-        print()
+        if "HomeActivity" in self.driver.current_activity or "ProfileActivity" in self.driver.current_activity:
+            self.log_out_from_home_page_or_login_page()
+
         grant_permissions_activity = "GrantPermissionsActivity"
         login_activity = "LoginActivity"
+        home_activity = "HomeActivity"
+        profile_activity = "ProfileActivity"
+        credential_picker = 'CredentialPickerActivity'
+        self.wait_activity(grant_permissions_activity, timeout=5)
         if grant_permissions_activity in self.driver.current_activity:
             self.on_boarding_activity()
+        if home_activity in self.driver.current_activity or profile_activity in self.driver.current_activity:
+            self.log_out_from_home_page_or_login_page()
+        if credential_picker in self.driver.current_activity:
+            try:
+                self.driver.tap([(128.90625, 335.90625)])
+            except:
+                logging.info("Credentials action dissmissed")
         if login_activity in self.driver.current_activity:
+
             return ReturnType(True, "Navigated to Login Screen")
         else:
             return ReturnType(False, "Couldn't navigate to Login Screen")
-        print()
 
-    def verify_login_screen_elements(self, text='', type='All'):
+    def verify_login_screen_elements(self, text='', type=''):
         login_activity = "LoginActivity"
-        if login_activity not in self.driver.current_activity:
-            return ReturnType(True, "User not in Login Screen")
+        # self.wait_activity(login_activity, timeout=5)
+        otp_activity = 'VerifyActivity'
+        if login_activity not in self.driver.current_activity and otp_activity not in self.driver.current_activity:
+            return ReturnType(False, "User not in Login Screen")
 
         if type.lower() == 'all':
-            pass
+            raise NotImplementedError
         else:
             try:
                 if text == 'Premium Login':
-                    text=self.get_element(self.premium_login_text).text
+                    sleep(2)
 
+                    required_text = self.get_element(*self.premium_login_text).is_displayed()
+                    return ReturnType(True, "{} text correct".format(text)) if required_text else ReturnType(
+                        False, "{} text not correct".format(text))
+                elif text.lower() == 'autofill':
+                    required_text = self.get_element(*self.selected_text_view).text
+                    return ReturnType(True, "{} text correct".format(text)) if required_text == "+91" else ReturnType(
+                        False,
+                        "{} text is not correct".format(
+                            text))
+                elif text.lower() == 'otp message' or text.lower() == 'we will send a 4 digit otp to verify':
+                    required_text = self.get_element(*self.we_will_sendotp).text
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if required_text.lower() == "we will send a 4 digit otp to verify" else ReturnType(False,
+                                                                                                                  "{} text is not correct".format(
+                                                                                                                      text))
+                elif text.lower() == 'next':
+                    required_text = self.get_element(*self.next_button).text
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if required_text.lower() == text.lower() else ReturnType(False,
+                                                                                        "{} text is not correct".format(
+                                                                                            text))
+                elif text.lower() == "not a premium user?".lower() or text.lower() == 'start free trial of'.lower() or text.lower() == 'Not a premium user?\nStart Free Trial of':
+                    required_text = self.get_element(*self.register_text_on_login).text
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if text.lower() in required_text.lower() else ReturnType(False,
+                                                                                        "{} text is not correct".format(
+                                                                                            text))
+                elif text.lower() == 'icon':
+                    flag = self.get_element(*self.byju_icon).is_displayed()
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if flag else ReturnType(False,
+                                                       "Byjus icon on login page not displayed")
+                elif text.lower() == 'mobile number':
+
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if self.is_text_match(expected_text=text) else ReturnType(False,
+                                                                                         "Byjus icon opn login page not displayed")
+                elif text.lower() == 'mobile number text field':
+                    check = self.get_element(*self.phone_number_text_field).is_displayed()
+                    return ReturnType(True, "{} text is correct".format(
+                        text)) if check else ReturnType(False,
+                                                        "Byjus icon opn login page not displayed")
+                elif text.lower() == 'this phone number is not registered with a premium account':
+                    sleep(3)
+                    if otp_activity in self.driver.current_activity or login_activity in self.driver.current_activity:
+                        message = self.get_element(*self.dialog_message).text
+                        return ReturnType(True, "{} message is correct and displayed".format(
+                            text)) if text.lower() == message.lower() else ReturnType(
+                            False, "{} message is incorrect or not displayed".format(text))
+                    else:
+                        ReturnType(
+                            False, "{} message is incorrect or not displayed".format(text))
+                elif text.lower() == 'try again':
+                    flag = self.get_element(*self.dialog_try).is_displayed()
+                    return ReturnType(True, "{} is displayed".format(text)) if flag else ReturnType(False,
+                                                                                                    "{} is not being displayed".format(
+                                                                                                        text))
+                elif text.lower() == 'contact us':
+                    flag = self.get_element(*self.dialog_contact).is_displayed()
+                    return ReturnType(True, "{} is displayed".format(text)) if flag else ReturnType(False,
+                                                                                                    "{} is not being displayed".format(
+                                                                                                        text))
+
+
+                else:
+                    return ReturnType(False, "{} elemant not found".format(text))
+
+            except:
+                if text == '':
+                    text = "Login screen"
+                return ReturnType(False, "{} element is not found".format(text))
+
+    def is_default_country_in_dropdown(self):
+        if self.is_dropdown_displayed_without_clicking().result:
+            self.close_dropdown()
+        return self.verify_login_screen_elements(text='autofill')
+
+    def verify_country_codes_in_dropdown(self,
+                                         text='India(+91+),UAE(+971),Bahrain(+973),Kuwait(+965),Oman(+968),'
+                                              'Qatar(+974),Saudi Arabia(+966),United Arab Emirates (+971)',
+                                         ordered=True):
+        country_code_list = self.get_country_codes_from_dropdown()
+        country_code_list_text = text.replace("(", " (").replace("  (", " (").split(",")
+        if ordered is True:
+            for i in range(len(country_code_list_text)):
+                if not country_code_list[i] == country_code_list_text[i]:
+                    return ReturnType(False,
+                                      "{} country  code not found or not in order".format(country_code_list_text[i]))
+        else:
+            for country_codes_name in country_code_list_text:
+                if country_codes_name not in country_code_list:
+                    return ReturnType(False,
+                                      "{} country  code not found or not in order".format(country_codes_name))
+        return ReturnType(True, "Given elements in country drop down are correct")
+
+    def verify_country_codes_in_dropdown_in_alphabetical_manner(self):
+        country_code_list = self.get_country_codes_from_dropdown()
+        country_code_list = country_code_list[8:]
+        i = 1
+        while i < len(country_code_list):
+            if not (country_code_list[i] > country_code_list[i - 1]):
+                return ReturnType(False, "Country code dropdown is not alphabetically sorted")
+            i += 1
+        return ReturnType(True, "Country code dropdown is  alphabetically sorted")
+
+    def is_numeric_pad_displayed(self):
+        return ReturnType(True, "keyboard is being shown") if self.driver.is_keyboard_shown() else ReturnType(False,
+                                                                                                              "Keyboard is not shown ")
+
+    def check_numeric_input_in_phone(self):
+        self.wait_for_locator('xpath', self.phone_number)
+        self.get_element('xpath', self.phone_number).clear()
+
+        for let in "982@1sd;":
+            self.get_element('xpath', self.phone_number).send_keys(let)
+
+        input = self.get_text_in_mobile_number_input()
+        return ReturnType(True, "User can input Numeric input only ") if input == "9821" else ReturnType(True,
+                                                                                                         "User is able to input alphanumeric in the text field")
+
+    def phone_number_field_is_empty(self):
+        try:
+            text = self.get_text_in_mobile_number_input()
+            if not text:
+                return ReturnType(True, "Phone number field is Empty")
+            else:
+                return ReturnType(False, "Phone number field is not  Empty")
+        except:
+            return ReturnType(False, "Phone number field is not  Empty")
+
+    def login_for_new_user(self):
+        try:
+            self.reset_and_login_with_otp()
+            self.wait_activity("HomeActivity")
+            if "HomeActivity" in self.driver.current_activity:
+                return ReturnType(True, "Successfully logged in for new user")
+            else:
+                return ReturnType(False, "Could not log in for new user")
+        except:
+            return ReturnType(False, "Could not log in for new user")
+
+    def log_out_from_home_page_or_login_page(self):
+        try:
+            if "HomeActivity" in self.driver.current_activity:
+                self.wait_for_locator(*self.hamburger_icon)
+                self.get_element(*self.hamburger_icon).click()
+                self.get_element(*self.home_drawer).click()
+                self.scroll_to_element("Sign out")
+                self.get_element(*self.signout_button).click()
+                self.get_element(*self.signout_confirm_button).click()
+                self.wait_activity("LoginActivity")
+                if "LoginActivity" in self.driver.current_activity:
+                    return ReturnType(True, "Successfully logged out")
+                else:
+                    return ReturnType(False, "user not successfully logged out")
+            elif "ProfileActivity" in self.driver.current_activity:
+                self.get_element(*self.signout_button).click()
+                self.get_element(*self.signout_confirm_button).click()
+                self.wait_activity("LoginActivity")
+                if "LoginActivity" in self.driver.current_activity:
+                    return ReturnType(True, "Successfully logged out")
+                else:
+                    return ReturnType(False, "user not successfully logged out")
+            else:
+                return ReturnType(False, "user not successfully logged out as not in home activity or profile activity")
+
+        except:
+            return ReturnType(False, "user not successfully logged out")
+
+    def check_mobile_number_field_is_prefilled_with_previous_logged_in_account(self):
+        set_mobile_number = self.get_text_in_mobile_number_input()
+        mobile_number = self.user_mobile
+
+        return ReturnType(True, "Mobile number is prefilled with previous mobile number {}".format(
+            set_mobile_number)) if set_mobile_number in mobile_number else ReturnType(False,
+                                                                                      "Mobile number is not prefilled with previous mobile number {}".format(
+                                                                                          set_mobile_number))
+
+    def is_otp_screen_shown(self):
+        self.wait_activity("VerifyActivity")
+        if "VerifyActivity" in self.driver.current_activity:
+            return ReturnType(True, "user is in otp page")
+        else:
+            return ReturnType(True, "user is in otp page")
+
+    def is_app_on_screen(self):
+        return ReturnType(True, "App is on screen") if self.package_name in self.driver.page_source else ReturnType(
+            False, "App is not on screen")
+
+    def tap_on_byju_icon(self):
+        try:
+            self.get_element(*self.byju_icon).click()
+            return ReturnType(True, "Clicked on byju's app icon on login")
+        except:
+            return ReturnType(False, "Couldnt click on byju's app icon on login")
+
+    def user_navigates_to_play_store(self):
+        sleep(2)
+
+        unauthenticated_play_store = 'UnauthenticatedMainActivity'
+        main_activity = 'MainActivity'
+        current_activity = self.driver.current_activity
+
+        if unauthenticated_play_store in current_activity or main_activity in current_activity:
+            return ReturnType(True, " User successfully navigated to playstore")
+        else:
+            return ReturnType(False, " User successfully navigated to playstore")
+
+    def verify_login_screen(self):
+        login_activity = "LoginActivity"
+        self.wait_activity(login_activity)
+        if login_activity in self.driver.current_activity:
+            return ReturnType(True, "User in login screen")
+        else:
+            return ReturnType(False, "User is not in login screen")
+
+    def tap_on_button(self, text):
+        try:
+            if text.lower() == "try again":
+                self.get_element(*self.dialog_try).click()
+            elif text.lower() == "contact us":
+                self.get_element(*self.dialog_contact).click()
+
+            elif text.lower() == 'get started':
+                self.get_element(*self.welcome_btn).click()
+            return ReturnType(True, "Successfully tapped on {}  button".format(text))
+        except:
+            return ReturnType(False, "Could not  tap on {}  button".format(text))
+
+    def verify_dialer(self):
+        current_activity = self.driver.current_activity
+        if "MainActivity" in current_activity:
+            return ReturnType(True, "User is on dialer screen")
+        else:
+            return ReturnType(False, "User is not on dialer screen")
+
+    def verify_dialer_with_number(self, number="+91 9241333666"):
+        dialed_number = self.get_element(*self.dialer).text.replace(" ", "")
+        number = number.replace(" ", "")
+        if dialed_number == number:
+            return ReturnType(True, "Dialed number is correct")
+        else:
+            return ReturnType(True, "Dialed number is correct")
+
+    def verify_sibling_screen(self):
+        sleep(1)
+        try:
+            if self.get_element(*self.dialog_description).is_displayed():
+                return ReturnType(True, "Sibling prifile dialog displayed")
+            else:
+                return ReturnType(False, "Sibling prifile  dialog not displayed")
+        except:
+            return ReturnType(False, "Sibling prifile  dialog not displayed")
+
+    def verify_sibling_screen_profiles(self):
+        elements = self.get_elements(*self.sibling_profile_names)
+        if len(elements) > 1:
+            return ReturnType(True, "Sibling profiles are shown")
+        else:
+            return ReturnType(False, "Sibling profiles are not shown")
+
+    def verify_sibling_screen_radio_buttons(self):
+        elements = self.get_elements(*self.sibling_radio)
+        if len(elements) > 1:
+            return ReturnType(True, "Sibling radio buttons  are shown")
+        else:
+            return ReturnType(False, "Sibling radio buttons are not shown")
+
+    def click_on_continue_button(self):
+        try:
+            self.get_element(*self.sibling_continue).click()
+            return ReturnType(True, "Clicked on continue button on sibling screen")
+        except:
+            return ReturnType(True, "Clicked on continue button on sibling screen")
+
+    def verify_welcome_screen_text(self):
+        try:
+            text = self.get_element(*self.welcome_text).text
+            if "Hi" in text:
+                return ReturnType(True, "Welcome screen text is correct")
+            else:
+                return ReturnType(False, "Welcome screen text is not correct")
+        except:
+            return ReturnType(False, "Welcome screen text is not correct")
 
 
 class LoginException(Exception):

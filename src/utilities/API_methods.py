@@ -43,7 +43,7 @@ def delete_deviceid(mobile_num):
     """
     resp = requests.post(url, json={'query': query}, params=params)
     print(resp.status_code)
-    print(resp.json())
+    #print(resp.json())
     
     
 # def delete_all_registered_mobile_num(browser):
@@ -65,7 +65,7 @@ def delete_deviceid(mobile_num):
 
 mobile = '+91-2583697415'
 mobile_number = "\""+mobile+"\""
-delete_deviceid(mobile_number)        
+delete_deviceid(mobile_number)
         
 def delete_single_registered_mobile_num(browser,mobile_num):
     delete_deviceid(mobile_num)

@@ -20,7 +20,8 @@
 		"noReset": true,
 		"url": "http://localhost:4723/wd/hub",
 		"newCommandTimeout": 300,
-		"implicitWait": 10
+		"implicitWait": 10,
+		"relaxed-security": true
 	},
 	"adb_connect": {
 		"token": ""

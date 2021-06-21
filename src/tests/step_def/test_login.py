@@ -17,13 +17,14 @@ def login_in(request, driver):
         login_in = LoginFactory().get_page(driver, Platform.WEB.value)
         yield login_in
 
-@fixture
+
+@pytest.fixture()
 def login(driver, request):
     platform_list = request.config.getoption("platform")
     from pages.factory.application_login_factory import Login
     if Platform.ANDROID.name.lower() == platform_list[-1].lower():
-        login_in = Login().get_page(driver, Platform.ANDROID.value)
-        yield login_in
+        login = Login().get_page(driver, Platform.ANDROID.value)
+        yield login
     else:
         raise NotImplementedError()
 
@@ -37,11 +38,15 @@ def enter_phone_number(login_in):
     login_in.enter_phone()
 
 
+@given("taps on Next Button")
+@when("taps on Next Button")
 @then(parsers.parse('tap on "NEXT" button'))
 def click_on_next(login_in):
     login_in.click_on_next()
 
 
+@then("enter valid otp in Verify OTP Screen")
+@when("enter valid otp in Verify OTP Screen")
 @then("enter valid OTP in OTP field")
 def enter_otp(login_in):
     login_in.enter_otp()
@@ -55,14 +60,4 @@ def verify_home_page(login_in):
 @when("Click on the Premium school card in the home page")
 def tap_on_premium_card(login_in):
     login_in.click_on_premium_school()
-
-
-@given("Navigate to Login screen")
-@when("Navigate to Login screen")
-def tap_on_premium_card(login):
-    if login.toggle_wifi_connection('on'):
-        login.driver.close_app()
-        login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
-    login.verify_home_screen()
 
