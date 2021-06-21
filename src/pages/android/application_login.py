@@ -1067,6 +1067,13 @@ class Login(LoginBase, TutorCommonMethods):
         except:
             return ReturnType(False, "Welcome screen text is not correct")
 
+    def verify_country_code(self,country_code="+91"):
+        required_text = self.get_element(*self.selected_text_view).text
+        return ReturnType(True, "{} text correct".format(country_code)) if required_text == country_code else ReturnType(
+            False,
+            "{} text is not correct".format(
+                country_code))
+
 
 class LoginException(Exception):
     pass

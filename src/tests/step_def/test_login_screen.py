@@ -386,5 +386,16 @@ def step_impl(login):
     login.verify_home_screen()
 
 
+@when("select any  from the drop down")
+@then("select any  from the drop down")
+def step_impl(login):
+    login.select_country_code("+682")
+
+
+
+@then("Verify selected  should be shown in country code field")
+def step_impl(login):
+    login.verify_country_code(country_code="+682")
+
 
 
