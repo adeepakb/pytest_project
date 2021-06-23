@@ -141,14 +141,14 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return ReturnType(False, "Couldn't set network mode to {}.".format(mode))
 
     def verify_book_free_class_screen(self, expected_activity='PremiumSchoolCourseActivity'):
-        time.sleep(3)
+        self.driver.implicitly_wait(5)
         if expected_activity in self.driver.current_activity:
             return ReturnType(True, " User is in Book a free class page {}".format(expected_activity))
 
         else:
             return ReturnType(False, " User is not in Book a free class page {}".format(expected_activity))
 
-        return return_type
+
 
     def tap_on_book_button(self):
         try:

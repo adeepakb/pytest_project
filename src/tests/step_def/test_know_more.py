@@ -89,20 +89,17 @@ def step_impl(driver, know_more):
 
 @then('verify "Book a free class" card is responsive')
 def step_impl(driver, know_more):
-    time.sleep(5)
     detail = know_more.verify_book_free_class_screen()
     check.equal(detail.result, True, detail.reason)
 
 
 @then('verify "View Class details" card is responsive')
 def step_impl(driver, know_more):
-    time.sleep(5)
     detail = know_more.verify_book_free_class_screen(expected_activity='OneToMegaHomeActivity')
     check.equal(detail.result, True, detail.reason)
 
 
 @then('verify that user is navigated to Premium school classroom session screen')
 def step_impl(driver, know_more):
-    time.sleep(5)
     detail = know_more.verify_book_free_class_screen()
     check.equal(detail.result, True, detail.reason)
