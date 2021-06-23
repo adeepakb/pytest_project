@@ -23,6 +23,7 @@ from selenium.webdriver.support.ui import Select
 from utilities.tutor_common_methods import TutorCommonMethods
 from constants.load_json import get_data
 from selenium.webdriver.chrome.options import Options
+from datetime import datetime, timedelta
 from utilities.exceptions import *
 from datetime import datetime , timedelta
 
@@ -1002,43 +1003,24 @@ class Stagingtllms(TutorCommonMethods):
     def _requisite_group(self, rt=None, at=None, mode='attach'):
         self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[-1])
         if mode.lower() == 'attach':
-            grp_name = self._req_grp_name(rt, at)
-            self.chrome_driver.find_element(By.XPATH, '//a[text()="Attach Requisite Group"]').click()
-            # select = Select(self.chrome_driver.find_element_by_id('requisite_group_id'))
-            # field_text = select.first_selected_option.text
-            # uncomment if reverted back to old changes
-            retry = 5
-            field = self.chrome_driver.find_element(By.CSS_SELECTOR, '.select2-selection__arrow')
-            try:
-                field_text = field.find_element(By.XPATH, '../../span[@id="select2-requisite_group_id-container"]').text
-            except NoSuchElementException:
-                field_text = str()
-            field.click()
-            self.chrome_driver.find_element(By.CSS_SELECTOR, ".select2-search__field").send_keys(grp_name)
-            while retry:
-                try:
-                    self.chrome_driver.find_element(By.XPATH, '//li[text()="%s"]' % grp_name).click()
-                    retry = 0
-                except (NoSuchElementException, StaleElementReferenceException):
-                    retry -= 1
-                    sleep(1)
-            # if field_text != grp_name:
-            #     select.select_by_visible_text(grp_name)
-            self.chrome_driver.find_element(By.CSS_SELECTOR, "#_submit_action>button").click()
-            # if field_text:
-            try:
-                self.chrome_driver.switch_to.alert.accept()
-            except NoAlertPresentException:
-                pass
-            notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
-            if "attached" not in notice.lower():
+            grp_id = self._req_grp_name(rt, at)
+            input_box = self.chrome_driver.find_element(By.CSS_SELECTOR, ".input-box")
+            input_box.clear()
+            input_box.send_keys(grp_id)
+            self.chrome_driver.find_element(By.CSS_SELECTOR, "button[label=Save]").click()
+            attached_id = self.chrome_driver.find_element(
+                "xpath",
+                f"//div[contains(text(), \"{self.cohort_grade}\") and contains(text(), \"{self.syllabus_grade}\")]"
+                f"/../..//span[@class=\"requisite_group_id\"]"
+            ).text
+            if grp_id != attached_id:
                 raise AttachmentError("'Requisite Group' attachment might not be successful.")
-        elif mode.lower() == 'detach':
-            self.chrome_driver.find_element(By.XPATH, '//a[text()="Detach Requisite Group"]').click()
-            self.chrome_driver.switch_to.alert.accept()
-            notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
-            if "detached" not in notice.lower():
-                raise AttachmentError("'Requisite Group' detachment might not be successful.")
+        # elif mode.lower() == 'detach':
+        #     self.chrome_driver.find_element(By.XPATH, '//a[text()="Detach Requisite Group"]').click()
+        #     self.chrome_driver.switch_to.alert.accept()
+        #     notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
+        #     if "detached" not in notice.lower():
+        #         raise AttachmentError("'Requisite Group' detachment might not be successful.")
         else:
             raise InvalidModeSelection(f"'{mode}' is not a valid mode.")
         return self

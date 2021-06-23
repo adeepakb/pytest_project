@@ -1,3 +1,5 @@
+import re
+import subprocess
 from time import sleep
 from urllib3.exceptions import MaxRetryError
 from constants.constants import CONFIG_PATH
@@ -28,6 +30,16 @@ class BaseClass:
                 sleep(1)
         if not retry:
             raise error
+
+    @staticmethod
+    def get_current_app_version():
+        stdout, stderr = subprocess.Popen(
+            'adb shell dumpsys package com.byjus.thelearningapp.premium | grep versionCode',
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+        output = stdout.decode("ascii")
+        app_version = re.search(r'^.*?\bversionCode=(\d+)', output).group(1)
+        print(app_version)
+        return app_version
 
     @staticmethod
     def setup_browser():

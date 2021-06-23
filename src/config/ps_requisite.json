@@ -1,24 +1,25 @@
 {
   "in_req": {
-    "assessment": "auto-in-assessment"
+    "assessment": "1006"
   },
   "post_req": {
-    "all": "auto-post-all",
-    "assessment": "auto-post-assessment",
-    "journey":"auto-post-journey",
-    "k3_video": "auto-post-k3_video",
-    "k12_video":"auto-post-k12_video",
-    "two": "auto-post-ak12v"
+    "all": "996",
+    "assessment": "985",
+    "journey": "995",
+    "k3_video": "994",
+    "k12_video": "993",
+    "assessment_k12": "1062"
   },
   "pre_req": {
-    "all": "auto-pre-all",
-    "assessment": "auto-pre-assessment",
-    "journey":"auto-pre-journey",
-    "k12_video":"auto-pre-k12_video",
-    "practice": "auto-pre-practice"
+    "all": "992",
+    "assessment": "980",
+    "journey": "990",
+    "k12_video": "979",
+    "practice": "991"
   },
-  "all_pre_post": "auto-pre-post-all",
-  "pre_post_ak3_29": "auto-pre-post-ak3-29",
-  "monthly_test_all": "Monthly Test",
-  "unit_test_all": "auto unit test pre post"
+  "all_pre_post": "1007",
+  "pre_post_ak3_29": "1264",
+  "unit_test_all": "1342",
+  "monthly_test_all": "1348",
+  "monthly_test_pre": "1365"
 }

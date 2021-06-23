@@ -168,7 +168,7 @@ class BuildFeatureJob():
     @staticmethod
     def connect_adb_api():
         url = "https://api-dev.headspin.io/v0/adb/" + get_data(CONFIG_PATH, 'desired_cap', 'udid') + "/connect"
-        headers = {'Authorization': 'Bearer ' + getdata(CONFIG_PATH, 'adb_connect', 'token')
+        headers = {'Authorization': 'Bearer ' + get_data(CONFIG_PATH, 'adb_connect', 'token')
                    }
         r = requests.post(url, headers=headers)
         if r.status_code == 200:

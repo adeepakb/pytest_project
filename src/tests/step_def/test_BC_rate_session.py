@@ -8,6 +8,7 @@ from utilities.staging_tlms import Stagingtlms
 from pages.factory.login import LoginFactory
 from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.factory.rate_session import RateSession
+import pytest_check as check
 
 scenarios('../features/Rate Session screen - Post session end.feature')
 
@@ -88,7 +89,7 @@ def verify_rate_session(dashboard, text):
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
-    assert button_status is True, "Unable to find {text} button"
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then('tap on Okay button')
@@ -277,7 +278,7 @@ def verify_dashboard(dashboard):
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
-    assert button_status is True, f"Unable to find {text} button"
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then(

@@ -2,23 +2,20 @@
   "cbse": {
     "29": {
       "masterclass": {
-        "id": 530,
-        "name": "4th master class",
-        "expires": "04/30/2022",
+        "id": 3016,
+        "name": "auto_test_masterclass_29",
         "type": "one_to_mega"
       }
     },
     "14": {
       "free_trial": {
-        "id": 867,
-        "name": "Free trail 8 th grade",
-        "expires": "03/10/2022",
+        "id": 3017,
+        "name": "auto_test_freetrail_14",
         "type": "one_to_mega"
       },
       "masterclass": {
-        "id": 880,
-        "name": "masterclass 8 th grade",
-        "expires": "03/12/2022",
+        "id": 3022,
+        "name": "auto_test_masterclass_14_1",
         "type": "one_to_mega"
       }
     }

@@ -13,8 +13,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
     StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 from constants.constants import Login_Credentials
-from utilities.staging_tlms import Stagingtlms
-from constants.load_json import getdata
+from utilities.staging_tllms import Stagingtllms
+from constants.load_json import get_data
 from utilities.tutor_common_methods import TutorCommonMethods
 
 
@@ -26,7 +26,7 @@ class MentorSession:
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtlms(driver)
+        self.tlms = Stagingtllms(driver)
         self.byjus_icon = "//img[contains(@src,'data:image/png')]"
         self.subject = '//*[@class = "subjectText"]'
         self.topic = '//*[@class = "topicText"]'
@@ -50,7 +50,7 @@ class MentorSession:
         self.exo_overlay = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_overlay"]'
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
         self.email = decrypted_data['staging_access']['email']
         self.password = decrypted_data['staging_access']['password']
@@ -155,17 +155,20 @@ class MentorSession:
                 logging.debug('chat is not displayed')
 
     def login_as_tutor(self):
+        path = '../config/config.json'
+        email = str(get_data(path, 'staging_access', 'email'))
+        password = str(get_data(path, 'staging_access', 'password'))
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
         self.wait_for_locator_webdriver("//input[@id='email']")
-        self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(self.email)
+        self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
         self.wait_for_locator_webdriver("//button[@type='submit']")
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
-        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(self.email)
+        self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
-        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(self.password)
+        self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
 
     def start_tutor_session(self, course='primary'):
@@ -231,7 +234,7 @@ class MentorSession:
             "text field is not enabled.No cursor in the text field"
 
     def verify_student_name_present(self):
-        user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
         assert self.chrome_driver.find_element_by_xpath(
             "//*[text()='" + user_name + "']").is_displayed(), "student name is not present"
 
@@ -286,7 +289,7 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath(self.ban).click()
         self.chrome_driver.find_element_by_xpath(self.ban_student_ban).click()
         try:
-            user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+            user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
             self.chrome_driver.find_element_by_xpath("//*[text()='" + user_name + "']").is_displayed()
         except NoSuchElementException:
             print("banned student messages are not present")

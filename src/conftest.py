@@ -1,4 +1,5 @@
 import re
+import time
 import traceback
 import os
 import sys
@@ -8,14 +9,23 @@ import logging
 from constants.platform import Platform
 from utilities.BasePage import BaseClass
 from utilities.pre_execution import BuildFeatureJob
+from selenium.common.exceptions import InvalidSessionIdException
+from utilities.base_page import BaseClass
+from utilities.common_methods import CommonMethods
+from utilities.pre_execution import BuildFeatureJob
+from constants.test_management import *
+from constants.loadFeatureFile import fetch_feature_file
+from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('constants/'))
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_featurefile
+# from constants.loadFeatureFile import fetch_feature_file
+from tests.common_steps import *
 
-baseClass = BaseClass()
+base_class = BaseClass()
+# CommonMethods = CommonMethods()
 feature_job = BuildFeatureJob()
 
 
@@ -37,11 +47,19 @@ def pytest_addoption(parser):
     parser.addoption("--platform", action="append")
 
 
+def capture_screenshot(request, feature_name):
+    driver = request.getfixturevalue("driver")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
+    screenshot_filename = feature_name + " " + timestamp + ".png"
+    driver.get_screenshot_as_file(screenshot_filename)
+    return screenshot_filename
+
+
 @pytest.fixture()
 def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
-        android_driver = baseClass.setup_android()
+        android_driver = base_class.setup_android()
         feature_job.lock_or_unlock_device('lock')
         serial = feature_job.connect_adb_api()
         feature_job.connect_to_adb(serial)
@@ -50,9 +68,12 @@ def driver(request):
                          stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
-        chrome_driver = baseClass.setup_browser()
+        chrome_driver = base_class.setup_browser()
         yield chrome_driver
         chrome_driver.quit()
+    else:
+        platform = platform_list[-1]
+        raise NotImplementedError(f"'{platform}' is not yet implemented.")
 
 
 # ---------------------------testrail updation--------------------
@@ -72,6 +93,7 @@ def pytest_bdd_before_scenario(feature):
        :returns: None
        """
     py_test.exception = None
+    py_test.start = time.time()
     feature_name = feature.name
     if feature_name == 'Register Screen':
         subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
@@ -118,23 +140,6 @@ def pytest_bdd_step_error(step):
     py_test.failed_step_name = step.name
 
 
-def capture_screenshot(request,feature_name):
-    driver = request.getfixturevalue("driver")
-    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
-    screenshot_filename = feature_name + " " + timestamp + ".png"
-    driver.get_screenshot_as_file(screenshot_filename)
-    return screenshot_filename
-
-def py_test():
-    """
-    Create and update the local-variable and reuse the same when required.
-    Will not be available across the test file(s) unless imported.
-     :returns: None
-    """
-    pass
-
-
-# this will execute after scenario no matter it is passed or failed
 def pytest_bdd_after_scenario(request, feature, scenario):
     """
     Called after scenario is executed even if one of steps has failed.
@@ -154,8 +159,10 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
+    app_version = base_class.get_current_app_version()
+    elapsed_time = int(time.time() - py_test.__getattribute__('start'))
+    py_test.elapsed = str(elapsed_time) + 's'
     suite_name = os.getenv('suite')
-    # suite_name = "Byju's Classes"
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
@@ -175,17 +182,25 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         else:
             step_name = py_test.__getattribute__('step_name')
         stdout_err = (
-                             "=" * 45 + "Failures" + "=" * 45 +
-                             "\nFailed Feature Name: %s\nFailed Scenario Name: %s\nFailed Step Name: %s\n" +
-                             "-" * 30 + "Test Exception" + "-" * 30 + "\n" + _exception + "=" * 45 + "Failures" +
-                             "=" * 45
-                     ) % (feature.name, scenario.name, py_test.__getattribute__('step_name'))
+                "\n" + "=" * 100 +
+                "Failures" + "=" * 100 +
+                "\nFailed Feature Name: %s\nFailed Scenario Name: %s\nFailed Step Name: %s\n"
+                % (feature_name, scenario_name, step_name) +
+                "-" * 50 + "Test Exception" + "-" * 50 + "\n" + _exception +
+                "=" * 100 + "Failures" + "=" * 100
+        )
         sys.stderr.writelines(stdout_err)
         update_testrail(data[1], data[0], False, step_name, _exception)
         add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
         msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, msg_body, 'passed')
+        update_testrail(data[1], data[0], True, msg_body, 'passed', py_test.elapsed, app_version)
+    file = '../../config/chrome_session.json'
+    try:
+        os.unlink(file)
+    except FileNotFoundError:
+        pass
 
 
 def pytest_sessionfinish():

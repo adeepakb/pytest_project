@@ -9,3 +9,5 @@ def get_data(filename, var, key=None):
     else:
         with open(filename) as f:
             return json.load(f)[var]
+
+
