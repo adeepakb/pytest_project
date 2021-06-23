@@ -1,7 +1,12 @@
 from random import choice
-from pytest_bdd import given, when, then, parsers
+from time import sleep
+
 from pytest import fixture
+from pytest_bdd import given, when, then, parsers
+import pytest_check as check
+
 from constants.platform import Platform
+from pages.android.Hamburgermenu import Hamburger
 from pages.android.homepage import HomePage
 from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
@@ -45,12 +50,13 @@ def journey_loading(driver):
     journey_loading = JourneyLoadingScreen(driver)
     yield journey_loading
 
+
 @fixture
 def know_more(request, driver):
     platform_list = request.config.getoption("platform")
     if Platform.ANDROID.name.lower() == platform_list[-1].lower():
         know_more = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
-        yield std_board
+        yield know_more
     else:
         raise NotImplementedError()
 
@@ -139,17 +145,6 @@ def m_class(driver, request):
     from pages.factory.masterclass_factory import MasterClassFactory
     if Platform.ANDROID.name.lower() == platform_list[-1].lower():
         m_class = MasterClassFactory().get_page(driver, Platform.ANDROID.value)
-        yield m_class
-    else:
-        raise NotImplementedError()
-
-
-@fixture
-def know_more(driver, request):
-    platform_list = request.config.getoption("platform")
-    from pages.factory.know_more import KnowMoreTestFactory
-    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
-        m_class = KnowMoreTestFactory().get_page(driver, Platform.ANDROID.value)
         yield m_class
     else:
         raise NotImplementedError()
@@ -488,9 +483,11 @@ def step_impl(std_board):
     assert std_board.is_all_post_requisite_accessible()
 
 
+@when('Tap on hamburger menu')
 @when('Tap on the Hamburger menu at the left corner on the home screen')
 def step_impl(know_more):
-    assert know_more.click_on_hamburger(), "Hamburger not found"
+    detail = know_more.click_on_hamburger()
+    check.equal(detail.result, True, detail.reason)
 
 
 @when('verify that the Left nav is displayed')
@@ -501,15 +498,87 @@ def ham_verify(driver):
 
 @then('Verify that in the left nav "Byjus classes-Know more" option is present')
 def step_impl(driver, know_more):
-    assert know_more.verify_know_more_displayed(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail = know_more.verify_know_more_displayed()
+    check.equal(detail.result, True, detail.reason)
 
 
+@then('Verify that in the left nav "Byjus classes-Know more" option is not present')
+def step_impl(driver, know_more):
+    detail = know_more.verify_know_more_displayed()
+    check.equal(detail.result, False, detail.reason)
+
+
+@when('Tap on the "Byjus classes" option on the left nav')
+@when('tap on "Byjus classes" option on the left nav')
 @then('tap on the "Byjus classes-Know more" option in the left nav')
 @then('Tap on the "Byjus classes" option on the left nav')
+@when('Tap on the "Byjus classes" option on the left nav')
 def step_impl(driver, know_more):
-    assert know_more.tap_on_byjus_classes_in_hamburger(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail = know_more.tap_on_byjus_classes_in_hamburger()
+    check.equal(detail.result, True, detail.reason)
 
 
 @then('verify  "Byjus classes-Know more" option is responsive')
 def step_impl(driver, know_more):
-    assert know_more.validate_know_more(), "Byjus classes-Know more is not displayed in Hamburger"
+    detail = know_more.validate_know_more()
+    check.equal(detail.result, True, detail.reason)
+
+
+@given('switch to offline')
+@then('switch to offline')
+@when('switch to offline')
+def step_impl(driver, know_more):
+    detail = know_more.select_online_offline_mode("offline")
+    check.equal(detail.result, True, detail.reason)
+
+
+@given('switch to online')
+@when('switch to online')
+@then('switch to online')
+def step_impl(driver, know_more):
+    detail = know_more.select_online_offline_mode("ALL_NETWORK_ON")
+    check.equal(detail.result, True, detail.reason)
+
+
+@then('verify that user is navigated to "Book a free class" screen')
+@then('verify that the user is navigated to the "Book a free class" screen')
+def step_impl(driver, know_more):
+    detail = know_more.verify_book_free_class_screen()
+    check.equal(detail.result, True, detail.reason)
+
+
+@given("login as user with free account")
+def step_impl(login):
+    login.toggle_wifi_connection('on')
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_3').switch_profile()
+
+
+@given("login with non booked user")
+def step_impl(login):
+    login.toggle_wifi_connection('on')
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
+
+
+@when('tap on "Book" button')
+@then('tap on "Book" button')
+def step_impl(know_more, m_class):
+    detail = know_more.tap_on_book_button()
+    check.equal(detail.result, True, detail.reason)
+    detail = m_class.verify_booking_screen()
+    check.equal(detail.result, True, detail.reason)
+
+
+@then('verify user is able to book a session')
+def step_impl(know_more, m_class, db):
+    detail = know_more.book_a_session(db=db)
+    check.equal(detail.result, True, detail.reason)
+    detail = know_more.verify_and_close_booked_screen(db=db)
+    check.equal(detail.result, True, detail.reason)
+    print()
+
+
+@given('relaunch the app')
+@then('relaunch the app')
+def step_impl(know_more, m_class, db):
+    detail = know_more.relaunch_app()
+    check.equal(detail.result, True, detail.reason)

@@ -120,7 +120,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.get_element(
             'android_uiautomator',
             'UiScrollable(UiSelector().resourceId("com.byjus.thelearningapp.premium:id/rv_user_profile")).'
-            'setSwipeDeadZonePercentage(0.25).'
+            'setSwipeDeadZonePercentage(0.1).'
             f'scrollTextIntoView("{self.profile_name}")'
         ).click()
         self.get_element(*self.submit_account).click()

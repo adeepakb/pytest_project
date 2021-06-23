@@ -1,7 +1,6 @@
 import re
-import os
 import traceback
-import pytest
+import os
 import sys
 import pytest
 import subprocess

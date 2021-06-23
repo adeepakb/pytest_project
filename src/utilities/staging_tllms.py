@@ -33,9 +33,9 @@ class Stagingtllms(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--headless')
-        # self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        #                                  f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
+        self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                         f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:
@@ -114,6 +114,7 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
             self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
         except NoSuchElementException:
+            self.chrome_driver.get_screenshot_as_file("failed.png")
             raise
         while retry:
             current_url = self.chrome_driver.current_url
@@ -805,6 +806,7 @@ class Stagingtllms(TutorCommonMethods):
                 try:
                     [self.chrome_driver.add_cookie(s) for s in session]
                 except UnableToSetCookieException:
+                    self.chrome_driver.get_screenshot_as_file("../../test_data/view.png")
                     raise
                 self.chrome_driver.get(url)
                 if '/users/sign_in' in self.chrome_driver.current_url:
@@ -1000,24 +1002,43 @@ class Stagingtllms(TutorCommonMethods):
     def _requisite_group(self, rt=None, at=None, mode='attach'):
         self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[-1])
         if mode.lower() == 'attach':
-            grp_id = self._req_grp_name(rt, at)
-            input_box = self.chrome_driver.find_element(By.CSS_SELECTOR, ".input-box")
-            input_box.clear()
-            input_box.send_keys(grp_id)
-            self.chrome_driver.find_element(By.CSS_SELECTOR, "button[label=Save]").click()
-            attached_id = self.chrome_driver.find_element(
-                "xpath",
-                f"//div[contains(text(), \"{self.cohort_grade}\") and contains(text(), \"{self.syllabus_grade}\")]"
-                f"/../..//span[@class=\"requisite_group_id\"]"
-            ).text
-            if grp_id != attached_id:
+            grp_name = self._req_grp_name(rt, at)
+            self.chrome_driver.find_element(By.XPATH, '//a[text()="Attach Requisite Group"]').click()
+            # select = Select(self.chrome_driver.find_element_by_id('requisite_group_id'))
+            # field_text = select.first_selected_option.text
+            # uncomment if reverted back to old changes
+            retry = 5
+            field = self.chrome_driver.find_element(By.CSS_SELECTOR, '.select2-selection__arrow')
+            try:
+                field_text = field.find_element(By.XPATH, '../../span[@id="select2-requisite_group_id-container"]').text
+            except NoSuchElementException:
+                field_text = str()
+            field.click()
+            self.chrome_driver.find_element(By.CSS_SELECTOR, ".select2-search__field").send_keys(grp_name)
+            while retry:
+                try:
+                    self.chrome_driver.find_element(By.XPATH, '//li[text()="%s"]' % grp_name).click()
+                    retry = 0
+                except (NoSuchElementException, StaleElementReferenceException):
+                    retry -= 1
+                    sleep(1)
+            # if field_text != grp_name:
+            #     select.select_by_visible_text(grp_name)
+            self.chrome_driver.find_element(By.CSS_SELECTOR, "#_submit_action>button").click()
+            # if field_text:
+            try:
+                self.chrome_driver.switch_to.alert.accept()
+            except NoAlertPresentException:
+                pass
+            notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
+            if "attached" not in notice.lower():
                 raise AttachmentError("'Requisite Group' attachment might not be successful.")
-        # elif mode.lower() == 'detach':
-        #     self.chrome_driver.find_element(By.XPATH, '//a[text()="Detach Requisite Group"]').click()
-        #     self.chrome_driver.switch_to.alert.accept()
-        #     notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
-        #     if "detached" not in notice.lower():
-        #         raise AttachmentError("'Requisite Group' detachment might not be successful.")
+        elif mode.lower() == 'detach':
+            self.chrome_driver.find_element(By.XPATH, '//a[text()="Detach Requisite Group"]').click()
+            self.chrome_driver.switch_to.alert.accept()
+            notice = self.chrome_driver.find_element(By.CSS_SELECTOR, ".flashes .flash").text
+            if "detached" not in notice.lower():
+                raise AttachmentError("'Requisite Group' detachment might not be successful.")
         else:
             raise InvalidModeSelection(f"'{mode}' is not a valid mode.")
         return self
@@ -1561,3 +1582,4 @@ class Stagingtllms(TutorCommonMethods):
                         session_details.update({header.text.strip().lower(): contents_row[i].text.strip()})
                 session_list.append(session_details.copy())
         return session_list
+

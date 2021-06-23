@@ -176,7 +176,7 @@ class Hamburger:
         except:
             CommonMethods.exception(driver, featureFileName, 'navigateToHomeScreen')
 
-    def hamburger_verify(self, driver, click=True):
+    def hamburger_verify(self, driver,click=True):
         # sleep(5)
         try:
             if CommonMethods.wait_for_element_visible(driver, self.ham_btn_id, 15):
@@ -407,5 +407,3 @@ class Hamburger:
         endx = int(size["height"] * end_x)
 
         driver.swipe(startx, starty, endx, endy, 1000)
-
-
