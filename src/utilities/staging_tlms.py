@@ -11,7 +11,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from constants.load_json import getdata
+from constants.load_json import get_data
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime, timedelta
 import time
@@ -29,7 +29,7 @@ class Stagingtlms:
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
     def login_to_staging(self):
@@ -68,14 +68,14 @@ class Stagingtlms:
         email = self.decrypted_data['staging_access']['email']
         session_course_id = premium_id = None
         if course == 'primary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_primary'))
             premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'secondary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
             premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'ternary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
-            premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
+            premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         self.navigate_to_student_sessions(premium_id)
         tutor_url = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
@@ -125,14 +125,14 @@ class Stagingtlms:
         premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
         if course == 'primary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_primary'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_primary'))
             premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'secondary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
             premium_id = self.decrypted_data['account_details']['premium_id']
         elif course == 'ternary':
-            session_course_id = str(getdata('../config/login_data.json', 'login_detail1', 'course_id'))
-            premium_id = str(getdata('../config/login_data.json', 'login_detail1', 'premium_id'))
+            session_course_id = str(get_data('../config/login_data.json', 'login_detail1', 'course_id'))
+            premium_id = str(get_data('../config/login_data.json', 'login_detail1', 'premium_id'))
 
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
@@ -700,7 +700,7 @@ class Stagingtlms:
         self.chrome_driver.close()
 
     def upload_class_note(self, filename):
-        tnl_cohort_id = str(getdata('../config/login_data.json', 'login_detail3', 'tnl_cohort_id'))
+        tnl_cohort_id = str(get_data('../config/login_data.json', 'login_detail3', 'tnl_cohort_id'))
         self.wait_for_clickable_element_webdriver("//div[text()='Class Notes']")
         self.chrome_driver.find_element_by_xpath("//div[text()='Class Notes']").click()
         self.wait_for_clickable_element_webdriver("//div[text()='Upload']")
@@ -850,7 +850,7 @@ class Stagingtlms:
         #     return available_slots
 
     def get_free_course_details(self):
-        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         self.navigate_to_student_sessions(premium_id)
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
         cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
