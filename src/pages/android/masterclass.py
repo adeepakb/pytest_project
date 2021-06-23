@@ -5,27 +5,26 @@ from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 
-from pages.android.application_login import Login
+from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 from pages.android.session_requisite import SessionRequisite
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from pages.android.student_dashboard_otm import StudentDashboardOneToMega
-from pages.base.masterclass import MasterClassBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from utilities.exceptions import *
 
 
-class MasterClass(MasterClassBase, TutorCommonMethods):
+class MasterClass(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.action = TouchAction(driver)
         self.scroll_cards = ScrollCards(driver)
         self.session_requisite = SessionRequisite(self.driver)
         super().__init__(driver)
         self.device = self.get_device_type()
         self.device_type = self.get_device_type()
-        self.staging = Stagingtllms(self.driver)
+        self.staging = Stagingtlms(self.driver)
         self.dashboard = StudentDashboardOneToMega(self.driver)
         self.__init_locators(self.device_type)
         self.ERROR_MESSAGE = 'Please connect to network and try again!'
@@ -152,10 +151,13 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
         return see_more_less.is_displayed()
 
     def click_option_see_more(self, text: str = 'see all'):
-        if self.is_see_all_link_displayed():
-            see_more = self.get_element(*self.see_more_tv)
-            if see_more.text.lower() == text:
-                see_more.click()
+        try :
+            if self.is_see_all_link_displayed():
+                see_more = self.get_element(*self.see_more_tv)
+                if see_more.text.lower() == text:
+                    see_more.click()
+        except NoSuchElementException:
+            pass
         return self
 
     def reset_view(self):
@@ -168,7 +170,7 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
 
     def get_up_next_master_class_session(self):
         self.dashboard.ps_home_page_tab()
-        self.click_option_see_more().reset_view()
+        # self.click_option_see_more().reset_view()
         check, view_changed = 3, False
         list_view = self.get_element(*self.card_list)
         list_content = self.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
@@ -262,17 +264,31 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                 displayed_status.append(self.get_element(*element).is_displayed())
             assert all(displayed_status)
 
-    def book_master_class(self, new_session=False, validate=False, **kwargs):
+    def book_special_master_class(self):
+        self.login.implicit_wait_for(2)
+        sessions = self.get_elements(*self.rc_card_root)
+        for session in sessions:
+            try:
+                session.find_element_by_id(self.card_book_btn[-1]).click()
+                sessions.clear()
+                self.get_element(*self.book_primary_btn).click()
+                self.get_element(*self.bs_okay_btn).click()
+                return True
+            except NoSuchElementException:
+                return False
+
+    def book_master_class(self, new_session=False, validate=False, ff_tag=True, error_validate=True, **kwargs):
         if not self.is_master_class_booked() or new_session:
             db = kwargs['db']
             self.scroll_rc_in_view()
             booking_success_activity = 'BookingSuccessActivity'
             otm_home_activity = 'OneToMegaHomeActivity'
             sessions = self.get_elements(*self.rc_card_root)
-            self.login.implicit_wait_for(0)
+            self.login.implicit_wait_for(1)
             for session in sessions:
                 try:
-                    assert session.find_element_by_id(self.card_filling_fast_label[-1]).is_displayed()
+                    if ff_tag:
+                        assert session.find_element_by_id(self.card_filling_fast_label[-1]).is_displayed()
                     db.booked_date_time = session.find_element_by_id(self.rc_card_schedule_tv[-1]).text
                     session.find_element_by_id(self.card_book_btn[-1]).click()
                     sessions.clear()
@@ -285,20 +301,21 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                 self.get_element(*self.book_primary_btn).click()
             except NoSuchElementException:
                 pass
-            error_message = None
-            try:
-                error_message = self.get_element(*self.dialog_message).text
-            except NoSuchElementException:
+            if error_validate:
+                error_message = None
                 try:
-                    error_message = self.get_element(*self.snack_bar).text
+                    error_message = self.get_element(*self.dialog_message).text
                 except NoSuchElementException:
-                    pass
-            finally:
-                if error_message is not None and self.wait_activity(otm_home_activity):
-                    return error_message
-                elif self.wait_activity(booking_success_activity):
-                    if validate:
-                        self.verify_booking_screen(booking_success_activity)
+                    try:
+                        error_message = self.get_element(*self.snack_bar).text
+                    except (NoSuchElementException,Exception):
+                        pass
+                finally:
+                    if error_message is not None and self.wait_activity(otm_home_activity):
+                        return error_message
+            if self.wait_activity(booking_success_activity):
+                if validate:
+                    self.verify_booking_screen(booking_success_activity)
                     self.get_element(*self.bs_okay_btn).click()
                 assert self.wait_activity(otm_home_activity)
             return True

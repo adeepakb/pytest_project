@@ -1,5 +1,5 @@
 from pages.android.ps_home_screen_android import PS_Homescreen_Android
-from pages.web.ps_home_screen_web import PSHomescreenWeb
+from pages.web_pages.ps_home_screen_web import PSHomescreenWeb
 from constants.platform import Platform
 
 

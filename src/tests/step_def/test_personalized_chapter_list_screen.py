@@ -1,7 +1,7 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 
 from pages.android.homepage import HomePage
-from utilities.base_page import BaseClass
+from utilities.BasePage import BaseClass
 from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen

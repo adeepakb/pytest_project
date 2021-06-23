@@ -1,32 +1,36 @@
 {
-    "login_detail1": {
-        "code": "+91-",
-        "mobile_no": "9513357003",
-        "country_code": "India (+91)",
-        "profile_name": "Reshma",
-        "profile_one_to_many_and_mega": "Premium Test One",
+	"login_detail1": {
+		"code": "+91-",
+		"mobile_no": "9513357003",
+		"country_code": "India (+91)",
+		"profile_name": "Reshma",
+		"profile_one_to_many_and_mega": "Premium Test One",
 		"course_id" : "102",
-        "OTP": "1089"
-    },
-    "login_details2": {
-        "code": "+91-",
-        "mobile_no": "7503268450",
-        "country_code": "India (+91)",
-        "profile_name": "Murali Cbse",
-        "OTP": "1089"
-    },
-    "login_detail3": {
-        "code": "+91-",
-        "mobile_no": "9513357002",
-        "country_code": "India (+91)",
-        "profile_name": "Reshma Test",
-        "profile_name_one_to_many": "Test One One One Many",
-        "profile_one_to_many_and_mega": "Testone",
+		"OTP": "1089"
+	},
+	"login_details2": {
+		"code": "+91-",
+		"mobile_no": "7503268450",
+		"country_code": "India (+91)",
+		"profile_name": "Murali Cbse",
+		"OTP": "1089"
+	},
+	"login_detail3": {
+		"code": "+91-",
+		"mobile_no": "9513357002",
+		"country_code": "India (+91)",
+		"profile_name": "Reshma Test",
+		"profile_name_one_to_many": "Test One One One Many",
+		"profile_one_to_many_and_mega": "Testone",
+		"profile_free_user": "Reshma 5th",
 		"course_id_primary": "102",
 		"course_id_secondary": "168",
-        "OTP": "1089"
-    },
-    "login_detail4": {
+		"course_id_ternary": "867",
+		"tnl_cohort_id":"14-tllms08marketing-8th Grade Marketing",
+		"free_user_premium_id": "1594549333",
+		"OTP": "1089"
+	},
+	"login_detail4": {
 		"code": "+91-",
 		"mobile_no": "9111117777",
 		"country_code": "India (+91)",
@@ -34,69 +38,22 @@
 		"profile_one_to_many_and_mega": "Megha",
 		"OTP": "1089"
 	},
-    "login_details_3": {
-        "user_1": {
-            "mobile_number": "+91-9513357003",
-            "profile_1": {
-                "profile_name": "Akshay",
-                "premium_id": "1016769503",
-                "grades": [
-                    "8"
-                ]
-            },
-            "profile_2": {
-                "profile_name": "Premium Test",
-                "premium_id": null,
-                "grades": [
-                    "8"
-                ]
-            },
-            "profile_3": {
-                "profile_name": "Parity User",
-                "premium_id": "1018822559",
-                "grades": [
-                    "8"
-                ]
-            },
-            "OTP": "1089"
-        },
-        "user_2": {
-            "mobile_number": "+91-9513357006",
-            "profile_1": {
-                "profile_name": "Reshma",
-                "premium_id": "1015013498",
-                "grades": [
-                    "8"
-                ]
-            },
-            "profile_2": {
-                "profile_name": "Test",
-                "premium_id": null,
-                "grades": [
-                    "9",
-                    "10"
-                ]
-            },
-            "profile_3": {
-                "profile_name": "Divya",
-                "premium_id": "1011546336",
-                "grades": [
-                    "4",
-                    "5",
-                    "6",
-                    "7"
-                ]
-            },
-            "profile_4": {
-                "profile_name": "Prajwal",
-                "premium_id": null,
-                "grades": [
-                    "8",
-                    "9",
-                    "10"
-                ]
-            },
-            "OTP": "1089"
-        }
-    }
+	"login_detail5": {
+		"code": "+91-",
+		"mobile_no": "9030158274",
+		"free_user_premium_id": "1012264874",
+		"country_code": "India (+91)",
+		"profile_name": "Prasanth",
+		"OTP": "1729"
+	},
+	"login_detail6": {
+		"code": "+91-",
+		"mobile_no": "7008348097",
+		"free_user_premium_id": "1010325016",
+		"country_code": "India (+91)",
+		"profile_name": "Priyanka",
+		"OTP": "1729"
+	}
 }
+
+																	

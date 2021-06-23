@@ -1,5 +1,11 @@
 """It contains all common elements and functionalities available to all pages."""
+import math
+import subprocess
+import pytest
+import time
+from subprocess import getoutput
 import datetime
+
 import pytest
 from PIL import Image, ImageChops
 from math import sqrt
@@ -16,9 +22,9 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException, \
     ElementNotSelectableException
 from appium.webdriver.common.mobileby import MobileBy
-from constants.load_json import get_data
-from utilities.exceptions import DeviceUnavailableException, ConnectionTimeoutError, DateError
-from utilities.return_type import ReturnType
+import numpy as np
+import pytesseract
+import cv2
 
 
 class TutorCommonMethods:
@@ -63,21 +69,21 @@ class TutorCommonMethods:
 
     @staticmethod
     def execute_command(command):
-        sub = Popen(command, shell=True, stdout=PIPE, stderr=STDOUT)
+        sub = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return sub.communicate()
 
     def take_screen_shot(self, feature_filename):
-        screen_shot = datetime.now()
+        screen_shot = datetime.datetime.now()
         file_name = screen_shot.strftime("%d-%m-%y, %H-%M-%S")
-        self.driver.get_screenshot_as_file("../../ScreenShots/" + feature_filename + " " + file_name + ".png")
+        self.driver.get_screenshot_as_file(feature_filename + " " + file_name + ".png")
 
-    def get_element(self, locator_type, locator_value, wait=True):
-        if locator_type.lower() != 'image' and wait:
-            self.wait_for_locator(locator_type, locator_value)
+    def get_element(self, locator_type, locator_value):
+        self.wait_for_locator(locator_type, locator_value)
         element = self.driver.find_element(self._by(locator_type), locator_value)
         return element
 
     def get_elements(self, locator_type, locator_value):
+        self.wait_for_locator(locator_type, locator_value,5)
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
@@ -92,33 +98,17 @@ class TutorCommonMethods:
 
         # this method is use to click on the element
 
-    @staticmethod
-    def child_element_by_id(element, id_locator_value):
+    def child_element_by_id(self,element,id_locator_value):
         return element.find_element_by_id(id_locator_value)
 
-    @staticmethod
-    def child_element_click_by_id(element, id_locator_value):
+    def child_element_click_by_id(self,element,id_locator_value):
         element.find_element_by_id(id_locator_value).click()
 
-    @staticmethod
-    def child_element_text(element, id_locator_value):
+    def child_element_text(self,element,id_locator_value):
         return element.find_element_by_id(id_locator_value).text
 
-    @staticmethod
-    def child_element_displayed(element, id_locator_value):
+    def child_element_displayed(self,element,id_locator_value):
         return element.find_element_by_id(id_locator_value).is_displayed()
-
-    def clear_app_data(self):
-        self.execute_command('adb shell pm clear %s' % self.package_name)
-
-    def clear_app_data_and_relaunch_the_app(self):
-        try:
-            self.clear_app_data()
-            self.execute_command('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % self.package_name)
-            return ReturnType(True, "App data not cleared")
-        except:
-            return ReturnType(False,"App data not cleared")
-
 
     # this method first clear the data then enter the text in given element
     def enter_text(self, data, locator_type, locator_value):
@@ -142,7 +132,7 @@ class TutorCommonMethods:
                 return True
         return False
 
-    def is_button_displayed_with_text(self, expected_text):
+    def is_button_displayed(self, expected_text):
         locator_type = 'xpath'
         locator_value = "//android.widget.Button"
         list_of_elements = self.get_elements(locator_type, locator_value)
@@ -215,7 +205,7 @@ class TutorCommonMethods:
     @staticmethod
     def root_mean_square_error(rgb1, rgb2):
         sumof = (rgb1[0] - rgb2[0]) ** 2 + (rgb1[1] - rgb2[1]) ** 2 + (rgb1[2] - rgb2[2]) ** 2
-        return sqrt(sumof / 3)
+        return math.sqrt(sumof / 3)
 
     def is_link_displayed(self, text):
         locator_type = 'xpath'
@@ -267,7 +257,7 @@ class TutorCommonMethods:
     # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator_type, locator_value):
         try:
-            self.wait_for_locator(locator_type, locator_value, 10)
+            # self.wait_for_locator(locator_type, locator_value, 10)
             element = self.get_element(locator_type, locator_value)
             if element is not None:
                 return True
@@ -279,7 +269,10 @@ class TutorCommonMethods:
 
     # this method is use to hide the visible keyboard from device
     def hide_keyboard(self):
-        return self.driver.hide_keyboard()
+        if self.driver.hide_keyboard():
+            return True
+        else:
+            return False
 
     # this method is use to fetch the text from an element
     def get_element_text(self, locator_type, locator_value):
@@ -323,7 +316,8 @@ class TutorCommonMethods:
         self.driver.back()
 
     def get_current_package(self):
-        package = self.driver.current_package
+        package = self.driver.current_package()
+        logging.info(package)
         return package
 
     # this method is use to click on device home button
@@ -335,58 +329,36 @@ class TutorCommonMethods:
             return False
 
     def take_app_foreground(self, app_package):
-        self.driver.activate_app(app_package)
-        return True
+        try:
+            self.driver.activate_app(app_package)
+            return True
+        except:
+            return False
 
     def query_app_state(self, text):
         check = self.driver.query_app_state(text)
         return check
 
     def toggle_wifi_connection(self, text):
-        _status = getoutput('adb devices')
-        wifi_state = "adb shell settings get global wifi_on"
-        wifi_on = 2
-        wifi_off = 0
-        _t = timeout = 30
-        mask = self.driver.mobile.network_connection.mask
-        if "no devices" in _status:
-            raise DeviceUnavailableException(_status)
-        elif text == 'off' and (mask // 2) % 2 > 0:
-            self.driver.mobile.set_network_connection(wifi_off)
-            while int(getoutput(wifi_state)):
-                if not _t:
-                    raise ConnectionTimeoutError(timeout)
-                sleep(1)
-                _t -= 1
-            else:
-                while "Network is unreachable" not in getoutput("adb shell ping -c 1 8.8.8.8"):
-                    if not _t:
-                        raise ConnectionTimeoutError(timeout)
-                    sleep(1)
-                    _t -= 1
-                else:
-                    return True
-        elif text == 'on' and (mask // 2) % 2 == 0:
-            self.driver.mobile.set_network_connection(wifi_on)
-            while not int(getoutput(wifi_state)):
-                if not _t:
-                    raise ConnectionTimeoutError(timeout)
-                sleep(1)
-                _t -= 1
-            else:
-                while "Network is unreachable" in getoutput("adb shell ping -c 1 8.8.8.8"):
-                    if not _t:
-                        raise ConnectionTimeoutError(timeout)
-                    sleep(1)
-                    _t -= 1
-                else:
-                    return True
-        else:
-            logging.info("WIFI-STATUS: %s" % text.upper())
-            return False
+        if text == 'off':
+            self.execute_command('adb shell am broadcast -a io.appium.settings.wifi --es setstatus disable')
+            current_status = ""
+            while "DISCONNECTED/DISCONNECTED" not in current_status:
+                current_status = getoutput('adb shell "dumpsys wifi | grep mNetworkInfo"')
+                print(current_status)
+                self.webdriver_wait(1)
+            print("Device data is not turned off")
+        elif text == 'on':
+            self.execute_command('adb shell am broadcast -a io.appium.settings.wifi --es setstatus enable')
+            current_status = ""
+            while "CONNECTED/CONNECTED" not in current_status:
+                current_status = getoutput('adb shell "dumpsys wifi | grep mNetworkInfo"')
+                print(current_status)
+                self.webdriver_wait(1)
+            print("Device data is not turned on")
 
     # capture partial screenshot of element
-    def capture_screenshot(self, element, image_file_name):
+    def capture_screenshot(self, element, imagefilename):
         location = element.location
         size = element.size
         png = self.driver.get_screenshot_as_png()
@@ -396,7 +368,7 @@ class TutorCommonMethods:
         right = location['x'] + size['width']
         bottom = location['y'] + size['height']
         im = im.crop((left, top, right, bottom))
-        im.save(image_file_name + '.png')
+        im.save(imagefilename + '.png')
 
     # shape detection using opencv
     def detect_shapes(self, element):
@@ -441,7 +413,7 @@ class TutorCommonMethods:
     @staticmethod
     def get_text_from_image(imagefilename):
         img = cv2.imread(imagefilename + '.png')
-        text = pytesseract.image_to_string(img)
+        text = pytesseract.image_to_string(img,lang='eng')
         return text
 
     # This method takes cropped screenshot and return all the colors present w.r.t provided webelement
@@ -465,54 +437,7 @@ class TutorCommonMethods:
 
     def clear_app_from_recents(self):
         self.execute_command('adb shell input keyevent KEYCODE_APP_SWITCH')
-        screen_size = self.driver.get_window_size()
-        orientation = self.driver.orientation
-        if orientation == "LANDSCAPE":
-            x, y = screen_size['height'], screen_size['width']
-        else:
-            x, y = screen_size['width'], screen_size['height']
-        start_x, start_y = x // 2, y // 2
-        end_x, end_y = start_x, 5
-        self.driver.swipe(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y, duration=3000)
-
-    def get_device_type(self):
-        size = self.driver.get_window_size()
-        width = size['width']
-        height = size['height']
-        dp = self.driver.get_display_density()
-        diagonal = (sqrt(width ** 2 + height ** 2)) / dp
-        if diagonal >= 10:
-            return 'tab'
-        else:
-            return 'mobile'
-
-    def wait_activity(self, activity_name, timeout=30):
-        while timeout:
-            c_a = self.driver.current_activity.split('.')[-1]
-            if activity_name == c_a:
-                return True
-            else:
-                sleep(1)
-                timeout -= 1
-        return False
-
-    @staticmethod
-    def is_holiday(day=datetime.today()):
-        h_days = get_data('../../config/holidays.json', 'local')
-        c_date = day.strftime("%m/%d/%Y")
-        if c_date in h_days:
-            return True
-        return False
-
-    def get_working_days(self, days):
-        d_list = list()
-        i = 0
-        while len(d_list) < days:
-            if not self.is_holiday(datetime.now() + timedelta(i)):
-                day = datetime.now() + timedelta(i)
-                d_list.append(day)
-            i += 1
-        return d_list
+        self.execute_command('adb shell input keyevent DEL')
 
     @staticmethod
     def compare_images(image1, image2):
@@ -535,6 +460,27 @@ class TutorCommonMethods:
         logging.error('Failed due to Exception in Method ' + methodName)
         self.takeScreenShot(featureFileName)
         pytest.fail("Failed Due to Exception in")
+
+    def get_device_type(self):
+        size = self.driver.get_window_size()
+        width = size['width']
+        height = size['height']
+        dp = self.driver.get_display_density()
+        diagonal = (math.sqrt(width ** 2 + height ** 2)) / dp
+        if diagonal >= 10:
+            return 'tab'
+        else:
+            return 'mobile'
+
+    def wait_activity(self, activity_name, timeout=30):
+        while timeout:
+            c_a = self.driver.current_activity.split('.')[-1]
+            if activity_name == c_a:
+                return True
+            else:
+                time.sleep(1)
+                timeout -= 1
+        return False
 
 
 class InValidLocatorError(Exception):

@@ -4,7 +4,7 @@ from constants.platform import Platform
 from pages.android.homepage import HomePage
 from utilities.mentor_session import MentorSession
 from pages.android.session_popup import SessionAlert
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from pages.factory.login import LoginFactory
 from pages.factory.ps_home_screen import PSHomescreenFactory
 from pages.factory.rate_session import RateSession
@@ -152,7 +152,7 @@ def verify_badge_text(dashboard, text):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen,driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver,assessment_name)
+    home_screen.attach_post_requisite(driver, assessment_name)
 
 
 @given('detach post requisite for latest session')
@@ -293,7 +293,7 @@ def select_feedback(dashboard):
 
 @given("reset student session and start session")
 def reset_session(driver, mentor_session):
-    Stagingtllms(driver).reset_session('secondary')
+    Stagingtlms(driver).reset_session('secondary')
     mentor_session.start_tutor_session('secondary')
 
 

@@ -41,7 +41,7 @@ def tap_on_premium_card(login_in):
 
 @then("navigate to one to mega homescreen")
 def navigate_to_one_to_mega_homescreen(login_in):
-    login_in.click_on_link('Premium School')
+    login_in.select_premium_school()
 
 
 @then('verify that in the For you tab, post requisite card is present')
@@ -149,7 +149,7 @@ def is_text_present(login_in, text):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(instruction_dialog, assessment_name):
-    instruction_dialog.attach_post_requisite_with_assessement(assessment_name)
+    instruction_dialog.attach_post_requisite(assessment_name)
 
 
 @then('reset assessment start date as today')

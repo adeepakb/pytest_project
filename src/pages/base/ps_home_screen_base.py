@@ -60,7 +60,7 @@ class PSHomeScreenBase(ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def attach_post_requisite_with_assessement(self, driver, assessment_name):
+    def attach_post_requisite(self, driver, requisite_name):
         raise NotImplemented()
 
     @abstractmethod
@@ -69,4 +69,8 @@ class PSHomeScreenBase(ABC):
 
     @abstractmethod
     def tap_outside_dialog_layout(self):
+        raise NotImplemented()
+
+    @abstractmethod
+    def is_user_in_ps_page(self):
         raise NotImplemented()

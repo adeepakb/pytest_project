@@ -2,7 +2,7 @@ import pytest
 from pytest_bdd import scenarios, given, then, when, parsers
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
-from pytest import fixture
+
 scenarios('../features/Login.feature')
 
 
@@ -16,17 +16,6 @@ def login_in(request, driver):
     elif Platform.WEB.name in platform_list:
         login_in = LoginFactory().get_page(driver, Platform.WEB.value)
         yield login_in
-
-
-@pytest.fixture()
-def login(driver, request):
-    platform_list = request.config.getoption("platform")
-    from pages.factory.application_login_factory import Login
-    if Platform.ANDROID.name.lower() == platform_list[-1].lower():
-        login = Login().get_page(driver, Platform.ANDROID.value)
-        yield login
-    else:
-        raise NotImplementedError()
 
 @given("Launch the platform")
 def navigate_to_one_to_many_and_mega_user(login_in):
@@ -60,4 +49,3 @@ def verify_home_page(login_in):
 @when("Click on the Premium school card in the home page")
 def tap_on_premium_card(login_in):
     login_in.click_on_premium_school()
-

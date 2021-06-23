@@ -1,6 +1,6 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 from pages.android.videopage import VideoPage
-from utilities.base_page import BaseClass
+from utilities.BasePage import BaseClass
 from utilities.common_methods import CommonMethods
 from time import sleep
 # from utilities.API_methods import *

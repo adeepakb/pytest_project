@@ -1,6 +1,6 @@
 from constants.platform import Platform
 from pages.android.rate_session_android import  Dashboard
-from pages.web.rate_session_web import RateSessionWeb
+from pages.web_pages.rate_session_web import RateSessionWeb
 
 
 class RateSession():

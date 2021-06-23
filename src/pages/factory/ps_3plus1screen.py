@@ -1,6 +1,6 @@
 from pages.android.ps_3plus1_screen_android import  PS_3Plus1ScreenAndroid
-from pages.web.ps_3plus1screen_web import PS_3Plus1ScreenWeb
-from pages.web.ps_home_screen_web import PSHomescreenWeb
+from pages.web_pages.ps_3plus1screen_web import PS_3Plus1ScreenWeb
+from pages.web_pages.ps_home_screen_web import PSHomescreenWeb
 from constants.platform import Platform
 
 

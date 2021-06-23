@@ -3,7 +3,7 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import InvalidElementStateException, StaleElementReferenceException
 import requests
 from utilities.common_methods import CommonMethods
-from pages.android.login_android import Login
+from pages.android.login_android import LoginAndroid
 import xml.etree.ElementTree as ET
 from utilities.tutor_common_methods import TutorCommonMethods
 
@@ -14,7 +14,7 @@ class SpeedTest:
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
         self.action = TouchAction(driver)
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.driver = driver
         self.action = TouchAction(driver)
         self.root = None

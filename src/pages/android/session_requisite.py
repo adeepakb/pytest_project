@@ -3,26 +3,25 @@ from time import sleep, strftime, strptime
 from typing import List
 import re
 from appium.webdriver import WebElement
-from selenium.webdriver.common.action_chains import ActionChains
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
+# from _pytest.main import NoMatch
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
 from pages.base.session_requisite import SessionRequisiteBase
 from utilities.exceptions import SessionNotFoundError
 from utilities.tutor_common_methods import TutorCommonMethods
-from pages.android.application_login import Login
+from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 
 
 class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.scroll_cards = ScrollCards(driver)
         self.device_type = self.get_device_type()
-        self.action_chains = ActionChains(driver)
         self.action = TouchAction(driver)
         self.action_1 = TouchAction(driver)
         self.multi_action = MultiAction(self.driver)
@@ -120,7 +119,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def verify_requisite_details(self, dtls=None):
         if dtls == 'forward_icons':
             icons = self.get_elements(*self.arrow_btn)
-            if len(icons) >= 2:
+            if len(icons) == 2:
                 return True
             else:
                 return False
@@ -136,15 +135,11 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def get_req_sessions(self) -> List[WebElement]:
         self.login.implicit_wait_for(2.5)
         try:
-            l_value = "//*[@resource-id=\"%s\"]" % self.sd_post_req_list[-1] + "/%s" % self.linear_layout[-1]
-            req = self.get_elements('xpath', l_value)
-            if len(req) == 0:
-                raise NoSuchElementException
+            req = self.get_element(*self.sd_post_req_list, wait=False).find_elements(
+                By.XPATH, '*/' + self.linear_layout[-1])
         except NoSuchElementException:
-            l_value = "//*[@resource-id=\"%s\"]" % self.sd_pre_req_list[-1] + "/%s" % self.linear_layout[-1]
-            req = self.get_elements('xpath', l_value)
-            if len(req) == 0:
-                raise NoSuchElementException from None
+            req = self.get_element(*self.sd_pre_req_list, wait=False).find_elements(
+                By.XPATH, '*/' + self.linear_layout[-1])
         self.login.implicit_wait_for(15)
         return req
 
@@ -254,14 +249,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             try:
                 time_dtls = self.get_element(*self.sd_time_desc, wait=False).text
             except NoSuchElementException:
-                try:
-                    time_dtls = self.get_element(*self.card_time_desc, wait=False).text
-                except NoSuchElementException:
-                    try:
-                        time_dtls = self.get_element(*self.pre_req_time, wait=False).text
-                    except NoSuchElementException:
-                        return self.get_element(*self.pr_status_date, wait=False).is_displayed()
-            time_dtls = time_dtls.split(",")[-1]
+                time_dtls = self.get_element(*self.card_time_desc, wait=False).text
             return self.verify_time_details(time_dtls)
         elif section == 'date':
             try:
@@ -406,7 +394,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             retry = 15
         while retry:
             try:
-                self.action_1.press(x=lyt_x, y=lyt_y).release().perform()
+                self.action_1.tap(x=lyt_x, y=lyt_y).release().perform()
                 self.get_element(*self.video_pause_ib, wait=False).click()
                 retry -= retry
             except (NoSuchElementException, StaleElementReferenceException):
@@ -438,7 +426,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def change_orientation(self):
         self.static_exo_player()
         self.get_element(*self.video_orientation_ib).click()
-        self.get_element(*self.video_forward_iv).click()
+        self.get_element(*self.video_play_ib).click()
         return self.verify_video_playing()
 
     def is_video_landscape_playable(self):

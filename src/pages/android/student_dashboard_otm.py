@@ -1,4 +1,3 @@
-import logging
 import random
 import time
 from datetime import datetime
@@ -7,9 +6,9 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
 
-from pages.android.application_login import Login
+from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from pages.android.session_requisite import SessionRequisite
 from pages.base.student_dashboard_otm import StudentDashboardBase
 from utilities.tutor_common_methods import TutorCommonMethods
@@ -23,14 +22,14 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             driver:
         """
         self.driver = driver
-        self.login = Login(driver)
+        self.login = LoginAndroid(driver)
         self.action = TouchAction(driver)
         self.scroll_cards = ScrollCards(driver)
         self.session_requisite = SessionRequisite(self.driver)
         super().__init__(driver)
         self.device = self.get_device_type()
         self.device_type = self.get_device_type()
-        self.staging = Stagingtllms(self.driver)
+        self.staging = Stagingtlms(self.driver)
         self.__init_locators(self.device_type)
 
     def __init_locators(self, device_type=None):
@@ -48,8 +47,6 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.card_topic_name_pr = 'id', '%s/topic_name' % package_name
         self.card_time_desc = 'id', '%s/session_time' % package_name
         self.card_label_tv = 'id', '%s/tvWorkshop' % package_name
-        self.card_content = 'id', '%s/content_card' % package_name
-        self.card_content_header = 'id', '%s/session_header' % package_name
         self.see_more_tv = 'id', '%s/tvShowMoreText' % package_name
         self.requisite_card = 'id', '%s/llRequisiteContentLyt' % package_name
         self.pr_view = 'id', '%s/post_requisite_view' % package_name
@@ -94,13 +91,10 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.assessment_start = 'id', '%s/test_start_button' % package_name
         self.assessment_submit_btn = 'id', '%s/rectangleNavButton' % package_name
         self.instruction_start_btn = 'id', '%s/btStartButton' % package_name
-        self.requisite_item_list='id', '%s/requisite_item_list' % package_name
-        self.arrow_buton ='id', '%s/arrow_btn' % package_name
         if device_type != 'tab':
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
             self.card_root = 'id', '%s/card' % package_name
-            self.card_root_sub = 'id', '%s/card_root' % package_name
             self.card_strip_title = 'id', '%s/strip_title' % package_name
             self.card_strip_desc = 'id', '%s/strip_message' % package_name
             self.card_strip_btn = 'id', '%s/card_strip_btn' % package_name
@@ -417,7 +411,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         sessions = session_list.find_elements_by_class_name('android.view.ViewGroup')
         days = [_.strftime("%d %b") for _ in self.get_working_days(7)]
         self.login.implicit_wait_for(0)
-        swipe_to = 5
+        swipe_to = 3
         scroll_down = True
         while swipe_to:
             end = self.get_element(*self.card_list)
@@ -437,27 +431,27 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     see_more_less.click()
                     scroll_down = False
             except NoSuchElementException:
-                self.scroll_cards.scroll_by_card(session, end)
+                pass
             sessions = self.get_elements(*self.card_root)
             swipe_to -= 1
         return False
 
     def is_up_next_displayed(self):
-        swipe = 3
-        while swipe:
-            try:
-                session = self.get_element(*self.card_root)
-                session_list = self.get_element(*self.card_list)
-                if session.find_element('id', self.pr_status_msg[-1]).text.lower() == "completed":
-                    self.scroll_cards.scroll_by_card(session, session_list)
-                    swipe -= 1
-            except NoSuchElementException:
-                return True
-        else:
-            raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
+        swipe_to = 3
+        self.login.implicit_wait_for(0)
+        while swipe_to:
+            session_list = self.get_element(*self.card_list)
+            session_cards = session_list.find_elements_by_class_name('android.view.ViewGroup')
+            session = None
+            for session in session_cards:
+                try:
+                    return session.find_element_by_id(self.card_time_desc[-1]).is_displayed()
+                except NoSuchElementException:
+                    pass
 
-
-
+            self.scroll_cards.scroll_by_card(session, session_list)
+            swipe_to -= 1
+        return False
 
     def is_post_requisite_attached(self):
         s = self.get_element(*self.pr_status_msg).text
@@ -557,34 +551,15 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
 
     def select_up_coming_card(self):
         self.login.implicit_wait_for(0)
-        swipe = 3
-        while swipe:
-            session_cards = self.get_elements(*self.card_content)
-            session_list = self.get_element(*self.card_list)
-            for session in session_cards:
-                try:
-                    try:
-                        session.find_element_by_id(self.pr_status_date[-1])
-                    except NoSuchElementException:
-                        session.find_element_by_id(self.pre_req_time[-1])
-                except NoSuchElementException:
-                    try:
-                        session.find_element_by_id(self.card_time_desc[-1])
-                    except NoSuchElementException:
-                        continue
-                try:
-                    card = session.find_element_by_id(self.card_content_header[-1])
-                except NoSuchElementException:
-                    card = session
-                try:
-                    card.find_element_by_id(self.pr_status_msg[-1])
-                except NoSuchElementException:
-                    card.click()
-                    return
-            self.scroll_cards.scroll_by_card(session_cards[-1], session_list)
-            swipe -= 1
-        else:
-            raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
+        session_list = self.get_element(*self.card_list)
+        session_cards = session_list.find_elements_by_class_name('android.view.ViewGroup')
+        for session in session_cards:
+            try:
+                session.find_element_by_id(self.pr_status_ico[-1])
+                continue
+            except NoSuchElementException:
+                session.click()
+                session_cards.clear()
 
     def last_completed_session_up_next(self, completed=None):
         self.login.implicit_wait_for(15)
@@ -886,14 +861,14 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         user_home_activity = "UserHomeActivity"
         otm_home_activity = "OneToMegaHomeActivity"
         home_activity = "HomeActivity"
-        timeout = 3
+        timeout = 5
         for _ in range(4):
             self.click_back()
             if self.wait_activity(user_home_activity, timeout):
                 self.get_element(*self.btn_premium).click()
                 break
             elif self.wait_activity(otm_home_activity, timeout):
-                timeout = 2
+                timeout = 3
             elif self.wait_activity(home_activity, timeout):
                 element = self.get_element(
                     'android_uiautomator',
@@ -901,20 +876,3 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                     'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image"))')
                 element.click()
                 break
-            else:
-                raise Exception()
-
-    def is_completed_session_displayed(self):
-        card_root = self.get_element(*self.card_root)
-        try:
-            card_root.find_element_by_id(self.pr_status_msg[-1])
-            return True
-        except NoSuchElementException:
-            return False
-
-    def verify_test_status(self, expected=None):
-        buttons = self.get_elements(*self.pr_status_msg)
-        for button  in buttons:
-            if expected  in button.text.lower():
-                return True
-        return False

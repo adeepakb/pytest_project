@@ -2,7 +2,7 @@ import pytest
 import os
 from pytest_bdd import scenarios, given, when, then, parsers
 from pages.android.Hamburgermenu import Hamburger
-from utilities.base_page import BaseClass
+from utilities.BasePage import BaseClass
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p)

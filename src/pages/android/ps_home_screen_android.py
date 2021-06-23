@@ -3,13 +3,17 @@ import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.login_android import LoginAndroid
 from utilities.common_methods import CommonMethods
 from pages.base.ps_home_screen_base import PSHomeScreenBase
 CommonMethods = CommonMethods()
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
 
 class PS_Homescreen_Android(PSHomeScreenBase):
     def __init__(self, driver):
@@ -25,10 +29,12 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.close_chat = 'com.byjus.thelearningapp.premium:id/closeChatBtn'
         self.arrow_button = 'com.byjus.thelearningapp.premium:id/arrow_btn'
         self.requisite_items = 'com.byjus.thelearningapp.premium:id/llRequisiteContentLyt'
-        self.pop_up='com.byjus.thelearningapp.premium:id/tv_secondaryAction'
-
-
-
+        self.home_tabs = 'com.byjus.thelearningapp.premium:id/premium_school_home_tabs'
+        self.home_page_title = 'com.byjus.thelearningapp.premium:id/toolbar_title'
+        self.design_bottom_sheet = 'com.byjus.thelearningapp.premium:id/design_bottom_sheet'
+        self.bottom_sheet_book = 'com.byjus.thelearningapp.premium:id/bt_primaryAction'
+        self.bottom_sheet_dismiss ='com.byjus.thelearningapp.premium:id/tv_secondaryAction'
+        self.byjus_classes_banner= 'com.byjus.thelearningapp.premium:id/ivMarketingBannerTop'
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', self.ps_tabs)
@@ -113,10 +119,10 @@ class PS_Homescreen_Android(PSHomeScreenBase):
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
-        self.obj.is_button_enabled(text)
+        return self.obj.is_button_enabled(text)
 
-    def attach_post_requisite_with_assessement(self, driver,assessment_name):
-        Stagingtlms(driver).attach_requisite(assessment_name)
+    def attach_post_requisite(self, driver, requisite_name):
+        Stagingtlms(driver).attach_requisite(requisite_name)
 
     def detach_post_requisite(self,driver):
         Stagingtlms(driver).detach_requisite()
@@ -141,10 +147,21 @@ class PS_Homescreen_Android(PSHomeScreenBase):
     def tap_outside_dialog_layout(self):
         self.action.tap(None, x=100, y=100).release().perform()
 
-    def click_on_dissmiss(self):
-        try:
-            self.obj.get_element('id', self.pop_up).click()
-            return True
-        except:
-            return False
+    def is_user_in_ps_page(self):
+        return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed())
 
+    def verify_bottom_sheet(self):
+        return (self.obj.get_element('id','com.byjus.thelearningapp.premium:id/tv_title').text == "BYJU's Classes" and
+                self.obj.get_element('id', self.bottom_sheet_book).text == 'Book a Free Trial' and
+                self.obj.get_element('id', self.bottom_sheet_dismiss).text == 'Dismiss' and
+                self.obj.get_element('id', self.design_bottom_sheet).is_displayed())
+
+    def verify_banner(self):
+        return self.obj.get_element('id',self.byjus_classes_banner)
+
+    def verify_booking_page(self):
+        if self.obj.is_text_match('Book a free class'):
+            return ReturnType(True, 'User is in Book a free class page')
+        else:
+            return ReturnType(False,'User is not in Book a free class page')

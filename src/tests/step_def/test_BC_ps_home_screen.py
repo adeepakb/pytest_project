@@ -3,7 +3,7 @@ from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.android.homepage import HomePage
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from pages.factory.ps_home_screen import PSHomescreenFactory
 
 scenarios('../features/Premium School Home Screen.feature')
@@ -33,7 +33,7 @@ def home_screen(request, driver):
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen, driver, assessment_name):
-    home_screen.attach_post_requisite_with_assessement(driver, assessment_name)
+    home_screen.attach_post_requisite(driver, assessment_name)
 
 
 @given("Launch the app online")
@@ -68,7 +68,7 @@ def verify_text(login_in, text):
                     'icon and forward Arrow button'))
 def verify_post_req_video_elements(login_in, home_screen, text1, text2):
     assert login_in.text_match(text1), "%s text is not displayed " % text1
-    assert login_in.text_match(text1), "%s text is not displayed " % text2
+    assert login_in.text_match(text2), "%s text is not displayed " % text2
     assert home_screen.verify_arrow_present_for_each_requisite(), "forward arrow is not displayed"
 
 
@@ -124,7 +124,7 @@ def verify_session_card_details(home_screen):
 
 @given("reset student session if the session is incase completed")
 def reset_session(driver):
-    Stagingtllms(driver).reset_session()
+    Stagingtlms(driver).reset_session()
 
 
 @then(parsers.parse('verify "{text}" button'))
@@ -154,3 +154,18 @@ def is_back_nav_present(home_screen):
 def tap_button(login_in, text):
     button_status = login_in.button_click(text)
     assert button_status is True, "Unable to find {text} button"
+
+
+@when("verify user is in BYJU's Classes pop up screen")
+def verify_bottom_sheet(home_screen):
+    assert home_screen.verify_bottom_sheet(), "user is not in BYJU's Classes pop up screen"
+
+
+@then('verify byjus classes banner is present')
+def verify_banner(home_screen):
+    home_screen.verify_banner(), "byjus classes banner is not present"
+
+
+@given('clear cache and login')
+def reset_and_login_with_otp(driver):
+    HomePage(driver).reset_and_login_with_otp(driver)

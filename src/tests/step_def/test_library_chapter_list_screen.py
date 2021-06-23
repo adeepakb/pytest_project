@@ -4,7 +4,7 @@ from time import sleep
 
 from pages.android.homepage import HomePage
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
-from utilities.base_page import BaseClass
+from utilities.BasePage import BaseClass
 from pages.android.personalizedChapterList import PersonalizedChapterList
 
 driver = fixture = 'driver'

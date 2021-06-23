@@ -1,6 +1,6 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 from pages.android.bookMarkPage import BookMark
-from utilities.base_page import BaseClass
+from utilities.BasePage import BaseClass
 import logging
 
 

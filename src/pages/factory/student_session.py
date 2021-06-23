@@ -1,7 +1,7 @@
 from pages.android.ps_home_screen_android import PS_Homescreen_Android
-from pages.web.ps_home_screen_web import PSHomescreenWeb
+from pages.web_pages.ps_home_screen_web import PSHomescreenWeb
 from constants.platform import Platform
-from pages.web.student_session_web import StudentSessionWeb
+from pages.web_pages.student_session_web import StudentSessionWeb
 from pages.android.student_session import StudentSessionAndroid
 
 
