@@ -7,7 +7,11 @@ from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
-featureFileName = "Session Flow"
+
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
 
 
 class StudentSessionAndroid(StudentSessionBase):
@@ -47,31 +51,37 @@ class StudentSessionAndroid(StudentSessionBase):
         data_off_icon_displayed = self.obj.get_element('xpath', self.dots_icon).is_displayed()
         is_enabled = self.obj.get_element('xpath', self.dots_icon).is_enabled()
         if data_off_icon_displayed and is_enabled:
-            return True
-        return False
+            return ReturnType(True, '3 dots icon is present')
+        return ReturnType(False, '3 dots icon is not present')
 
     def is_tutor_icon_displayed(self):
         tutor_icon_displayed = self.obj.get_element('xpath', self.tutor_icon).is_displayed()
         is_enabled = self.obj.get_element('xpath', self.tutor_icon).is_enabled()
         if tutor_icon_displayed and is_enabled:
-            return True
-        return False
+            return ReturnType(True, 'Tutor Icon is present')
+        return ReturnType(False, 'Tutor Icon is not present')
 
     def verify_subject_name(self, subject_value):
         subject = self.driver.find_element_by_xpath(self.subject).text
-        assert subject == subject_value, 'Subject name is not correct'
+        if subject == subject_value:
+            return ReturnType(True, 'Subject name is correct')
+        else:
+            return ReturnType(False, 'Subject name is not correct')
 
     def verify_chapter_name(self, topic_title):
         chapter = self.driver.find_element_by_xpath(self.title).text
         print(chapter)
-        assert topic_title in chapter, 'Chapter name is not correct'
+        if topic_title in chapter:
+            return ReturnType(True, 'Chapter name is correct')
+        else:
+            return ReturnType(False, 'Chapter name is not correct')
 
     def is_student_chat_enabled(self):
         if self.obj.is_element_present('xpath', self.student_chat) and not (
                 self.obj.is_element_present('xpath', self.student_chat_disabled)):
-            return True
+            return ReturnType(True, 'Student chat is present and live chat is enabled')
         else:
-            return False
+            return ReturnType(False, 'Student chat is not present and live chat is disabled')
 
     def tap_on_disabled_chat(self):
         self.obj.wait_for_locator('xpath', self.student_chat_disabled)
@@ -79,15 +89,24 @@ class StudentSessionAndroid(StudentSessionBase):
 
     def is_chat_icon_displayed(self):
         self.obj.wait_for_locator('xpath', self.show_chat)
-        return self.obj.is_element_present('xpath', self.show_chat)
+        if self.obj.is_element_present('xpath', self.show_chat):
+            return ReturnType(True, 'chat icon is displayed')
+        else:
+            return ReturnType(False, 'chat icon is not displayed')
 
     def is_live_chat_displayed(self):
         self.obj.wait_for_locator('xpath', self.live_chat_header)
-        return self.obj.is_element_present('xpath', self.live_chat_header)
+        if self.obj.is_element_present('xpath', self.live_chat_header):
+            return ReturnType(True, 'Live chat header is displayed')
+        else:
+            return ReturnType(False, 'Live chat header is not displayed')
 
     def is_chat_close_icon_displayed(self):
         self.obj.wait_for_locator('xpath', self.chat_close_icon)
-        return self.obj.is_element_present('xpath', self.chat_close_icon)
+        if self.obj.is_element_present('xpath', self.chat_close_icon):
+            return ReturnType(True, "chat close icon is displayed")
+        else:
+            return ReturnType(False,"chat close icon is not displayed")
 
     def tap_on_chat_icon(self):
         self.obj.wait_for_locator('xpath', self.show_chat)
@@ -110,36 +129,53 @@ class StudentSessionAndroid(StudentSessionBase):
 
     def video_elements_present(self):
         self.obj.wait_for_locator('xpath', self.player_view, 10)
-        return self.obj.is_element_present('xpath', self.player_view) and \
+        if self.obj.is_element_present('xpath', self.player_view) and \
                self.obj.is_element_present('xpath', self.exo_content) and \
-               self.obj.is_element_present('xpath', self.exo_overlay)
+               self.obj.is_element_present('xpath', self.exo_overlay):
+            return ReturnType(True, "User is on tutor videoplayer screen")
+        else:
+            return ReturnType(False, "User is not on tutor videoplayer screen")
 
     def verify_student_chat_dialog(self):
-        return self.obj.is_element_present('xpath', self.student_chat_dialog)
+        if self.obj.is_element_present('xpath', self.student_chat_dialog):
+            return ReturnType(True, "Chat dialog is present")
+        else:
+            return ReturnType(False, "Chat dialog is not present")
 
     def tap_on_chat_dialog(self):
         self.obj.wait_for_locator('xpath', self.student_chat_dialog)
         self.obj.get_element('xpath', self.student_chat_dialog).click()
 
     def is_emoji_present(self):
-        return self.obj.is_element_present('xpath', "//*[@class='emoji']")
+        if self.obj.is_element_present('xpath', "//*[@class='emoji']"):
+            return ReturnType(True, "Emoji is present in chat box")
+        else:
+            return ReturnType(False, "Emoji is not present in chat box")
 
     def is_cursor_present(self):
-        is_element_focused = self.obj.get_element('xpath', self.chat_popup).get_attribute('focused')
-        return is_element_focused
+        if self.obj.get_element('xpath', self.chat_popup).get_attribute('focused'):
+            return ReturnType(True, "Cursor is present and text field is focused")
+        else:
+            return ReturnType(False, "Cursor is not present and hence text field is not focused")
 
     def click_back(self):
         self.obj.click_back()
 
     def is_keyboard_shown(self):
-        assert self.obj.is_keyboard_shown(), "Device keypad not enabled"
+        if self.obj.is_keyboard_shown():
+            return ReturnType(True,"Device keypad enabled")
+        else:
+            return ReturnType(False,"Device keypad not enabled")
 
     def enter_text_in_chat(self, message):
         self.obj.wait_for_locator('xpath', self.student_chat)
         self.obj.get_element('xpath', self.student_chat).send_keys(message)
 
     def verify_entered_chat(self, message):
-        assert message == self.obj.get_element('xpath', self.student_chat).text, "Chat text verification failed"
+        if message == self.obj.get_element('xpath', self.student_chat).text:
+            return ReturnType(True,"Chat text verification passed")
+        else:
+            return ReturnType(False, "Chat text verification failed")
 
     def tap_on_chat_send(self):
         self.obj.wait_for_locator('xpath', self.student_chat_send)
@@ -153,7 +189,10 @@ class StudentSessionAndroid(StudentSessionBase):
             if message in view_text:
                 text_present = True
                 break
-        return text_present
+        if text_present:
+            return ReturnType(True, "%s message is present" % message)
+        else:
+            return ReturnType(False, "%s message is not present" % message)
 
     def speed_test(self):
         try:
@@ -188,3 +227,11 @@ class StudentSessionAndroid(StudentSessionBase):
 
     def is_video_progress_bar_present(self):
         return self.obj.is_element_present('id', self.exo_progress_bar)
+
+    def is_video_play_pause_progress_bar_present(self):
+        if (self.is_video_play_present() and
+                not self.is_video_pause_progress_bar_present() and
+                not self.is_video_progress_bar_present()):
+            return ReturnType(True, "seek bar,pause,play icons are present on the screen")
+        else:
+            return ReturnType(False, "seek bar,pause,play icons are not present on the screen")

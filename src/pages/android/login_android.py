@@ -16,6 +16,12 @@ from utilities.common_methods import CommonMethods
 CommonMethods = CommonMethods()
 
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
+
+
 class LoginAndroid(LoginBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
@@ -54,23 +60,24 @@ class LoginAndroid(LoginBase):
         self.welcome_button = "com.byjus.thelearningapp.premium:id/welcomeButton"
         self.loginBtn_id = "com.byjus.thelearningapp.premium:id/btnLogin"
         self.continue_button = "com.byjus.thelearningapp.premium:id/tv_submit"
+        self.byjus_class_card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/home_card_title_text" and @text="Byju\'s Classes"]'
+        self.home_card_layout = "com.byjus.thelearningapp.premium:id/home_card_layout"
+        self.marketing_classes_image = 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image'
 
     def implicit_wait_for(self, pool):
         self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
-        # element = self.get_element( 'android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(
-        # true)).scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
         try:
-            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
+            self.obj.wait_for_locator('id', self.home_card_layout)
+            self.obj.get_element('android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(text("Byju\'s Classes"))')
+            self.obj.element_click('xpath',self.byjus_class_card)
             if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',self.permission_container_tab):
                 self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
-            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
-        except:
-            raise Exception("Premium School card might not be displayed!")
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/backToTopClick')
+            element = self.obj.get_element('android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("'+self.marketing_classes_image+'"))')
+            element.click()
 
     # This step is only applicable in web. Hence skipping this for android
     def click_on_hamburger(self):
@@ -182,8 +189,8 @@ class LoginAndroid(LoginBase):
     def text_match(self, expected_text):
         text_matches = self.obj.is_text_match(expected_text)
         if text_matches is True:
-            return True
-        return False
+            return ReturnType(True, '%s text is displayed' % expected_text)
+        return ReturnType(False, '%s text is not displayed' % expected_text)
 
     def dropdown_select(self):
         self.obj.get_element('class_name', "android.widget.Spinner").click()
@@ -215,8 +222,8 @@ class LoginAndroid(LoginBase):
     def is_button_displayed(self, text):
         for button in self.find_buttons():
             if button.text == text:
-                return True
-        return False
+                return ReturnType(True, '%s button is displayed' % text)
+        return ReturnType(False, '%s button is not displayed' % text)
 
     def button_click(self, text):
         for button in self.find_buttons():
@@ -298,8 +305,8 @@ class LoginAndroid(LoginBase):
         self.obj.wait_for_locator('xpath', self.offline_validation_layout)
         layout = self.obj.get_element('xpath', self.offline_validation_layout).is_displayed()
         if layout is True:
-            return True
-        return False
+            return ReturnType(True, "Offline related bottom sheet dialog is displayed")
+        return ReturnType(False, "Offline related bottom sheet dialog is not displayed")
 
     def verify_offline_validation_layout(self, text1, text2):
         self.obj.is_button_enabled(text1)

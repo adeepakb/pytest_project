@@ -9,6 +9,12 @@ from pages.base.instruction_dialog_base import InstructionDialogBase
 CommonMethods = CommonMethods()
 
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
+
+
 class InstructionDialogAndroid(InstructionDialogBase):
     def __init__(self, driver):
         self.obj = TutorCommonMethods(driver)
@@ -27,11 +33,16 @@ class InstructionDialogAndroid(InstructionDialogBase):
         self.exit_assessment_button = '//android.view.View[@content-desc="Exit Assessment"]/android.widget.TextView'
 
     def is_close_instruction_displayed(self):
-        return self.obj.is_element_present('xpath', self.close_instruction)
+        if self.obj.is_element_present('xpath', self.close_instruction):
+            return ReturnType(True, 'close icon is displayed')
+        else:
+            return ReturnType(False, 'close icon is not displayed')
 
     def is_requisite_list(self):
-        is_present = self.obj.is_element_present('id', self.requisite_list)
-        return is_present
+        if self.obj.is_element_present('id', self.requisite_list):
+            return ReturnType(True, 'requisite is displayed')
+        else:
+            return ReturnType(False, 'requisite is not displayed')
 
     def tap_on_close_instruction(self):
         self.obj.get_element('xpath', self.close_instruction).click()
@@ -42,14 +53,20 @@ class InstructionDialogAndroid(InstructionDialogBase):
         self.obj.wait_for_locator('xpath', '//*[@resource-id = "main-wrapper"]',5)
 
     def is_assessment_popup_present(self):
-        return self.obj.is_element_present('xpath', self.assessment_popup)
+        if self.obj.is_element_present('xpath', self.assessment_popup):
+            return ReturnType(True, 'assessment popup is displayed')
+        else:
+            return ReturnType(False, 'assessment popup is not displayed')
 
     def click_back(self):
         self.obj.click_back()
 
     def is_user_in_ps_page(self):
-        return (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
-                self.obj.get_element('id', self.home_tabs).is_displayed())
+        if (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed()):
+            return ReturnType(True, 'User is in the PS screen')
+        else:
+            return ReturnType(False, 'User is not in the PS screen')
 
     def end_test(self):
         self.obj.get_element('xpath',self.exit_assessment_button).click()
@@ -66,7 +83,10 @@ class InstructionDialogAndroid(InstructionDialogBase):
             m = re.match("\d+.0 \/ \d+.0 = \d+%", actual_text)
             if m is not None:
                 score_found = True
-        return score_found
+        if score_found:
+            return ReturnType(True, 'Assessment score not shown')
+        else:
+            return ReturnType(False, 'Assessment score is not shown')
 
     def set_future_assessment_start_date(self):
         future_date = (datetime.today() + timedelta(days=1)).strftime('%d-%m-%Y %H:%M')
@@ -98,4 +118,7 @@ class InstructionDialogAndroid(InstructionDialogBase):
         self.obj.capture_screenshot(element, image_name)
 
     def image_diff(self,img1,img2):
-        return self.obj.compare_images(img1+".png", img2+".png")
+        if self.obj.compare_images(img1+".png", img2+".png") is None :
+            return ReturnType(True, 'User resume same place where assessment was exited previously')
+        else:
+            return ReturnType(False, 'User did not resume same place where assessment was exited previously')

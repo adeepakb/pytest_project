@@ -190,16 +190,21 @@ class ClassNotesAndroid(ClassNotesBase):
         if len(share_apps) == 0:
             raise Exception("Share via app option is not present")
         for app in share_apps:
-            if app.text == "Save to Drive":
+            if app.text == "Save to Drive" or app.text == "Drive":
                 app.click()
                 self.obj.wait_for_locator('id', self.save_to_drive_title)
                 self.driver.back()
                 self.obj.element_click('id', self.save_button)
-                message = self.obj.get_element('id', 'android:id/message').text
-                if not self.obj.is_element_present('id', self.save_button) or (message == "Preparing to upload 1 file"):
-                    return ReturnType(True, 'pdf share file successful')
-                else:
-                    return ReturnType(False, 'pdf share file not successful with toast message %s' % message)
+                upload_check_limit = 15  # Avoided using while True condition or hardcoded wait time
+                while upload_check_limit > 0:
+                    if self.obj.is_android_notification_present('Uploading 1 file'):
+                        upload_check_limit -= 1
+                        continue
+                    if self.obj.is_android_notification_present('Uploaded 1 file'):
+                        self.obj.click_back()
+                        return ReturnType(True, 'PDF uploaded to Drive')
+                    self.obj.click_back()
+                    return ReturnType(False, 'PDF uploaded message is not present')
 
     def verify_no_pdf_viewer_message(self):
         req_contents = self.obj.get_elements('id', self.req_content)

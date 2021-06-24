@@ -64,6 +64,7 @@ class TrailClassAndroid(TrialClassBase):
         self.bs_count_down_seconds = 'id', '%s/appTextViewSec' % package_name
         self.bs_count_down_seconds_text = 'id', '%s/appTextView4' % package_name
         self.bottom_sheet = '%s/design_bottom_sheet' % package_name
+        self.welcome_button = '%s/welcomeButton' % package_name
 
     def scroll_rc_in_view(self):
         try:
@@ -111,13 +112,11 @@ class TrailClassAndroid(TrialClassBase):
                 i += 1
                 if i == 3:
                     prev_cards = cards_root
+                    if prev_cards[2] == cards_root[2]:
+                        return ReturnType(False, 'Reached end of page and trial session card with book is not present')
                     self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
                     time.sleep(1)  # waiting until scroll is completed and page loaded
                     cards_root = self.obj.get_elements(*self.rc_card_root)
-                    prev_card_subject = self.obj.child_element_text(prev_cards[2], self.card_topic_tv)
-                    card_subject = self.obj.child_element_text(cards_root[2], self.card_topic_tv)
-                    if prev_card_subject == card_subject:
-                        return ReturnType(False, 'Reached end of page and trial session card with book is not present')
                     i = 1
 
     def is_master_class_present(self):
@@ -185,35 +184,32 @@ class TrailClassAndroid(TrialClassBase):
         if completed_subject == up_next_subject and completed_session_title == up_next_title:
             return ReturnType(True, 'Up next free session is displayed in completed tab')
         else:
-            return ReturnType(True, 'Up next free session is not displayed in completed tab')
+            return ReturnType(False, 'Up next free session is not displayed in completed tab')
 
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',
                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
 
     def get_up_next_trial_class_session(self):
-        try:
-            list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
-            if len(list_content) == 0:
-                raise Exception("No trial cards present in booking page For you tab")
-            section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
-            elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
-            if len(elements) == 0:
-                raise Exception('No cards present in booking page For you tab')
-            while True:
-                for element in elements:
-                    if section_name == 'Up Next':
-                        try:
-                            self.obj.child_element_by_id(element, self.workshop_label)
-                        except NoSuchElementException:
-                            try:
-                                subject = self.obj.child_element_text(element, self.upnext_subject_name)
-                                if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
-                                    return element
-                            except NoSuchElementException:
-                                return False
-        except:
+        list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
+        if len(list_content) == 0:
             return False
+        section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
+        elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
+        if len(elements) == 0:
+            raise Exception('No cards present in booking page For you tab')
+        for element in elements:
+            if section_name == 'Up Next':
+                try:
+                    self.obj.child_element_by_id(element, self.workshop_label)
+                except NoSuchElementException:
+                    try:
+                        subject = self.obj.child_element_text(element, self.upnext_subject_name)
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                            return element
+                    except NoSuchElementException:
+                        return False
+
 
     def is_trial_class_booked(self):
         up_next_session = self.get_up_next_trial_class_session()
@@ -274,6 +270,7 @@ class TrailClassAndroid(TrialClassBase):
                         self.obj.child_element_click_by_id(elements[i], self.card_book_btn)
                         self.obj.button_click("Confirm & Book")
                         self.obj.button_click("Okay")
+                        return True
                 i += 1
                 if i == 3:
                     self.scroll_cards.scroll_by_card(elements[2], elements[0])
@@ -347,7 +344,8 @@ class TrailClassAndroid(TrialClassBase):
                             self.card_book_btn):
                             return ReturnType(True, 'Trial class session card is present')
                     except NoSuchElementException:
-                        return ReturnType(False, 'Trial class session card with book is not present')
+                        continue
+                    return ReturnType(False, 'Trial class session card with book is not present')
         except NoSuchElementException:
             return ReturnType(False, 'No cards present in booking page')
 
@@ -383,7 +381,8 @@ class TrailClassAndroid(TrialClassBase):
                                 and self.obj.get_element_text('id', self.other_slots_detail) is not None:
                             return ReturnType(True, 'Trial class session details are present')
                     except NoSuchElementException:
-                        return ReturnType(False, 'Trial class session details are not  present')
+                        continue
+                    return ReturnType(False, 'Trial class session details are not  present')
         except NoSuchElementException:
             return ReturnType(False, 'No cards present in booking page')
 
@@ -446,8 +445,13 @@ class TrailClassAndroid(TrialClassBase):
         self.driver.close_app()
 
     def dismiss_trail_popup(self):
-        if self.obj.is_element_present('id', self.bottom_sheet):
-            self.obj.click_link('Dismiss')
+        self.obj.wait_for_locator('id', self.bottom_sheet)
+        self.obj.click_link('Dismiss')
+        try:
+            self.obj.wait_for_locator('id', self.welcome_button)
+            self.obj.element_click('id',self.welcome_button)
+        except NoSuchElementException:
+            pass
 
     def verify_trial_class_confirmation_msg(self):
         self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/appTextView_title')
@@ -519,14 +523,12 @@ class TrailClassAndroid(TrialClassBase):
                 if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
                     trial_class_topics.append(self.obj.child_element_text(cards_root[i], self.card_topic_tv))
                 i += 1
-                if i == 4:
-                    break
-            if i == 4:
+            if i == len(cards_root):
                 prev_cards = cards_root
-                self.scroll_cards.scroll_by_card(cards_root[3], cards_root[0])
+                self.scroll_cards.scroll_by_card(cards_root[len(cards_root)-1], cards_root[0])
                 cards_root = self.obj.get_elements(*self.rc_card_root)
-                prev_card_subject = self.obj.child_element_text(prev_cards[3], self.card_topic_tv)
-                card_subject = self.obj.child_element_text(cards_root[3], self.card_topic_tv)
+                prev_card_subject = self.obj.child_element_text(prev_cards[len(cards_root)-1], self.card_topic_tv)
+                card_subject = self.obj.child_element_text(cards_root[len(cards_root)-1], self.card_topic_tv)
                 if prev_card_subject == card_subject:
                     for i in range(len(trial_class_topics) - 1):
                         if trial_class_topics[i] == trial_class_topics[i + 1]:

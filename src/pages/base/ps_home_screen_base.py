@@ -74,3 +74,15 @@ class PSHomeScreenBase(ABC):
     @abstractmethod
     def is_user_in_ps_page(self):
         raise NotImplemented()
+
+    @abstractmethod
+    def verify_bottom_sheet(self):
+        raise NotImplemented()
+
+    @abstractmethod
+    def verify_banner(self):
+        raise NotImplemented()
+
+    @abstractmethod
+    def verify_booking_page(self):
+        raise NotImplemented()
