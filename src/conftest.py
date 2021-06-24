@@ -14,7 +14,7 @@ from utilities.base_page import BaseClass
 from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_feature_file
+#from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
@@ -26,12 +26,12 @@ from tests.common_steps import *
 
 base_class = BaseClass()
 # CommonMethods = CommonMethods()
-feature_job = BuildFeatureJob()
+#feature_job = BuildFeatureJob()
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
-    feature_job.build_and_install_apk()
+    #feature_job.build_and_install_apk()
     yield
     # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
@@ -60,12 +60,12 @@ def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         android_driver = base_class.setup_android()
-        feature_job.lock_or_unlock_device('lock')
-        serial = feature_job.connect_adb_api()
-        feature_job.connect_to_adb(serial)
+        # feature_job.lock_or_unlock_device('lock')
+        # serial = feature_job.connect_adb_api()
+        # feature_job.connect_to_adb(serial)
         yield android_driver
-        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT).communicate()
+        # subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+        #                  stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
         chrome_driver = base_class.setup_browser()
