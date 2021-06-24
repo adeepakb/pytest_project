@@ -377,8 +377,8 @@ class TrailClassAndroid(TrialClassBase):
                         subject = self.obj.child_element_text(card, self.subject_name)
                         if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') \
                                 and self.obj.get_element_text('id', self.card_topic_tv) is not None \
-                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None \
-                                and self.obj.get_element_text('id', self.other_slots_detail) is not None:
+                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None :
+                                # and self.obj.get_element_text('id', self.other_slots_detail) is not None
                             return ReturnType(True, 'Trial class session details are present')
                     except NoSuchElementException:
                         continue

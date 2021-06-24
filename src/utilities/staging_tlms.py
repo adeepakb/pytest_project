@@ -1,6 +1,8 @@
 import json
 import os
+import random
 import re
+import string
 from cryptography.fernet import Fernet
 from random import randint
 from selenium import webdriver
@@ -15,6 +17,7 @@ from constants.load_json import getdata
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime, timedelta
 import time
+from utilities.exceptions import SlotUpdateError, AttachmentError, InvalidModeSelection
 from utilities.tutor_common_methods import TutorCommonMethods
 
 
@@ -24,8 +27,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
@@ -574,7 +577,7 @@ class Stagingtlms:
         self.chrome_driver.close()
         return date
 
-    def attach_requisite(self, requisite_name):
+    def attach_requisite(self, requisite_id):
         premium_id = self.decrypted_data['account_details']['premium_id']
         today = datetime.today().strftime('%Y-%m-%d')
 
@@ -596,51 +599,88 @@ class Stagingtlms:
 
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
         cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
-        channel_col = status_col = None
+        status_col = tagged_col = None
         for i in range(1, cols):
             header = self.chrome_driver.find_elements_by_xpath(
                 "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'Channel':
-                channel_col = i
-            elif header == 'Status':
+            if header == 'Status':
                 status_col = i
+            elif header == 'Teaching Material/Video Tagged':
+                tagged_col = i
 
+        topic_id = None
         for r in range(1, rows + 1):
             try:
                 status = self.chrome_driver.find_element_by_xpath(
                     "//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
                 if 'one_to_mega' in status:
-                    self.chrome_driver.find_element_by_xpath(
-                        "//tr[" + str(r) + "]/td[" + str(channel_col) + "]/a[@target='_blank']").click()
-                    # switch to newly opened tab to attach requisite
-                    self.chrome_driver.switch_to_window(self.chrome_driver.window_handles[1])
-                    self.wait_for_locator_webdriver("//a[text()='Attach Requisite Group']")
-                    self.chrome_driver.find_element_by_xpath("//a[text()='Attach Requisite Group']").click()
-                    self.wait_for_locator_webdriver("//span[@role='presentation']")
-                    self.chrome_driver.find_element_by_xpath("//span[@role='presentation']").click()
-                    # self.wait_for_locator_webdriver("//li[text()='"+requisite_name+"']")
-                    # self.chrome_driver.find_element_by_xpath("//li[text()='"+requisite_name+"']").click()
-                    self.chrome_driver.find_element_by_xpath("//input[@class='select2-search__field']").send_keys(
-                        requisite_name)
-                    time.sleep(2)
-                    self.chrome_driver.find_element_by_xpath(
-                        "//li[@class='select2-results__option select2-results__option--highlighted']").click()
-                    self.wait_for_locator_webdriver("//button[@type='submit']")
-                    self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
-                    try:
-                        WebDriverWait(self.chrome_driver, 5).until(EC.alert_is_present(),
-                                                                   'Timed out waiting for confirmation popup to appear.')
-                        alert = self.chrome_driver.switch_to.alert
-                        alert.accept()
-                        print("alert accepted")
-                        time.sleep(2)
-                    except TimeoutException:
-                        print("no alert")
-                    self.chrome_driver.close()
-                    self.chrome_driver.switch_to_window(self.chrome_driver.window_handles[0])
+                    course_topic_details = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
+                    topic_id = re.search(r'Topic id : (\d+)', course_topic_details).group(1)
             except NoSuchElementException:
                 continue
+
+        tmb_id = getdata("../config/attachments.json", "one_to_mega", '8')["tmb_id"]
+        uri = "tmbs/%s" % tmb_id
+        self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/' + uri)
+        self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
+        self.wait_for_locator_webdriver("//button[label=Requisites]")
+        self.chrome_driver.find_element("css selector", "button[label=Requisites]").click()
+        self.chrome_driver.find_element("xpath","//div[contains(text(), '14-8th Grade Marketing-Standard VIII-CBSE')]/../..//a[contains(text(), \"RG\")]").click()
+        self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[-1])
+        input_box = self.chrome_driver.find_element(By.CSS_SELECTOR, ".input-box")
+        input_box.clear()
+        input_box.send_keys(requisite_id)
+        self.chrome_driver.find_element(By.CSS_SELECTOR, "button[label=Save]").click()
+        self._attachment_write(tmb_id, topic_id)
         self.chrome_driver.close()
+
+    def _attachment_write(self, tmb_id, topic_id=None):
+        if tmb_id is None:
+            raise TypeError("'tmb_id' must be str, not None")
+        topics_uri = 'raw_topics/%s'
+        topic_id = int(topic_id)
+        self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/' + (topics_uri % topic_id))
+        try:
+            self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
+        except NoSuchElementException:
+            pass
+        self.wait_for_locator_webdriver("button[label=Edit]")
+        self.chrome_driver.find_element("css selector", "button[label=Edit]").click()
+        drp_box_input = self.chrome_driver.find_element(
+            "xpath", "//div[contains(text(), \"TMB\")]/following-sibling::div//input")
+        drp_box_input.click()
+        drp_box_input.send_keys(Keys.CONTROL + "a" + Keys.BACKSPACE)
+        drp_box_input.send_keys(tmb_id)
+        retry = 3
+        while retry:
+            list_options = self.chrome_driver.find_elements("css selector", ".tmbTagOption .tagOptionIdText")
+            if len(list_options) != 0:
+                try:
+                    for option in list_options:
+                        if option.text == tmb_id:
+                            option.click()
+                            break
+                    else:
+                        if retry < 1:
+                            raise Exception(f"ID Error: \"{tmb_id}\" is not displayed in the list")
+                    break
+                except StaleElementReferenceException:
+                    pass
+            retry -= 1
+            time.sleep(0.5)
+        else:
+            raise Exception("<Empty List>: contents might have taken too long to load")
+        self.wait_for_locator_webdriver('//input[placeholder="Enter Chapter"]')
+        chapter_input = self.chrome_driver.find_element("css selector", "input[placeholder=\"Enter Chapter\"]")
+        chapter_input.clear()
+        chapter_input.send_keys("null")
+        self.chrome_driver.find_element("css selector", "button[label=Save]").click()
+        try:
+            missing_param = self.chrome_driver.find_element("id", "message-id").text
+            print("missing param........................", missing_param)
+            raise AttachmentError(missing_param)
+        except NoSuchElementException:
+            pass
 
     def detach_requisite(self):
         premium_id = self.decrypted_data['account_details']['premium_id']
@@ -790,48 +830,118 @@ class Stagingtlms:
         c_day, ac_time = start_time.strftime('%A %H:%M').split()
         return c_day, ac_time, end_time
 
-    # todo: change implementation
-    def _add_slot(self, booking_time=None, course_id=None,num_slots=1):
+    def _add_slot(self, booking_time=None, new_course_id=None):
         def group_name(d, t):
             return "auto_" + str(time.strptime(d, "%A").tm_wday + 1) + ''.join(t.split(":"))
         # self.session_relaunch(cms=True)
-        self.chrome_driver.get(f"https://tutor-plus-cms-staging.tllms.com/courses/%s/slot_groups/new" % course_id)
+        self.chrome_driver.get(f"https://tutor-plus-cms-staging.tllms.com/neo_courses/%s/slot_groups/new" % new_course_id)
+        ms_count = 1
         self.wait_for_locator_webdriver("//div[@class='subheader--title']")
-        if num_slots == 1:
-            for i in range(2):
-                self.chrome_driver.find_element_by_xpath("//div[text()='-']").click()
-            b_day, start_time, end_time = booking_time
-            weeks = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday", "Sunday")
-            for i, day in enumerate(weeks):
-                if day.lower() == b_day.lower():
-                    index = i+1
-                    break
-            else:
-                raise Exception("DayFormatException: bad day format '%s'" % b_day)
-            grp_name = group_name(b_day, start_time)
-            self.chrome_driver.find_element_by_css_selector("input.slotNameInput").send_keys(grp_name)
-            self.chrome_driver.find_element("css selector", "div.MuiInput-input").click()
-            self.chrome_driver.find_elements("css selector", "div#menu- .MuiListItem-button")[index].click()
-            self.chrome_driver.find_element("css selector","div.slotContent > div:nth-child(2)> div:nth-child(2) input.slotDateInput").send_keys(start_time)
-            self.chrome_driver.find_element("css selector","div.slotContent > div:nth-child(2)> div:nth-child(3) input.slotDateInput").send_keys(end_time)
-            self.chrome_driver.find_element("css selector", "button[type=button]").click()
-            try:
-                self.wait_for_locator_webdriver("//button[text()='Create New Slot Group']")
-                self.chrome_driver.find_element("xpath", "//button[text()='Create New Slot Group']")
-            except NoSuchElementException:
-                raise Exception("Cannot update slot in cms")
-            self.chrome_driver.close()
-            return {
-                grp_name: {
-                    "slot_0": {
-                        "day": b_day,
-                        "start_time": start_time,
-                        "end_time": end_time
-                    }
-                }
-            }
+        freq = int(self.chrome_driver.find_element("css selector", ".elipseMinus + input").get_attribute("value"))
+        slot_count = abs(ms_count - freq)
+        if ms_count < freq:
+            for _ in range(slot_count):
+                self.chrome_driver.find_element("xpath", "//div[@class=\"elipseMinus\"][text()=\"-\"]").click()
+        elif ms_count > freq:
+            for _ in range(slot_count):
+                self.chrome_driver.find_element("xpath", "//div[@class=\"elipseMinus\"][text()=\"+\"]").click()
+        number_of_slots = int(len(self.chrome_driver.find_elements('css selector', 'div.slotCardContainer')))
+        if ms_count != number_of_slots:
+            raise SlotUpdateError("'Mandatory Sessions Count' and 'Number Of Slots' should be same")
+        b_day, start_time, end_time = booking_time
+        weeks = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday", "Sunday")
+        for i, day in enumerate(weeks, 1):
+            if day.lower() == b_day.lower():
+                index = i
+                break
         else:
-            NotImplementedError("Booking for more than one slot is not yet implemented.")
+            raise Exception("DayFormatException: bad day format '%s'" % b_day)
+        grp_name = group_name(b_day, start_time)
+        self.chrome_driver.find_element_by_css_selector("input.slotNameInput").send_keys(grp_name)
+        dropdowns = self.chrome_driver.find_elements(
+            By.XPATH, "(//label[text()=\"Day*\"]/../following-sibling::div)//div[text()=\"Select the day\"]")
+        items = list(range(1, len(dropdowns) * 2, 2))
+        for i, dropdown in enumerate(dropdowns):
+            dropdown.click()
+            index = index if index + i < 8 else 0
+            self.chrome_driver.find_elements("css selector", "div#menu- .MuiListItem-button")[index + i].click()
+            self.chrome_driver.find_element("xpath",
+                                            "(//input[@class=\"slotInput\"])[%s]" % items[i]
+                                            ).send_keys(start_time)
+            self.chrome_driver.find_element("xpath",
+                                            "(//input[@class=\"slotInput\"])[%s]" % (items[i] + 1)).send_keys(
+                end_time)
+            self.chrome_driver.find_element("xpath", "//div[text()=\"Select Session Type\"][1]").click()
+            self.chrome_driver.find_element("xpath", "//li[text()=\"Mandatory\"]").click()
+        self.chrome_driver.find_element("css selector", "button.submitButton[type=button]").click()
+        new_slot_grp_url = self.chrome_driver.current_url
+        try:
+            self.wait_for_locator_webdriver("//div[text()='Create New Slot Group']")
+            self.chrome_driver.find_element("xpath", "//div[text()='Create New Slot Group']")
+        except NoSuchElementException:
+            pass
+        timeout = 30
+        while timeout:
+            if self.chrome_driver.current_url != new_slot_grp_url:
+                ths = self.chrome_driver.find_elements("css selector", ".tableHeaderTextStyle")
+                id_index = [ths.index(i) for i in ths if i.text.lower() == "id"][-1]
+                tds = self.chrome_driver.find_elements("css selector", ".tableBodyTextStyle span")
+                sl_id, sl_name = tds[id_index].text, tds[id_index + 1].text
+                return sl_id, sl_name
+            else:
+                timeout -= 1
+                time.sleep(1)
+        else:
+            self.chrome_driver.quit()
+            raise SlotUpdateError(
+                f"Cannot update slot in "
+                f"'https://tutor-plus-cms-staging.tllms.com/neo_courses/{new_course_id}/slot_groups'")
+
+    def _add_batch(self, new_course_id, *slot_details):
+        uri = "neo_courses/%s" % new_course_id
+        url = 'https://tutor-plus-cms-staging.tllms.com/'+uri
+        new_batch_url = url + "/batches/new"
+        self.chrome_driver.get(url)
+        self.wait_for_locator_webdriver('//div[text()="Create New Batch"]')
+        self.chrome_driver.find_element("css selector", ".batches-container .btn").click()
+        batch_input, slot_drp_dwn, topic_drp_dwn = self.chrome_driver.find_elements("css selector", "input[type=text]")
+        date_fields = self.chrome_driver.find_elements("css selector", "input[type=date]")
+        topic_count = self.chrome_driver.find_element("css selector", "input[type=number]")
+        today, tomorrow = datetime.today().strftime('%m%d%Y'), (datetime.today() + timedelta(days=1)).strftime('%m%d%Y')
+        batch_name = "test_batch_" + ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(5))
+        batch_input.send_keys(batch_name)
+        slot_drp_dwn.click()
+        slot_id, slot_grp_name = slot_details
+        for char in slot_grp_name:
+            slot_drp_dwn.send_keys(char)
+            time.sleep(0.15)
+        drp_dwn_ids = self.chrome_driver.find_elements("css selector", ".slotGroup-id")
+        for drp_dwn_id in drp_dwn_ids:
+            if drp_dwn_id.text.lower() == "id:" + slot_id:
+                drp_dwn_id.click()
+                break
+        else:
+            raise Exception(f"NAME: \"{slot_grp_name}\", ID: \"{slot_id}\" is not found in the \"Slot Group\" list")
+        date_fields[0].send_keys(today)
+        date_fields[1].send_keys(tomorrow)
+        self.chrome_driver.find_element(
+            "xpath", "//*[text()=\"Holiday Preference*\"]/following-sibling::div//input/..").click()
+        self.chrome_driver.find_elements("css selector", "#menu- li")[1].click()
+        topic_drp_dwn.click()
+        self.chrome_driver.find_element("css selector", "ul[role=listbox] > li").click()
+        topic_count.send_keys("5")
+        self.chrome_driver.find_element("css selector", "button[type=button][label=Next]").click()
+        timeout = 30
+        while timeout:
+            if self.chrome_driver.current_url != new_batch_url:
+                break
+            else:
+                timeout -= 1
+                time.sleep(1)
+        else:
+            raise Exception("took too long to add new batch")
+        self.chrome_driver.quit()
+
 
     def verify_and_add_slot(self, hours=None, minutes=None, day=None):
         with open('../../config/course.json') as io_read:
@@ -904,6 +1014,7 @@ class Stagingtlms:
     def login_and_add_slot(self,hours=None, minutes=None, day=None, course_id= None):
         self.login_to_cms_staging()
         b_day, start_time, *_ = b_time = self.booking_time(hours, minutes, day)
-        self._add_slot(b_time, course_id,num_slots=1)
+        slot_details = self._add_slot(b_time, course_id)
+        self._add_batch(course_id, *slot_details)
         d = datetime.strptime(start_time, "%H:%M")
         return d.strftime("%-I:%M %p")

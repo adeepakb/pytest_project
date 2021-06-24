@@ -268,6 +268,7 @@ class HomePage():
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)
+                    self.verify_user_name(driver,'personal')
                     print("----------------------below")
                     logging.info('home page verified')
                 else:
@@ -292,6 +293,8 @@ class HomePage():
                     actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
                 elif account_type == 'one_to_many':
                     actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                elif account_type == 'personal':
+                    actual_username = getdata(Login_Credentials, 'login_detail3', 'profile_name')
                 expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
                 if CommonMethods.verifyTwoText(expected_username, actual_username):
                     print("---------------above")
