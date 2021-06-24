@@ -326,7 +326,9 @@ class LoginAndroid(LoginBase):
         if account_type == 'many':
             data = Stagingtlms(self.driver).get_mobile_and_ccode()
         elif account_type == 'personal':
+
             data = str(get_data('../../config/config.json', 'account_with_password', 'mobile'))
+
         mobile_and_code = data.split('-')
         self.select_country_code(mobile_and_code[0])
         self.enter_phone(mobile_and_code[1])

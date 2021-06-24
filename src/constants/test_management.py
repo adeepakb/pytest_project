@@ -20,9 +20,13 @@ from constants.load_json import *
 import glob
 
 fp = '../../config/config.json'
-testrail_url = get_data(fp, 'testrail', 'url')
-testrail_username = get_data(fp, 'testrail', 'userName')
-testrail_password = get_data(fp, 'testrail', 'password')
+key = os.getenv('SECRET')
+f = Fernet(key)
+encrypted_data = get_data(fp, 'encrypted_data', 'token')
+decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+testrail_url = decrypted_data['testrail']['url']
+testrail_username = decrypted_data['testrail']['userName']
+testrail_password = decrypted_data['testrail']['password']
 custom_Tag_Dict = {1: 'Video', 2: 'Sanity', 3: 'BVT'}
 custom_Tag_List = [1, 2, 3]
 

@@ -22,7 +22,7 @@ def login_in(request, driver):
         yield login_in
 
 
-@fixture
+@pytest.fixture()
 def login(driver, request):
     platform_list = request.config.getoption("platform")
     from pages.factory.application_login_factory import Login
@@ -48,7 +48,7 @@ def tap_on_premium_card(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
+
     login.navigate_to_login_screen()
 
 
@@ -58,7 +58,7 @@ def launch_app(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
+
 
 
 @given("Launch the app in offline")
@@ -66,7 +66,6 @@ def launch_app(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
     set_connection_type(login.driver, "OFFLINE")
 
 

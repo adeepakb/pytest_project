@@ -1,7 +1,9 @@
+import json
 import re
 import subprocess
 from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
+from cryptography.fernet import Fernet
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -271,7 +273,7 @@ class Login(LoginBase, TutorCommonMethods):
                 timeout -= 1
                 if timeout == 1:
                     self.driver.launch_app()
-                sleep(1)
+                self.driver.implicitly_wait(2)
         if not timeout:
             raise LoginException("Premium School card might not be displayed!")
         try:
@@ -375,11 +377,14 @@ class Login(LoginBase, TutorCommonMethods):
         self.action.tap(x=10, y=100).perform()
 
     def is_dropdown_displayed_without_clicking(self):
-        drop_down = self.get_element('class_name', 'android.widget.ListView')
-        drop_down_visible = drop_down.is_displayed()
-        if drop_down_visible is True:
-            return ReturnType(True, "Dropdown is being displayed")
-        return ReturnType(False, "Dropdown is not being displayed")
+        try:
+            drop_down = self.get_element('class_name', 'android.widget.ListView')
+            drop_down_visible = drop_down.is_displayed()
+            if drop_down_visible is True:
+                return ReturnType(True, "Dropdown is being displayed")
+            return ReturnType(False, "Dropdown is not being displayed")
+        except:
+            return ReturnType(False, "Dropdown is not being displayed")
 
     def mobile_number_input(self):
         input_box = self.get_element('xpath', self.phone_number).is_displayed()
@@ -643,7 +648,12 @@ class Login(LoginBase, TutorCommonMethods):
                 break
 
     def enter_passwd(self):
-        psswd = str(get_data('../../config/config.json', 'account_with_password', 'password'))
+        fp = '../../config/config.json'
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = get_data(fp, 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+        psswd = decrypted_data['account_with_password']['password']
         self.enter_password(psswd)
 
     def login_with_otp(self, bottom_sheet_dismiss=True):
@@ -823,12 +833,18 @@ class Login(LoginBase, TutorCommonMethods):
             return ReturnType(False, "User not in Login Screen")
 
         if type.lower() == 'all':
+            self.verify_login_screen_elements(text="Premium Login")
+            self.verify_login_screen_elements(text="autofill")
+            self.verify_login_screen_elements(text="otp message")
+            self.verify_login_screen_elements(text="next")
+            self.verify_login_screen_elements(text="not a premium user?")
+            self.verify_login_screen_elements(text="mobile number")
+            self.verify_login_screen_elements(text="mobile number text field")
             raise NotImplementedError
         else:
             try:
                 if text == 'Premium Login':
-                    sleep(2)
-
+                    self.driver.implicitly_wait(4)
                     required_text = self.get_element(*self.premium_login_text).is_displayed()
                     return ReturnType(True, "{} text correct".format(text)) if required_text else ReturnType(
                         False, "{} text not correct".format(text))
@@ -872,7 +888,7 @@ class Login(LoginBase, TutorCommonMethods):
                         text)) if check else ReturnType(False,
                                                         "Byjus icon opn login page not displayed")
                 elif text.lower() == 'this phone number is not registered with a premium account':
-                    sleep(3)
+                    self.driver.implicitly_wait(3)
                     if otp_activity in self.driver.current_activity or login_activity in self.driver.current_activity:
                         message = self.get_element(*self.dialog_message).text
                         return ReturnType(True, "{} message is correct and displayed".format(
@@ -1026,7 +1042,7 @@ class Login(LoginBase, TutorCommonMethods):
             return ReturnType(False, "Couldnt click on byju's app icon on login")
 
     def user_navigates_to_play_store(self):
-        sleep(2)
+        self.driver.implicitly_wait(2)
 
         unauthenticated_play_store = 'UnauthenticatedMainActivity'
         main_activity = 'MainActivity'
@@ -1074,7 +1090,7 @@ class Login(LoginBase, TutorCommonMethods):
             return ReturnType(True, "Dialed number is correct")
 
     def verify_sibling_screen(self):
-        sleep(1)
+        self.driver.implicitly_wait(2)
         try:
             if self.get_element(*self.dialog_description).is_displayed():
                 return ReturnType(True, "Sibling prifile dialog displayed")
@@ -1082,14 +1098,14 @@ class Login(LoginBase, TutorCommonMethods):
                 return ReturnType(False, "Sibling prifile  dialog not displayed")
         except:
             return ReturnType(False, "Sibling prifile  dialog not displayed")
-
+#TODO
     def verify_sibling_screen_profiles(self):
         elements = self.get_elements(*self.sibling_profile_names)
         if len(elements) > 1:
             return ReturnType(True, "Sibling profiles are shown")
         else:
             return ReturnType(False, "Sibling profiles are not shown")
-
+#TODO
     def verify_sibling_screen_radio_buttons(self):
         elements = self.get_elements(*self.sibling_radio)
         if len(elements) > 1:
@@ -1148,14 +1164,19 @@ class Login(LoginBase, TutorCommonMethods):
             topic_name_displayed = self.get_element(*self.bs_topic_name).is_displayed()
             join_btn_displayed = self.get_element(*self.bs_join_btn).is_displayed()
             cancel_btn_displayed = self.get_element(*self.bs_cancel_btn).is_displayed()
-            return ReturnType(True, "items in bottom sheet are correctly dosplayed") if all(
+            return ReturnType(True, "items in bottom sheet are correctly displayed") if all(
                 (cls_started_title_displayed, subject_name_displayed, topic_name_displayed, join_btn_displayed,
-                 cancel_btn_displayed)) else ReturnType(False, "items in bottom sheet are correctly dosplayed")
+                 cancel_btn_displayed)) else ReturnType(False, "items in bottom sheet are correctly displayed")
 
         return ReturnType(False, "Bottoms sheet is not available")
 
     def join_the_class_bottom_sheet(self):
         self.wait.until(ec.element_to_be_clickable((By.ID, self.bs_join_btn[-1]))).click()
+
+    def clear_app_data_and_relaunch_the_app(self):
+        self.execute_command('adb shell pm clear %s' % self.package_name)
+        self.execute_command('adb shell monkey -p %s -c android.intent.category.LAUNCHER 1' % self.package_name)
+
 
 
 class LoginException(Exception):

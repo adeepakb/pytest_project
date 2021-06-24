@@ -16,7 +16,12 @@ class BaseClass:
         desired_caps = dict()
         retry, error = 3, None
         desired_cap = CONFIG_PATH
-        data = get_data(desired_cap, 'desired_cap')
+        fp = '../../config/config.json'
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = get_data(desired_cap, 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+        data = decrypted_data['desired_cap']
         imp_wait, command_executor = data.pop("implicitWait"), data.pop("url")
         desired_caps.update(data)
         while retry:

@@ -21,7 +21,7 @@ PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('constants/'))
 from constants.test_management import *
-# from constants.loadFeatureFile import fetch_feature_file
+
 from tests.common_steps import *
 
 base_class = BaseClass()
@@ -163,7 +163,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     elapsed_time = int(time.time() - py_test.__getattribute__('start'))
     py_test.elapsed = str(elapsed_time) + 's'
     suite_name = os.getenv('suite')
-    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
+    #data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -190,12 +190,12 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                 "=" * 100 + "Failures" + "=" * 100
         )
         sys.stderr.writelines(stdout_err)
-        update_testrail(data[1], data[0], False, step_name, _exception)
-        add_attachment_to_result(data[0], data[1], screenshot_filename)
+        # update_testrail(data[1], data[0], False, step_name, _exception)
+        # add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
         msg_body = "all steps are passed"
-        update_testrail(data[1], data[0], True, msg_body, 'passed')
-        update_testrail(data[1], data[0], True, msg_body, 'passed', py_test.elapsed, app_version)
+        # update_testrail(data[1], data[0], True, msg_body, 'passed')
+        # update_testrail(data[1], data[0], True, msg_body, 'passed', py_test.elapsed, app_version)
     file = '../../config/chrome_session.json'
     try:
         os.unlink(file)

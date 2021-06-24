@@ -25,6 +25,8 @@ import numpy as np
 import pytesseract
 import cv2
 
+from constants.load_json import get_data
+
 
 class TutorCommonMethods:
     def __init__(self, driver):
@@ -76,16 +78,15 @@ class TutorCommonMethods:
         file_name = screen_shot.strftime("%d-%m-%y, %H-%M-%S")
         self.driver.get_screenshot_as_file(feature_filename + " " + file_name + ".png")
 
-    def get_element(self, locator_type, locator_value):
+    def get_element(self, locator_type, locator_value, wait=False):
         self.wait_for_locator(locator_type, locator_value)
         element = self.driver.find_element(self._by(locator_type), locator_value)
         return element
 
     def get_elements(self, locator_type, locator_value):
-        self.wait_for_locator(locator_type, locator_value,5)
+        self.wait_for_locator(locator_type, locator_value, 5)
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
-
 
     # this method is use to click on the element
     def element_click(self, locator_type=None, locator_value=None, element=None):
@@ -98,16 +99,16 @@ class TutorCommonMethods:
 
         # this method is use to click on the element
 
-    def child_element_by_id(self,element,id_locator_value):
+    def child_element_by_id(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value)
 
-    def child_element_click_by_id(self,element,id_locator_value):
+    def child_element_click_by_id(self, element, id_locator_value):
         element.find_element_by_id(id_locator_value).click()
 
-    def child_element_text(self,element,id_locator_value):
+    def child_element_text(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value).text
 
-    def child_element_displayed(self,element,id_locator_value):
+    def child_element_displayed(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value).is_displayed()
 
     # this method first clear the data then enter the text in given element
@@ -426,7 +427,7 @@ class TutorCommonMethods:
     @staticmethod
     def get_text_from_image(imagefilename):
         img = cv2.imread(imagefilename + '.png')
-        text = pytesseract.image_to_string(img,lang='eng')
+        text = pytesseract.image_to_string(img, lang='eng')
         return text
 
     # This method takes cropped screenshot and return all the colors present w.r.t provided webelement
@@ -535,7 +536,7 @@ class TutorCommonMethods:
             self.count += 1
             self.scroll_to_text(text)
         else:
-            self.count=0
+            self.count = 0
             return False
 
     def get_device_type(self):
