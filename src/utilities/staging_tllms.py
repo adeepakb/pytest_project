@@ -2,6 +2,8 @@ import os
 import string
 import sys
 from random import randint
+
+from cryptography.fernet import Fernet
 from selenium.webdriver import ActionChains
 import json
 import pickle
@@ -63,8 +65,15 @@ class Stagingtllms(TutorCommonMethods):
         self.ATTACHMENT_DETAILS = '../../config/attachments.json'
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.REQUISITE_DETAILS = '../../config/ps_requisite.json'
-        self.EMAIL = str(get_data('../../config/config.json', 'staging_access', 'email'))
-        self.PASSWORD = str(get_data('../../config/config.json', 'staging_access', 'password'))
+        #self.EMAIL = str(get_data('../../config/config.json', 'staging_access', 'email'))
+        fp = '../../config/config.json'
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = get_data(fp, 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+        self.EMAIL = decrypted_data['staging_access']['email']
+        #self.PASSWORD = str(get_data('../../config/config.json', 'staging_access', 'password'))
+        self.PASSWORD = decrypted_data['staging_access']['password']
         self.IN_REQ = 'in_req'
         self.POST_REQ = 'post_req'
         self.PRE_REQ = 'pre_req'

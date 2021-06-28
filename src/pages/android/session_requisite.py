@@ -9,6 +9,7 @@ from appium.webdriver.common.multi_action import MultiAction
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
+from pages.android.login_android import LoginAndroid
 from pages.base.session_requisite import SessionRequisiteBase
 from utilities.exceptions import SessionNotFoundError
 from utilities.return_type import ReturnType

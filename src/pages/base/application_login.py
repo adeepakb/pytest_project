@@ -64,7 +64,7 @@ class LoginBase(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def allow_deny_permission(self):
+    def allow_deny_permission(self,permissions: list):
         raise NotImplementedError()
 
     @abstractmethod

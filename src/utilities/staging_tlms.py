@@ -29,7 +29,7 @@ class Stagingtlms:
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../../config/config.json', 'encrypted_data', 'token')
         self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
     def login_to_staging(self):
