@@ -27,8 +27,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
@@ -752,6 +752,8 @@ class Stagingtlms:
         current_location = os.path.dirname(os.path.abspath(__file__))
         location = os.path.normpath(os.path.join(current_location, "../../files/" + filename + ""))
         input_element.send_keys(location)
+
+        # value = self.chrome_driver.find_element_by_xpath("//h2[@class='MuiTypography-root MuiTypography-h6']").text
 
         self.chrome_driver.find_element_by_xpath(
             "//*[contains(@class,'MuiInputBase-formControl MuiInput-formControl')]").click()

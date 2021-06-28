@@ -65,6 +65,7 @@ class TrailClassAndroid(TrialClassBase):
         self.bs_count_down_seconds_text = 'id', '%s/appTextView4' % package_name
         self.bottom_sheet = '%s/design_bottom_sheet' % package_name
         self.welcome_button = '%s/welcomeButton' % package_name
+        self.confirm_book_button = '%s/primaryAction' %package_name
 
     def scroll_rc_in_view(self):
         try:
@@ -322,11 +323,14 @@ class TrailClassAndroid(TrialClassBase):
             return ReturnType(False, 'Expected message is not shown once user reaches maximum free trail class limit')
 
     def scroll_to_regular_classes(self):
-        CommonMethods.scrollToElement(self.driver, 'Regular Classes')
-        rc_section = self.obj.get_element('id', self.title)
-        if rc_section.text.lower() == 'regular classes':
-            session_list = self.obj.get_element('id', self.course_list)
-            self.scroll_cards.scroll_by_card(rc_section, session_list)
+        try:
+            CommonMethods.scrollToElement(self.driver, 'Regular Classes')
+            rc_section = self.obj.get_element('id', self.title)
+            if rc_section.text.lower() == 'regular classes':
+                session_list = self.obj.get_element('id', self.course_list)
+                self.scroll_cards.scroll_by_card(rc_section, session_list)
+        except NoSuchElementException:
+            pass  # skip if not found. reusing same method for book a free class trial classes
 
     def is_free_trial_class_present_under_reg_class(self):
         self.scroll_to_regular_classes()
@@ -413,6 +417,7 @@ class TrailClassAndroid(TrialClassBase):
             subject = self.obj.child_element_text(card, self.subject_name)
             if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
                 self.obj.child_element_click_by_id(card, self.card_book_btn)
+                self.obj.wait_for_locator('id',self.confirm_book_button)
                 break
 
     def is_date_and_time_popup_present(self):
@@ -550,3 +555,15 @@ class TrailClassAndroid(TrialClassBase):
             else:
                 continue
         return ReturnType(True,'Trial session which starts at %s(within 30 mins) is not present under regular classes' % backend_scheduled_start_time)
+
+    def click_on_swap_btn(self):
+        self.obj.wait_for_locator('id',"com.byjus.thelearningapp.premium:id/swap_button")
+        self.obj.element_click('id',"com.byjus.thelearningapp.premium:id/swap_button")
+
+    def verify_rebook_slots_page(self):
+        rebook_message_present = self.obj.is_text_match("You missed a session earlier, book it again so you don’t miss on learning") and \
+                                 self.obj.is_text_match('Rebook a session')
+        if rebook_message_present:
+            return ReturnType(True, 'User navigated to rebook page')
+        else:
+            return ReturnType(False, 'User is not in rebook page')
