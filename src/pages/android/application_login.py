@@ -790,6 +790,42 @@ class Login(LoginBase, TutorCommonMethods):
         element.click()
         re.findall(r'(?i)premium school', element.text)
 
+    def subscription_expired(self, action="dismiss"):
+        try:
+            self.get_element(*self.action_layout_dismiss, wait=False).click()
+        except NoSuchElementException:
+            pass
+        try:
+            self.get_element(*self.action_layout_ignore, wait=False).click()
+        except NoSuchElementException:
+            pass
+        expired_msg_displayed = self.get_element(*self.expired_msg_title).is_displayed()
+        if expired_msg_displayed and action.lower() == "dismiss":
+            self.get_element(*self.expired_later_btn).click()
+        elif expired_msg_displayed and action.lower() == "call us":
+            self.get_element(*self.se_call_us).click()
+        elif expired_msg_displayed:
+            raise NotImplementedError(f"Action of type \"{action}\" is not yet implemented.")
+        return ReturnType(True, "Expired message is being displayed ") if expired_msg_displayed else ReturnType(True,
+                                                                                                                "Expired message is not being displayed ")
+
+    def verify_bottom_sheet_details(self):
+        dialog_lyt_displayed = self.get_element(*self.dialog_layout).is_displayed()
+        if dialog_lyt_displayed:
+            cls_started_title_displayed = self.get_element(*self.bs_class_started_title).is_displayed()
+            subject_name_displayed = self.get_element(*self.bs_subject_name).is_displayed()
+            topic_name_displayed = self.get_element(*self.bs_topic_name).is_displayed()
+            join_btn_displayed = self.get_element(*self.bs_join_btn).is_displayed()
+            cancel_btn_displayed = self.get_element(*self.bs_cancel_btn).is_displayed()
+            return ReturnType(True, "items in bottom sheet are correctly dosplayed") if all(
+                (cls_started_title_displayed, subject_name_displayed, topic_name_displayed, join_btn_displayed,
+                 cancel_btn_displayed)) else ReturnType(False, "items in bottom sheet are correctly dosplayed")
+
+        return ReturnType(False, "Bottoms sheet is not available")
+
+    def join_the_class_bottom_sheet(self):
+        self.wait.until(ec.element_to_be_clickable((By.ID, self.bs_join_btn[-1]))).click()
+
 
 class LoginException(Exception):
     pass

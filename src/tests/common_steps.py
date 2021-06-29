@@ -157,7 +157,7 @@ def launch_and_nav_to_home(login):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.implicit_wait_for(15)
-    login.verify_home_screen()
+    #login.verify_home_screen()
     login.implicit_wait_for(15)
 
 

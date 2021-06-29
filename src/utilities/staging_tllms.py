@@ -36,9 +36,9 @@ class Stagingtllms(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                                         f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
+        #self.chrome_options.add_argument('--headless')
+        #self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+         #                                f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:

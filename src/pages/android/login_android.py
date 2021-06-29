@@ -1,5 +1,8 @@
+import json
+import os
 import re
 from appium.webdriver.common.touch_action import TouchAction
+from cryptography.fernet import Fernet
 from pytest_check import check
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -83,19 +86,32 @@ class LoginAndroid(Login):
         super().__init__(driver)
 
     def click_on_premium_school(self):
-        # element = self.get_element( 'android_uiautomator', 'new UiScrollable(new UiSelector().scrollable(
-        # true)).scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/home_tutor_plus_layout"))')
+        timeout = 3
+        element = None
+        while timeout:
+            try:
+                element = self.get_element(
+                    'android_uiautomator',
+                    'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
+                    'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image"))')
+                break
+            except NoSuchElementException:
+                timeout -= 1
+                if timeout == 1:
+                    self.driver.launch_app()
+                self.driver.implicitly_wait(2)
+        if not timeout:
+            raise LoginException("Premium School card might not be displayed!")
         try:
-            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/home_tutor_plus_layout')
-            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
-                                                                                                              self.permission_container_tab):
-                self.allow_deny_permission(["Allow", "Allow", "Allow"])
+            element.click()
+            if not self.wait_activity('OneToMegaHomeActivity', 5):
+                self.grant_permissions()
+                try:
+                    self.get_element('xpath', self.btn_premium).click()
+                except NoSuchElementException:
+                    pass
         except NoSuchElementException:
-            self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image')
-        except:
-            raise Exception("Premium School card might not be displayed!")
+            raise LoginException("Premium School card might not be displayed!")
 
     # This step is only applicable in web. Hence skipping this for android
     def click_on_hamburger(self):
@@ -486,7 +502,12 @@ class LoginAndroid(Login):
                 break
 
     def enter_passwd(self):
-        psswd = str(get_data('../../config/config.json', 'account_with_password', 'password'))
+        fp = '../../config/config.json'
+        key = os.getenv('SECRET')
+        f = Fernet(key)
+        encrypted_data = get_data(fp, 'encrypted_data', 'token')
+        decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+        psswd = decrypted_data['account_with_password']['password']
         self.enter_password(psswd)
 
     def reset_and_login_with_otp(self):
@@ -1039,3 +1060,7 @@ class LoginAndroid(Login):
 
     def login_as_free_user(self):
         HomePage(self.driver).reset_and_login_with_otp(self.driver, "free")
+
+
+class LoginException(Exception):
+    pass
