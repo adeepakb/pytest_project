@@ -1,9 +1,9 @@
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import re
 from appium.webdriver.common.touch_action import TouchAction
 
 from constants.constants import REQUISITE_DETAILS
-from constants.load_json import getdata
+from constants.load_json import get_data
 from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.login_android import LoginAndroid
@@ -100,7 +100,7 @@ class InstructionDialogAndroid(InstructionDialogBase):
         self.tlms.set_assessment_start_date(datetime.today().strftime('%d-%m-%Y %H:%M'),68881)
 
     def attach_post_requisite_with_assessement(self,assessment_name):
-        requisite_id = getdata(REQUISITE_DETAILS, assessment_name)
+        requisite_id = get_data(REQUISITE_DETAILS, assessment_name)
         self.tlms.attach_requisite(requisite_id)
 
     def get_assessment_available_until_date(self):

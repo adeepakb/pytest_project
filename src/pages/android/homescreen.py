@@ -22,7 +22,7 @@ import pytest
 # from pyparsing import Char
 from selenium.webdriver.support.wait import WebDriverWait
 from utilities.common_methods import CommonMethods
-# from constants.load_json import getdata
+# from constants.load_json import get_data
 from utilities.interrupt import *
 featureFileName = "Home Screen"
 CommonMethods = CommonMethods()

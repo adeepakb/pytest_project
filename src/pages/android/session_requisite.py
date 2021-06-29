@@ -3,17 +3,20 @@ from time import sleep, strftime, strptime
 from typing import List
 import re
 from appium.webdriver import WebElement
+from selenium.webdriver.common.action_chains import ActionChains
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
-# from _pytest.main import NoMatch
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
+from pages.android.login_android import LoginAndroid
 from pages.base.session_requisite import SessionRequisiteBase
 from utilities.exceptions import SessionNotFoundError
+from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
-from pages.android.login_android import LoginAndroid
+from pages.android.application_login import Login
 from pages.android.scroll_cards import ScrollCards
+import pytest_check as check
 
 
 class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
@@ -119,27 +122,32 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
     def verify_requisite_details(self, dtls=None):
         if dtls == 'forward_icons':
             icons = self.get_elements(*self.arrow_btn)
-            if len(icons) == 2:
-                return True
+            if len(icons) >= 2:
+                return ReturnType(True, "Requisite details are correct")
             else:
-                return False
+                return ReturnType(False, "Requisite details are correct")
         else:
             requisites_title = self.get_elements(*self.requisite_title)
             for req_title in requisites_title:
                 if dtls in req_title.text.lower():
-                    return True
+                    return ReturnType(True, "Requisite details are correct")
 
     def click_app_back_btn(self):
         self.get_element(*self.nav_btn).click()
 
     def get_req_sessions(self) -> List[WebElement]:
-        self.login.implicit_wait_for(2.5)
+        self.login.implicit_wait_for(15)
         try:
-            req = self.get_element(*self.sd_post_req_list, wait=False).find_elements(
-                By.XPATH, '*/' + self.linear_layout[-1])
+            l_value = "//*[@resource-id=\"%s\"]" % self.sd_post_req_list[-1] + "/%s" % self.linear_layout[-1]
+            req = self.get_elements('xpath', l_value)
+            if len(req) == 0:
+                raise NoSuchElementException
         except NoSuchElementException:
-            req = self.get_element(*self.sd_pre_req_list, wait=False).find_elements(
-                By.XPATH, '*/' + self.linear_layout[-1])
+            self.login.implicit_wait_for(5)
+            l_value = "//*[@resource-id=\"%s\"]" % self.sd_pre_req_list[-1] + "/%s" % self.linear_layout[-1]
+            req = self.get_elements('xpath', l_value)
+            if len(req) == 0:
+                raise NoSuchElementException from None
         self.login.implicit_wait_for(15)
         return req
 
@@ -249,7 +257,14 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             try:
                 time_dtls = self.get_element(*self.sd_time_desc, wait=False).text
             except NoSuchElementException:
-                time_dtls = self.get_element(*self.card_time_desc, wait=False).text
+                try:
+                    time_dtls = self.get_element(*self.card_time_desc, wait=False).text
+                except NoSuchElementException:
+                    try:
+                        time_dtls = self.get_element(*self.pre_req_time, wait=False).text
+                    except NoSuchElementException:
+                        return self.get_element(*self.pr_status_date, wait=False).is_displayed()
+            time_dtls = time_dtls.split(",")[-1]
             return self.verify_time_details(time_dtls)
         elif section == 'date':
             try:
@@ -279,15 +294,19 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             return False
         if see_more.is_displayed() and len(req) >= 2:
             see_more.click()
-            return self.is_all_requisites_attached()
-        return False
+            return ReturnType(True,
+                              " is more option is displayed") if self.is_all_requisites_attached().result else ReturnType(
+                False, " is more option is not displayed with all requisites attatched")
+        return ReturnType(True,
+                          " is more option is not displayed")
 
     def is_all_requisites_attached(self):
         self.get_requisites_attached()
         req = self.get_requisites_attached()
         if len(req) > 2:
             self.click_app_back_btn()
-            return True
+            return ReturnType(True, "All requisites is attatched")
+        return ReturnType(False, "All requisites is not attatched")
 
     def ps_home_page_tab(self, tab_name="For you", check=False):
         action_bar_tab = self.get_element(*self.home_page_tab)
@@ -394,7 +413,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             retry = 15
         while retry:
             try:
-                self.action_1.tap(x=lyt_x, y=lyt_y).release().perform()
+                self.action_1.press(x=lyt_x, y=lyt_y).release().perform()
                 self.get_element(*self.video_pause_ib, wait=False).click()
                 retry -= retry
             except (NoSuchElementException, StaleElementReferenceException):
@@ -417,23 +436,23 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
                     tap_act = action_2.tap(element=self.get_element(*self.video_play_ib))
                     self.multi_action.add(sweep_act, tap_act)
                     self.multi_action.perform()
-                    return True
+                    return ReturnType(True," Video is completed")
                 except (NoSuchElementException, StaleElementReferenceException):
                     t -= 1
-            raise NoSuchElementException
-        raise Exception
+            return ReturnType(False," Video is not completed successfully but video was buffering")
+        return ReturnType(False," Video is not completed successfully dur to video not buffering")
 
     def change_orientation(self):
         self.static_exo_player()
         self.get_element(*self.video_orientation_ib).click()
-        self.get_element(*self.video_play_ib).click()
+        self.get_element(*self.video_forward_iv).click()
         return self.verify_video_playing()
 
     def is_video_landscape_playable(self):
         if self.change_orientation():
             self.click_back()
-            return True
-        return False
+            return ReturnType(True, "video is  playable in landscape")
+        return ReturnType(True, "video is not playable in landscape")
 
     def verify_video_player_elements(self):
         self.static_exo_player()
@@ -463,9 +482,11 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         for dt in details:
             assert self.verify_content_description(*dt)
         if session is None:
-            assert self.verify_requisite_details("forward_icons")
-            assert self.is_see_more_option_displayed()
-        return True
+            details = self.verify_requisite_details("forward_icons")
+            check.equal(details.result, details.reason)
+            details = self.is_see_more_option_displayed()
+            check.equal(details.result, details.reason)
+        return ReturnType(False, "Session card is not there")
 
     def future_card(self):
         session = self.get_session('future')
@@ -481,13 +502,16 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             else:
                 assert attachment.find_element(*self.sd_req_assess)
             assert attachment.find_element(*self.sd_req_typ_desc)
-            assert attachment.find_element(*self.sd_req_next_arrow)
+            # assert attachment.find_element(*self.sd_req_next_arrow)
         if attachments:
-            return True
+            return ReturnType(True, "Preequisite details are correct")
+        else:
+            return ReturnType(False, "Preequisite details are not correct")
 
     def verify_app_home_screen(self):
         home_activity = "HomeActivity"
         user_home_activity = "UserHomeActivity"
         if self.wait_activity(user_home_activity):
             self.click_back()
-        return self.wait_activity(home_activity)
+        return ReturnType(True, "Home page verified") if self.wait_activity(home_activity) else ReturnType(False,
+                                                                                                           "User was not onHome page ")

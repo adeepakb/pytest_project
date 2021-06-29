@@ -27,11 +27,15 @@ def enter_phone_number(login_in):
     login_in.enter_phone()
 
 
+@given("taps on Next Button")
+@when("taps on Next Button")
 @then(parsers.parse('tap on "NEXT" button'))
 def click_on_next(login_in):
     login_in.click_on_next()
 
 
+@then("enter valid otp in Verify OTP Screen")
+@when("enter valid otp in Verify OTP Screen")
 @then("enter valid OTP in OTP field")
 def enter_otp(login_in):
     login_in.enter_otp()

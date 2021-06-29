@@ -122,21 +122,21 @@ class BookMark():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3'
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
                                                                , 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'),
                                 self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
             radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
             for profile in profiles:
                 for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                    if profile.text == get_data(Login_Credentials, 'login_detail3', 'profile_name'):
                         button.click()
                         break
         CommonMethods.elementClick(driver, self.continue_button)
@@ -155,7 +155,7 @@ class BookMark():
                 CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
+                actual_mob_num = get_data(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)

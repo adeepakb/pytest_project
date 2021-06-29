@@ -13,8 +13,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
     StaleElementReferenceException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from constants.constants import Login_Credentials
-from utilities.staging_tlms import Stagingtlms
-from constants.load_json import getdata
+from utilities.staging_tllms import Stagingtllms
+from constants.load_json import get_data
 from utilities.tutor_common_methods import TutorCommonMethods
 
 
@@ -32,7 +32,7 @@ class MentorSession:
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtlms(driver)
+        self.tlms = Stagingtllms(driver)
         self.byjus_icon = "//img[contains(@src,'data:image/png')]"
         self.subject = '//*[@class = "subjectText"]'
         self.topic = '//*[@class = "topicText"]'
@@ -56,7 +56,7 @@ class MentorSession:
         self.exo_overlay = "com.byjus.thelearningapp.premium:id/exo_overlay"
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
         self.email = decrypted_data['staging_access']['email']
         self.password = decrypted_data['staging_access']['password']
@@ -130,6 +130,11 @@ class MentorSession:
     def page_refresh(self):
         self.chrome_driver.refresh()
 
+    def verify_type_something_text(self):
+        self.wait_for_locator_webdriver(self.type_something_inputcard)
+        assert self.chrome_driver.find_element_by_xpath(
+            self.type_something_inputcard).is_displayed(), "Type something text is not present"
+
     def verify_zero_online_text(self):
         self.wait_for_locator_webdriver("//*[@class='online']")
         if self.chrome_driver.find_element_by_xpath("//*[@class='online']").text == 'Online':
@@ -195,6 +200,7 @@ class MentorSession:
             except (NoSuchElementException,TimeoutException):
                 break
 
+
     def verify_tutor_unable_to_join_session_again(self):
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
@@ -242,7 +248,7 @@ class MentorSession:
                                      "is enabled %s " % is_live_chat_header_present % is_live_chat_close_present % is_type_something_present)
 
     def verify_student_name_present(self):
-        user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+        user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
         if self.chrome_driver.find_element_by_xpath("//*[text()='" + user_name + "']").is_displayed():
             return ReturnType(True, "student name is present")
         else:
@@ -313,7 +319,7 @@ class MentorSession:
         self.chrome_driver.find_element_by_xpath(self.ban).click()
         self.chrome_driver.find_element_by_xpath(self.ban_student_ban).click()
         try:
-            user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+            user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
             self.chrome_driver.find_element_by_xpath("//*[text()='" + user_name + "']").is_displayed()
             return ReturnType(True, "clicking on Ban button user is banned and banned student messages are shown")
         except NoSuchElementException:

@@ -275,7 +275,25 @@ def create_feature_from_run(suite_ID, project_ID, run_ID):
     print('Number of test cases in feature files = ' + str(count))
 
 
-def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, testing_device, app_version):
+# to fetch latest result id
+def get_latest_result_id(run_id, case_id):
+    client = get_testrail_client()
+    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    for test_result in test_results:
+        if test_result is not None:
+            print(test_result['id'])
+            return test_result['id']
+
+
+# Add attachment to test result
+def add_attachment_to_result(run_id, case_id, attachment):
+    client = get_testrail_client()
+    result_id = get_latest_result_id(run_id, case_id)
+    response = client.send_post('add_attachment_to_result/%s' % result_id, attachment)
+    print(response)
+
+
+def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, app_version):
     """
     Update the result to testrail for the particular *run_id* and *case_id* with appropriate
     comments and status.
@@ -310,10 +328,7 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, t
         exc_msg = "Failed Step Name: %s\n%s" % (step, exc_msg)
     if run_id is not None:
         result = client.send_post('add_result_for_case/%s/%s' % (run_id, case_id),
-                                  {'status_id': status_id,
-                                   'comment': exc_msg+'\nTested on device model : %s'%testing_device,
-                                   'elapsed': elapsed_time,
-                                   'version': app_version})
+                                  {'status_id': status_id, 'comment': exc_msg})
         print("Status: %s" % result)
         print('Updated test result for case: %s in test run: %s ' % (case_id, run_id))
     return update_flag

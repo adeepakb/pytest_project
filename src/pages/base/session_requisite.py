@@ -28,12 +28,12 @@ class SessionRequisiteBase(ABC):
 
     @staticmethod
     @abstractmethod
-    def verify_calendar_details():
+    def verify_calendar_details(*args):
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
-    def verify_time_details():
+    def verify_time_details(*args):
         raise NotImplementedError()
 
     @abstractmethod

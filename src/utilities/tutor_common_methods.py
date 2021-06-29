@@ -1,14 +1,21 @@
 """It contains all common elements and functionalities available to all pages."""
 import math
 import subprocess
+import pytest
 import time
 from subprocess import getoutput
 import datetime
-
 import pytest
 from PIL import Image, ImageChops
+from math import sqrt
+from subprocess import getoutput, Popen, PIPE, STDOUT
+from datetime import datetime, timedelta
+from time import sleep
+from PIL import Image
 from io import BytesIO
+import cv2
 import logging
+import pytesseract
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException, \
@@ -17,6 +24,8 @@ from appium.webdriver.common.mobileby import MobileBy
 import numpy as np
 import pytesseract
 import cv2
+
+from constants.load_json import get_data
 
 
 class TutorCommonMethods:
@@ -69,13 +78,13 @@ class TutorCommonMethods:
         file_name = screen_shot.strftime("%d-%m-%y, %H-%M-%S")
         self.driver.get_screenshot_as_file(feature_filename + " " + file_name + ".png")
 
-    def get_element(self, locator_type, locator_value):
+    def get_element(self, locator_type, locator_value, wait=False):
         self.wait_for_locator(locator_type, locator_value)
         element = self.driver.find_element(self._by(locator_type), locator_value)
         return element
 
     def get_elements(self, locator_type, locator_value):
-        self.wait_for_locator(locator_type, locator_value,5)
+        self.wait_for_locator(locator_type, locator_value, 5)
         elements = self.driver.find_elements(self._by(locator_type), locator_value)
         return elements
 
@@ -90,16 +99,16 @@ class TutorCommonMethods:
 
         # this method is use to click on the element
 
-    def child_element_by_id(self,element,id_locator_value):
+    def child_element_by_id(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value)
 
-    def child_element_click_by_id(self,element,id_locator_value):
+    def child_element_click_by_id(self, element, id_locator_value):
         element.find_element_by_id(id_locator_value).click()
 
-    def child_element_text(self,element,id_locator_value):
+    def child_element_text(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value).text
 
-    def child_element_displayed(self,element,id_locator_value):
+    def child_element_displayed(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value).is_displayed()
 
     # this method first clear the data then enter the text in given element
@@ -124,7 +133,7 @@ class TutorCommonMethods:
                 return True
         return False
 
-    def is_button_displayed(self, expected_text):
+    def is_button_displayed_with_text(self, expected_text):
         locator_type = 'xpath'
         locator_value = "//android.widget.Button"
         list_of_elements = self.get_elements(locator_type, locator_value)
@@ -212,6 +221,19 @@ class TutorCommonMethods:
                 return True
         return False
 
+    def is_desired_text_displayed(self, text):
+        locator_type = 'xpath'
+        locator_value = "//android.view.View"
+        self.wait_for_locator(locator_type, locator_value, timeout=30)
+        list_of_elements = self.get_elements(locator_type, locator_value)
+        for element in range(len(list_of_elements)):
+            text2 = list_of_elements[element].text
+            if text2 == text:
+                list_of_elements[element].get_attribute("clickable")
+                list_of_elements[element].is_enabled()
+                return True
+        return False
+
     def click_link(self, text):
         locator_type = 'xpath'
         locator_value = "//android.widget.TextView"
@@ -249,7 +271,7 @@ class TutorCommonMethods:
     # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator_type, locator_value):
         try:
-            # self.wait_for_locator(locator_type, locator_value, 10)
+            self.wait_for_locator(locator_type, locator_value, 10)
             element = self.get_element(locator_type, locator_value)
             if element is not None:
                 return True
@@ -405,7 +427,7 @@ class TutorCommonMethods:
     @staticmethod
     def get_text_from_image(imagefilename):
         img = cv2.imread(imagefilename + '.png')
-        text = pytesseract.image_to_string(img,lang='eng')
+        text = pytesseract.image_to_string(img, lang='eng')
         return text
 
     # This method takes cropped screenshot and return all the colors present w.r.t provided webelement
@@ -429,7 +451,54 @@ class TutorCommonMethods:
 
     def clear_app_from_recents(self):
         self.execute_command('adb shell input keyevent KEYCODE_APP_SWITCH')
-        self.execute_command('adb shell input keyevent DEL')
+        screen_size = self.driver.get_window_size()
+        orientation = self.driver.orientation
+        if orientation == "LANDSCAPE":
+            x, y = screen_size['height'], screen_size['width']
+        else:
+            x, y = screen_size['width'], screen_size['height']
+        start_x, start_y = x // 2, y // 2
+        end_x, end_y = start_x, 5
+        self.driver.swipe(start_x=start_x, start_y=start_y, end_x=end_x, end_y=end_y, duration=3000)
+
+    def get_device_type(self):
+        size = self.driver.get_window_size()
+        width = size['width']
+        height = size['height']
+        dp = self.driver.get_display_density()
+        diagonal = (sqrt(width ** 2 + height ** 2)) / dp
+        if diagonal >= 10:
+            return 'tab'
+        else:
+            return 'mobile'
+
+    def wait_activity(self, activity_name, timeout=30):
+        while timeout:
+            c_a = self.driver.current_activity.split('.')[-1]
+            if activity_name == c_a:
+                return True
+            else:
+                sleep(1)
+                timeout -= 1
+        return False
+
+    @staticmethod
+    def is_holiday(day=datetime.today()):
+        h_days = get_data('../../config/holidays.json', 'local')
+        c_date = day.strftime("%m/%d/%Y")
+        if c_date in h_days:
+            return True
+        return False
+
+    def get_working_days(self, days):
+        d_list = list()
+        i = 0
+        while len(d_list) < days:
+            if not self.is_holiday(datetime.now() + timedelta(i)):
+                day = datetime.now() + timedelta(i)
+                d_list.append(day)
+            i += 1
+        return d_list
 
     @staticmethod
     def compare_images(image1, image2):
@@ -452,6 +521,23 @@ class TutorCommonMethods:
         logging.error('Failed due to Exception in Method ' + methodName)
         self.takeScreenShot(featureFileName)
         pytest.fail("Failed Due to Exception in")
+
+    count = 0
+
+    def scroll_to_text(self, text):
+        dimension = self.driver.get_window_size()
+        scrollStart = dimension['height'] * 0.9
+        scrollEnd = dimension['height'] * 0.1
+        self.driver.swipe(100, scrollStart, 100, scrollEnd, 5000)
+        if self.is_desired_text_displayed(text):
+            self.count = 0
+            return True
+        elif self.count >= 50:
+            self.count += 1
+            self.scroll_to_text(text)
+        else:
+            self.count = 0
+            return False
 
     def get_device_type(self):
         size = self.driver.get_window_size()

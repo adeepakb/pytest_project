@@ -1,6 +1,7 @@
 import re
-import os
 import time
+import traceback
+import os
 import traceback
 import pytest
 import sys
@@ -9,12 +10,18 @@ import logging
 from constants.platform import Platform
 from utilities.BasePage import BaseClass
 from utilities.pre_execution import BuildFeatureJob
+from selenium.common.exceptions import InvalidSessionIdException
+from utilities.base_page import BaseClass
+from utilities.common_methods import CommonMethods
+from utilities.pre_execution import BuildFeatureJob
+from constants.test_management import *
+#from constants.loadFeatureFile import fetch_feature_file
+from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('constants/'))
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_featurefile
 
 baseClass = BaseClass()
 feature_job = BuildFeatureJob()
@@ -28,12 +35,23 @@ def setup_teardown():
     # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
-        report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
+        report_id = get_testrail_reports(24, 'Regression Run (Summary) %date%')
+        run_testrail_reports(report_id)
+    elif suitename == 'Sanity_PremiumApp_Automation':
+        report_id = get_testrail_reports(24, 'Sanity Run (Summary) %date%')
         run_testrail_reports(report_id)
 
 
 def pytest_addoption(parser):
     parser.addoption("--platform", action="append")
+
+
+def capture_screenshot(request, feature_name):
+    driver = request.getfixturevalue("driver")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
+    screenshot_filename = feature_name + " " + timestamp + ".png"
+    driver.get_screenshot_as_file(screenshot_filename)
+    return screenshot_filename
 
 
 @pytest.fixture()
@@ -52,6 +70,9 @@ def driver(request):
         chrome_driver = baseClass.setup_browser()
         yield chrome_driver
         chrome_driver.quit()
+    else:
+        platform = platform_list[-1]
+        raise NotImplementedError(f"'{platform}' is not yet implemented.")
 
 
 # ---------------------------testrail updation--------------------
@@ -71,8 +92,11 @@ def pytest_bdd_before_scenario(feature):
        :returns: None
        """
     py_test.exception = None
-    feature_name = feature.name
     py_test.start = time.time()
+    feature_name = feature.name
+    if feature_name == 'Register Screen':
+        subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
+    logging.info(feature_name)
     # This code is used to make "No Reset" false before launching the app"
     if feature_name == 'Register Screen' or feature_name == 'Register OTP Verification Screen':
         subprocess.Popen('adb shell pm clear com.byjus.thelearningapp.premium', shell=True)
@@ -113,14 +137,6 @@ def pytest_bdd_step_error(step):
     """
     py_test.exception = True
     py_test.failed_step_name = step.name
-
-
-def capture_screenshot(request,feature_name):
-    driver = request.getfixturevalue("driver")
-    timestamp = datetime.datetime.now().strftime("%d-%m-%y, %H-%M-%S")
-    screenshot_filename = feature_name + " " + timestamp + ".png"
-    driver.get_screenshot_as_file(screenshot_filename)
-    return screenshot_filename
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
@@ -178,5 +194,18 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         update_testrail(data[1], data[0], False, step_name, _exception, elapsed_time, testing_device, app_version)
         add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
-        msg_body = "All test steps have passed"
+        msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)
+    file = '../../config/chrome_session.json'
+    try:
+        os.unlink(file)
+    except FileNotFoundError:
+        pass
+
+
+def pytest_sessionfinish():
+    for file in ['../../config/login.pkl', '../../config/chrome_session.json']:
+        try:
+            os.unlink(file)
+        except FileNotFoundError:
+            pass

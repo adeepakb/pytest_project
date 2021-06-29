@@ -212,7 +212,7 @@ class EngineTestScreen():
                 CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = getdata(data_file, 'profile_credentials', 'mobileNum')
+                actual_mob_num = get_data(data_file, 'profile_credentials', 'mobileNum')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)
@@ -238,22 +238,22 @@ class EngineTestScreen():
         CommonMethods.wait_for_locator(driver, self.country_Code, 5)
         CommonMethods.elementClick(driver, self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3'
-                                                              , 'country_code'))
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'),
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'),
                                 self.phone_num)
         CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
         CommonMethods.elementClick(driver, self.loginBtn_id)
 
         CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'),
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'),
                                 self.OtpTxtBx_id)
         if CommonMethods.wait_for_element_visible(driver, self.multiple_accounts_dialog, 5):
             profiles = CommonMethods.getElements(driver, self.user_profile_name)
             radio_buttons = CommonMethods.getElements(driver, self.profile_select_radio_button)
             for profile in profiles:
                 for button in radio_buttons:
-                    if profile.text == getdata(Login_Credentials, 'login_detail3', 'profile_name'):
+                    if profile.text == get_data(Login_Credentials, 'login_detail3', 'profile_name'):
                         button.click()
                         break
         CommonMethods.elementClick(driver, self.continue_button)
@@ -1199,14 +1199,14 @@ class EngineTestScreen():
     # This method is used to navigate to question screen
     def navigate_to_objective_test_question_scn(self, driver):
         try:
-            test = getdata(Test_data, 'Test_to_be_tested', 'Test')
-            chapter = getdata(Test_data, test, 'Chapter')
+            test = get_data(Test_data, 'Test_to_be_tested', 'Test')
+            chapter = get_data(Test_data, test, 'Chapter')
             test_link1 = (By.XPATH,
                           "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_title_view' and @text=\'" + chapter + "\']/parent::android.widget.LinearLayout/following-sibling::android.widget.LinearLayout/android.widget.TextView[@text='Test']")
             test_link2 = (By.XPATH,
                           "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_title_view' and @text=\'" + chapter + "\']//ancestor::android.widget.LinearLayout[@resource-id='com.byjus.thelearningapp.premium:id/chapter_view_group']//android.widget.Button[@text='Test']")
-            self.switch_grade(driver, getdata(Test_data, test, 'Grade'))
-            self.navigate_to_library(driver, getdata(Test_data, test, 'Subject'))
+            self.switch_grade(driver, get_data(Test_data, test, 'Grade'))
+            self.navigate_to_library(driver, get_data(Test_data, test, 'Subject'))
             CommonMethods.wait_for_locator(driver, self.App_backBtn, 10)
             CommonMethods.scrollToElement(driver, chapter)
             if CommonMethods.isElementPresent(driver, test_link1):
@@ -1216,7 +1216,7 @@ class EngineTestScreen():
             else:
                 CommonMethods.run('adb shell input touchscreen swipe 300 635 294 381')
                 CommonMethods.elementClick(driver, test_link2)
-            test_name = getdata(Test_data, test, 'Test_Name')
+            test_name = get_data(Test_data, test, 'Test_Name')
             test_locator = (By.XPATH,
                             "//android.widget.TextView[@resource-id='com.byjus.thelearningapp.premium:id/chapter_tests_list_item_txtv_testname'][contains(@text,\'" + test_name + "\')]")
             CommonMethods.wait_for_locator(driver, test_locator, 20)
@@ -1777,7 +1777,7 @@ class EngineTestScreen():
         try:
             #             diff = ImageChops.difference(self.image,self.image2)
             #             if diff.getbbox()!=None:
-            if list(self.image.getdata()) != list(self.image2.getdata()):
+            if list(self.image.get_data()) != list(self.image2.get_data()):
                 logging.info('Option is selected')
             else:
                 pytest.fail('Option is not selected')
@@ -1832,7 +1832,7 @@ class EngineTestScreen():
         try:
             #             diff = ImageChops.difference(self.image,self.image2)
             # if diff.getbbox()!=None:
-            if list(self.image.getdata()) != list(self.image2.getdata()):
+            if list(self.image.get_data()) != list(self.image2.get_data()):
                 logging.info('Options are selected ')
             else:
                 pytest.fail('Options are not selected')
@@ -1850,7 +1850,7 @@ class EngineTestScreen():
 
             #             diff = ImageChops.difference(self.image2,im2)
             #             if diff.getbbox()!=None:
-            if list(im2.getdata()) != list(self.image2.getdata()):
+            if list(im2.get_data()) != list(self.image2.get_data()):
                 pytest.fail('Previously saved answer is not shown')
             else:
                 logging.info('Answer is saved')
@@ -1869,7 +1869,7 @@ class EngineTestScreen():
     # This method is used to navigate to image type questions
     def navigate_to_image_type_qn(self, driver):
         try:
-            qn_number = getdata(Test_data, getdata(Test_data, 'Test_to_be_tested', 'Test'),
+            qn_number = get_data(Test_data, get_data(Test_data, 'Test_to_be_tested', 'Test'),
                                 'Image_type_question_number')
             self.tap_on_question_number(driver, qn_number)
         except NoSuchElementException:
@@ -2101,7 +2101,7 @@ class EngineTestScreen():
             self.image2 = self.crop_element(driver, self.image_view)
             #             diff = ImageChops.difference(self.image,self.image2)
             #             if diff.getbbox()!=None:
-            if list(self.image.getdata()) != list(self.image2.getdata()):
+            if list(self.image.get_data()) != list(self.image2.get_data()):
                 logging.info('Image is zoomed')
             else:
                 pytest.fail('Failed to zoom the image')
@@ -2118,7 +2118,7 @@ class EngineTestScreen():
             self.image2 = self.crop_element(driver, self.image_view)
             #             diff = ImageChops.difference(self.image,self.image2)
             #             if diff.getbbox()!=None:
-            if list(self.image.getdata()) != list(self.image2.getdata()):
+            if list(self.image.get_data()) != list(self.image2.get_data()):
                 pytest.fail('Failed to zoom out the image')
             else:
                 logging.info('Image zoomed in')

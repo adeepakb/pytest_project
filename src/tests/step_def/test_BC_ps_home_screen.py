@@ -3,7 +3,7 @@ from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.android.homepage import HomePage
-from utilities.staging_tlms import Stagingtlms
+from utilities.staging_tllms import Stagingtllms
 from pages.factory.ps_home_screen import PSHomescreenFactory
 import pytest_check as check
 
@@ -136,7 +136,7 @@ def verify_session_card_details(home_screen):
 
 @given("reset student session if the session is incase completed")
 def reset_session(driver):
-    Stagingtlms(driver).reset_session()
+    Stagingtllms(driver).reset_session()
 
 
 @when(parsers.parse('verify "{text}" button'))
@@ -168,7 +168,8 @@ def is_back_nav_present(home_screen):
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @when("verify user is in BYJU's Classes pop up screen")

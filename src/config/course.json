@@ -1,0 +1,23 @@
+{
+  "cbse": {
+    "29": {
+      "masterclass": {
+        "id": 3016,
+        "name": "auto_test_masterclass_29",
+        "type": "one_to_mega"
+      }
+    },
+    "14": {
+      "free_trial": {
+        "id": 3017,
+        "name": "auto_test_freetrail_14",
+        "type": "one_to_mega"
+      },
+      "masterclass": {
+        "id": 3022,
+        "name": "auto_test_masterclass_14_1",
+        "type": "one_to_mega"
+      }
+    }
+  }
+}
