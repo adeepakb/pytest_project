@@ -99,12 +99,13 @@ def tap_on_okay_button(dashboard):
 
 @then(parsers.parse('verify "{text}" button is displayed'))
 def verify_button(dashboard, text):
-    assert dashboard.verify_button(text),"button is not displayed"
+    details = dashboard.verify_button(text)
+    check.equal(details.result,True,details.reason)
 
 
-# @then('tap on "Join Now" button')
-# def tap_on_join_now(dashboard):
-#     dashboard.tap_on_join_now()
+@then('tap on "Join Now" button')
+def tap_on_join_now(dashboard):
+    dashboard.tap_on_join_now()
 
 
 @then(parsers.parse('verify "{text}" text is displayed'))
@@ -137,8 +138,8 @@ def verify_session_details(driver):
 @then(parsers.parse('verify text "{text}" is present'))
 @then(parsers.parse('verify text "{text}" on Rate Session card'))
 def verify_text(dashboard, text):
-    is_present = dashboard.text_match(text)
-    assert is_present is True, "%s is not present" %text
+    details = dashboard.text_match(text)
+    check.equal(details.result,True,details.reason)
 
 
 @then(parsers.parse('verify feedback option "{index}"- "{text}" with a checkbox is present'))
@@ -178,12 +179,14 @@ def verify_button_a(dashboard, text):
 
 @then("verify all Rate your session card details are displayed")
 def verify_rate_session_card(dashboard):
-    dashboard.verify_rate_session_details(details_dict)
+    details = dashboard.verify_rate_session_details(details_dict)
+    check.equal(details.result, True, details.reason)
 
 
 @then("Verify Cancel button")
 def verify_rate_session_cancel_button(dashboard):
-    assert dashboard.verify_rate_session_close_button(),"Cancel button is not present"
+    details = dashboard.verify_rate_session_close_button()
+    check.equal(details.result,True,details.reason)
 
 
 @then("tap on close button")
@@ -240,7 +243,8 @@ def tap_on_any_session_card(login_in):
 @then(parsers.parse('verify text "{text}" with icon'))
 def verify_text_and_icon(dashboard, text):
     dashboard.text_match(text)
-    assert dashboard.is_data_off_icon_displayed() is True, "Icon is not present"
+    details = dashboard.is_data_off_icon_displayed()
+    check.equal(details.result,True,details.reason)
 
 
 @then('tap on session card')

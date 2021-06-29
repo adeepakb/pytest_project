@@ -1,5 +1,7 @@
 import logging
 import datetime
+import re
+import subprocess
 from cryptography.fernet import Fernet
 from constants.load_json import *
 from appium import webdriver as AppiumDriver
@@ -7,6 +9,10 @@ from selenium import webdriver as ChromeDriver
 from selenium.webdriver.chrome.options import Options
 
 '''this class is used for starting appium and  launching App & getting the  Appium driver for all the test files '''
+key = os.getenv('SECRET')
+f = Fernet(key)
+encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
 
 class BaseClass:
@@ -46,3 +52,13 @@ class BaseClass:
         # logging.basicConfig(filename='App_logs/TestLogs/'+featureFileName+" "+dateTime+".log", filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
         logging.basicConfig(filename='../../App_logs/TestLogs/' + featureFileName + " " + dateTime + ".log",
                             filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+    @staticmethod
+    def get_current_app_version():
+        app_package = decrypted_data['desired_cap']['appPackage']
+        stdout, stderr = subprocess.Popen('adb shell dumpsys package '+app_package+' | grep versionCode',
+                                          shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+        output = stdout.decode("ascii")
+        app_version = re.search(r'^.*?\bversionCode=(\d+)', output).group(1)
+        print(app_version)
+        return app_version

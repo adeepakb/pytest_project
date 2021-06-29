@@ -8,10 +8,12 @@ from utilities.common_methods import CommonMethods
 
 CommonMethods = CommonMethods()
 
-class ReturnType:
+
+class ReturnType():
     def __init__(self, result, reason):
-        self.result = False
-        self.reason = ""
+        self.result = result
+        self.reason = reason
+
 
 class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
     def __init__(self, driver):
@@ -36,16 +38,28 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
         self.ps_tabs = 'androidx.appcompat.app.ActionBar$Tab'
 
     def is_calendar_with_date_present(self):
-        result= self.obj.is_element_present('id', self.calender_icon) and self.obj.is_element_present('id', self.date)
+        if self.obj.is_element_present('id', self.calender_icon) and self.obj.is_element_present('id', self.date):
+            return ReturnType(True, 'Date is displayed with the calendar icon')
+        else:
+            return ReturnType(False, 'Date is not displayed with the calendar icon')
 
     def is_timestamp_with_time_present(self):
-        return self.obj.is_element_present('id', self.time_icon) and self.obj.is_element_present('id', self.time)
+        if self.obj.is_element_present('id', self.time_icon) and self.obj.is_element_present('id', self.time):
+            return ReturnType(True, 'Time is displayed with the timestamp icon')
+        else:
+            return ReturnType(False, 'Time is not displayed with the timestamp icon')
 
     def is_back_button_present(self):
-        return self.obj.is_element_present('id', self.roundedNavButton)
+        if self.obj.is_element_present('id', self.roundedNavButton):
+            return ReturnType(True, 'back icon is present')
+        else:
+            return ReturnType(False, 'back icon is not present')
 
     def is_forward_button_present(self):
-        return self.obj.is_element_present('id', self.cardArrowButton)
+        if self.obj.is_element_present('id', self.cardArrowButton):
+            return ReturnType(True, 'forward icon is present')
+        else:
+            return ReturnType(False, 'forward icon is not present')
 
     def verify_optional_mandatory_class_present(self):
         mandatory_subjects = ['BIOLOGY', 'CHEMISTRY', 'PHYSICS', 'MATHEMATICS']
@@ -60,10 +74,16 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
                 mandatory_subject_found = True
             if subject == optional_subject:
                 optional_subject_found = True
-        return mandatory_subject_found and optional_subject_found
+        if mandatory_subject_found and optional_subject_found:
+            return ReturnType(True, "Both mandatory and optional sessions are displayed")
+        else:
+            return ReturnType(True, "Both mandatory and optional sessions are not displayed")
 
     def is_date_time_present(self):
-        return self.obj.is_element_present('id', self.date_time)
+        if self.obj.is_element_present('id', self.date_time):
+            return ReturnType(True,"Date and time are displayed")
+        else:
+            return ReturnType(True, "Date and time are not displayed")
 
     def verify_change_topic_not_present_mandatory_session(self):
         mandatory_subjects = ['BIOLOGY', 'CHEMISTRY', 'PHYSICS', 'MATHEMATICS']
@@ -97,11 +117,11 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
     def card_arrow_button_click(self):
         self.obj.get_element('id', self.cardArrowButton).click()
 
-    def verify_choose_topic_screen(self):
-        self.obj.get_element('id', self.cardArrowButton).click()
-        return self.obj.is_element_present('id', self.choose_topic_title) and \
-               self.obj.is_element_present('id', self.choose_topic_select) and self.obj.is_text_match(
-            "Choose your topic")
+    # def verify_choose_topic_screen(self):
+    #     self.obj.get_element('id', self.cardArrowButton).click()
+    #     return self.obj.is_element_present('id', self.choose_topic_title) and \
+    #            self.obj.is_element_present('id', self.choose_topic_select) and self.obj.is_text_match(
+    #         "Choose your topic")
 
     def verify_topic_select_button(self):
         topic_list = self.obj.get_elements('id', self.topic_list)
@@ -111,9 +131,10 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
                     '//*[contains(@resource-id, "tvChooseTopicTitle")]').is_displayed()
                 choose_topic_select = topic.find_element_by_xpath(
                     '//*[contains(@resource-id, "ivChooseTopicSelectButton")]').is_displayed()
-                return (choose_topic_title and choose_topic_select)
+                return ReturnType(choose_topic_title and choose_topic_select,"choose topic screen consists of the topic list with radio button")
             except NoSuchElementException:
-                return False
+                return ReturnType(False,"choose topic screen does not consist of the topic list with radio button")
+
 
     def tap_back_icon(self):
         self.obj.get_element('id', self.roundedNavButton).click()
@@ -125,7 +146,10 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
             choose_topic_title = choose_topic.text
             if int(choose_topic_title.split()[1]) <= int(latest_topic_title.split()[1]):
                 flag = True
-        return flag
+        if flag:
+            return ReturnType(flag, "choose topic list consist of topics which are mandatory && occurred in past")
+        else:
+            return ReturnType(flag, "choose topic list doesn't consist of topics which are mandatory && occurred in past")
 
     def select_first_topic(self):
         topic_select_list = self.obj.get_elements('id', self.choose_topic_select)
@@ -134,15 +158,22 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
     def verify_extra_session_booked(self):
         try:
             self.obj.get_element('id', self.extra_session_tag).is_displayed()
-            return True
+            flag = True
         except NoSuchElementException:
-            return False
+            flag = False
+        if flag:
+            return ReturnType(flag, "User has booked revision class")
+        else:
+            return ReturnType(flag, "User doesn't have any booked revision class")
 
     def tap_on_booked_extra_session(self):
         self.obj.get_element('id', self.extra_session_tag).click()
 
     def is_session_desc_present(self):
-        return self.obj.is_element_present('id', self.session_desc)
+        if self.obj.is_element_present('id', self.session_desc):
+            return ReturnType(True, "Selected topic summary is displayed")
+        else:
+            return ReturnType(False, "Selected topic summary is not displayed")
 
     def change_topic_and_verify(self):
         self.obj.click_link("Change Your Topic")
@@ -154,11 +185,11 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
         assert self.obj.is_text_match(updated_topic_title), "Topic not changed"
 
     def verify_ps_tabs(self, expected_text):
-        text_elements = self.obj.get_elements('class_name', self.ps_tabs)
+        text_elements = self.obj.get_elements('class_name', 'android.widget.LinearLayout')
         for element in text_elements:
             if expected_text == element.get_attribute('content-desc'):
-                return True
-        return False
+                return ReturnType(True, '%s Tab is present' % expected_text)
+        return ReturnType(False, '%s Tab is not present' % expected_text)
 
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',

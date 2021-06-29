@@ -2,15 +2,20 @@ from datetime import datetime, timedelta
 import re
 from appium.webdriver.common.touch_action import TouchAction
 
-from utilities.return_type import ReturnType
-from utilities.staging_tllms import Stagingtlms
+from constants.constants import REQUISITE_DETAILS
+from constants.load_json import get_data
+from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.login_android import LoginAndroid
 from utilities.common_methods import CommonMethods
 from pages.base.instruction_dialog_base import InstructionDialogBase
-
 CommonMethods = CommonMethods()
 
+
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
 
 
 class InstructionDialogAndroid(InstructionDialogBase):
@@ -31,34 +36,43 @@ class InstructionDialogAndroid(InstructionDialogBase):
         self.exit_assessment_button = '//android.view.View[@content-desc="Exit Assessment"]/android.widget.TextView'
 
     def is_close_instruction_displayed(self):
-        return self.obj.is_element_present('xpath', self.close_instruction)
+        if self.obj.is_element_present('xpath', self.close_instruction):
+            return ReturnType(True, 'close icon is displayed')
+        else:
+            return ReturnType(False, 'close icon is not displayed')
 
     def is_requisite_list(self):
-        is_present = self.obj.is_element_present('id', self.requisite_list)
-        return is_present
+        if self.obj.is_element_present('id', self.requisite_list):
+            return ReturnType(True, 'requisite is displayed')
+        else:
+            return ReturnType(False, 'requisite is not displayed')
 
     def tap_on_close_instruction(self):
         self.obj.get_element('xpath', self.close_instruction).click()
 
     def tap_on_begin_assessment(self):
-        self.obj.wait_for_locator('xpath', self.begin_assessment, 10)
+        self.obj.wait_for_locator('xpath', self.begin_assessment,10)
         self.obj.get_element('xpath', self.begin_assessment).click()
-        self.obj.wait_for_locator('xpath', '//*[@resource-id = "main-wrapper"]', 5)
+        self.obj.wait_for_locator('xpath', '//*[@resource-id = "main-wrapper"]',5)
 
     def is_assessment_popup_present(self):
-        return self.obj.is_element_present('xpath', self.assessment_popup)
+        if self.obj.is_element_present('xpath', self.assessment_popup):
+            return ReturnType(True, 'assessment popup is displayed')
+        else:
+            return ReturnType(False, 'assessment popup is not displayed')
 
     def click_back(self):
         self.obj.click_back()
 
     def is_user_in_ps_page(self):
-        return ReturnType(True, "USer is in ps page") if (
-                    self.obj.get_element('id', self.home_page_title).text == 'Classes' and
-                    self.obj.get_element('id', self.home_tabs).is_displayed()) else ReturnType(False,
-                                                                                               "User is in ps page")
+        if (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed()):
+            return ReturnType(True, 'User is in the PS screen')
+        else:
+            return ReturnType(False, 'User is not in the PS screen')
 
     def end_test(self):
-        self.obj.get_element('xpath', self.exit_assessment_button).click()
+        self.obj.get_element('xpath',self.exit_assessment_button).click()
         self.obj.get_element('id', self.assessment_ok_button).click()
 
     def verify_score_present(self):
@@ -72,7 +86,10 @@ class InstructionDialogAndroid(InstructionDialogBase):
             m = re.match("\d+.0 \/ \d+.0 = \d+%", actual_text)
             if m is not None:
                 score_found = True
-        return score_found
+        if score_found:
+            return ReturnType(True, 'Assessment score not shown')
+        else:
+            return ReturnType(False, 'Assessment score is not shown')
 
     def set_future_assessment_start_date(self):
         future_date = (datetime.today() + timedelta(days=1)).strftime('%d-%m-%Y %H:%M')
@@ -80,10 +97,11 @@ class InstructionDialogAndroid(InstructionDialogBase):
         return datetime.strptime(date, '%d-%m-%Y %H:%M').strftime('%I:%M %p, %B %d,%Y')
 
     def set_assessment_start_date_today(self):
-        self.tlms.set_assessment_start_date(datetime.today().strftime('%d-%m-%Y %H:%M'), 68881)
+        self.tlms.set_assessment_start_date(datetime.today().strftime('%d-%m-%Y %H:%M'),68881)
 
-    def attach_post_requisite_with_assessement(self, assessment_name):
-        self.tlms.attach_requisite(assessment_name)
+    def attach_post_requisite_with_assessement(self,assessment_name):
+        requisite_id = get_data(REQUISITE_DETAILS, assessment_name)
+        self.tlms.attach_requisite(requisite_id)
 
     def get_assessment_available_until_date(self):
         date = self.tlms.get_assessment_available_until_date(68881)
@@ -96,12 +114,15 @@ class InstructionDialogAndroid(InstructionDialogBase):
 
     def reset_future_end_date(self):
         future_datetime = (datetime.today() + timedelta(days=150)).strftime('%d-%m-%Y %H:%M')
-        date = Stagingtlms(self.driver).set_assessment_end_date(future_datetime, 68881)
+        date = Stagingtlms(self.driver).set_assessment_end_date(future_datetime,68881)
         return date
 
-    def capture_screenshot_of_assessment(self, image_name):
+    def capture_screenshot_of_assessment(self,image_name):
         element = self.obj.get_element('xpath', '//*[@resource-id = "main-wrapper"]')
         self.obj.capture_screenshot(element, image_name)
 
-    def image_diff(self, img1, img2):
-        return self.obj.compare_images(img1 + ".png", img2 + ".png")
+    def image_diff(self,img1,img2):
+        if self.obj.compare_images(img1+".png", img2+".png") is None :
+            return ReturnType(True, 'User resume same place where assessment was exited previously')
+        else:
+            return ReturnType(False, 'User did not resume same place where assessment was exited previously')

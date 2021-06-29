@@ -2,8 +2,9 @@ import re
 import time
 import traceback
 import os
-import sys
+import traceback
 import pytest
+import sys
 import subprocess
 import logging
 from constants.platform import Platform
@@ -22,16 +23,14 @@ PATH = lambda p: os.path.abspath(
 sys.path.append(PATH('constants/'))
 from constants.test_management import *
 
-from tests.common_steps import *
-
-base_class = BaseClass()
-# CommonMethods = CommonMethods()
-#feature_job = BuildFeatureJob()
+baseClass = BaseClass()
+feature_job = BuildFeatureJob()
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
-    #feature_job.build_and_install_apk()
+    # feature_job.build_and_install_apk()
+    pass
     yield
     # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
@@ -59,16 +58,16 @@ def capture_screenshot(request, feature_name):
 def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
-        android_driver = base_class.setup_android()
-        # feature_job.lock_or_unlock_device('lock')
-        # serial = feature_job.connect_adb_api()
-        # feature_job.connect_to_adb(serial)
+        android_driver = baseClass.setup_android()
+        feature_job.lock_or_unlock_device('lock')
+        serial = feature_job.connect_adb_api()
+        feature_job.connect_to_adb(serial)
         yield android_driver
-        # subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-        #                  stderr=subprocess.STDOUT).communicate()
+        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
-        chrome_driver = base_class.setup_browser()
+        chrome_driver = baseClass.setup_browser()
         yield chrome_driver
         chrome_driver.quit()
     else:
@@ -159,11 +158,13 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
     feature_name = feature.name
     scenario_name = scenario.name
-    app_version = base_class.get_current_app_version()
-    elapsed_time = int(time.time() - py_test.__getattribute__('start'))
-    py_test.elapsed = str(elapsed_time) + 's'
+    elapsed = int(time.time() - py_test.__getattribute__('start'))
+    elapsed_time = str(elapsed) + 's'
+    testing_device = request.getfixturevalue("driver").session['deviceModel']
+    app_version = baseClass.get_current_app_version()
     suite_name = os.getenv('suite')
-    #data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
+    # suite_name = "Byju's Classes"
+    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
@@ -190,12 +191,11 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                 "=" * 100 + "Failures" + "=" * 100
         )
         sys.stderr.writelines(stdout_err)
-        # update_testrail(data[1], data[0], False, step_name, _exception)
-        # add_attachment_to_result(data[0], data[1], screenshot_filename)
+        update_testrail(data[1], data[0], False, step_name, _exception, elapsed_time, testing_device, app_version)
+        add_attachment_to_result(data[0], data[1], screenshot_filename)
     else:
         msg_body = "all steps are passed"
-        # update_testrail(data[1], data[0], True, msg_body, 'passed')
-        # update_testrail(data[1], data[0], True, msg_body, 'passed', py_test.elapsed, app_version)
+        update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)
     file = '../../config/chrome_session.json'
     try:
         os.unlink(file)

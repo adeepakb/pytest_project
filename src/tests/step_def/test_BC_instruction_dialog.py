@@ -47,7 +47,8 @@ def navigate_to_one_to_mega_homescreen(login_in):
 
 @then('verify that in the For you tab, post requisite card is present')
 def is_requisite_list(instruction_dialog):
-    assert instruction_dialog.is_requisite_list(), "requisite is not displayed"
+    details = instruction_dialog.is_requisite_list()
+    check.equal(details.result, True, details.reason)
 
 
 @then(parsers.parse('tap on "{text}" link'))
@@ -56,22 +57,24 @@ def tap_on_link(login_in, text):
     login_in.click_on_link(text)
 
 
-@then(parsers.parse(
-    'verify that if the assessment time is not reached to session time then "{text}" link should not be visible'))
+@then(parsers.parse('verify that if the assessment time is not reached to session time then "{text}" link should not be visible'))
 @then(parsers.parse('verify "{text}" option is not displayed if the post requisite contain only 2 resource type'))
 def verify_text(login_in, text):
-    assert (not login_in.text_match(text)), "%s text is displayed" % text
+    details = login_in.text_match(text)
+    check.equal(details.result,False, details.reason)
 
 
 @then('verify that on pop up close icon is displayed')
 def is_close_instruction_displayed(instruction_dialog):
-    assert instruction_dialog.is_close_instruction_displayed(), "close icon is not displayed"
+    details = instruction_dialog.is_close_instruction_displayed()
+    check.equal(details.result,True , details.reason)
 
 
 @then('verify on tap of the close icon pop up should close')
 def tap_on_close_instruction(instruction_dialog, login_in):
     instruction_dialog.tap_on_close_instruction()
-    assert not login_in.text_match("Test Instructions"), "Pop up did not get closed"
+    details = login_in.text_match("Test Instructions")
+    check.equal(details.result,False, details.reason)
 
 
 @then(parsers.parse('tap on "{text}" button'))
@@ -82,7 +85,8 @@ def tap_button(login_in, text):
 
 @then(parsers.parse('verify that open the test on the web'))
 def is_assessment_popup_present(instruction_dialog):
-    assert instruction_dialog.is_assessment_popup_present(), "assessment popup is not displayed"
+    details = instruction_dialog.is_assessment_popup_present()
+    check.equal(details.result,True, details.reason)
 
 
 @then("tap on device back button")
@@ -93,7 +97,7 @@ def tap_device_back(instruction_dialog):
 @then("verify the user is navigated to the PS screen")
 def is_user_in_ps_page(instruction_dialog):
     details = instruction_dialog.is_user_in_ps_page()
-    check.equal(details.result , True, details.reason)
+    check.equal(details.result,True,details.reason)
 
 
 @then('end the test')
@@ -103,13 +107,14 @@ def end_test(instruction_dialog):
 
 @then('verify that score should be shown')
 def verify_score_present(instruction_dialog):
-    assert instruction_dialog.verify_score_present(), "assessment score is not shown"
+    details =instruction_dialog.verify_score_present()
+    check.equal(details.result, True,details.reason)
 
 
 @then(parsers.parse('verify "{text}" button is displayed'))
 def button_verify(login_in, text):
-    button_displayed = login_in.is_button_displayed(text)
-    assert button_displayed is True, f"Button {text} is not displayed"
+    details = login_in.is_button_displayed(text)
+    check.equal(details.result,True,details.reason)
 
 
 @then('tap on Continue Assessment button')
@@ -121,7 +126,8 @@ def tap_on_begin_assessment(instruction_dialog):
 
 @then('verify start test instruction dialogue should not be shown')
 def is_start_assessment_popup(login_in):
-    assert not login_in.text_match("Test Instructions"), "Pop up did not get closed"
+    details = login_in.text_match("Test Instructions")
+    check.equal(details.result, False,details.reason)
 
 
 @given('set the start time which is not reached for the assessment')
@@ -146,12 +152,13 @@ def set_expired_assessment_end_date(instruction_dialog):
 def is_text_present(login_in, text):
     if "{date}" in text:
         text = text.format(date=date).encode('utf-8').decode('unicode_escape')
-    assert login_in.text_match(text), "%s text is not displayed" % text
+    details = login_in.text_match(text)
+    check.equal(details.result,True,details.reason)
 
 
 @given(parsers.parse('post-requisite "{assessment_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(instruction_dialog, assessment_name):
-    instruction_dialog.attach_post_requisite(assessment_name)
+    instruction_dialog.attach_post_requisite_with_assessement(assessment_name)
 
 
 @then('reset assessment start date as today')
@@ -169,8 +176,7 @@ def capture_screenshot_of_assessment(instruction_dialog, text):
     instruction_dialog.capture_screenshot_of_assessment(text)
 
 
-@then(parsers.parse('compare both images "{img1}" and "{img2}" to verify user is able to continue with the '
-                    'assessment where the user was paused'))
+@then(parsers.parse('compare both images "{img1}" and "{img2}" to verify user is able to continue with the assessment where the user was paused'))
 def verify_images(instruction_dialog, img1, img2):
-    assert instruction_dialog.image_diff(img1, img2) is None, "User did not resume same place where assessment was " \
-                                                              "exited previously "
+    details = instruction_dialog.image_diff(img1, img2)
+    check.equal(details.result,True, details.reason)

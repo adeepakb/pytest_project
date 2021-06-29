@@ -1,18 +1,17 @@
-""" it will load the json file """
+''' it will load the json file '''
+
 import json
 import os
+import sys
 
-from cryptography.fernet import Fernet
+PATH = lambda p: os.path.abspath(
+    os.path.join(os.path.dirname(__file__), p))
 
 
 def get_data(filename, var, key=None):
-
     if key is not None:
-        with open(filename) as f:
+        with open(PATH(filename)) as f:
             return json.load(f)[var][key]
-
     else:
         with open(filename) as f:
             return json.load(f)[var]
-
-

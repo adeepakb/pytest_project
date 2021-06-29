@@ -12,7 +12,7 @@ import inspect
 from selenium.webdriver.common.by import By
 import logging
 import pytest
-from utilities.API_methods import *
+# from utilities.API_methods import *
 from utilities.common_methods import CommonMethods
 from constants.constants import CONFIG_PATH, Login_Credentials
 from constants.load_json import get_data
@@ -261,10 +261,11 @@ class HomePage():
                 CommonMethods.scrollToElement(driver, 'Account Details')
                 CommonMethods.wait_for_locator(driver, self.profile_mob_num, 5)
                 expected_mob_num = CommonMethods.getTextOfElement(driver, self.profile_mob_num)
-                actual_mob_num = get_data(data_file, 'profile_credentials', 'mobileNum')
+                actual_mob_num = get_data(Login_Credentials, 'login_detail3', 'code')+""+get_data(Login_Credentials, 'login_detail3', 'mobile_no')
                 if CommonMethods.verifyTwoText(actual_mob_num, expected_mob_num):
                     print("---------------above")
                     CommonMethods.click_on_device_back_btn(driver)
+                    self.verify_user_name(driver,'personal')
                     print("----------------------below")
                     logging.info('home page verified')
                 else:
@@ -289,6 +290,9 @@ class HomePage():
                     actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
                 elif account_type == 'one_to_many':
                     actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
+                elif account_type == 'personal':
+                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name')
                 expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
                 if CommonMethods.verifyTwoText(expected_username, actual_username):
                     print("---------------above")
@@ -356,6 +360,7 @@ class HomePage():
                 self.login_as_three_plus_one_user(driver)
         except:
             logging.info('Error in Verifing Home Page')
+            pytest.fail("failed in navigate_to_three_plus_one_user due to exception")
 
     def after_delete_the_user(self, driver, code, countrycode, mobno, otp):
         try:

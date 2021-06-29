@@ -84,6 +84,12 @@ class LoginAndroid(Login):
         self.dialer = "id", "com.android.dialer:id/digits"
         self.welcome_text = 'id', '%s:id/welcomeTitle' % self.package_name
         super().__init__(driver)
+        self.byjus_class_card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/home_card_title_text" and @text="Byju\'s Classes"]'
+        self.home_card_layout = "com.byjus.thelearningapp.premium:id/home_card_layout"
+        self.marketing_classes_image = 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image'
+
+    def implicit_wait_for(self, pool):
+        self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
         timeout = 3
@@ -230,8 +236,8 @@ class LoginAndroid(Login):
     def text_match(self, expected_text=None):
         text_matches = self.obj.is_text_match(expected_text)
         if text_matches is True:
-            return True
-        return False
+            return ReturnType(True, '%s text is displayed' % expected_text)
+        return ReturnType(False, '%s text is not displayed' % expected_text)
 
     def dropdown_select(self):
         self.obj.get_element('class_name', "android.widget.Spinner").click()
@@ -263,8 +269,8 @@ class LoginAndroid(Login):
     def is_button_displayed(self, text):
         for button in self.find_buttons():
             if button.text == text:
-                return True
-        return False
+                return ReturnType(True, '%s button is displayed' % text)
+        return ReturnType(False, '%s button is not displayed' % text)
 
     def button_click(self, text):
         for button in self.find_buttons():
@@ -346,8 +352,8 @@ class LoginAndroid(Login):
         self.obj.wait_for_locator('xpath', self.offline_validation_layout)
         layout = self.obj.get_element('xpath', self.offline_validation_layout).is_displayed()
         if layout is True:
-            return True
-        return False
+            return ReturnType(True, "Offline related bottom sheet dialog is displayed")
+        return ReturnType(False, "Offline related bottom sheet dialog is not displayed")
 
     def verify_offline_validation_layout(self, text1=None, text2=None):
         self.obj.is_button_enabled(text1)

@@ -4,8 +4,14 @@ import time
 import jenkins
 import requests
 import subprocess
-from constants.constants import CONFIG_PATH
-from constants.load_json import get_data
+from constants.load_json import getdata
+from cryptography.fernet import Fernet
+key = os.getenv('SECRET')
+f = Fernet(key)
+encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
+udid = decrypted_data['desired_cap']['udid']
+token = decrypted_data['adb_connect']['token']
 
 
 class BuildFeatureJob():
@@ -155,10 +161,10 @@ class BuildFeatureJob():
     @staticmethod
     def lock_or_unlock_device(flag):
         if flag == 'lock':
-            url = "https://api-dev.headspin.io/v0/adb/" + get_data(CONFIG_PATH, 'desired_cap', 'udid') + "/lock"
+            url = "https://api-dev.headspin.io/v0/adb/" + udid + "/lock"
         else:
-            url = "https://api-dev.headspin.io/v0/adb/" + get_data(CONFIG_PATH, 'desired_cap', 'udid') + "/unlock"
-        headers = {'Authorization': 'Bearer ' + get_data(CONFIG_PATH, 'adb_connect', 'token')
+            url = "https://api-dev.headspin.io/v0/adb/" + udid + "/unlock"
+        headers = {'Authorization': 'Bearer ' + token
                    }
         r = requests.post(url, headers=headers)
         if r.status_code == 200:
@@ -167,8 +173,8 @@ class BuildFeatureJob():
     # to call the connect API to get the current port number details and host
     @staticmethod
     def connect_adb_api():
-        url = "https://api-dev.headspin.io/v0/adb/" + get_data(CONFIG_PATH, 'desired_cap', 'udid') + "/connect"
-        headers = {'Authorization': 'Bearer ' + get_data(CONFIG_PATH, 'adb_connect', 'token')
+        url = "https://api-dev.headspin.io/v0/adb/" + udid + "/connect"
+        headers = {'Authorization': 'Bearer ' + token
                    }
         r = requests.post(url, headers=headers)
         if r.status_code == 200:

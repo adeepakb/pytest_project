@@ -44,10 +44,6 @@ class PS_3Plus1ScreenBase(ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def verify_choose_topic_screen(self):
-        raise NotImplemented()
-
-    @abstractmethod
     def verify_topic_select_button(self):
         raise NotImplemented()
 
