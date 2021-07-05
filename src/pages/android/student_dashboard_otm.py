@@ -15,6 +15,11 @@ from utilities.tutor_common_methods import TutorCommonMethods
 from utilities.exceptions import *
 
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
+
 class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
     def __init__(self, driver):
         """
@@ -335,9 +340,9 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.login.implicit_wait_for(20)
         try:
             displayed = self.get_element(*self.pr_view).is_displayed()
-            return displayed
+            return ReturnType(displayed, 'completed sessions are displayed')
         except NoSuchElementException:
-            return False
+            return ReturnType(False, 'completed sessions are not displayed')
 
     def is_completed_check_displayed(self):
         try:

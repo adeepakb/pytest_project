@@ -146,8 +146,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     elapsed_time = str(elapsed) + 's'
     testing_device = request.getfixturevalue("driver").session['deviceModel']
     app_version = baseClass.get_current_app_version()
-    suite_name = os.getenv('suite')
-    # suite_name = "Byju's Classes"
+    # suite_name = os.getenv('suite')
+    suite_name = "Byju's Classes"
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
@@ -155,7 +155,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                                  prj_path_only in summary or
                                  summaries.index(summary) == 0 or
                                  ("exception" in summary.lower() and prj_path_only in summary) or
-                                 ("error" in summary.lower() and prj_path_only in summary), summaries))
+                                  ("error" in summary.lower() and prj_path_only in summary), summaries))
         while _exception.count(trc) > 0:
             _exception.remove(trc)
         _exception.insert(0, trc)

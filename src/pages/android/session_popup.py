@@ -57,9 +57,17 @@ class SessionAlert(TutorCommonMethods):
 
     def content_card_loaded(self):
         subject_name = self.get_element('xpath', '//*[contains(@resource-id, "subject_name")]').text
-        topic_name = self.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
-        session_time = self.get_element('xpath', '//*[contains(@resource-id, "session_time")]').text
-
+        try:
+            topic_name = self.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
+        except NoSuchElementException:
+            topic_name = self.get_element('xpath', '//*[contains(@resource-id, "topic_name")]').text
+        try:
+            session_time = self.get_element('xpath', '//*[contains(@resource-id, "session_time")]').text
+        except NoSuchElementException:
+            try:
+                session_time = self.get_element('xpath', '//*[contains(@resource-id, "pre_requisite_time")]').text
+            except NoSuchElementException:
+                session_time = self.get_element('xpath', '//*[contains(@resource-id, "post_requisite_date")]').text
         content_dict = {
             "Subject": subject_name,
             "Topic": topic_name,

@@ -1,10 +1,12 @@
 {
   "one_to_mega": {
     "4": {
-      "tmb_id": "15555"
+      "tmb_id": "15555",
+      "tmb_name": "auto_test_tmb_4"
     },
     "8": {
-      "tmb_id": "15518"
+      "tmb_id": "15518",
+      "tmb_name": "auto_test_tmb_8"
     }
     }
 }

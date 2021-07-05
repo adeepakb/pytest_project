@@ -486,6 +486,15 @@ class TutorCommonMethods:
                 flag = True
         return flag
 
+    def is_child_element_present(self, parent_element,locator_type,locator_value):
+        try:
+            element = parent_element.find_element(self._by(locator_type), locator_value)
+            if element is not None:
+                return True
+            else:
+                return False
+        except (NoSuchElementException, TimeoutException):
+            return False
 
 class InValidLocatorError(Exception):
     pass
