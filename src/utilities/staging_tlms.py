@@ -27,12 +27,12 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = get_data('../../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
     def login_to_staging(self):
@@ -619,8 +619,9 @@ class Stagingtlms:
             except NoSuchElementException:
                 continue
 
-        tmb_id = getdata("../config/attachments.json", "one_to_mega", '8')["tmb_id"]
+        tmb_id = get_data("../config/attachments.json", "one_to_mega", '8')["tmb_id"]
         uri = "tmbs/%s" % tmb_id
+        tmb_name = get_data("../config/attachments.json", "one_to_mega", '8')["tmb_name"]
         self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/' + uri)
         self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
         self.wait_for_locator_webdriver("//button[label=Requisites]")
@@ -630,11 +631,12 @@ class Stagingtlms:
         input_box = self.chrome_driver.find_element(By.CSS_SELECTOR, ".input-box")
         input_box.clear()
         input_box.send_keys(requisite_id)
+        time.sleep(1)
         self.chrome_driver.find_element(By.CSS_SELECTOR, "button[label=Save]").click()
-        self._attachment_write(tmb_id, topic_id)
+        self._attachment_write(tmb_id,tmb_name, topic_id)
         self.chrome_driver.close()
 
-    def _attachment_write(self, tmb_id, topic_id=None):
+    def _attachment_write(self, tmb_id,tmb_name=None, topic_id=None):
         if tmb_id is None:
             raise TypeError("'tmb_id' must be str, not None")
         topics_uri = 'raw_topics/%s'
@@ -644,13 +646,14 @@ class Stagingtlms:
             self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
         except NoSuchElementException:
             pass
-        self.wait_for_locator_webdriver("button[label=Edit]")
+        self.wait_for_locator_webdriver("//div[text()='Edit']")
         self.chrome_driver.find_element("css selector", "button[label=Edit]").click()
         drp_box_input = self.chrome_driver.find_element(
             "xpath", "//div[contains(text(), \"TMB\")]/following-sibling::div//input")
+        drp_box_input.clear()
         drp_box_input.click()
         drp_box_input.send_keys(Keys.CONTROL + "a" + Keys.BACKSPACE)
-        drp_box_input.send_keys(tmb_id)
+        drp_box_input.send_keys(tmb_name)
         retry = 3
         while retry:
             list_options = self.chrome_driver.find_elements("css selector", ".tmbTagOption .tagOptionIdText")
@@ -670,7 +673,6 @@ class Stagingtlms:
             time.sleep(0.5)
         else:
             raise Exception("<Empty List>: contents might have taken too long to load")
-        self.wait_for_locator_webdriver('//input[placeholder="Enter Chapter"]')
         chapter_input = self.chrome_driver.find_element("css selector", "input[placeholder=\"Enter Chapter\"]")
         chapter_input.clear()
         chapter_input.send_keys("null")

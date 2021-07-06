@@ -92,32 +92,23 @@ class LoginAndroid(Login):
         self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
-        timeout = 3
-        element = None
-        while timeout:
-            try:
-                element = self.get_element(
-                    'android_uiautomator',
-                    'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
-                    'scrollIntoView(resourceId("com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image"))')
-                break
-            except NoSuchElementException:
-                timeout -= 1
-                if timeout == 1:
-                    self.driver.launch_app()
-                self.driver.implicitly_wait(2)
-        if not timeout:
-            raise LoginException("Premium School card might not be displayed!")
         try:
-            element.click()
-            if not self.wait_activity('OneToMegaHomeActivity', 5):
-                self.grant_permissions()
-                try:
-                    self.get_element('xpath', self.btn_premium).click()
-                except NoSuchElementException:
-                    pass
+            self.obj.wait_for_locator('id', self.home_card_layout)
+            self.obj.get_element('android_uiautomator',
+                                 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(text("Byju\'s Classes"))')
+            self.obj.element_click('xpath', self.byjus_class_card)
+            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
+                                                                                                              self.permission_container_tab):
+                self.allow_deny_permission(["Allow", "Allow", "Allow"])
         except NoSuchElementException:
-            raise LoginException("Premium School card might not be displayed!")
+            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/backToTopClick')
+            element = self.obj.get_element('android_uiautomator',
+                                           'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("' + self.marketing_classes_image + '"))')
+            width = element.size['width']
+            height = element.size['height']
+            self.action.press(None, element.location['x'] + (width / 2), height).wait(3000).move_to(
+                x=element.location['x'] + (width / 2), y=2 * height).release().perform()
+            element.click()
 
     # This step is only applicable in web. Hence skipping this for android
     def click_on_hamburger(self):

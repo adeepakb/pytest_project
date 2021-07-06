@@ -1,21 +1,15 @@
 import re
 import time
-import traceback
 import os
 import traceback
 import pytest
 import sys
 import subprocess
 import logging
-from constants.platform import Platform
-from utilities.BasePage import BaseClass
-from utilities.pre_execution import BuildFeatureJob
-from selenium.common.exceptions import InvalidSessionIdException
 from utilities.base_page import BaseClass
-from utilities.common_methods import CommonMethods
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-#from constants.loadFeatureFile import fetch_feature_file
+from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
@@ -35,10 +29,7 @@ def setup_teardown():
     # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
-        report_id = get_testrail_reports(24, 'Regression Run (Summary) %date%')
-        run_testrail_reports(report_id)
-    elif suitename == 'Sanity_PremiumApp_Automation':
-        report_id = get_testrail_reports(24, 'Sanity Run (Summary) %date%')
+        report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
         run_testrail_reports(report_id)
 
 

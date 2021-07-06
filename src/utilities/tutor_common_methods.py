@@ -133,6 +133,29 @@ class TutorCommonMethods:
                 return True
         return False
 
+    def is_button_displayed(self, expected_text):
+        locator_type = 'xpath'
+        locator_value = "//android.widget.Button"
+        list_of_elements = self.get_elements(locator_type, locator_value)
+        for element in range(len(list_of_elements)):
+            actual_text = list_of_elements[element].text
+            if expected_text == actual_text:
+                return True
+        return False
+
+    def button_click(self, expected_text):
+        locator_type = 'xpath'
+        locator_value = "//android.widget.Button"
+        list_of_elements = self.get_elements(locator_type, locator_value)
+        try:
+            for element in range(len(list_of_elements)):
+                actual_text = list_of_elements[element].text
+                if expected_text == actual_text:
+                    list_of_elements[element].click()
+                    break
+        except NoSuchElementException:
+            logging.info("Cannot click on the element with locator: " + locator_value)
+
     def is_button_displayed_with_text(self, expected_text):
         locator_type = 'xpath'
         locator_value = "//android.widget.Button"

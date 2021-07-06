@@ -26,7 +26,7 @@ PATH = lambda p: os.path.abspath(
 
 key = os.getenv('SECRET')
 f = Fernet(key)
-encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
 decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 testrail_url = decrypted_data['testrail']['url']
 testrail_username = decrypted_data['testrail']['userName']
@@ -275,32 +275,11 @@ def create_feature_from_run(suite_ID, project_ID, run_ID):
     print('Number of test cases in feature files = ' + str(count))
 
 
-# to fetch latest result id
-def get_latest_result_id(run_id, case_id):
-    client = get_testrail_client()
-    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
-    for test_result in test_results:
-        if test_result is not None:
-            print(test_result['id'])
-            return test_result['id']
-
-
-# Add attachment to test result
-def add_attachment_to_result(run_id, case_id, attachment):
-    client = get_testrail_client()
-    result_id = get_latest_result_id(run_id, case_id)
-    response = client.send_post('add_attachment_to_result/%s' % result_id, attachment)
-    print(response)
-
-
-def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, app_version):
+def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, testing_device, app_version):
     """
     Update the result to testrail for the particular *run_id* and *case_id* with appropriate
     comments and status.
-
     The status will set accordingly whether or not an exception occurs during test execution.
-
-
     :param case_id: ID of the case of the particular test case. Example: `C12345`
     :param run_id: ID of the run, can be found under **Test Runs and Results**. Example: `R123`
     :param result_flag: is set True/False based on whether or not exception has occurred
@@ -309,7 +288,6 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, a
     :param elapsed_time: execution time of each scenario
     :param testing_device: device on which test execution was carried out
     :param app_version: app version
-
     :type case_id: str
     :type run_id: str
     :type result_flag: bool
@@ -328,7 +306,10 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, a
         exc_msg = "Failed Step Name: %s\n%s" % (step, exc_msg)
     if run_id is not None:
         result = client.send_post('add_result_for_case/%s/%s' % (run_id, case_id),
-                                  {'status_id': status_id, 'comment': exc_msg})
+                                  {'status_id': status_id,
+                                   'comment': exc_msg+'\nTested on device model : %s'%testing_device,
+                                   'elapsed': elapsed_time,
+                                   'version': app_version})
         print("Status: %s" % result)
         print('Updated test result for case: %s in test run: %s ' % (case_id, run_id))
     return update_flag

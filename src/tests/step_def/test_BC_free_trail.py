@@ -61,7 +61,7 @@ def mentor_session(driver):
 
 
 @given("launch the application online")
-def navigate_to_one_to_many_and_mega_user(login_in):
+def navigate_to_free_user(login_in):
     login_in.navigate_to_home_screen()
 
 
@@ -99,6 +99,7 @@ def scroll_to_text(trial_class):
     check.equal(details.result, True, details.reason)
 
 
+@then('Verify that book button should display')
 @then('Verify that book option should display for free trial session')
 @then('verify that user should get book option for free trial sessions in recommended section')
 def verify_book_option_for_free_trail(trial_class):
@@ -235,7 +236,7 @@ def is_master_class_present_under_master_class_section(trial_class):
 
 @then('Verify that all availabe slots for subject/topic are listed on the tile as per zeplin UI')
 @then('Verify that subject name and subject title should display in free regular class title')
-@then('verify that Free class subject name, title name , time ,date, duration , other slots time , day should display.')
+@then('verify that Free class subject name, title name , time ,date, duration , day should display.')
 def verify_free_trial_class_details(trial_class):
     details = trial_class.is_free_trial_class_details_present_under_reg_class()
     check.equal(details.result, True, details.reason)
@@ -296,6 +297,7 @@ def dismiss_trail_popup(trial_class):
     trial_class.dismiss_trail_popup()
 
 
+@then('book regular trial session')
 @when('book regular trial session')
 def book_regular_trial_class(login_in, trial_class):
     trial_class.click_on_book_btn_reg_class()

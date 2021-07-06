@@ -13,8 +13,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
     StaleElementReferenceException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from constants.constants import Login_Credentials
-from utilities.staging_tllms import Stagingtllms
 from constants.load_json import get_data
+from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 
 
@@ -29,10 +29,10 @@ class MentorSession:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtllms(driver)
+        self.tlms = Stagingtlms(driver)
         self.byjus_icon = "//img[contains(@src,'data:image/png')]"
         self.subject = '//*[@class = "subjectText"]'
         self.topic = '//*[@class = "topicText"]'
@@ -45,7 +45,7 @@ class MentorSession:
         self.up_arrow_button = '//*[@class= "fa fa-angle-up"]'
         self.type_something_inputcard = '//input[@placeholder="Type something"]'
         self.relaunch_error = "//*[contains(@class ,'Mui-error')]"
-        self.chat_icon = "//img[@src='/static/media/chatPopup.3398527e.svg']"
+        self.chat_icon = "//img[contains(@src,'/static/media/chatPopup')]"
         self.ban = "//*[@class='action']"
         self.ban_student_cancel = "//div[@class='popupActionButton' and text()='Cancel']"
         self.ban_student_ban = "//div[@class='popupActionButton' and text()='Ban']"
@@ -185,7 +185,6 @@ class MentorSession:
         self.wait_for_locator_webdriver("//li[@id='mentoring']")
         self.chrome_driver.get(url)
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
-        self.chrome_driver.save_screenshot("image2.png")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
         return url
 

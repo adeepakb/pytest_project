@@ -1,4 +1,5 @@
 # Module Owner - Reshma R Nair
+import re
 import time
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
@@ -7,11 +8,16 @@ from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 from pages.base.trialclass_base import TrialClassBase
 from utilities.common_methods import CommonMethods
-from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.masterclass import MasterClass
 
 CommonMethods = CommonMethods()
+
+
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
 
 
 class TrailClassAndroid(TrialClassBase):
@@ -30,7 +36,6 @@ class TrailClassAndroid(TrialClassBase):
         self.see_more_tv = 'id', '%s/tvShowMoreText' % package_name
         self.card_schedule_tv = 'id', '%s/session_time' % package_name
         self.card_icon_iv = 'id', '%s/cIvSessionImage' % package_name
-        self.rc_card_schedule_tv = 'id', '%s/tvSessionTime' % package_name
         self.rounded_nav_button = 'id', '%s/roundedNavButton' % package_name
         self.card_topic_tv = '%s/tvSessionTopicName' % package_name
         self.card_book_btn = '%s/btBookSession' % package_name  # com.byjus.thelearningapp:id/tvSessionTopicName
@@ -40,7 +45,6 @@ class TrailClassAndroid(TrialClassBase):
         self.card_topic = '%s/session_title' % package_name
         self.card = '%s/card' % package_name
         self.course_list = '%s/rvCourseList' % package_name
-        self.expired_title = "id", "%s/tvSessionExpiryTitle" % package_name
         self.title = '%s/tvTitle' % package_name
         self.filling_fast = '%s/tvFillingFast' % package_name
         self.rc_card_schedule_tv = '%s/tvSessionTime' % package_name
@@ -61,6 +65,7 @@ class TrailClassAndroid(TrialClassBase):
         self.bs_count_down_seconds_text = 'id', '%s/appTextView4' % package_name
         self.bottom_sheet = '%s/design_bottom_sheet' % package_name
         self.welcome_button = '%s/welcomeButton' % package_name
+        self.confirm_book_button = '%s/primaryAction' %package_name
 
     def scroll_rc_in_view(self):
         try:
@@ -138,35 +143,15 @@ class TrailClassAndroid(TrialClassBase):
                             return ReturnType(False, 'Masterclass is not present')
                     i += 1
                     if i == 3:
-                        time.sleep(2)
                         prev_cards = cards_root
                         self.scroll_cards.scroll_by_card(cards_root[2], cards_root[0])
+                        time.sleep(1)  # waiting until scroll is completed and page loaded
                         if prev_cards == cards_root:
                             return ReturnType(False, 'Scrolled till the end and Masterclass not found')
-                        time.sleep(2)
                         i = 1
                         cards_root = self.obj.get_elements(*self.rc_card_root)
         except Exception:
             return ReturnType(False, 'Test failed due to exception')
-
-    def is_sessions_under_rc_displayed(self):
-        self.scroll_rc_in_view()
-        rc_sessions = False
-        list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
-        self.login.implicit_wait_for(0)
-        for element in list_content:
-            try:
-                session_section = self.obj.child_element_by_id(element, self.section_name[-1])
-                if session_section.text.lower() == 'recommended classes':
-                    rc_sessions = True
-                    continue
-            except NoSuchElementException:
-                if rc_sessions:
-                    self.obj.child_element_by_id(element, self.rc_card_root[-1])
-                    self.login.implicit_wait_for(15)
-                    return True
-        self.login.implicit_wait_for(15)
-        return False
 
     def is_see_all_link_displayed(self):
         see_more_less = self.obj.get_element(
@@ -174,11 +159,10 @@ class TrailClassAndroid(TrialClassBase):
             'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
             f'scrollIntoView(resourceId("{self.see_more_tv[-1]}"))'
         )
-        return ReturnType(True, "All links displayed") if see_more_less.is_displayed() else ReturnType(False,
-                                                                                                       "All links are not displayed")
+        return see_more_less.is_displayed()
 
     def click_option_see_more(self, text: str = 'see all'):
-        if self.is_see_all_link_displayed().result:
+        if self.is_see_all_link_displayed():
             see_more = self.obj.get_element(*self.see_more_tv)
             if see_more.text.lower() == text:
                 see_more.click()
@@ -192,7 +176,7 @@ class TrailClassAndroid(TrialClassBase):
         self.driver.implicitly_wait(2)
         completed_cards = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
         if len(completed_cards) == 0:
-            return ReturnType(False, 'No completed session present under Completed tab')
+            return ReturnType(False, 'No cards present under Completed tab')
         completed_session_title = self.obj.child_element_text(completed_cards[0], self.card_topic)
         try:
             completed_subject = self.obj.child_element_text(completed_cards[0], self.workshop_label)
@@ -208,28 +192,25 @@ class TrailClassAndroid(TrialClassBase):
                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
 
     def get_up_next_trial_class_session(self):
-        try:
-            list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
-            if len(list_content) == 0:
-                raise Exception("No trial cards present in booking page For you tab")
-            section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
-            elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
-            if len(elements) == 0:
-                raise Exception('No cards present in booking page For you tab')
-            while True:
-                for element in elements:
-                    if section_name == 'Up Next':
-                        try:
-                            self.obj.child_element_by_id(element, self.workshop_label)
-                        except NoSuchElementException:
-                            try:
-                                subject = self.obj.child_element_text(element, self.upnext_subject_name)
-                                if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
-                                    return element
-                            except NoSuchElementException:
-                                return False
-        except:
+        list_content = self.obj.get_elements('xpath', f'//*[@resource-id="{self.card_list[-1]}"]/*')
+        if len(list_content) == 0:
             return False
+        section_name = self.obj.child_element_text(list_content[0], self.section_name[-1])
+        elements = self.obj.get_elements('id', 'com.byjus.thelearningapp.premium:id/card')
+        if len(elements) == 0:
+            raise Exception('No cards present in booking page For you tab')
+        for element in elements:
+            if section_name == 'Up Next':
+                try:
+                    self.obj.child_element_by_id(element, self.workshop_label)
+                except NoSuchElementException:
+                    try:
+                        subject = self.obj.child_element_text(element, self.upnext_subject_name)
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                            return element
+                    except NoSuchElementException:
+                        return False
+
 
     def is_trial_class_booked(self):
         up_next_session = self.get_up_next_trial_class_session()
@@ -275,7 +256,7 @@ class TrailClassAndroid(TrialClassBase):
             return ReturnType(False, 'User missed booked session message is not present')
 
     def book_trial_class(self):
-        self.master.scroll_rc_in_view()
+        self.scroll_rc_in_view()
         elements = self.obj.get_elements(*self.rc_card_root)
         if len(elements) == 0:
             raise Exception('No cards present under recommended classes')
@@ -293,9 +274,8 @@ class TrailClassAndroid(TrialClassBase):
                         return True
                 i += 1
                 if i == 3:
-                    time.sleep(2)
                     self.scroll_cards.scroll_by_card(elements[2], elements[0])
-                    time.sleep(2)
+                    time.sleep(1)  # waiting until scroll is completed and page loaded
                     i = 1
                     elements = self.obj.get_elements(*self.rc_card_root)
 
@@ -319,10 +299,7 @@ class TrailClassAndroid(TrialClassBase):
         self.obj.get_element(*self.rounded_nav_button).click()
 
     def book_special_master_class(self):
-        return self.master.book_special_master_class()
-
-    def is_master_class_booked(self):
-        return self.master.is_master_class_booked()
+        self.master.book_special_master_class()
 
     def verify_completed_trial_cards(self):
         if self.login.text_match("Completed your free trial class?") and \
@@ -338,22 +315,24 @@ class TrailClassAndroid(TrialClassBase):
             return ReturnType(False, '"Recommended Classes" section is present')
 
     def verify_free_trial_message(self):
-
-        if not self.login.text_match('Hope you enjoyed your trial class!'):
-            return ReturnType(False, "hope you enjoyed your trial class! is not beind displayed")
-        elif not self.login.text_match('Our academic counsellor will reach out to you shortly to provide more '
-                                       'information on BYJU’S Classes.'):
-            return ReturnType(False, "Our academic counsellor will reach out to you shortly is not being displayed")
+        if self.login.text_match('Hope you enjoyed your trial class!') and \
+                self.login.text_match(
+                    'Our academic counsellor will reach out to you shortly to provide more information on BYJU’S Classes.'):
+            return ReturnType(True, 'Expected message is shown once user reaches maximum free trail class limit')
         else:
-            return ReturnType(True, " free trial messages are displayed correctly")
+            return ReturnType(False, 'Expected message is not shown once user reaches maximum free trail class limit')
 
     def scroll_to_regular_classes(self):
-        CommonMethods.scrollToElement(self.driver, 'Regular Classes')
-        rc_section = self.obj.get_element('id', self.title)
-        if rc_section.text.lower() == 'regular classes':
-            session_list = self.obj.get_element('id', self.course_list)
-            self.scroll_cards.scroll_by_card(rc_section, session_list)
-    def is_free_trail_expired(self):
+        try:
+            rc_section = self.obj.get_elements('id', self.title)[-1]
+            if rc_section.text.lower() == 'regular classes':
+                session_list = self.obj.get_element('id', self.course_list)
+                self.scroll_cards.scroll_by_card(rc_section, session_list)
+        except NoSuchElementException:
+            pass  # skip if not found. reusing same method for book a free class trial classes
+
+    def is_free_trial_class_present_under_reg_class(self):
+        self.scroll_to_regular_classes()
         try:
             cards_root = self.obj.get_elements(*self.rc_card_root)
             if len(cards_root) == 0:
@@ -368,96 +347,183 @@ class TrailClassAndroid(TrialClassBase):
                             self.card_book_btn):
                             return ReturnType(True, 'Trial class session card is present')
                     except NoSuchElementException:
-                        return ReturnType(False, 'Trial class session card with book is not present')
+                        continue
+                    return ReturnType(False, 'Trial class session card with book is not present')
         except NoSuchElementException:
             return ReturnType(False, 'No cards present in booking page')
 
-class TrailClassFuturePaid(TutorCommonMethods):
-    def __init__(self, driver):
-        super().__init__(driver)
-        self.driver = driver
-        self.scroll_cards = ScrollCards(driver)
-        self.action = TouchAction(driver)
-        self.device_type = self.get_device_type()
-        self.__init_locators(self.device_type)
-
-    def __init_locators(self, device_type=None):
-        package_name = self.driver.capabilities['appPackage'] + ':id'
-        self.section_name = 'id', '%s/sectionName' % package_name
-        self.card_list_root = "id", "%s/root_view" % package_name
-        self.card_list = 'id', '%s/rvCourseList' % package_name
-        self.card_root = "id", "%s/cvSessionCard" % package_name
-        self.card_label_tv = 'id', '%s/tvWorkshop' % package_name
-        self.card_book_btn = 'id', '%s/btBookSession' % package_name
-        self.session_header = "id", "%s/tvTitle" % package_name
-        self.card_subject_tv = "id", "%s/tvSubjectName" % package_name
-        self.toolbar = "id", "%s/toolbarView" % package_name
-        self.book_primary_btn = 'id', '%s/primaryAction' % package_name
-        self.bs_okay_btn = 'id', '%s/appButtonCtaOk' % package_name
-        self.expired_title = "id", "%s/tvSessionExpiryTitle" % package_name
-
-    def scroll_rgc_in_view(self):
+    def is_master_class_present_under_master_class_section(self):
         try:
-            self.get_element(
-                'android_uiautomator',
-                'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
-                f'scrollTextIntoView("Regular Classes")'
-            )
+            cards_root = self.obj.get_elements(*self.rc_card_root)
+            if len(cards_root) == 0:
+                return ReturnType(False, 'No master classes present in book a free class screen')
+            while True:
+                for card in cards_root:
+                    try:
+                        subject = self.obj.child_element_text(card, self.workshop_label)
+                        if subject == 'WORKSHOP' and self.obj.child_element_displayed(card, self.card_book_btn):
+                            return ReturnType(True, 'Masterclass is present')
+                    except NoSuchElementException:
+                        return ReturnType(False, 'Masterclass is not present')
         except NoSuchElementException:
-            return self.get_element(
-                'android_uiautomator',
-                'UiScrollable(UiSelector()).setSwipeDeadZonePercentage(0.25).'
-                f'scrollTextIntoView("Up Next")'
-            ).is_displayed()
-        toolbar = self.get_element(*self.toolbar)
-        session_headers = self.get_elements(*self.session_header)
-        for session_header in session_headers:
-            if session_header.text.lower() == "regular classes":
-                start_location = session_header.location
-                start_element_size = session_header.size
-                start_x = start_location['x'] + start_element_size["width"] // 2
-                start_y = start_location['y'] + start_element_size["height"] - 10
-                end_location = toolbar.location
-                end_y = end_location['y'] + toolbar.size["height"] + 10
-                self.action.press(x=start_x, y=start_y).move_to(x=start_x, y=end_y).wait(3000).release().perform()
-                return False
+            return ReturnType(False, 'No cards present in booking page')
 
-    def is_trial_class_available(self):
-        if self.scroll_rgc_in_view():
-            return True
-        cards = self.get_elements(*self.card_root)
-        self.driver.implicitly_wait(0)
-        for card in cards:
+    def is_free_trial_class_details_present_under_reg_class(self):
+        self.scroll_to_regular_classes()
+        try:
+            cards_root = self.obj.get_elements(*self.rc_card_root)
+            if len(cards_root) == 0:
+                return ReturnType(False, 'No trial classes present under regular classes')
+            while True:
+                for card in cards_root:
+                    try:
+                        subject = self.obj.child_element_text(card, self.subject_name)
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') \
+                                and self.obj.get_element_text('id', self.card_topic_tv) is not None \
+                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None :
+                                # and self.obj.get_element_text('id', self.other_slots_detail) is not None
+                            return ReturnType(True, 'Trial class session details are present')
+                    except NoSuchElementException:
+                        continue
+                    return ReturnType(False, 'Trial class session details are not  present')
+        except NoSuchElementException:
+            return ReturnType(False, 'No cards present in booking page')
+
+    def is_master_class_details_present_under_master_class(self):
+        try:
+            cards_root = self.obj.get_elements(*self.rc_card_root)
+            if len(cards_root) == 0:
+                return ReturnType(False, 'No master classes present in book a free class screen')
+            while True:
+                for card in cards_root:
+                    try:
+                        subject = self.obj.child_element_text(card, self.workshop_label)
+                        if subject == 'WORKSHOP' and self.obj.get_element_text('id', self.card_topic_tv) is not None \
+                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None:
+                            return ReturnType(True, 'Master class session details are present')
+                    except NoSuchElementException:
+                        return ReturnType(False, 'Master class session details are not present')
+        except NoSuchElementException:
+            return ReturnType(False, 'No cards present in booking page')
+
+    def click_on_book_btn_reg_class(self):
+        self.scroll_to_regular_classes()
+        cards_root = self.obj.get_elements(*self.rc_card_root)
+        if len(cards_root) == 0:
+            raise Exception("No trial classes present under regular classes")
+        for card in cards_root:
+            subject = self.obj.child_element_text(card, self.subject_name)
+            if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                self.obj.child_element_click_by_id(card, self.card_book_btn)
+                self.obj.wait_for_locator('id',self.confirm_book_button)
+                break
+
+    def is_date_and_time_popup_present(self):
+        self.obj.is_text_match('Select date & time')
+        if self.obj.is_element_present('id', self.toggle_buttons):
             try:
-                label_text = card.find_element_by_id(self.card_label_tv[-1]).text.lower()
+                if self.obj.get_element_text('id', self.confirm_book_popup_date) is not None:
+                    return ReturnType(True, 'Toggle buttons and Date present in Select date & time popup')
+                else:
+                    return ReturnType(False, 'Date is empty in Select date & time popup')
             except NoSuchElementException:
-                try:
-                    label_text = card.find_element_by_id(self.card_subject_tv[-1]).text.lower()
-                except NoSuchElementException:
-                    label_text = None
-            if label_text != "workshop" and label_text is not None \
-                    and card.find_element_by_id(self.card_book_btn[-1]).is_displayed():
-                return True
-        return False
+                return ReturnType(False, 'Date element is not present in Select date & time popup')
+        else:
+            return ReturnType(False, 'Toggle buttons not present in Select date & time popup')
 
-    def book_trial_class(self):
-        if self.scroll_rgc_in_view():
-            return True
-        elements = self.get_elements(*self.card_root)
-        self.driver.implicitly_wait(0)
+    def verify_select_date_time_buttons(self):
+        if self.obj.is_button_displayed('Confirm & Book'):
+            if self.obj.is_text_match('Cancel'):
+                return ReturnType(True, 'Confirm & Book and Cancel buttons are present in Select date & time popup')
+            else:
+                return ReturnType(False, 'Cancel button is not present in Select date & time popup')
+        else:
+            return ReturnType(False, 'Confirm & Book button is not present in Select date & time popup')
+
+    def click_on_confirm_n_book_btn(self):
+        self.obj.button_click("Confirm & Book")
+        self.obj.element_click('id', self.bs_okay_btn)
+
+    def close_application(self):
+        self.driver.close_app()
+
+    def dismiss_trail_popup(self):
+        self.obj.wait_for_locator('id', self.bottom_sheet)
+        self.obj.click_link('Dismiss')
+        try:
+            self.obj.wait_for_locator('id', self.welcome_button)
+            self.obj.element_click('id',self.welcome_button)
+        except NoSuchElementException:
+            pass
+
+    def verify_trial_class_confirmation_msg(self):
+        self.obj.wait_for_locator('id', 'com.byjus.thelearningapp.premium:id/appTextView_title')
+        if self.login.text_match("You Successfully Booked"):
+            return ReturnType(True, 'Successfully trial class booked message is displayed')
+        else:
+            return ReturnType(False, 'Successfully trial class booked message is not displayed')
+
+    def verify_booking_screen(self):
+        elements = [self.bs_success_title, self.bs_topic_name, self.bs_date_text, self.bs_time_text]
+        displayed_status = []
         for element in elements:
-            try:
-                element.find_element_by_id(self.card_label_tv[-1])
-            except NoSuchElementException:
-                try:
-                    subject = element.find_element_by_id(self.card_subject_tv[-1]).text
-                except NoSuchElementException:
-                    continue
+            displayed_status.append(self.obj.get_element(*element).is_displayed())
+            if all(displayed_status):
+                continue
+            else:
+                return ReturnType(False, '%s is not displayed in booking confirmation page' % element[1])
+        return ReturnType(True, 'Session title , date , day , time are displayed in booking confirmation page')
+
+    def verify_timer(self):
+        elements = [self.bs_count_down_layout, self.bs_count_down_hour, self.bs_count_down_minutes,
+                    self.bs_count_down_seconds]
+        displayed_status = []
+        for element in elements:
+            displayed_status.append(self.obj.get_element(*element).is_displayed())
+            if all(displayed_status):
+                continue
+            else:
+                return ReturnType(False, '%s is not displayed in booking confirmation page' % element[1])
+        return ReturnType(True, 'Session starts in time is not displayed in booking confirmation page')
+
+    def verify_okay_button_present(self):
+        if self.obj.is_button_displayed("Okay"):
+            return ReturnType(True, 'Okay button is displayed in trial class booking confirmation page')
+        else:
+            return ReturnType(False, 'Okay button is not displayed in trial class booking confirmation page')
+
+    def verify_timer_format(self):
+        elements = [self.bs_count_down_hour, self.bs_count_down_hour_text,
+                    self.bs_count_down_minutes, self.bs_count_down_minutes_text,
+                    self.bs_count_down_seconds, self.bs_count_down_seconds_text]
+        element_text_parts = []
+        for element in elements:
+            element_text_parts.append(self.obj.get_element(*element).text)
+        element_text = (" ".join(element_text_parts))
+        m = re.match("[0-9][0-9] HOURS? [0-5][0-9] MINS? [0-5][0-9] SECS?", element_text)
+        if m is not None:
+            return ReturnType(True, 'Timer is displayed in HH.MM.SS format in booking confirmation page')
+        else:
+            return ReturnType(True, 'Timer is not displayed in HH.MM.SS format in booking confirmation page')
+
+    def is_filling_fast_present(self):
+        if self.obj.is_element_present('id', self.filling_fast):
+            return ReturnType(True, 'slot avaliblity indicator(Filling Fast) is present in regular class booking page')
+        else:
+            return ReturnType(False,
+                              'slot avaliblity indicator(Filling Fast)  is present in regular class booking page')
+
+    def is_trial_card_unique_in_booking_page(self):
+        self.scroll_to_regular_classes()
+        trial_class_topics = []
+        i = 0
+        while True:
+            cards_root = self.obj.get_elements(*self.rc_card_root)
+            if len(cards_root) == 0:
+                return ReturnType(False, 'No trial cards present under regular classes')
+            for card in cards_root:
+                subject = self.obj.child_element_text(cards_root[i], self.subject_name)
                 if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
-                    element.find_element_by_id(self.card_book_btn[-1]).click()
-                    self.get_element(*self.book_primary_btn).click()
-                    self.get_element(*self.bs_okay_btn).click()
-                    return True
                     trial_class_topics.append(self.obj.child_element_text(cards_root[i], self.card_topic_tv))
                 i += 1
             if i == len(cards_root):
