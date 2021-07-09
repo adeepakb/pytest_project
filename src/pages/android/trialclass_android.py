@@ -324,7 +324,9 @@ class TrailClassAndroid(TrialClassBase):
 
     def scroll_to_regular_classes(self):
         try:
+            CommonMethods.scrollToElement(self.driver, 'Regular Classes')
             rc_section = self.obj.get_elements('id', self.title)[-1]
+
             if rc_section.text.lower() == 'regular classes':
                 session_list = self.obj.get_element('id', self.course_list)
                 self.scroll_cards.scroll_by_card(rc_section, session_list)
@@ -553,3 +555,15 @@ class TrailClassAndroid(TrialClassBase):
             else:
                 continue
         return ReturnType(True,'Trial session which starts at %s(within 30 mins) is not present under regular classes' % backend_scheduled_start_time)
+
+    def click_on_swap_btn(self):
+        self.obj.wait_for_locator('id',"com.byjus.thelearningapp.premium:id/swap_button")
+        self.obj.element_click('id',"com.byjus.thelearningapp.premium:id/swap_button")
+
+    def verify_rebook_slots_page(self):
+        rebook_message_present = self.obj.is_text_match("You missed a session earlier, book it again so you don’t miss on learning") and \
+                                 self.obj.is_text_match('Rebook a session')
+        if rebook_message_present:
+            return ReturnType(True, 'User navigated to rebook page')
+        else:
+            return ReturnType(False, 'User is not in rebook page')

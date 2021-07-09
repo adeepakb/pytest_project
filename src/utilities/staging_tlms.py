@@ -755,6 +755,8 @@ class Stagingtlms:
         location = os.path.normpath(os.path.join(current_location, "../../files/" + filename + ""))
         input_element.send_keys(location)
 
+        # value = self.chrome_driver.find_element_by_xpath("//h2[@class='MuiTypography-root MuiTypography-h6']").text
+
         self.chrome_driver.find_element_by_xpath(
             "//*[contains(@class,'MuiInputBase-formControl MuiInput-formControl')]").click()
         time.sleep(2)
