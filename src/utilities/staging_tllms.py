@@ -36,9 +36,9 @@ class Stagingtllms(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
-        #self.chrome_options.add_argument('--headless')
-        #self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-         #                                f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
+        self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                        f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:
@@ -66,7 +66,7 @@ class Stagingtllms(TutorCommonMethods):
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.REQUISITE_DETAILS = '../../config/ps_requisite.json'
         #self.EMAIL = str(get_data('../../config/config.json', 'staging_access', 'email'))
-        fp = '../../config/config.json'
+        fp = '../config/config.json'
         key = os.getenv('SECRET')
         f = Fernet(key)
         encrypted_data = get_data(fp, 'encrypted_data', 'token')
@@ -89,7 +89,7 @@ class Stagingtllms(TutorCommonMethods):
         self.wait = WebDriverWait(self.chrome_driver, timeout=30)
         self.url_session_user_wise = self.STAGING_TLLMS_URL + 'student_sessions/#scheduling-sessions-user-wise'
         try:
-            self.premium_id = str(get_data('../../config/config.json', 'profile_credentials', 'premium_id'))
+            self.premium_id = str(get_data('../config/config.json', 'profile_credentials', 'premium_id'))
         except KeyError:
             pass
         self.today = datetime.today().strftime('%Y-%m-%d')
@@ -139,7 +139,7 @@ class Stagingtllms(TutorCommonMethods):
         date_month = datetime.now().strftime("%H%M%S_%d%m%Y")
         file_name = "../../test_data/screenshots/failed_%s.png" % date_month
         self.chrome_driver.get_screenshot_as_file(file_name)
-        raise InvalidSessionURL(f"unusual redirect to '{current_url}'.")
+        raise Exception(f"unusual redirect to '{current_url}'.")
 
     def get_tutor_url(self, course='primary', premium_id='primary'):
         email = str(get_data('../config/config.json', 'staging_access', 'email'))

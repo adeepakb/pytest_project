@@ -290,14 +290,14 @@ def step_impl(std_board):
 
 @when(parsers.re('verify text "(?P<text>(.*))".*'))
 def verify_text(std_board, text):
-    text_displayed = std_board.verify_is_text_displayed(text)
-    check.equal(text_displayed, True, text_displayed + f' The text "{text}" is not displayed.')
+    details = std_board.verify_is_text_displayed(text)
+    check.equal(details.result, True, details.reason + f' The text "{text}" is not displayed.')
 
 
 @then(parsers.re('verify text "(?P<text>(.*))".*'))
 def verify_text(std_board, text):
-    text_displayed = std_board.verify_is_text_displayed(text)
-    check.equal(text_displayed, True, text_displayed + f' The text "{text}" is not displayed.')
+    details = std_board.verify_is_text_displayed(text)
+    check.equal(details.result, True, details.reason + f' The text "{text}" is not displayed.')
 
 
 @when(parsers.re('tap on (?:any |)(?P<t>(?:future|completed|tomorrow|up next)) session card'))

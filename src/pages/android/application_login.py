@@ -80,7 +80,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.bs_join_btn = "id", "%s:id/btnJoinNow" % self.package_name
         self.bs_cancel_btn = "id", "%s:id/tvCancel" % self.package_name
         self.login_data, self.user_mobile, self.profile_name, self.otp, self.premium_id = None, None, None, None, None
-        self.os_version_major = int(subprocess.getoutput("adb shell getprop ro.build.version.release").split(".")[0])
+        # self.os_version_major = int(subprocess.getoutput("adb shell getprop ro.build.version.release").split(".")[0])
 
         self.set_user_profile()
         super().__init__(driver)

@@ -1,6 +1,7 @@
 import re
 import subprocess
 from time import sleep
+from cryptography.fernet import Fernet
 from urllib3.exceptions import MaxRetryError
 from constants.constants import CONFIG_PATH
 from constants.load_json import *
@@ -16,7 +17,6 @@ class BaseClass:
         desired_caps = dict()
         retry, error = 3, None
         desired_cap = CONFIG_PATH
-        fp = '../../config/config.json'
         key = os.getenv('SECRET')
         f = Fernet(key)
         encrypted_data = get_data(desired_cap, 'encrypted_data', 'token')

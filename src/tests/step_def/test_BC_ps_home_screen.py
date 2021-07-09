@@ -3,7 +3,7 @@ from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.android.homepage import HomePage
-from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 from pages.factory.ps_home_screen import PSHomescreenFactory
 import pytest_check as check
 
@@ -136,7 +136,7 @@ def verify_session_card_details(home_screen):
 
 @given("reset student session if the session is incase completed")
 def reset_session(driver):
-    Stagingtllms(driver).reset_session()
+    Stagingtlms(driver).reset_session()
 
 
 @when(parsers.parse('verify "{text}" button'))
@@ -151,8 +151,8 @@ def verify_button(home_screen, text):
     'session rating given by the user in stars followed by the numeric')
 def verify_completed_card_details(home_screen):
     details_dict = home_screen.verify_completed_card_details()
-    check.equal(all(v is not None for v in [details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],
-                                        details_dict['Session status']]) and details_dict['Session status'] == "Completed"),True,"Completed Session card details not loaded"
+    condition = all(v is not None for v in [details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],details_dict['Session status']]) and details_dict['Session status'] == "Completed"
+    check.equal(condition,True,"Completed Session card details not loaded")
 
 @then('Verify Get help button')
 def is_get_help_present(home_screen):
