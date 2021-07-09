@@ -151,8 +151,8 @@ def verify_button(home_screen, text):
     'session rating given by the user in stars followed by the numeric')
 def verify_completed_card_details(home_screen):
     details_dict = home_screen.verify_completed_card_details()
-    check.equal(all(v is not None for v in [details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],
-                                        details_dict['Session status']]) and details_dict['Session status'] == "Completed"),True,"Completed Session card details not loaded"
+    condition = all(v is not None for v in [details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],details_dict['Session status']]) and details_dict['Session status'] == "Completed"
+    check.equal(condition,True,"Completed Session card details not loaded")
 
 @then('Verify Get help button')
 def is_get_help_present(home_screen):
@@ -168,7 +168,8 @@ def is_back_nav_present(home_screen):
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @when("verify user is in BYJU's Classes pop up screen")

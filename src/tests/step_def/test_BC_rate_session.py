@@ -88,7 +88,8 @@ def verify_rate_session(dashboard, text):
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then('tap on Okay button')
@@ -280,7 +281,8 @@ def verify_dashboard(dashboard):
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then(

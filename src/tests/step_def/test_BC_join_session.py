@@ -1,6 +1,6 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
-from constants.load_json import getdata
+from constants.load_json import get_data
 from constants.constants import Login_Credentials
 from pages.android.session_popup import SessionAlert
 from utilities.mentor_session import MentorSession
@@ -81,14 +81,15 @@ def tap_on_join_now(student_session):
 @when(parsers.parse('tap on "{text}" button'))
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, student_session, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
     student_session.speed_test()
 
 
 @then(parsers.parse('verify "{text}" bottom sheet dialog should be shown'))
 @then(parsers.parse('verify text "{text}" on welcome screen'))
 def verify_text(login_in, text):
-    profile_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    profile_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     text = text.format(username=profile_name).encode('utf-8').decode('unicode_escape')
     details = login_in.text_match(text)
     check.equal(details.result,True, details.reason)
@@ -299,6 +300,44 @@ def tap_on_cancel(student_session):
     student_session.tap_on_cancel()
 
 
+@then("verify uploaded pdf should be displayed on the student white screen")
+def is_teaching_material_present(student_session):
+    student_session.is_teaching_material_present()
+
+
+@then("verify video icon should be enabled")
+def verify_video_option_enabled(student_session):
+    is_enabled = student_session.is_student_video_icon_enabled()
+    assert is_enabled == 'true', "Video icon is not disabled"
+
+
+@then("verify mic option should be enabled")
+def verify_mic_option_disabled(student_session):
+    is_enabled = student_session.is_student_mic_option_enabled()
+    assert is_enabled == 'true', "Mic icon is not disabled"
+
+
+@then("verify student video screen should be enabled")
+def verify_video_screen_disabled(student_session):
+    assert student_session.is_student_video_screen_present() is True, "Video screen is disabled"
+
+
+@then("tap on video icon")
+def tap_on_video_icon(student_session):
+    student_session.tap_on_video_icon()
+
+
+@then("tap on audio mic icon")
+def tap_on_audio_mic_icon(student_session):
+    student_session.tap_on_audio_mic_icon()
+
+
+@then(parsers.parse(
+    'verify tutor video should be disabled and verify black colour RGB value "{color_code}" screen is displayed'))
+def is_tutor_video_muted_and_black_screen_displayed(student_session, color_code):
+    student_session.is_tutor_video_muted_and_black_screen_displayed(color_code)
+
+
 @then(parsers.parse('switch "{text}" the tutor chat toggle button'))
 def toggle_chat(mentor_session, text):
     mentor_session.toggle_chat(text)
@@ -445,7 +484,7 @@ def tap_on_reject_message(mentor_session):
 
 @then(parsers.parse('verify that approved message "{text}" is shown in the other student chat window'))
 def login_as_student2_and_verify_approved_msg(student_session, text):
-    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
     details =  student_session.verify_message_at_student_side(expected_text)
     check.equal(details.result, True, details.reason)
@@ -460,7 +499,7 @@ def login_as_student2(driver, login_in):
 
 @then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))
 def verify_rejected_msg(student_session, text):
-    user_name = getdata(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
+    user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
     expected_text = user_name + " " + text
     details = student_session.verify_message_at_student_side(expected_text)
     check.equal(details.result,False,details.reason)

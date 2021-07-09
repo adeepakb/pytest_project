@@ -79,7 +79,8 @@ def tap_on_close_instruction(instruction_dialog, login_in):
 
 @then(parsers.parse('tap on "{text}" button'))
 def tap_button(login_in, text):
-    login_in.button_click(text)
+    button_status = login_in.button_click(text)
+    check.equal(button_status.result, True, button_status.reason)
 
 
 @then(parsers.parse('verify that open the test on the web'))

@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.options import Options
 '''this class is used for starting appium and  launching App & getting the  Appium driver for all the test files '''
 key = os.getenv('SECRET')
 f = Fernet(key)
-encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
 decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
 
@@ -21,7 +21,7 @@ class BaseClass:
     def setup_android(self):
         key = os.getenv('SECRET')
         f = Fernet(key)
-        encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+        encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 
         desired_caps = {}

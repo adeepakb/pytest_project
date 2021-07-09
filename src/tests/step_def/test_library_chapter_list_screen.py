@@ -16,7 +16,7 @@ personalize = PersonalizedChapterList(driver)
 """storing the feature file name"""
 featureFileName = "Library chapter list screen"
 
-#baseClass.setupLogs(featureFileName)
+# baseClass.setupLogs(featureFileName)
 
 """scenario is initialized so no need to give feature file name each time in @scenario annotation"""
 scenarios('../features/' + featureFileName + '.feature')
@@ -25,10 +25,10 @@ scenarios('../features/' + featureFileName + '.feature')
 # scenario 1
 @given('Launch the app online')
 def launch_app(driver):
-    # code = getdata(Login_Credentials,'login_detail5_search', 'code')
-    # countrycode = getdata(Login_Credentials,'login_detail5_search', 'country_code')
-    # mobno = getdata(Login_Credentials,'login_detail5_search', 'mobile_no')
-    # otp = getdata(Login_Credentials,'login_detail5_search','OTP')
+    # code = get_data(Login_Credentials,'login_detail5_search', 'code')
+    # countrycode = get_data(Login_Credentials,'login_detail5_search', 'country_code')
+    # mobno = get_data(Login_Credentials,'login_detail5_search', 'mobile_no')
+    # otp = get_data(Login_Credentials,'login_detail5_search','OTP')
     home.navigate_to_home_screen(driver)
     pass
 
@@ -37,7 +37,7 @@ def launch_app(driver):
 def personalized_chapter_screen(driver):
     home.select_subject_mathematics(driver)
 
-    
+
 @when('User taps on app back button')
 def tap_on_back_button(driver):
     personalize.click_on_back_arrow(driver)
@@ -55,7 +55,7 @@ def app_back_btn(driver):
 
 
 @then(parsers.parse('Personalized button along with the text "{text}" at the top right of the screen.'))
-def personalised_btn(driver,text):
+def personalised_btn(driver, text):
     library.verify_personalise_btn(driver, text)
 
 
@@ -73,12 +73,13 @@ def sub_videos_tests(driver):
 def chapters_chapters_list(driver):
     library.chapter_name_with_total_video_count(driver)
 
+
 # scenario 3
 @when('User is in Library Chapter list screen')
 def library_chapter_screen(driver):
     home.select_subject_mathematics(driver)
     library.verify_library_cha_screen(driver)
-    
+
 
 @when('User taps on personalized button')
 def tep_on_personalized_button(driver):
@@ -99,7 +100,6 @@ def chapter_name_with_video_count(driver):
 @then('Video card with video thumbnail and Video Progression below the video thumbnail')
 def verify_video_card_and_video_thumbail(driver):
     library.verify_video_thumbnail_progression_bar(driver)
-    
 
 
 @then('Test Button and Practice Button')
@@ -110,7 +110,7 @@ def practice_and_test(driver):
 # scenario 5
 @then('Verify that Chapter name should be displayed')
 def chapter_names(driver):
-#     library.chapter_names_without_video(driver)
+    #     library.chapter_names_without_video(driver)
     pass
 
 

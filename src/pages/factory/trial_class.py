@@ -1,9 +1,9 @@
-from pages.web_pages.trialclass_web import TrialClassWeb
+from pages.web.trialclass_web import TrialClassWeb
 from pages.android.trialclass_android import TrailClassAndroid
 from constants.platform import Platform
 
 
-class TrialClassFactory():
+class TrialClassFactory:
 
     def get_page(self, driver, platform):
         if platform == Platform.ANDROID.value:

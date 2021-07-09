@@ -102,14 +102,14 @@ class Loginoptscreen():
             CommonMethods.wait_for_locator(driver,self.country_Code,15)
             CommonMethods.elementClick(driver,self.country_Code)
             sleep(1)
-            CommonMethods.scrollToElementAndClick(driver, getdata(Login_Credentials, 'login_detail3', 'country_code'))
-            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+            CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3', 'country_code'))
+            CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
             # CommonMethods.scrollToElementAndClick(driver, 'Canada (+1)')
             # CommonMethods.enterText(driver, "9871234", self.profile_mob_num)
             CommonMethods.wait_for_locator(driver, self.loginBtn_id, 15)
             CommonMethods.elementClick(driver, self.loginBtn_id)
             CommonMethods.wait_for_locator(driver, self.OtpTxtBx_id, 15)
-            CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
+            CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'OTP'), self.OtpTxtBx_id)
         else:
             logging.info('User verified Login page')
             
@@ -152,17 +152,17 @@ class Loginoptscreen():
         CommonMethods.wait_for_locator(driver,self.country_Code,15)
         CommonMethods.elementClick(driver,self.country_Code)
         sleep(2)
-        CommonMethods.scrollToElementAndClick(driver,getdata(Login_Credentials,'login_detail3'
-                                                                      , 'country_code'))            
+        CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail3'
+                                                               , 'country_code'))
             
     def enterMobileNo(self,driver):
-        CommonMethods.enterText(driver, getdata(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
+        CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail3', 'mobile_no'), self.phone_num)
 
  
     
     def verifynum(self,driver):
         try:            
-            expected_number = getdata(Login_Credentials, 'login_detail3', 'mobile_no')
+            expected_number = get_data(Login_Credentials, 'login_detail3', 'mobile_no')
             print("Expected num..........",expected_number)
             
             act_num= CommonMethods.getAttributeOfElement(driver,'text',self.otp_phno)

@@ -131,13 +131,13 @@ class QuestionSharing():
                     CommonMethods.wait_for_locator(driver,self.country_Code,15)
                     CommonMethods.elementClick(driver,self.country_Code)
                     sleep(2)
-                    CommonMethods.scrollToElementAndClick(driver,getdata(Login_Credentials,'login_detail4'
-                                                                          , 'country_code'))
-                    CommonMethods.enterText(driver,getdata(Login_Credentials,'login_detail4','mobile_no'),self.phone_num)
+                    CommonMethods.scrollToElementAndClick(driver, get_data(Login_Credentials, 'login_detail4'
+                                                                           , 'country_code'))
+                    CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail4', 'mobile_no'), self.phone_num)
                     CommonMethods.wait_for_locator(driver,self.loginBtn_id,10)
                     CommonMethods.elementClick(driver,self.loginBtn_id)
                     CommonMethods.wait_for_locator(driver,self.OtpTxtBx_id,15)
-                    CommonMethods.enterText(driver, getdata(Login_Credentials,'login_detail4','OTP'), self.OtpTxtBx_id)
+                    CommonMethods.enterText(driver, get_data(Login_Credentials, 'login_detail4', 'OTP'), self.OtpTxtBx_id)
                     sleep(10)
                 self.verify_home_screen(driver)
 
