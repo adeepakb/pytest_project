@@ -9,5 +9,8 @@ ScreenShots/
 /test_data/session_completed_data.json
 .DS_Store
 /tests/step_def/*.png
-/tests/features/*.feature
 /tests/step_def/.DS_Store
+/tests/features/*.feature
+config/chrome_session.json
+/config/login.pkl
+/tests/step_def/screenshots/

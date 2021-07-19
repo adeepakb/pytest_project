@@ -57,9 +57,17 @@ class SessionAlert(TutorCommonMethods):
 
     def content_card_loaded(self):
         subject_name = self.get_element('xpath', '//*[contains(@resource-id, "subject_name")]').text
-        topic_name = self.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
-        session_time = self.get_element('xpath', '//*[contains(@resource-id, "session_time")]').text
-
+        try:
+            topic_name = self.get_element('xpath', '//*[contains(@resource-id, "session_title")]').text
+        except NoSuchElementException:
+            topic_name = self.get_element('xpath', '//*[contains(@resource-id, "topic_name")]').text
+        try:
+            session_time = self.get_element('xpath', '//*[contains(@resource-id, "session_time")]').text
+        except NoSuchElementException:
+            try:
+                session_time = self.get_element('xpath', '//*[contains(@resource-id, "pre_requisite_time")]').text
+            except NoSuchElementException:
+                session_time = self.get_element('xpath', '//*[contains(@resource-id, "post_requisite_date")]').text
         content_dict = {
             "Subject": subject_name,
             "Topic": topic_name,
@@ -73,17 +81,14 @@ class SessionAlert(TutorCommonMethods):
         subject_name = self.get_element('xpath', '//*[contains(@resource-id, "subjectNametv")]').text
         topic_name = self.get_element('xpath', '//*[contains(@resource-id, "chapterNametv")]').text
         session_date = self.get_element('xpath', '//*[contains(@resource-id, "sessionDatetv")]').text
-        session_time = self.get_element('xpath', '//*[contains(@resource-id, "sessionTimetv")]').text
-        session_desc = self.get_element('xpath', '//*[contains(@resource-id, "sessionDesctv")]').text
+        session_time = self.get_element('xpath', '//*[contains(@resource-id, "timeTv")]').text
         details_dict = {
             "Subject": subject_name,
             "Topic": topic_name,
             "Schedule Date": session_date,
             "Schedule Time": session_time,
-            "Session Desc": session_desc
         }
-        assert all(v is not None for v in [subject_name, topic_name, session_time, session_date,
-                                           session_desc]), "Session card details not loaded"
+        assert all(v is not None for v in [subject_name, topic_name, session_time, session_date]), "Session card details not loaded"
         return details_dict
 
 

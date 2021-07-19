@@ -60,11 +60,11 @@ def launch_app(login_in):
 
 
 @given("Launch the app in offline")
-def launch_app(login_in):
+def launch_app(login_in,driver):
     if login_in.toggle_wifi_connection('on'):
         login_in.driver.close_app()
         login_in.driver.activate_app(login.driver.capabilities['appPackage'])
-    set_connection_type(login.driver, "OFFLINE")
+    set_connection_type(driver, "OFFLINE")
 
 
 @then(parsers.re('"(?P<text>(.*))" button.*'))
@@ -133,11 +133,16 @@ def step_impl(login_in):
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify GCC countries mentioned below should be displayed first")
 @then(parsers.re(
     'verify these listed countries are displayed first and in the same order as mentioned "(?P<text>(.*))".*'))
 def step_impl(login_in, text):
     details = login_in.verify_country_codes_in_dropdown(text=text)
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify GCC countries mentioned below should be displayed first")
+def step_impl(login_in):
+    details = login_in.verify_country_codes_in_dropdown()
     check.equal(details.result, True, details.reason)
 
 
@@ -238,7 +243,7 @@ def step_impl(login_in):
 @when("User enters  in Mobile Number Field")
 @given("User enters  in Mobile Number Field")
 def step_impl(login_in):
-    login_in.enter_phone(phone_num='9875643247')
+    login_in.enter_phone(phone_num='9875643243')
 
 
 @when("Tap on 'Byjus the Learning App' icon")
@@ -263,18 +268,18 @@ def enter_otp(login):
     login.enter_otp(login.otp)
 
 
-@then("The bottom sheet appears.")
+@when("The bottom sheet appears.")
 @when("The bottom sheet is displayed.")
 @when('Verify the "This phone number is not registered with a premium account" bottom sheet dialog.')
 @then("The bottom sheet is displayed.")
-@then('Verify the "This phone number is not registered with a premium account" bottom sheet dialog.')
+@then('Verify the "This phone number is not registered with a premium account." bottom sheet dialog.')
 def step_impl(login_in):
-    details = login_in.verify_login_screen_elements(text="This phone number is not registered with a premium account")
+    details = login_in.verify_login_screen_elements(text="This phone number is not registered with a premium account.")
     check.equal(details.result, True, details.reason)
 
 
 @then("Verify that the bottom sheet is dismissed.")
-@then('Verify "Phone number is not registered with a premium account" bottom sheet dialog dismissed')
+@then('Verify "Phone number is not registered with a premium account." bottom sheet dialog dismissed')
 def step_impl(login_in):
     details = login_in.verify_login_screen_elements(text="This phone number is not registered with a premium account")
     check.equal(details.result, False, details.reason)

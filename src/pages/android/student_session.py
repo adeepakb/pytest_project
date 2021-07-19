@@ -41,7 +41,9 @@ class StudentSessionAndroid(StudentSessionBase):
         self.exo_pause = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_pause"]'
         self.exo_play = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_play"]'
         self.exo_progress_bar = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/exo_progress"]'
-        self.join_now = 'com.byjus.thelearningapp.premium:id/card_strip_btn'
+        self.join_now = 'com.byjus.thelearningapp.premium:id/btnAction'
+        self.home_tabs = 'com.byjus.thelearningapp.premium:id/premium_school_home_tabs'
+        self.home_page_title = 'com.byjus.thelearningapp.premium:id/toolbar_title'
 
     def verify_button(self, text):
         self.obj.is_button_displayed(text)
@@ -115,6 +117,16 @@ class StudentSessionAndroid(StudentSessionBase):
     def tap_on_join_now(self):
         self.obj.wait_for_locator('id', self.join_now)
         self.obj.get_element('id', self.join_now).click()
+
+    def tap_on_completed_tab(self):
+        self.obj.element_click('xpath','//android.widget.LinearLayout[@content-desc="Completed"]')
+
+    def is_user_in_ps_page(self):
+        if (self.obj.get_element('id', self.home_page_title).text == 'Classes' and
+                self.obj.get_element('id', self.home_tabs).is_displayed()):
+            return ReturnType(True, 'User is in the PS screen')
+        else:
+            return ReturnType(False, 'User is not in the PS screen')
 
     def close_chat(self):
         self.obj.wait_for_locator('xpath', self.chat_close_icon)

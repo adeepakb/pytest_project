@@ -30,7 +30,7 @@ def instruction_dialog(request, driver):
         instruction_dialog = InstructionDialog().get_page(driver, Platform.WEB.value)
         yield instruction_dialog
 
-@given("launch the app and navigate to home screen")
+@given("launch the application and navigate to home screen")
 def login_as_one_mega_user(driver):
     HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
 

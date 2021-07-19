@@ -37,6 +37,7 @@ class PS_Homescreen_Android(PSHomeScreenBase):
         self.bottom_sheet_book = 'com.byjus.thelearningapp.premium:id/bt_primaryAction'
         self.bottom_sheet_dismiss ='com.byjus.thelearningapp.premium:id/tv_secondaryAction'
         self.byjus_classes_banner= 'com.byjus.thelearningapp.premium:id/ivMarketingBannerTop'
+        self.home_screen_user_name =  "com.byjus.thelearningapp.premium:id/header_title_text"
 
     def verify_ps_tabs(self, expected_text):
         text_elements = self.obj.get_elements('class_name', 'android.widget.LinearLayout')
@@ -48,6 +49,13 @@ class PS_Homescreen_Android(PSHomeScreenBase):
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',
                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
+
+    def verify_home_screen(self):
+        check = self.obj.is_element_present('id',self.home_screen_user_name)
+        if check:
+            return ReturnType(True, 'User is in home screen')
+        else:
+            return ReturnType(False, 'User is not in home screen')
 
     def verify_arrow_present_for_each_requisite(self):
         if len(self.obj.get_elements('id', self.requisite_items)) == len(self.obj.get_elements('id', self.arrow_button)):

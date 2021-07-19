@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from constants.load_json import get_data
 from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
+from pages.android.session_popup import SessionAlert
 from pages.base.trialclass_base import TrialClassBase
 from utilities.common_methods import CommonMethods
 from utilities.tutor_common_methods import TutorCommonMethods
@@ -28,6 +29,7 @@ class TrailClassAndroid(TrialClassBase):
         self.scroll_cards = ScrollCards(driver)
         self.obj = TutorCommonMethods(driver)
         self.master = MasterClass(driver)
+        self.session_popup = SessionAlert(driver)
         package_name = self.driver.capabilities['appPackage'] + ':id'
         self.section_name = 'id', '%s/sectionName' % package_name
         self.card_list = 'id', '%s/sessions_list' % package_name
@@ -103,7 +105,7 @@ class TrailClassAndroid(TrialClassBase):
                 except NoSuchElementException:
                     try:
                         subject = self.obj.child_element_text(cards_root[i], self.subject_name)
-                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') \
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE') \
                                 and self.obj.child_element_displayed(card, self.card_book_btn):
                             return ReturnType(True, 'Trial class session card with book is present')
                     except NoSuchElementException:
@@ -206,7 +208,7 @@ class TrailClassAndroid(TrialClassBase):
                 except NoSuchElementException:
                     try:
                         subject = self.obj.child_element_text(element, self.upnext_subject_name)
-                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE'):
                             return element
                     except NoSuchElementException:
                         return False
@@ -223,7 +225,8 @@ class TrailClassAndroid(TrialClassBase):
     def verify_upnext_free_class_details(self, tllms_topic_details):
         up_next_session = self.get_up_next_trial_class_session()
         app_trial_subject = self.obj.child_element_text(up_next_session, self.upnext_subject_name)
-        app_topic_name = self.obj.child_element_text(up_next_session, self.card_topic)
+        details_dict = self.session_popup.content_card_loaded()
+        app_topic_name = details_dict['Topic']
         if app_trial_subject.lower().capitalize() in tllms_topic_details and app_topic_name in tllms_topic_details:
             return ReturnType(True, 'Free class details in app is same as shown in staging')
         else:
@@ -267,7 +270,7 @@ class TrailClassAndroid(TrialClassBase):
                     self.obj.child_element_by_id(elements[i], self.workshop_label)
                 except NoSuchElementException:
                     subject = self.obj.child_element_text(elements[i], self.subject_name)
-                    if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                    if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE'):
                         self.obj.child_element_click_by_id(elements[i], self.card_book_btn)
                         self.obj.button_click("Confirm & Book")
                         self.obj.button_click("Okay")
@@ -324,6 +327,7 @@ class TrailClassAndroid(TrialClassBase):
 
     def scroll_to_regular_classes(self):
         try:
+            CommonMethods.scrollToElement(self.driver, 'Regular Classes')
             rc_section = self.obj.get_elements('id', self.title)[-1]
             if rc_section.text.lower() == 'regular classes':
                 session_list = self.obj.get_element('id', self.course_list)
@@ -341,8 +345,7 @@ class TrailClassAndroid(TrialClassBase):
                 for card in cards_root:
                     try:
                         subject = self.obj.child_element_text(card, self.subject_name)
-                        if subject in (
-                                'PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') and self.obj.child_element_displayed(
+                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE') and self.obj.child_element_displayed(
                             card,
                             self.card_book_btn):
                             return ReturnType(True, 'Trial class session card is present')
@@ -378,7 +381,7 @@ class TrailClassAndroid(TrialClassBase):
                 for card in cards_root:
                     try:
                         subject = self.obj.child_element_text(card, self.subject_name)
-                        if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') \
+                        if subject in ('SCIENCE','PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS') \
                                 and self.obj.get_element_text('id', self.card_topic_tv) is not None \
                                 and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None :
                                 # and self.obj.get_element_text('id', self.other_slots_detail) is not None
@@ -413,7 +416,7 @@ class TrailClassAndroid(TrialClassBase):
             raise Exception("No trial classes present under regular classes")
         for card in cards_root:
             subject = self.obj.child_element_text(card, self.subject_name)
-            if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+            if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE'):
                 self.obj.child_element_click_by_id(card, self.card_book_btn)
                 self.obj.wait_for_locator('id',self.confirm_book_button)
                 break
@@ -523,7 +526,7 @@ class TrailClassAndroid(TrialClassBase):
                 return ReturnType(False, 'No trial cards present under regular classes')
             for card in cards_root:
                 subject = self.obj.child_element_text(cards_root[i], self.subject_name)
-                if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS'):
+                if subject in ('PHYSICS', 'CHEMISTRY', 'BIOLOGY', 'MATHEMATICS','SCIENCE'):
                     trial_class_topics.append(self.obj.child_element_text(cards_root[i], self.card_topic_tv))
                 i += 1
             if i == len(cards_root):

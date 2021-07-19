@@ -39,7 +39,7 @@ class StagingTutorPlus(Stagingtllms):
         self.sub_profile, self.day = sub_profile, day
         return self
 
-    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test", grade="8"):
+    def convert_video_session(self, subject_topic_name, day="today", assessment_type="unit test", grade="8",**kwargs):
         session_details = self.student_session_details(day, self.login_profile, self.user_profile, self.sub_profile)
         subject_name, topic_name = subject_topic_name
         self.chrome_driver.implicitly_wait(10)

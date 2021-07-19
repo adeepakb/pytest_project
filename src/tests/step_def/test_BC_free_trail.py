@@ -124,7 +124,7 @@ def is_trial_class_booked(trial_class):
 
 @given('ensure tutor has started the session')
 def start_tutor_session(mentor_session):
-    mentor_session.start_tutor_session(course='ternary')
+    mentor_session.start_tutor_session()
 
 
 @then('user completes the session')

@@ -194,3 +194,7 @@ class PS_3Plus1ScreenAndroid(PS_3Plus1ScreenBase):
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',
                              '//android.widget.LinearLayout[@content-desc="' + text + '"]/android.widget.TextView').click()
+
+    def scroll_and_click_see_all(self):
+        self.obj.scroll_to_element('See all')
+        self.login.click_on_link('See all')

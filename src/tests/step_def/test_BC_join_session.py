@@ -47,7 +47,7 @@ def start_tutor_session(mentor_session):
     mentor_session.start_tutor_session()
 
 
-@given("launch the app and navigate to home screen")
+@given("launch the application and navigate to home screen")
 def login_as_one_mega_user(driver):
     HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
 
@@ -64,13 +64,19 @@ def navigate_to_one_to_mega_homescreen(login_in):
 
 @then(parsers.parse('verify "{text}" option is enabled for the current day session on your session has started card'))
 @when(parsers.parse('verify "{text}" option is enabled for the current day session on your session has started card'))
-@then("verify user is landed on one to mega dashboard homescreen")
-def verify_join_now_is_enabled(driver, student_session, text):
+def verify_join_now_is_enabled(driver, student_session, text, login_in):
     global details_dict
+    student_session.tap_on_completed_tab()
+    login_in.click_on_completed_card(0)
     session_pop = SessionAlert(driver)
-    session_pop.verify_popup_present()
-    details_dict = session_pop.content_card_loaded()
+    details_dict = session_pop.verify_session_card_details_loaded()
     student_session.verify_button(text)
+
+
+@then("verify user is landed on one to mega dashboard homescreen")
+def is_user_in_ps_page(student_session):
+    details = student_session.is_user_in_ps_page()
+    check.equal(details.result, True, details.reason)
 
 
 @then('tap on "Join Now" button')
@@ -494,7 +500,6 @@ def login_as_student2_and_verify_approved_msg(student_session, text):
 def login_as_student2(driver, login_in):
     HomePage(driver).login_as_another_one_mega_user(driver,'login_detail1')
     login_in.click_on_premium_school()
-    login_in.click_on_link("Byju's classes")
 
 
 @then(parsers.parse('verify that rejected message "{text}" is not shown in the other student chat window'))

@@ -419,7 +419,8 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
 
     def is_master_class_available(self, day="today", max_rec=None):
         try:
-            if (session := self.get_up_next_master_class_session()) and day == "today":
+            session = self.get_up_next_master_class_session()
+            if session and day == "today":
                 try:
                     session.find_element_by_id(self.pr_status_msg[-1])
                     return ReturnType(False, "Master class is not available for {} ".format(day))
@@ -443,9 +444,11 @@ class MasterClass(MasterClassBase, TutorCommonMethods):
                                            "ended.") from None
 
     def get_master_class_join_now_button(self):
-        if session := self.get_up_next_master_class_session():
+        session = self.get_up_next_master_class_session()
+        if session:
             try:
-                if join_now_btn := session.find_element_by_id(self.card_strip_btn[-1]):
+                join_now_btn = session.find_element_by_id(self.card_strip_btn[-1])
+                if join_now_btn:
                     if join_now_btn.text.lower() == 'join now':
                         return session
                 return None

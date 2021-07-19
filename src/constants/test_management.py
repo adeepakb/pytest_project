@@ -307,7 +307,7 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, t
     if run_id is not None:
         result = client.send_post('add_result_for_case/%s/%s' % (run_id, case_id),
                                   {'status_id': status_id,
-                                   'comment': exc_msg+'\nTested on device model : %s'%testing_device,
+                                   'comment': exc_msg + '\nTested on device model : %s' % testing_device,
                                    'elapsed': elapsed_time,
                                    'version': app_version})
         print("Status: %s" % result)
@@ -408,6 +408,14 @@ def add_attachment_to_result(run_id,case_id, attachment):
     result_id = get_latest_result_id(run_id,case_id)
     response = client.send_post('add_attachment_to_result/%s' % (result_id),attachment)
     print(response)
+
+
+# update execution time for existing test run
+def update_run_for_execution_time(run_id, duration):
+    client = get_testrail_client()
+    response = client.send_post('update_run/%s' % run_id, {'description': 'Total execution time %s' % duration})
+    print(response)
+
 
 def get_run_id(test_run_name, project_name):
     """

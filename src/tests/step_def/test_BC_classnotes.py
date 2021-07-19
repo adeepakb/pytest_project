@@ -92,6 +92,11 @@ def select_tab(home_screen, text):
     home_screen.tap_on_tab(text)
 
 
+@then('verify that user navigates to home screen')
+def verify_home_screen(home_screen):
+    home_screen.verify_home_screen()
+
+
 @then('Verify that For you tab contents are loading')
 def verify_session_card_details(home_screen):
     home_screen.verify_card_details()
@@ -102,9 +107,8 @@ def verify_session_card_details(home_screen):
 @then('Verify that Completed sessions tab contents are loading')
 def verify_completed_card_details(home_screen):
     details_dict = home_screen.verify_completed_card_details()
-    check.equal(all(v is not None for v in[details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],details_dict['Session status']])
-                and details_dict['Session status'] == "Completed"), True, "Completed Session card details not loaded"
-
+    flag = (all(v is not None for v in[details_dict['Subject'], details_dict['Topic'], details_dict['Schedule Date'],details_dict['Session status']]))
+    check.equal(flag and details_dict['Session status'] == "Completed", True, "Completed Session card details not loaded")
 
 @given(parsers.parse('post-requisite "{requisite_name}" should be tagged for the particular classroom session'))
 def attach_post_requisite(home_screen, driver, requisite_name):
@@ -268,3 +272,8 @@ def uninstall_pdf_reader_apps(classnotes):
 @then('install back pdf viewer apps')
 def install_pdf_reader_apps(classnotes):
     classnotes.install_pdf_reader_apps()
+
+
+@then(parsers.parse('verify "{text}" toast message is displayed'))
+def toast_message_is_present(classnotes,text):
+    classnotes.toast_message_is_present(text)
