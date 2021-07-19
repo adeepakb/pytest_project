@@ -32,7 +32,7 @@ class ClassNotesAndroid(ClassNotesBase):
         self.classnotes_img = f'{package_name}/classNotesImg'
         self.arrow_btn = f'{package_name}/arrow_btn'
         self.new_tag = f'{package_name}/classnotesNewTag'
-        self.processing = f'{package_name}/downloadingProgressbar'
+        self.processing = f'{package_name}/arrowLayout'
         self.post_req_session = f'{package_name}/cvSession'
         self.req_content = f'{package_name}/llRequisiteContentLyt'
         self.more_options = '//android.widget.ImageView[@content-desc="More options"]'
@@ -270,3 +270,10 @@ class ClassNotesAndroid(ClassNotesBase):
     # def install_pdf_reader_apps(self):
     #     self.install_app('com.microsoft.skydrive.apk')
     #     self.install_app('com.trustedapp.pdfreaderpdfviewer.apk')
+
+    def toast_message_is_present(self, expected_message):
+        text = self.obj.get_element_text('xpath','//android.widget.Toast')
+        if text == expected_message:
+            return ReturnType(True, 'toast message is displayed as expected when internet is off,class notes download icon is tapped')
+        else:
+            return ReturnType(False, 'toast message is not displayed as expected when internet is off,class notes download icon is tapped')

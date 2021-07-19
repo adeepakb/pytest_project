@@ -312,10 +312,7 @@ class MentorSession:
 
     def verify_ban_student(self):
         # ban student and verify Banned student messages are not be shown
-        self.tap_chat_icon()
         self.wait_for_locator_webdriver(self.ban_student_popup)
-        self.wait_for_clickable_element_webdriver(self.ban)
-        self.chrome_driver.find_element_by_xpath(self.ban).click()
         self.chrome_driver.find_element_by_xpath(self.ban_student_ban).click()
         try:
             user_name = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')

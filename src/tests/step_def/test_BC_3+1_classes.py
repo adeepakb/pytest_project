@@ -38,13 +38,13 @@ def navigate_to_one_to_many_and_mega_user(driver):
 @when("tap on premium school card")
 def tap_on_premium_card(login_in):
     login_in.click_on_premium_school()
-    login_in.click_on_link('See all')
 
 
 @then('verify that the classroom screen consists of "For You" tab')
-def verify_dashboard(login_in):
+def verify_dashboard(login_in,ps_home_screen):
     details = login_in.text_match("For you")
     check.equal(details.result,True,details.reason)
+    ps_home_screen.scroll_and_click_see_all()
 
 
 @then("tap on revision session")
@@ -173,7 +173,7 @@ def verify_button(login_in, text):
 
 @then(parsers.parse('verify in "{text1}" tab the revision topic should be displayed with tag "{text2}"'))
 def verify_dashboard(login_in, ps_home_screen, text1, text2):
-    details_1 = ps_home_screen.verify_ps_tabs(text1)
+    details_1 = login_in.text_match(text1)
     check.equal(details_1.result, True, details_1.reason)
     details_2 = login_in.text_match(text2)
     check.equal(details_2.result,True,details_2.reason)

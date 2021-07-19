@@ -1,5 +1,4 @@
 import time
-
 from appium.webdriver.common.touch_action import TouchAction
 
 from pages.android.Hamburgermenu import Hamburger
@@ -21,6 +20,7 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         self.driver = driver
         self.Hamburg = Hamburger(driver)
         self.ScrollCards = ScrollCards(driver)
+        super().__init__(driver)
         package_name = self.driver.desired_capabilities['appPackage'] + ':id'
         self.hamburger_icon = "id", "%s/roundedNavButton" % package_name
         self.byjus_classes = "id", "com.byjus.thelearningapp.premium:id/home_drawer_list_item_txtvw"
@@ -32,6 +32,13 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
         self.booked_screen_title = 'id', '%s/appTextView_title' % package_name
         self.booked_screen_time = 'id', '%s/appTextViewTime' % package_name
         self.booked_screen_ok = 'id', '%s/appButtonCtaOk' % package_name
+        self.rc_card_root = 'id', '%s/cvSessionCard' % package_name
+        self.card_label_tv = 'id', '%s/tvWorkshop' % package_name
+        self.book_button = 'id', '%s/btBookSession' % package_name
+        self.subject_name = 'id', '%s/tvSubjectName' % package_name
+        self.topic_name = 'id', '%s/tvSessionTopicName' % package_name
+
+
 
     def click_on_hamburger(self):
         try:
@@ -141,32 +148,39 @@ class KnowMoreTest(KnowMoreTestBase, TutorCommonMethods):
             return ReturnType(False, "Couldn't set network mode to {}.".format(mode))
 
     def verify_book_free_class_screen(self, expected_activity='PremiumSchoolCourseActivity'):
-        self.driver.implicitly_wait(5)
+        self.driver.implicitly_wait(10)
+        self.wait_activity(expected_activity)
         if expected_activity in self.driver.current_activity:
             return ReturnType(True, " User is in Book a free class page {}".format(expected_activity))
 
         else:
             return ReturnType(False, " User is not in Book a free class page {}".format(expected_activity))
 
-
-
     def tap_on_book_button(self):
         try:
-            self.is_scrolled_and_element_clicked("Book")
+            self.scroll_to_element("Regular Classes")
+            dimension = self.driver.get_window_size()
+            scrollStart = dimension['height'] * 0.9
+            scrollEnd = dimension['height'] * 0.6
+            self.driver.swipe(100, scrollStart, 100, scrollEnd, 5000)
+            rc_sessions = self.get_elements(*self.rc_card_root)
+            for session in rc_sessions:
+                if session.find_element_by_id(self.topic_name[-1]).is_displayed():
+                    session.find_element_by_id(self.book_button[-1]).click()
+                    break
+                else:
+                    return ReturnType(False, "Book button not found")
 
             if self.is_element_present(*self.booking_page_dropdown):
-                ReturnType(True, "Book button found and booking page found")
+                return ReturnType(True, "Book button found and booking page found")
             else:
-                ReturnType(True, "Book button not found and booking page not found")
-            return ReturnType(True, "Book button found")
+                return ReturnType(True, "Book button not found and booking page not found")
         except:
             return ReturnType(False, "Book button not found")
 
-        return return_type
 
     def book_a_session(self, **kwargs):
         db = kwargs['db']
-        header_text = self.get_element(*self.bs_header_title).text
         selected_time = self.get_selected_time()
         if selected_time:
             db.selected_time = selected_time

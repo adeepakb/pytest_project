@@ -166,19 +166,6 @@ class TutorCommonMethods:
                 return True
         return False
 
-    def button_click(self, expected_text):
-        locator_type = 'xpath'
-        locator_value = "//android.widget.Button"
-        list_of_elements = self.get_elements(locator_type, locator_value)
-        try:
-            for element in range(len(list_of_elements)):
-                actual_text = list_of_elements[element].text
-                if expected_text == actual_text:
-                    list_of_elements[element].click()
-                    break
-        except NoSuchElementException:
-            logging.info("Cannot click on the element with locator: " + locator_value)
-
     def is_button_enabled(self, expected_text):
         locator_type = 'xpath'
         locator_value = "//android.widget.Button"
@@ -294,7 +281,6 @@ class TutorCommonMethods:
     # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator_type, locator_value):
         try:
-            self.wait_for_locator(locator_type, locator_value, 10)
             element = self.get_element(locator_type, locator_value)
             if element is not None:
                 return True
@@ -495,7 +481,7 @@ class TutorCommonMethods:
         else:
             return 'mobile'
 
-    def wait_activity(self, activity_name, timeout=30):
+    def wait_activity(self, activity_name, timeout=5):
         while timeout:
             c_a = self.driver.current_activity.split('.')[-1]
             if activity_name == c_a:
@@ -562,26 +548,6 @@ class TutorCommonMethods:
             self.count = 0
             return False
 
-    def get_device_type(self):
-        size = self.driver.get_window_size()
-        width = size['width']
-        height = size['height']
-        dp = self.driver.get_display_density()
-        diagonal = (math.sqrt(width ** 2 + height ** 2)) / dp
-        if diagonal >= 10:
-            return 'tab'
-        else:
-            return 'mobile'
-
-    def wait_activity(self, activity_name, timeout=30):
-        while timeout:
-            c_a = self.driver.current_activity.split('.')[-1]
-            if activity_name == c_a:
-                return True
-            else:
-                time.sleep(1)
-                timeout -= 1
-        return False
 
     def is_android_notification_present(self, expected_notification):
         flag = False

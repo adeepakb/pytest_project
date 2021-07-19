@@ -55,7 +55,7 @@ def navigate_to_live_classes(dashboard, text):
     dashboard.click_link(text)
 
 
-@given("launch the app online and navigate to home screen")
+@given("launch the application online and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(driver):
     HomePage(driver).navigate_to_one_to_many_and_mega_user(driver)
 
@@ -298,11 +298,16 @@ def select_feedback(dashboard):
 
 @given("reset student session and start session")
 def reset_session(driver, mentor_session):
-    Stagingtlms(driver).reset_session('secondary')
-    mentor_session.start_tutor_session('secondary')
+    Stagingtlms(driver).reset_session()
+    mentor_session.start_tutor_session()
 
 
 @then('tutor should end the session')
 def tutor_taps_on_end_session(mentor_session):
     mentor_session.wait_for_reset_buffer_time_to_complete()
     mentor_session.tutor_end_session()
+
+
+@then(parsers.parse('click on session card'))
+def click_on_completed_card(login_in):
+    login_in.click_on_completed_card(0)

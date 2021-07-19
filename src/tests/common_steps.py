@@ -1,21 +1,22 @@
 from random import choice
-from time import sleep
-
 from pytest import fixture
 from pytest_bdd import given, when, then, parsers
 import pytest_check as check
-
 from constants.platform import Platform
-from pages.android.Hamburgermenu import Hamburger
 from pages.android.homepage import HomePage
 from pages.android.personalizedChapterList import PersonalizedChapterList
 from pages.android.Journeyloadingscreen import JourneyLoadingScreen
 from pages.android.Journeymapscreen import JourneyMapScreen
 from pages.android.Librarychapterlistscreen import LibraryChapterListsScreen
-import pytest_check as check
+from pages.android.trialclass_android import TrailClassAndroid
 from pages.factory.know_more import KnowMoreTestFactory
-from pages.factory.monthly_test import MonthlyTestFactory
 from pages.android.Hamburgermenu import Hamburger
+
+
+@fixture
+def trial_class(driver):
+    trial_class = TrailClassAndroid(driver)
+    yield trial_class
 
 
 class Context:
@@ -151,14 +152,14 @@ def m_class(driver, request):
         raise NotImplementedError()
 
 
+@given('navigate to the home screen')
 @given('launch the app and navigate to home screen')
 def launch_and_nav_to_home(login):
     if login.toggle_wifi_connection('on'):
         login.driver.close_app()
         login.driver.activate_app(login.driver.capabilities['appPackage'])
-    login.implicit_wait_for(15)
-    #login.verify_home_screen()
-    login.implicit_wait_for(15)
+    login.verify_home_screen()
+    pass
 
 
 @given('navigate to one to mega home screen')
@@ -214,13 +215,13 @@ def step_impl(db, tllms, req_type, req_content, this_day):
 @when('verify completed session cards should be displayed')
 def verify_completed_session(std_board):
     details = std_board.is_completed_sessions_displayed()
-    check.equal(details.result, True.details.reason)
+    check.equal(details.result, True,details.reason)
 
 
 @then('verify completed session cards should be displayed')
 def then_verify_completed_session(std_board):
     details = std_board.is_completed_sessions_displayed()
-    check.equal(details.result, True.details.reason)
+    check.equal(details.result, True,details.reason)
 
 
 @when(parsers.re('switch (?P<state>(?:off|on)) the device wifi'))
@@ -245,6 +246,7 @@ def step_impl(std_board):
     std_board.scroll_up_next_top()
 
 
+@then('Tap on the back icon on the web view')
 @when('tap on app back button')
 def tap_on_app_back(std_board):
     std_board.click_app_back_btn()
@@ -274,7 +276,7 @@ def step_impl(std_board):
 @then('verify user is navigated one to mega home screen')
 @then('verify user landed on student dashboard screen')
 def verify_one_to_mega_home_screen(std_board):
-    assert std_board.is_one_to_mega_screen_displayed()
+    check.equal(std_board.is_one_to_mega_screen_displayed(),True,"User is not on student dashboard screen")
 
 
 @then('verify that for up coming session pre requisite are displayed')
@@ -289,15 +291,15 @@ def step_impl(std_board):
 
 
 @when(parsers.re('verify text "(?P<text>(.*))".*'))
-def verify_text(std_board, text):
-    details = std_board.verify_is_text_displayed(text)
-    check.equal(details.result, True, details.reason + f' The text "{text}" is not displayed.')
+def verify_text(login, text):
+    details = login.text_match(text)
+    check.equal(details.result,True, details.reason)
 
 
 @then(parsers.re('verify text "(?P<text>(.*))".*'))
-def verify_text(std_board, text):
-    details = std_board.verify_is_text_displayed(text)
-    check.equal(details.result, True, details.reason + f' The text "{text}" is not displayed.')
+def verify_text(login, text):
+    details = login.text_match(text)
+    check.equal(details.result,True, details.reason)
 
 
 @when(parsers.re('tap on (?:any |)(?P<t>(?:future|completed|tomorrow|up next)) session card'))
@@ -312,46 +314,34 @@ def tap_on_upcoming_card(std_board, t):
 
 @then(parsers.re('verify (?P<s_t>(?:subject|topic)) (?P<n_i>(?:name|icon)).*'))
 def verify_content_desc(ssn_req, std_board, s_t, n_i):
-    std_board.login.implicit_wait_for(0)
     check.equal(ssn_req.verify_content_description(s_t, n_i), True, "Content Description is wrong")
-    std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<c_t>(?:calendar|clock)).*'))
 def verify_content_desc(ssn_req, std_board, c_t):
-    std_board.login.implicit_wait_for(0)
     check.equal(ssn_req.verify_content_description(c_t), True, "Calender time not verified")
-    std_board.login.implicit_wait_for(15)
 
 
 @when(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 @then(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(std_board, tp_tm, cnt_typ):
-    std_board.login.implicit_wait_for(0)
     check.equal(ssn_req.verify_content_description(tp_tm, cnt_typ), True, "Time is worng")
-    std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<tp_tm>(?:topic|time|date)) (?P<cnt_typ>(?:(description|details))).*'))
 def verify_content_desc(ssn_req, std_board, tp_tm, cnt_typ):
-    std_board.login.implicit_wait_for(15)
     check.equal(ssn_req.verify_content_description(tp_tm, cnt_typ), True,
                 " {} {} are not verified".format(tp_tm, cnt_typ))
-    std_board.login.implicit_wait_for(15)
 
 
 @when(parsers.re('verify (?P<b_type>(?i:get help|app back|retry|rate now)) button.*'))
 def verify_button_displayed(std_board, b_type):
-    std_board.login.implicit_wait_for(0)
     check.equal(std_board.is_button_displayed(b_type), True, "{} button is not being displayed".format(b_type))
-    std_board.login.implicit_wait_for(15)
 
 
 @then(parsers.re('verify (?P<b_type>(?i:get help|app back|retry|rate now)) button.*'))
 def verify_button_displayed(std_board, b_type):
-    std_board.login.implicit_wait_for(0)
     check.equal(std_board.is_button_displayed(b_type), True, "{} button is not bring diplayed".format(b_type))
-    std_board.login.implicit_wait_for(15)
 
 
 @when('tap on completed tab')
@@ -359,6 +349,7 @@ def tap_on_completed_tab(std_board):
     check.equal(std_board.ps_home_page_tab('Completed'), True, "Could not click on completed tab")
 
 
+@then('Verify that the user is navigated to the home screen successfully')
 @when('verify user navigated to home screen')
 @then('verify user navigated to home screen')
 def step_impl(login):
@@ -410,17 +401,19 @@ def step_impl(std_board):
 def step_impl(std_board):
     pre_req, post_req = True, True
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req)
-    assert pre_req is displayed and post_req is displayed
+    check.equal(displayed.result,pre_req,displayed.result)
+    check.equal(displayed.result, post_req, displayed.result)
+
 
 
 @then('verify that for completed session post requisite is displayed')
 def step_impl(std_board):
     pre_req, post_req = False, True
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req)
-    check.equal(displayed, True, displayed.reason)
-    flag1 = pre_req is not displayed
+    check.equal(displayed.result, True, displayed.reason)
+    flag1 = pre_req is not displayed.result
     check.equal(flag1, True, displayed.reason + " Pre requisite is displayed")
-    flag2 = post_req is displayed
+    flag2 = post_req is displayed.result
     check.equal(flag2, True, displayed.reason + " Post requisite is  not  displayed")
 
 
@@ -428,10 +421,10 @@ def step_impl(std_board):
 def step_impl(std_board):
     pre_req, post_req = True, False
     displayed = std_board.is_pre_post_requisite_displayed(pre_req, post_req, session='upcoming')
-    check.equal(displayed, True, displayed.reason)
-    flag1 = pre_req is displayed
+    check.equal(displayed.result, True, displayed.reason)
+    flag1 = pre_req is displayed.result
     check.equal(flag1, True, displayed.reason + " Pre requisite is not displayed")
-    flag2 = post_req is not displayed
+    flag2 = post_req is not displayed.result
     check.equal(flag2, True, displayed.reason + " Post requisite is displayed")
 
 
@@ -471,7 +464,7 @@ def step_impl(ssn_req):
 
 @then('verify user is landed on premium school screen')
 def verify_user_on_ps_screen(std_board):
-    assert std_board.is_screen_displayed("Classes")
+    check.equal(std_board.is_screen_displayed("Classes"),True,"user is not on premium school screen")
 
 
 @then('tap on the video')
@@ -498,8 +491,7 @@ def step_impl(ssn_req):
 @given('last session should be ended and should not be rated')
 def step_impl(login, std_board, db):
     login.toggle_wifi_connection('on')
-    # login.verify_home_screen()
-    login.implicit_wait_for(15)
+    login.verify_home_screen()
     db.user_profile = 'user_1'
     check.equal(std_board.complete_last_session(rate_action='skip', db=db), True,
                 "Last session was not ended and rating was not done")
@@ -523,8 +515,8 @@ def step_impl(db, std_board):
 def step_impl(std_board):
     check.equal(std_board.is_all_post_requisite_accessible(), True,
                 "User is not able to access all post requisites attatched to the session")
-# ------------------------------------------------------------------------
-    assert std_board.is_all_post_requisite_accessible()
+    # ------------------------------------------------------------------------
+
 
 
 @when('Tap on hamburger menu')
@@ -552,6 +544,10 @@ def step_impl(driver, know_more):
     check.equal(detail.result, False, detail.reason)
 
 
+@then('Tap on "Byjus classes" option on left navigation')
+@when('Tap on "Byjus classes" option on left navigation')
+@then('Tap on "Byjus classes-Know more" option on the left nav')
+@when('Tap on "Byjus classes-Know more" option on the left nav')
 @when('Tap on the "Byjus classes" option on the left nav')
 @when('tap on "Byjus classes" option on the left nav')
 @then('tap on the "Byjus classes-Know more" option in the left nav')
@@ -579,14 +575,14 @@ def step_impl(driver, know_more):
 @given('switch to online')
 @when('switch to online')
 @then('switch to online')
-def step_impl(driver, know_more):
+def step_impl(know_more):
     detail = know_more.select_online_offline_mode("ALL_NETWORK_ON")
     check.equal(detail.result, True, detail.reason)
 
 
 @then('verify that user is navigated to "Book a free class" screen')
 @then('verify that the user is navigated to the "Book a free class" screen')
-def step_impl(driver, know_more):
+def step_impl(know_more):
     detail = know_more.verify_book_free_class_screen()
     check.equal(detail.result, True, detail.reason)
 
@@ -600,7 +596,17 @@ def step_impl(login):
 @given("login with non booked user")
 def step_impl(login):
     login.toggle_wifi_connection('on')
-    login.set_user_profile(user_profile='user_1', sub_profile='profile_1').verify_user_profile()
+    login.set_user_profile(user_profile='user_1', sub_profile='profile_1')
+
+
+@when('Verify that new user launches the app')
+@given('New user launch the app and navigate to home screen')
+def new_user_launch_and_nav_to_home(login):
+    if login.toggle_wifi_connection('on'):
+        login.driver.close_app()
+        login.driver.activate_app(login.driver.capabilities['appPackage'])
+    login.set_user_profile(user_profile='user_3', sub_profile='profile_1').verify_user_profile()
+    print()
 
 
 @when('tap on "Book" button')
@@ -613,16 +619,42 @@ def step_impl(know_more, m_class):
 
 
 @then('verify user is able to book a session')
-def step_impl(know_more, m_class, db):
+def step_impl(know_more, db):
     detail = know_more.book_a_session(db=db)
     check.equal(detail.result, True, detail.reason)
     detail = know_more.verify_and_close_booked_screen(db=db)
     check.equal(detail.result, True, detail.reason)
-    print()
 
 
 @given('relaunch the app')
 @then('relaunch the app')
-def step_impl(know_more, m_class, db):
+def step_impl(know_more):
     detail = know_more.relaunch_app()
     check.equal(detail.result, True, detail.reason)
+
+
+@given('User Taps on Byjus classes and lands on Booking screen')
+@when('User Taps on Byjus classes and lands on Booking screen')
+def step_impl(know_more, login):
+    login.click_on_premium_school()
+    detail = know_more.verify_book_free_class_screen()
+    check.equal(detail.result, True, detail.reason)
+
+
+@when('taps on book free trail session')
+@then('taps on book free trail session')
+def step_impl(know_more, m_class, db):
+    detail = know_more.tap_on_book_button()
+    check.equal(detail.result, True, detail.reason)
+    detail = m_class.verify_booking_screen()
+    check.equal(detail.result, True, detail.reason)
+    detail = know_more.book_a_session(db=db)
+    check.equal(detail.result, True, detail.reason)
+
+
+@when("new user's book history is deleted from backend")
+@given("new user's book history is deleted from backend")
+def step_impl(trial_class, login):
+    p_id = login.premium_id
+    status = trial_class.delete_completed_sessions_api(premium_id=p_id)
+    check.equal(status == 200, True, "delete completed free trail class was not successful.")

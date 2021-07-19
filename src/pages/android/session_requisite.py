@@ -136,19 +136,17 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         self.get_element(*self.nav_btn).click()
 
     def get_req_sessions(self) -> List[WebElement]:
-        self.login.implicit_wait_for(15)
+        self.login.implicit_wait_for(5)
         try:
             l_value = "//*[@resource-id=\"%s\"]" % self.sd_post_req_list[-1] + "/%s" % self.linear_layout[-1]
             req = self.get_elements('xpath', l_value)
             if len(req) == 0:
                 raise NoSuchElementException
         except NoSuchElementException:
-            self.login.implicit_wait_for(5)
             l_value = "//*[@resource-id=\"%s\"]" % self.sd_pre_req_list[-1] + "/%s" % self.linear_layout[-1]
             req = self.get_elements('xpath', l_value)
             if len(req) == 0:
                 raise NoSuchElementException from None
-        self.login.implicit_wait_for(15)
         return req
 
     def verify_subject_details(self):
@@ -197,7 +195,6 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         return False
 
     def is_subject_icon_displayed(self):
-        self.login.implicit_wait_for(0)
         try:
             subj_ico = self.get_element(*self.card_subject_ico, wait=False)
             return subj_ico.is_displayed()
@@ -218,9 +215,9 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
 
     def is_cards_loaded(self):
         nxt = 4
-        self.login.implicit_wait_for(2.5)
         while nxt:
             try:
+                self.wait_for_locator(*self.card_root)
                 self.get_element(*self.card_root, wait=False)
                 return True
             except NoSuchElementException:
@@ -230,7 +227,6 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
 
     def verify_content_description(self, section=None, e_type=None):
         self.is_cards_loaded()
-        self.login.implicit_wait_for(0)
         section = section.lower()
         if e_type is not None:
             e_type = e_type.lower()
@@ -286,18 +282,18 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         return req
 
     def is_see_more_option_displayed(self):
-        self.login.implicit_wait_for(15)
         req = self.get_elements(*self.requisite_card)
         try:
             see_more = self.get_element(*self.see_more_tv, wait=False)
         except NoSuchElementException:
-            return False
+            return ReturnType(False,
+                          " is more option is not displayed")
         if see_more.is_displayed() and len(req) >= 2:
             see_more.click()
             return ReturnType(True,
                               " is more option is displayed") if self.is_all_requisites_attached().result else ReturnType(
                 False, " is more option is not displayed with all requisites attatched")
-        return ReturnType(True,
+        return ReturnType(False,
                           " is more option is not displayed")
 
     def is_all_requisites_attached(self):
@@ -326,10 +322,9 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         self.scroll_cards.scroll_by_card(start, end)
 
     def get_session(self, session_type='up_next'):
-        retry = 3
+        retry = 2
         self.ps_home_page_tab()
         self.is_cards_loaded()
-        self.login.implicit_wait_for(0)
         # self.scroll_up_next_top()
         while retry:
             session_list = self.get_element(*self.card_list)
@@ -367,11 +362,9 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         raise SessionNotFoundError('no up coming sessions available')
 
     def verify_video_playing(self):
-        t = 20
-        self.login.implicit_wait_for(60)
+        t = 2
         self.static_exo_player()
         pm, ps = list(map(int, self.get_element(*self.video_start_time_tv).text.split(":")))
-        self.login.implicit_wait_for(4.5)
         retry = False
         while t:
             try:
@@ -390,8 +383,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
                 t -= 1
                 sleep(1)
 
-    def is_video_not_buffering(self, t=30):
-        self.login.implicit_wait_for(0)
+    def is_video_not_buffering(self, t=2):
         while t:
             try:
                 self.get_element(*self.video_buffer, wait=False).is_displayed()
@@ -402,15 +394,13 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
         return bool(t)
 
     def static_exo_player(self):
-        self.login.implicit_wait_for(15)
         frame_layout = self.get_element(*self.video_frame_lyt, wait=False)
         lyt_x, lyt_y = frame_layout.location['x'] + 5, int(frame_layout.size['height'] * 0.6)
-        self.login.implicit_wait_for(0)
         try:
             self.get_element(*self.video_play_ib, wait=False)
             return
         except NoSuchElementException:
-            retry = 15
+            retry = 2
         while retry:
             try:
                 self.action_1.press(x=lyt_x, y=lyt_y).release().perform()
@@ -420,8 +410,7 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
                 retry -= 1
 
     def complete_video(self):
-        self.driver.implicitly_wait(0)
-        t = 30
+        t = 2
         if self.is_video_not_buffering():
             while t:
                 try:
@@ -483,10 +472,10 @@ class SessionRequisite(SessionRequisiteBase, TutorCommonMethods):
             assert self.verify_content_description(*dt)
         if session is None:
             details = self.verify_requisite_details("forward_icons")
-            check.equal(details.result, details.reason)
+            check.equal(details.result, True,details.reason)
             details = self.is_see_more_option_displayed()
-            check.equal(details.result, details.reason)
-        return ReturnType(False, "Session card is not there")
+            check.equal(details.result, True,details.reason)
+        return ReturnType(True, "Session card is not there")
 
     def future_card(self):
         session = self.get_session('future')

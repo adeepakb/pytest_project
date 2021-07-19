@@ -173,17 +173,17 @@ class Login(LoginBase, TutorCommonMethods):
         except NoSuchElementException:
             pass
         self.implicit_wait_for(3)
+        # try:
+        #     self.subscription_expired()
+        #     self.get_element(*self.hamburger_icon).click()
+        # except NoSuchElementException:
         try:
-            self.subscription_expired()
             self.get_element(*self.hamburger_icon).click()
+            self.get_element(*self.home_drawer).click()
         except NoSuchElementException:
-            try:
-                self.get_element(*self.hamburger_icon).click()
-                self.get_element(*self.home_drawer).click()
-            except NoSuchElementException:
-                self.reset_and_login_with_otp()
-                self.get_element(*self.hamburger_icon).click()
-                self.get_element(*self.home_drawer).click()
+            self.reset_and_login_with_otp()
+            self.get_element(*self.hamburger_icon).click()
+            self.get_element(*self.home_drawer).click()
         profile_activity = self.wait_activity("ProfileActivity", 20)
         grade = self.get_element(*self.garde_rv_tv).text
         if int(grade.strip(grade[grade.index("th"):])) < 6:
@@ -266,7 +266,7 @@ class Login(LoginBase, TutorCommonMethods):
         self.implicit_wait_for(15)
 
     def click_on_premium_school(self):
-        timeout = 3
+        timeout = 1
         element = None
         while timeout:
             try:
@@ -342,8 +342,8 @@ class Login(LoginBase, TutorCommonMethods):
     def text_match(self, expected_text=None):
         text_matches = self.is_text_match(expected_text)
         if text_matches is True:
-            return True
-        return False
+            return ReturnType(True, '%s text is displayed' % expected_text)
+        return ReturnType(False, '%s text is not displayed' % expected_text)
 
     def dropdown_select(self):
         self.get_element('class_name', "android.widget.Spinner").click()

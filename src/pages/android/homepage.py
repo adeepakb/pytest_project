@@ -39,6 +39,7 @@ class HomePage():
     covid19_pop_up = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
     homescreen_corana_dialog_ok_btn = (By.ID, "com.byjus.thelearningapp.premium:id/bt_primaryAction")
     homescreen_corana_dialog = (By.ID, "com.byjus.thelearningapp.premium:id/dialog_layout")
+    later_button= (By.ID, "com.byjus.thelearningapp.premium:id/tvLater")
     profile_name = (By.ID, "com.byjus.thelearningapp.premium:id/header_title_text")
     covid19_secondary_ok_opt = (By.ID, "com.byjus.thelearningapp.premium:id/tv_secondaryAction")
     covid19_primary_reserve_noe_opn = (By.ID, "com.byjus.thelearningapp.premium:id/bt_primaryAction")
@@ -288,9 +289,6 @@ class HomePage():
                 actual_username = None
                 if account_type == 'one_to_many_and_mega':
                     actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_one_to_many_and_mega')
-                elif account_type == 'one_to_many':
-                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
-                    actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name_one_to_many')
                 elif account_type == 'personal':
                     actual_username = get_data(Login_Credentials, 'login_detail3', 'profile_name')
                 expected_username = CommonMethods.getTextOfElement(driver, self.user_name_profile_page)
@@ -310,15 +308,11 @@ class HomePage():
 
     def navigate_to_home_screen(self, driver):
         try:
-            # subject_rgb = (By.XPATH,"//android.widget.TextView[@text=\'"+text+"\']")
-            if CommonMethods.wait_for_element_visible(driver, self.homescreen_corana_dialog, 6):
-                CommonMethods.elementClick(driver, self.homescreen_corana_dialog_ok_btn)
+            if CommonMethods.wait_for_element_visible(driver, self.covid19_secondary_ok_opt, 6):
+                CommonMethods.elementClick(driver, self.covid19_secondary_ok_opt)
                 self.verify_home_page(driver)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(driver, subject_rgb)
             elif CommonMethods.wait_for_element_visible(driver, self.back_button_id, 3):
-                # self.verify_badge(driver)
                 self.verify_home_page(driver)
-                # VideoPage.subject_rgb_lst = self.get_the_rgb_lst(driver, subject_rgb)
             else:
                 self.reset_and_login_with_otp(driver)
         except NoSuchElementException:

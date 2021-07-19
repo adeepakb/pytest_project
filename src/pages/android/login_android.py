@@ -10,6 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from constants.constants import Login_Credentials
 from pages.android.application_login import Login
 from pages.android.homepage import HomePage
+from pages.android.know_more import KnowMoreTest
 from pages.base.login_base import LoginBase
 from utilities.return_type import ReturnType
 from utilities.tutor_common_methods import TutorCommonMethods
@@ -32,12 +33,14 @@ class LoginAndroid(Login):
         self.action = TouchAction(driver)
         self._scroll = ScrollCards(driver)
         self.driver = driver
+        self.know_more = KnowMoreTest(self.driver)
         self.package_name = driver.desired_capabilities['appPackage']
         self.phone_number = "com.byjus.thelearningapp.premium:id/etPhoneNumber"
         self.password = "//*[contains(@resource-id, 'etPassword')]"
         self.next_btn = "//*[contains(@resource-id, 'btnNext')]"
         self.login_btn = "//*[contains(@resource-id, 'btnLogin')]"
         self.btn_session_board = '//*[contains(@resource-id,"ScheduleCard")]'
+        self.cards = 'com.byjus.thelearningapp.premium:id/card_root'
         self.app_icon = '//*[contains(@content-desc,"Tutor+")]'
         self.app_list = '//*[@content-desc="Apps list"]'
         self.permission_alert = '//*[contains(@resource-id,"alert")]'
@@ -66,7 +69,7 @@ class LoginAndroid(Login):
         self.loginBtn_id = "com.byjus.thelearningapp.premium:id/btnLogin"
         self.continue_button = "com.byjus.thelearningapp.premium:id/tv_submit"
         self.premium_login_text = 'id', '%s:id/img_premium_login' % self.package_name
-        self.selected_text_view = 'id', '%s:id/drop_down_text_view' % self.package_name
+        self.selected_text_view = 'id', '%s:id/selected_text_view' % self.package_name
         self.we_will_sendotp = 'id', '%s:id/tvWeWillSendOtp' % self.package_name
         self.register_text_on_login = 'id', '%s:id/tvRegister' % self.package_name
         self.byju_icon = 'id', '%s:id/iv_google_play_navigation_image' % self.package_name
@@ -87,28 +90,26 @@ class LoginAndroid(Login):
         self.byjus_class_card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/home_card_title_text" and @text="Byju\'s Classes"]'
         self.home_card_layout = "com.byjus.thelearningapp.premium:id/home_card_layout"
         self.marketing_classes_image = 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image'
+        self.subject_names = 'com.byjus.thelearningapp.premium:id/subject_name'
 
     def implicit_wait_for(self, pool):
         self.driver.implicitly_wait(pool)
 
-    def click_on_premium_school(self):
+    def click_on_premium_school(self, relaunch=False):
+        if relaunch:
+            detail = self.know_more.relaunch_app()
+        self.obj.wait_for_locator('id', self.home_card_layout)
+        element = self.obj.get_element('android_uiautomator','new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("' + self.marketing_classes_image + '"))')
+        width = element.size['width']
+        height = element.size['height']
+        self.action.press(None, element.location['x'] + (width / 2), height).wait(3000).move_to(
+            x=element.location['x'] + (width / 2), y=2 * height).release().perform()
+        element.click()
         try:
-            self.obj.wait_for_locator('id', self.home_card_layout)
-            self.obj.get_element('android_uiautomator',
-                                 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(text("Byju\'s Classes"))')
-            self.obj.element_click('xpath', self.byjus_class_card)
-            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
-                                                                                                              self.permission_container_tab):
-                self.allow_deny_permission(["Allow", "Allow", "Allow"])
-        except NoSuchElementException:
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/backToTopClick')
-            element = self.obj.get_element('android_uiautomator',
-                                           'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("' + self.marketing_classes_image + '"))')
-            width = element.size['width']
-            height = element.size['height']
-            self.action.press(None, element.location['x'] + (width / 2), height).wait(3000).move_to(
-                x=element.location['x'] + (width / 2), y=2 * height).release().perform()
-            element.click()
+            self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',self.permission_container_tab)
+            self.allow_deny_permission(["Allow", "Allow", "Allow"])
+        except:
+            pass # skip
 
     # This step is only applicable in web. Hence skipping this for android
     def click_on_hamburger(self):
@@ -130,6 +131,7 @@ class LoginAndroid(Login):
         self.wait_for_locator('xpath', self.phone_number)
         self.get_element('xpath', self.phone_number).clear()
         self.get_element('xpath', self.phone_number).send_keys(phone_num)
+
     def enter_otp(self, otp=None, sub_profile_type='primary') -> None:
         if otp is not None:
             self.get_element('id', self.otp_id).send_keys(otp)
@@ -525,7 +527,7 @@ class LoginAndroid(Login):
         except NoSuchElementException:
             pass
 
-    #this is an old method
+    # this is an old method
     # def reset_and_login_with_otp(self):
     #     self.obj.execute_command('adb shell pm clear com.byjus.tutorplus')
     #     self.obj.execute_command('adb shell monkey -p com.byjus.tutorplus -c android.intent.category.LAUNCHER 1')
@@ -685,7 +687,7 @@ class LoginAndroid(Login):
                     return ReturnType(True, "{} text is correct".format(
                         text)) if check else ReturnType(False,
                                                         "Byjus icon opn login page not displayed")
-                elif text.lower() == 'this phone number is not registered with a premium account':
+                elif text.lower() == 'this phone number is not registered with a premium account.':
                     self.driver.implicitly_wait(3)
                     if otp_activity in self.driver.current_activity or login_activity in self.driver.current_activity:
                         message = self.get_element(*self.dialog_message).text
@@ -721,9 +723,9 @@ class LoginAndroid(Login):
         return self.verify_login_screen_elements(text='autofill')
 
     def verify_country_codes_in_dropdown(self,
-                                         text='India(+91+),UAE(+971),Bahrain(+973),Kuwait(+965),Oman(+968),'
+                                         text='India(+91),UAE(+971),Bahrain(+973),Kuwait(+965),Oman(+968),'
                                               'Qatar(+974),Saudi Arabia(+966),United Arab Emirates (+971)',
-                                         ordered=True):
+                                         ordered=False):
         country_code_list = self.get_country_codes_from_dropdown()
         country_code_list_text = text.replace("(", " (").replace("  (", " (").split(",")
         if ordered is True:
@@ -840,10 +842,10 @@ class LoginAndroid(Login):
             return ReturnType(False, "Couldnt click on byju's app icon on login")
 
     def user_navigates_to_play_store(self):
-        self.driver.implicitly_wait(2)
 
         unauthenticated_play_store = 'UnauthenticatedMainActivity'
         main_activity = 'MainActivity'
+        self.wait_activity(main_activity)
         current_activity = self.driver.current_activity
 
         if unauthenticated_play_store in current_activity or main_activity in current_activity:
@@ -873,6 +875,7 @@ class LoginAndroid(Login):
             return ReturnType(False, "Could not  tap on {}  button".format(text))
 
     def verify_dialer(self):
+        self.wait_activity("MainActivity")
         current_activity = self.driver.current_activity
         if "MainActivity" in current_activity:
             return ReturnType(True, "User is on dialer screen")
@@ -1057,6 +1060,10 @@ class LoginAndroid(Login):
 
     def login_as_free_user(self):
         HomePage(self.driver).reset_and_login_with_otp(self.driver, "free")
+
+    def click_on_completed_card(self, index):
+        cards_list = self.obj.get_elements('id', self.subject_names)
+        cards_list[index].click()
 
 
 class LoginException(Exception):

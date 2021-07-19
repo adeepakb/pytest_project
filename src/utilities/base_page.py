@@ -43,7 +43,6 @@ class BaseClass:
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
         output = stdout.decode("ascii")
         app_version = re.search(r'^.*?\bversionCode=(\d+)', output).group(1)
-        print(app_version)
         return app_version
 
     @staticmethod

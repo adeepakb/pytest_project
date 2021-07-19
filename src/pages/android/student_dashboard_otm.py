@@ -6,6 +6,7 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
 
+from pages.android.know_more import KnowMoreTest
 from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 from utilities.return_type import ReturnType
@@ -15,9 +16,6 @@ from pages.base.student_dashboard_otm import StudentDashboardBase
 from utilities.tutor_common_methods import TutorCommonMethods
 from utilities.exceptions import *
 import pytest_check as check
-
-
-
 
 
 class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
@@ -98,6 +96,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.assessment_start = 'id', '%s/test_start_button' % package_name
         self.assessment_submit_btn = 'id', '%s/rectangleNavButton' % package_name
         self.instruction_start_btn = 'id', '%s/btStartButton' % package_name
+        self.toolbar_title_upnext = 'id', '%s/toolbar_title' % package_name
         if device_type != 'tab':
             self.toolbar_title = 'id', '%s/toolbar_title' % package_name
             self.home_page_tab = 'id', '%s/premium_school_home_tabs' % package_name
@@ -115,8 +114,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             self.card_strip_desc = 'id', '%s/strip_message' % package_name
             self.card_strip_btn = 'id', '%s/card_strip_btn' % package_name
 
+
     def verify_is_text_displayed(self, expected_text=None):
-        self.login.implicit_wait_for(10)
         while expected_text:
             try:
                 response = self.get_element('xpath', "//*[contains(@text, '" + expected_text + "')]").is_displayed()
@@ -140,6 +139,11 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         return screen_status
 
     def ps_home_page_tab(self, tab_name="For you", check=False):
+        try:
+            if self.get_element(*self.toolbar_title_upnext).text.lower() == 'up next':
+                self.click_back()
+        except:
+            pass
         action_bar_tab = self.get_element(*self.home_page_tab)
         tabs_view = action_bar_tab.find_elements_by_class_name('android.widget.TextView')
         for tab_view in tabs_view:
@@ -152,7 +156,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         return False
 
     def get_session(self, session_type='up_next'):
-        retry = 3
+        retry = 1
         self.ps_home_page_tab()
         self.session_requisite.is_cards_loaded()
         self.login.implicit_wait_for(0)
@@ -162,6 +166,11 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 see_more_less = self.get_element(*self.see_more_tv)
                 if see_more_less.text.lower() != 'see less':
                     see_more_less.click()
+                    try:
+                        if self.is_button_displayed('retry'):
+                            self.click_back()
+                    except:
+                        pass
             except NoSuchElementException:
                 pass
             session_list = self.get_element(*self.card_list)
@@ -174,6 +183,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                             self.login.implicit_wait_for(0)
                             continue
                         except NoSuchElementException:
+                            #self.click_back()
                             return session
                     elif session_type == 'future':
                         try:
@@ -255,7 +265,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 sleep(1)
 
     def is_join_now_btn_displayed(self):
-        retry = 2
+        retry = 1
         while retry:
             try:
                 ele = self.get_element(
@@ -299,7 +309,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             self.login.implicit_wait_for(15)
 
     def bottom_sheet_okay_btn(self, verify=False):
-        timeout = 5
+        timeout = 2
         okay_btn = self.get_element(*self.bottom_sheet_submit_btn)
         if not verify:
             okay_btn.click()
@@ -316,7 +326,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 "Bottom sheet okay button is  displayed")
 
     def network_btn_retry(self, verify=False):
-        retry = 3
+        retry = 2
         rty_btn = self.get_element(*self.sd_retry_btn)
         if not verify:
             while retry:
@@ -361,7 +371,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             return ReturnType(False, "completed check is displayed")
 
     def is_screen_displayed(self, title=None):
-        timeout = 5
+        timeout = 2
         self.login.implicit_wait_for(0)
         while timeout:
             toolbar_titles = self.get_elements(*self.toolbar_title)
@@ -460,6 +470,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             try:
                 session = self.get_element(*self.card_root)
                 session_list = self.get_element(*self.card_list)
+                self.scroll_to_element("Up next")
                 if session.find_element('id', self.pr_status_msg[-1]).text.lower() == "completed":
                     self.scroll_cards.scroll_by_card(session, session_list)
                     swipe -= 1
@@ -479,7 +490,6 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                                   "Either Post Requisite is not attacthed checked or revision material not shown")
             except NoSuchElementException:
                 return ReturnType(False, "Post requisite not found")
-
 
     def is_rate_now_card_displayed(self):
         try:
@@ -560,8 +570,8 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             req = self.get_req_sessions()
             if len(req) > 2:
                 self.click_app_back_btn()
-                return True
-        return False
+                return ReturnType(True," see more option is displayed")
+        return ReturnType(False,"see more option is not being displayed")
 
     def scroll_up_next_top(self):
         start = self.get_element(*self.card_up_next)
@@ -600,13 +610,12 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             raise SessionNotFoundError("'UP NEXT' session might not be displayed.")
 
     def last_completed_session_up_next(self, completed=None):
-        self.login.implicit_wait_for(30)
         self.click_back()
         self.staging.otm_home_screen()
-        check = 5
+        check = 1
+        self.wait_for_locator(*self.card_list)
         session_list = self.get_element(*self.card_list)
         session = None
-        self.login.implicit_wait_for(0)
         if completed == 'today':
             lst_cmp_ssn_dt = time.strftime("%d %b")
         else:
@@ -615,6 +624,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 lst_cmp_ssn_dt = self.get_element(*self.pr_status_date).text
             except NoSuchElementException:
                 self.ps_home_page_tab(tab_name='Completed')
+                self.wait_for_locator(*self.pr_status_msg)
                 self.get_element(*self.pr_status_msg)
                 lst_cmp_ssn_dt = self.get_element(*self.pr_status_date).text
                 self.ps_home_page_tab(tab_name='For you')
@@ -722,33 +732,34 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                         session_reset_status = True
                 retry -= 1
 
-    def complete_last_session(self, rate_action="skip", rate_activity_check=False, db=None):
-        profile = 'login_details_3'
-        sub_profile = 'profile_1'
-        if rate_action == 'rate':
-            user_profile = 'user_2'
-        else:
-            user_profile = 'user_1'
-        self.login.set_user_profile(user_profile=user_profile).verify_home_screen()
+    def complete_last_session(self, rate_action="skip", rate_activity_check=False, db=None, profile='login_details_3',
+                              sub_profile='profile_1', user_profile='user_1', relaunch=False):
+        # if rate_action == 'rate':
+        #     user_profile = 'user_2'
+        # else:
+        #     user_profile = 'user_1'
+        self.login.set_user_profile(user_profile=user_profile)  # .verify_home_screen() TODO
         self.staging.session_relaunch()
         self.staging.attach_session_video(grade="8", profile=profile, user_profile=user_profile,
                                           sub_profile=sub_profile)
-        self.login.click_on_premium_school()
+        self.login.click_on_premium_school(relaunch=relaunch)
         if not self.rate_session():
             join_session_topic_name = self.join_session(rate_action=rate_action)
             db.topic_name = join_session_topic_name
-            self.staging.end_ongoing_session(rate_action=rate_action, topic_name=join_session_topic_name)
-            self.login.implicit_wait_for()
+            session = 'today',
+            self.staging.end_ongoing_session(rate_action=rate_action, user_profile=user_profile,
+                                             sub_profile=sub_profile, topic_name=join_session_topic_name)
+            self.login.implicit_wait_for(0)
             self.get_element(*self.bottom_sheet_submit_btn).click()
             if rate_activity_check:
-                assert self.wait_activity('RatingActivity')
+                check.equal(self.wait_activity('RatingActivity'), True, "Not in rate activity")
         self.session_rating(action=rate_action)
         return True
 
     def session_rating(self, action="skip"):
         rating_activity = "RatingActivity"
         if action == "skip":
-            if self.wait_activity(rating_activity, 15):
+            if self.wait_activity(rating_activity, 5):
                 self.click_app_back_btn()
                 try:
                     if self.get_element(*self.toolbar_title).text.lower() == 'session details':
@@ -765,7 +776,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
             except NoSuchElementException:
                 pass
             if self.wait_activity(rating_activity, 15):
-                rating_bar = self.get_element(*self.rating_bar)
+                rating_bar = self.get_element("id","com.byjus.thelearningapp.premium:id/ratingBarInitial")
                 bar_location = rating_bar.location
                 bar_size = rating_bar.size
                 start_x, start_y = bar_location['x'], bar_location['y'] + bar_size['height'] // 2
@@ -774,9 +785,10 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
                 self.get_element(*self.rating_btn_submit).click()
 
     def rate_session(self, session='today'):
-        self.login.implicit_wait_for(30)
+        self.login.implicit_wait_for(5)
         cst = None
         last_completed = time.strftime("%d %b")
+        self.wait_for_locator(*self.card_list)
         session_list = self.get_element(*self.card_list)
         session_cards = session_list.find_elements_by_class_name('android.view.ViewGroup')
         self.login.implicit_wait_for(0)

@@ -23,7 +23,7 @@ def tap_on_premium_school(login):
 @when("verify future session cards are displayed under 'For you' tab")
 def verify_future_card(std_board):
     session = std_board.get_session()
-    check.equal(session, None, "future session cards are displayed under 'For you' tab")
+    check.equal(session is not None, True,"future session cards are displayed under 'For you' tab")
 
 
 @when('verify join now button is displayed on ongoing sessions')

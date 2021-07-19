@@ -192,3 +192,8 @@ def reset_and_login_with_otp(driver):
 @when(parsers.parse('tap on "{name}" text'))
 def tap_on_link(login_in,name):
     login_in.click_on_link(name)
+
+
+@then('verify that user navigates to home screen')
+def verify_home_screen(home_screen):
+    home_screen.verify_home_screen()

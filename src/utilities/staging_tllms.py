@@ -36,9 +36,8 @@ class Stagingtllms(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
+        self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument(f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                                        f'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36')
         self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:
@@ -65,14 +64,12 @@ class Stagingtllms(TutorCommonMethods):
         self.ATTACHMENT_DETAILS = '../../config/attachments.json'
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.REQUISITE_DETAILS = '../../config/ps_requisite.json'
-        #self.EMAIL = str(get_data('../../config/config.json', 'staging_access', 'email'))
         fp = '../config/config.json'
         key = os.getenv('SECRET')
         f = Fernet(key)
         encrypted_data = get_data(fp, 'encrypted_data', 'token')
         decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
         self.EMAIL = decrypted_data['staging_access']['email']
-        #self.PASSWORD = str(get_data('../../config/config.json', 'staging_access', 'password'))
         self.PASSWORD = decrypted_data['staging_access']['password']
         self.IN_REQ = 'in_req'
         self.POST_REQ = 'post_req'
@@ -95,17 +92,15 @@ class Stagingtllms(TutorCommonMethods):
         self.today = datetime.today().strftime('%Y-%m-%d')
 
     def save_session(self):
+        self.chrome_driver.implicitly_wait(5)
         self.chrome_driver.find_element(By.CSS_SELECTOR, 'img[src]')
         self.chrome_driver.get_screenshot_as_file("view.png")
         with open('../../config/login.pkl', 'wb') as io_write:
             pickle.dump(self.chrome_driver.get_cookies(), io_write)
 
     def login_to_staging(self, cms_login=None):
-        self.chrome_driver.implicitly_wait(30)
         email = self.EMAIL
         password = self.PASSWORD
-        retry = 3
-        current_url = None
         try:
             if cms_login:
                 self.chrome_driver.get(self.TUTOR_PLUS_CMS_URL)
@@ -113,11 +108,13 @@ class Stagingtllms(TutorCommonMethods):
                 self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
             else:
                 self.chrome_driver.get(self.STAGING_TLLMS_URL)
+            self.chrome_driver.maximize_window()
             self.wait_for_locator_webdriver("//input[@id='email']")
             self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
             self.wait_for_locator_webdriver("//button[@type='submit']")
             self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
             self.wait_for_locator_webdriver("//input[@type='email']")
+            self.wait_for_clickable_element_webdriver("//input[@type='email']")
             self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
             self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
             self.wait_for_clickable_element_webdriver("//input[@type='password']")
@@ -125,21 +122,7 @@ class Stagingtllms(TutorCommonMethods):
             self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
         except NoSuchElementException:
             self.chrome_driver.get_screenshot_as_file("failed.png")
-            raise
-        while retry:
-            current_url = self.chrome_driver.current_url
-            if "tllms.com" in current_url:
-                return self
-            retry -= 1
-            sleep(0.5)
-        try:
-            os.mkdir("screenshots")
-        except FileExistsError:
-            pass
-        date_month = datetime.now().strftime("%H%M%S_%d%m%Y")
-        file_name = "../../test_data/screenshots/failed_%s.png" % date_month
-        self.chrome_driver.get_screenshot_as_file(file_name)
-        raise Exception(f"unusual redirect to '{current_url}'.")
+            raise Exception("Unable to login to staging")
 
     def get_tutor_url(self, course='primary', premium_id='primary'):
         email = str(get_data('../config/config.json', 'staging_access', 'email'))
@@ -209,66 +192,6 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.close()
         return tutor_url
 
-    def reset_session(self, course='primary'):
-        premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
-        if course == 'primary':
-            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_primary'))
-            premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        elif course == 'secondary':
-            session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_secondary'))
-            premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        elif course == 'ternary':
-            session_course_id = str(get_data('../config/login_data.json', 'login_detail1', 'course_id'))
-            premium_id = str(get_data('../config/login_data.json', 'login_detail1', 'premium_id'))
-
-        self.login_to_staging()
-        self.chrome_driver.save_screenshot("image.png")
-        self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='Mentoring']").click()
-        self.chrome_driver.save_screenshot("image1.png")
-        self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-        self.chrome_driver.save_screenshot("image2.png")
-
-        self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
-        self.wait_for_locator_webdriver("//input[@id ='target_date']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
-        self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
-        self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
-        self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
-        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
-        reset_col = 10
-        tagged_col = status_col = None
-        for i in range(1, cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'Teaching Material/Video Tagged':
-                tagged_col = i
-            elif header == 'Status':
-                status_col = i
-
-        for r in range(1, rows + 1):
-            try:
-                status = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
-                # incase of multiple sessions in same day
-                course_details = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
-                course_id = re.search(r'^.*?\bCourse id : (\d+)', course_details).group(1)
-                if 'one_to_mega' in status and course_id == session_course_id:
-                    self.chrome_driver.find_element_by_xpath(
-                        "//tr[" + str(r) + "]/td[" + str(reset_col) + "]/a[text()= 'Reset']").click()
-                    break
-            except NoSuchElementException:
-                continue
-        self.chrome_driver.close()
-
     def get_mobile_and_ccode(self, profile='login_details_3', user_profile='user_1', sub_profile='profile_1'):
         from pages.android.application_login import Login
         login = Login(self.driver)
@@ -309,84 +232,6 @@ class Stagingtllms(TutorCommonMethods):
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def select_course(self, course_id=None):
-        # Tutor is in cms course page
-        self.wait_for_locator_webdriver("//table[contains(@class,'MuiTable-root')]")
-        course_table_rows = len(
-            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root')]/tbody/tr"))
-        course_table_cols = len(
-            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root')]/thead/tr/th"))
-        course_id_col = None
-        topics_col = 11
-        for i in range(1, course_table_cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'MuiTable-root')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'ID':
-                course_id_col = i
-                break
-        r = 1
-        while True:
-            course_found = False
-            self.wait_for_locator_webdriver("//tr[" + str(r) + "]/td[" + str(course_id_col) + "]")
-            value = self.chrome_driver.find_element_by_xpath(
-                "//tr[" + str(r) + "]/td[" + str(course_id_col) + "]").text
-            if course_id == value:
-                course_found = True
-                self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(topics_col) + "]/a").click()
-                break
-            r += 1
-            if course_found is False and r == course_table_rows:
-                svg_icons = self.chrome_driver.find_elements_by_css_selector('.MuiSvgIcon-root')
-                length = len(svg_icons)
-                svg_icons[length - 1].click()  # click on next for pagination
-                r = 1
-
-    def select_topic_and_update_teaching_material(self, topic_id=None):
-        teaching_material = str(get_data('../config/config.json', 'update_pdf_in_cms_details', 'teaching_material'))
-
-        # Tutor is in cms topics page
-        self.wait_for_locator_webdriver("//table[contains(@class,'MuiTable-root')]")
-        topic_table_rows = len(
-            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root')]/tbody/tr"))
-        topic_table_cols = len(
-            self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'MuiTable-root')]/thead/tr/th"))
-        topics_id_col = None
-        for i in range(1, topic_table_cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'MuiTable-root')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'ID':
-                topics_id_col = i
-                break
-        row = 1
-        while True:
-            topic_found = False
-            time.sleep(1.0)
-            result = self.chrome_driver.find_element_by_xpath(
-                "//tr[" + str(row) + "]/td[" + str(topics_id_col) + "]").text
-            if topic_id == result:
-                topic_found = True
-                teaching_material_input_fields = self.chrome_driver.find_elements_by_css_selector(
-                    '.MuiAutocomplete-inputRoot .MuiAutocomplete-input')
-                teaching_material_input_fields[row - 1].click()
-                teaching_material_input_fields[row - 1].send_keys((Keys.COMMAND, "a"))
-                teaching_material_input_fields[row - 1].send_keys(teaching_material, Keys.ARROW_DOWN)
-                input_id = teaching_material_input_fields[row - 1].get_attribute("id")
-                activedescendant = input_id + "-option-0"
-                activedescendant_expected = activedescendant.replace("Mui", "mui")
-                self.chrome_driver.find_element_by_css_selector(
-                    "li#" + activedescendant_expected + ".MuiAutocomplete-option").click()
-                self.wait_for_locator_webdriver("//span[contains(text(),'Save')]")
-                self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Save')]").click()
-                time.sleep(0.5)
-                break
-            row += 1
-            if topic_found is False and row == topic_table_rows:
-                svg_icons = self.chrome_driver.find_elements_by_css_selector('.MuiSvgIcon-root')
-                length = len(svg_icons)
-                svg_icons[length - 1].click()  # click on next for pagination
-                row = 1
-
     def login_to_cms_staging(self):
         email = str(get_data('../config/config.json', 'staging_access', 'email'))
         password = str(get_data('../config/config.json', 'staging_access', 'password'))
@@ -396,6 +241,8 @@ class Stagingtllms(TutorCommonMethods):
         self.wait_for_locator_webdriver("//span[contains(text(),'LOGIN')]")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
         self.wait_for_locator_webdriver("//input[@id='email']")
+        self.chrome_driver.implicitly_wait(2)
+        self.wait_for_clickable_element_webdriver("//input[@id='email']")
         self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
         self.wait_for_locator_webdriver("//button[@type='submit']")
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
@@ -408,387 +255,7 @@ class Stagingtllms(TutorCommonMethods):
         self.wait_for_locator_webdriver("//span[contains(text(),'Next')]")
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'Next')]").click()
 
-    def update_teaching_material(self, course_details):
-        print(course_details)
-        course_id = re.search(r'^.*?\bCourse id : (\d+)', course_details).group(1)
-        topic_id = re.search(r'Topic id ?: (\d+)', course_details).group(1)
-        self.login_to_cms_staging()
-        self.select_course(course_id)
-        self.select_topic_and_update_teaching_material(topic_id)
-        self.chrome_driver.close()
-
-    def is_session_present_today(self):
-        premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
-
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='mentoring']").click()
-        self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-        self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
-        self.wait_for_locator_webdriver("//input[@id ='target_date']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
-        self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
-        self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
-        self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-        flag = False
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
-        if rows >= 1:
-            flag = True
-        self.chrome_driver.close()
-        return flag
-
-    def is_teaching_material_tagged(self):
-        premium_id = str(get_data('../config/config.json', 'asset_not_tagged_account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
-
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='mentoring']").click()
-        self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-
-        self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
-        self.wait_for_locator_webdriver("//input[@id ='target_date']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
-        self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
-        self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
-        self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
-        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
-        course_info = dict()
-        tagged_flag = tagged_col = None
-        for i in range(1, cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'Teaching Material Tagged':
-                tagged_col = i
-                break
-
-        for r in range(1, rows + 1):
-            try:
-                tagged_flag = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[contains(@class,'status_tag')]").text
-                course_details = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
-                course_info = {
-                    "tagged": tagged_flag,
-                    "course_details": course_details
-                }
-            except NoSuchElementException:
-                continue
-
-        self.chrome_driver.close()
-        return course_info
-
-    def click_on_teaching_material_link(self):
-        self.wait_for_clickable_element_webdriver("//a[text()='Teaching Material ']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Teaching Material ']").click()
-
-    def verify_teaching_material_page(self):
-        self.wait_for_locator_webdriver("//th[text()='ID']")
-        self.chrome_driver.find_element_by_xpath("//th[text()='ID']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//th[text()='MATERIAL NAME']").is_displayed()
-
-    def click_on_add_material_button(self):
-        self.wait_for_clickable_element_webdriver("//span[text()='Add Material']")
-        self.chrome_driver.find_element_by_xpath("//span[text()='Add Material']").click()
-
-    def verify_teaching_material_popup(self):
-        self.wait_for_locator_webdriver("//*[@role='dialog']")
-        self.wait_for_locator_webdriver("//div[@id='max-width-dialog-title']")
-        header_text = self.chrome_driver.find_element_by_xpath("//div[@id='max-width-dialog-title']").text
-        assert header_text == 'Upload Teaching Material', "Upload Teaching Material header is not present"
-        self.chrome_driver.find_element_by_xpath("//label[text()='Material Name:']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//input[@id='name']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//label[text()='Upload:']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//input[@id='pdfContainer']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//span[text()='Submit']").is_displayed()
-        self.chrome_driver.find_element_by_xpath("//span[text()='Close']").is_displayed()
-
-    def click_outside_upload_teaching_material_popup(self):
-        ActionChains(self.chrome_driver).drag_and_drop_by_offset(
-            self.chrome_driver.find_element_by_xpath("//*[@class='MuiIconButton-label']"), 10, 10).perform()
-
-    def verify_teaching_material_popup_is_closed(self):
-        self.wait_for_element_not_present_webdriver("//*[@role='dialog']")
-        try:
-            self.chrome_driver.find_element_by_xpath("//*[@role='dialog']").is_displayed()
-        except NoSuchElementException:
-            return False
-        return True
-
     def close_driver(self):
-        self.chrome_driver.close()
-
-    def close_upload_teaching_material_dialog(self):
-        self.chrome_driver.find_element_by_xpath("//span[text()='Close']").click()
-
-    def verify_teaching_material_page_pagination(self):
-        i = 1
-        length = len(self.chrome_driver.find_elements_by_css_selector('.MuiButton-label'))
-        while i < length:
-            pagination_icon = self.chrome_driver.find_element_by_xpath("//span[text()=" + str(i) + "]")
-            self.chrome_driver.execute_script("arguments[0].click();", pagination_icon)  # click on next for pagination
-            self.chrome_driver.implicitly_wait(0.5)
-            pagination_icon = self.chrome_driver.find_element_by_xpath(
-                "//span[text()=" + str(i) + "]")  # page reloaded,hence fetching element again
-            assert pagination_icon.is_enabled() == True, "Page " + i + "is not selected"
-            i += 1
-
-    def set_material_name(self):
-        global material_name
-        random = randint(1, 100000)
-        material_name = 'Material_' + str(random)
-        self.chrome_driver.find_element_by_xpath("//input[@id='name']").send_keys(material_name)
-        return material_name
-
-    def choose_pdf_file(self):
-        input_element = self.chrome_driver.find_element_by_xpath("//input[@type='file']")
-        current_location = os.path.dirname(os.path.abspath(__file__))
-        location = os.path.normpath(os.path.join(current_location, '../../files/Simple_Equations_Sample.pdf'))
-        input_element.send_keys(location)
-        ActionChains(self.chrome_driver).send_keys(Keys.ESCAPE).perform()
-
-    def verify_file_other_than_pdf_cannot_be_selected(self):
-        self.chrome_driver.execute_script("arguments[0].click();",
-                                          self.chrome_driver.find_element_by_xpath("//input[@type='file']"))
-        accept_value = self.chrome_driver.find_element_by_xpath("//input[@type='file']").get_attribute('accept')
-        assert accept_value == ".pdf", "Able to select files other than .pdf file"
-
-    def click_on_submit_teaching_material_page(self):
-        self.chrome_driver.find_element_by_xpath("//span[text()='Submit']").click()
-
-    def is_uploaded_file_present(self):
-        self.wait_for_locator_webdriver("//*[text()='" + material_name + "']")
-        material_name_found = material_id_found = False
-        table_items = self.chrome_driver.find_elements_by_css_selector('.MuiTableRow-root')
-        for item in table_items:
-            item_value = item.text
-            items = item_value.split()
-            if material_name == items[1]:
-                material_name_found = True
-            if items[0] is not None:
-                material_id_found = True
-        assert material_name_found is True and material_id_found is True, "Material is not added"
-
-    def verify_page_num_is_highlighted(self, page_num):
-        pagination_icon = self.chrome_driver.find_element_by_xpath(
-            "//span[text()=" + page_num + "]")  # page reloaded,hence fetching element again
-        assert pagination_icon.is_enabled() == True, "Page " + page_num + "is not selected"
-
-    def add_role_to_user(self, role):
-        email = str(get_data('../config/config.json', 'staging_access', 'email'))
-        self.wait_for_clickable_element_webdriver("//a[text()='Users']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Users']").click()
-        self.wait_for_clickable_element_webdriver("//input[@id='q_email']")
-        self.chrome_driver.find_element_by_xpath("//input[@id='q_email']").send_keys(email)
-        self.chrome_driver.find_element_by_xpath("//input[@name='commit']").click()
-
-        self.wait_for_clickable_element_webdriver("//a[@title='View']")
-        self.chrome_driver.find_element_by_xpath("//a[@title='View']").click()
-
-        self.wait_for_clickable_element_webdriver("//a[text()='Roles']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Roles']").click()
-        select = Select(self.chrome_driver.find_element_by_xpath("//*[@id='resource_role']"))
-        select.select_by_visible_text(role)
-        add_buttons = self.chrome_driver.find_elements_by_xpath("//*[@name='commit']")
-        add_buttons[0].click()
-
-    def is_role_added(self, role):
-        self.login_to_cms_staging()
-        self.wait_for_clickable_element_webdriver("//*[@class='MuiAvatar-img']")
-        self.chrome_driver.find_element_by_xpath("//*[@class='MuiAvatar-img']").click()
-        role_found = False
-        menu_items = self.chrome_driver.find_elements_by_css_selector('.MuiMenuItem-root')
-        for item in menu_items:
-            print(item.text)
-            if role == item.text:
-                role_found = True
-        self.chrome_driver.close()
-        return role_found
-
-    def set_assessment_start_date(self, date, assessment_id):
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='assessments']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='assessments']").click()
-        self.chrome_driver.find_element_by_css_selector("#q_id").send_keys(assessment_id)
-        self.wait_for_clickable_element_webdriver("//*[@name='commit']")
-        self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
-
-        self.wait_for_clickable_element_webdriver("//a[text()='Edit']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Edit']").click()
-        self.wait_for_clickable_element_webdriver("//input[@id='assessment_available_starting']")
-        self.chrome_driver.find_element_by_xpath("//input[@id='assessment_available_starting']").clear()
-        self.chrome_driver.find_element_by_xpath("//input[@id='assessment_available_starting']").send_keys(date)
-        self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
-        self.chrome_driver.close()
-        return date
-
-    def set_assessment_end_date(self, date, assessment_id):
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='assessments']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='assessments']").click()
-        self.chrome_driver.find_element_by_css_selector("#q_id").send_keys(assessment_id)
-        self.wait_for_clickable_element_webdriver("//*[@name='commit']")
-        self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
-
-        self.wait_for_clickable_element_webdriver("//a[text()='Edit']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Edit']").click()
-        self.wait_for_clickable_element_webdriver("//input[@id='assessment_available_until']")
-        self.chrome_driver.find_element_by_xpath("//input[@id='assessment_available_until']").clear()
-        date = self.chrome_driver.find_element_by_xpath("//input[@id='assessment_available_until']").send_keys(date)
-        self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
-        self.chrome_driver.close()
-        return date
-
-    def get_assessment_available_until_date(self, assessment_id):
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='assessments']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='assessments']").click()
-        self.chrome_driver.find_element_by_css_selector("#q_id").send_keys(assessment_id)
-        self.wait_for_clickable_element_webdriver("//*[@name='commit']")
-        self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
-
-        self.wait_for_clickable_element_webdriver("//a[text()='Edit']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Edit']").click()
-        self.wait_for_clickable_element_webdriver("//input[@id='assessment_available_until']")
-        date = self.chrome_driver.find_element_by_xpath("//input[@id='assessment_available_until']").get_attribute(
-            'value')
-        self.chrome_driver.close()
-        return date
-
-    def attach_requisite(self, requisite_name):
-        premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
-
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='mentoring']").click()
-        self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-
-        self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
-        self.wait_for_locator_webdriver("//input[@id ='target_date']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
-        self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
-        self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
-        self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
-        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
-        channel_col = status_col = None
-        for i in range(1, cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'Channel':
-                channel_col = i
-            elif header == 'Status':
-                status_col = i
-
-        for r in range(1, rows + 1):
-            try:
-                status = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
-                if 'one_to_mega' in status:
-                    self.chrome_driver.find_element_by_xpath(
-                        "//tr[" + str(r) + "]/td[" + str(channel_col) + "]/a[@target='_blank']").click()
-                    # switch to newly opened tab to attach requisite
-                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[1])
-                    self.wait_for_locator_webdriver("//a[text()='Attach Requisite Group']")
-                    self.chrome_driver.find_element_by_xpath("//a[text()='Attach Requisite Group']").click()
-                    self.wait_for_locator_webdriver("//span[@role='presentation']")
-                    self.chrome_driver.find_element_by_xpath("//span[@role='presentation']").click()
-                    # self.wait_for_locator_webdriver("//li[text()='"+requisite_name+"']")
-                    # self.chrome_driver.find_element_by_xpath("//li[text()='"+requisite_name+"']").click()
-                    self.chrome_driver.find_element_by_xpath("//input[@class='select2-search__field']").send_keys(
-                        requisite_name)
-                    time.sleep(2)
-                    self.chrome_driver.find_element_by_xpath(
-                        "//li[@class='select2-results__option select2-results__option--highlighted']").click()
-                    self.wait_for_locator_webdriver("//button[@type='submit']")
-                    self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
-                    try:
-                        WebDriverWait(self.chrome_driver, 5).until(ec.alert_is_present(),
-                                                                   'Timed out waiting for confirmation popup to appear.')
-                        alert = self.chrome_driver.switch_to.alert
-                        alert.accept()
-                        print("alert accepted")
-                        time.sleep(2)
-                    except TimeoutException:
-                        print("no alert")
-                    self.chrome_driver.close()
-                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[0])
-            except NoSuchElementException:
-                continue
-        self.chrome_driver.close()
-
-    def detach_requisite(self):
-        premium_id = str(get_data('../config/config.json', 'account_details', 'premium_id'))
-        today = datetime.today().strftime('%Y-%m-%d')
-
-        self.login_to_staging()
-        self.wait_for_clickable_element_webdriver("//li[@id='mentoring']")
-        self.chrome_driver.find_element_by_xpath("//li[@id='mentoring']").click()
-        self.wait_for_clickable_element_webdriver("//*[text()='1:M - Schedule Student Sessions']")
-        self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
-
-        self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
-        self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.implicitly_wait(5)
-        self.wait_for_locator_webdriver("//input[@id ='target_date']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
-        self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
-        self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
-        self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
-        self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-
-        rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
-        cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
-        channel_col = status_col = None
-        for i in range(1, cols):
-            header = self.chrome_driver.find_elements_by_xpath(
-                "//table[contains(@class,'index_table')]/thead/tr/th[" + str(i) + "]")[0].text
-            if header == 'Channel':
-                channel_col = i
-            elif header == 'Status':
-                status_col = i
-
-        for r in range(1, rows + 1):
-            try:
-                status = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
-                if 'one_to_mega' in status:
-                    self.chrome_driver.find_element_by_xpath(
-                        "//tr[" + str(r) + "]/td[" + str(channel_col) + "]/a[@target='_blank']").click()
-                    # switch to newly opened tab to attach requisite
-                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[1])
-                    self.wait_for_locator_webdriver("//a[text()='Detach Requisite Group']")
-                    self.chrome_driver.find_element_by_xpath("//a[text()='Detach Requisite Group']").click()
-                    try:
-                        WebDriverWait(self.chrome_driver, 5).until(ec.alert_is_present(),
-                                                                   'Timed out waiting for confirmation popup to appear.')
-                        alert = self.chrome_driver.switch_to.alert
-                        alert.accept()
-                        print("alert accepted")
-                        time.sleep(2)
-                    except TimeoutException:
-                        print("no alert")
-                    self.chrome_driver.close()
-                    self.chrome_driver.switch_to.window(self.chrome_driver.window_handles[0])
-            except NoSuchElementException:
-                continue
         self.chrome_driver.close()
 
     def saved_session(self):
@@ -800,11 +267,12 @@ class Stagingtllms(TutorCommonMethods):
                 else:
                     return c
         except (EOFError, FileNotFoundError):
-            self.login_to_staging().save_session()
+            self.login_to_staging()
+            self.save_session()
             return list()
 
     def session_relaunch(self, cms=False):
-        retry = 3
+        retry = 1
         url = self.STAGING_TLLMS_URL if cms is False else self.TUTOR_PLUS_CMS_URL
         while retry:
             session = self.saved_session()
@@ -826,7 +294,7 @@ class Stagingtllms(TutorCommonMethods):
                     self.chrome_driver.find_element("xpath", "//span[text()='LOGIN']").click()
                     self.wait_for_element_not_present_webdriver("//span[text()='LOGIN']")
                     try:
-                        self.chrome_driver.implicitly_wait(30)
+                        self.chrome_driver.implicitly_wait(5)
                         self.chrome_driver.find_element("css selector", "img[src]")
                     except NoSuchElementException:
                         pass
@@ -860,7 +328,7 @@ class Stagingtllms(TutorCommonMethods):
 
     def _pid(self, user_profile=None, mobile=None):
         self.session_relaunch()
-        self.chrome_driver.implicitly_wait(30)
+        self.chrome_driver.implicitly_wait(3)
         self.chrome_driver.find_element(By.ID, 'users').click()
         self.chrome_driver.find_element(By.ID, 'q_mobile').send_keys(mobile)
         self.chrome_driver.find_element(By.CSS_SELECTOR, '.buttons > input').click()
@@ -916,7 +384,7 @@ class Stagingtllms(TutorCommonMethods):
         __o = self.otm_home_screen()
         last_date, up_nxt_date = __o.last_completed_session_up_next(completed)
         __o.click_app_back_btn()
-        if __o.login.wait_activity("UserHomeActivity", 5):
+        if __o.login.wait_activity("UserHomeActivity", 3):
             __o.click_app_back_btn()
         return last_date, up_nxt_date.split(',')[0]
 
@@ -1070,9 +538,9 @@ class Stagingtllms(TutorCommonMethods):
             raise NotImplementedError("Requisite attachment for grades other than '8' and '4' and syllabus 'CBSE' is "
                                       "not yet implemented")
         self._session_user_wise(session=days, profile=profile, user_profile=user_profile, sub_profile=sub_profile)
-        tmb_id = get_data("../../config/attachments.json", "one_to_mega", grade)["tmb_id"]
+        tmb_id = get_data("../config/attachments.json", "one_to_mega", grade)["tmb_id"]
         uri = "tmbs/%s" % tmb_id
-        self.chrome_driver.implicitly_wait(30)
+        self.chrome_driver.implicitly_wait(5)
         self.chrome_driver.get(self.TUTOR_PLUS_CMS_URL + uri)
         self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
         self.chrome_driver.find_element("css selector", "button[label=Requisites]").click()
@@ -1109,6 +577,7 @@ class Stagingtllms(TutorCommonMethods):
                 if topic_name in raw_topic_name:
                     m_url = session.find_element_by_xpath(
                         "./following-sibling::td/li[@id='meeting_url_input']/input").get_attribute('value')
+
                     e_mail = session.find_element_by_xpath(
                         "./following-sibling::td/li[@id='teacher_email_input']/input")
                     return m_url, e_mail
@@ -1120,7 +589,7 @@ class Stagingtllms(TutorCommonMethods):
         # todo: log: get sub_profile_type
         if rate_action == 'skip':
             if user_profile is None and sub_profile is None:
-                self._session_user_wise(session='today', user_profile='user_1', sub_profile='profile_1')
+                self._session_user_wise(session='today', user_profile='user_1', sub_profile='profile_1')  # TODO
             else:
                 self._session_user_wise(session='today', user_profile=user_profile, sub_profile=sub_profile)
         elif rate_action == 'rate':
@@ -1134,7 +603,6 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.get(m_url)
         self.wait_for_clickable_element_webdriver('//span[text()="LOGIN"]')
         self.chrome_driver.find_element(By.XPATH, '//span[text()="LOGIN"]').click()
-        self.chrome_driver.implicitly_wait(0)
         try:
             count = 20
             while timeout:
@@ -1215,6 +683,7 @@ class Stagingtllms(TutorCommonMethods):
             if sm == cm:
                 if sd == cd:
                     if ah > ch:
+                        self.chrome_driver.implicitly_wait(3)
                         mega_session.find_element(By.XPATH, "./following-sibling::td/a[text()='Reset']").click()
                         self.otm_home_screen()
                 elif sd > cd:
@@ -1298,45 +767,38 @@ class Stagingtllms(TutorCommonMethods):
             elif "url" in element_label:
                 self._video_url(this=col, label=element_label, attachment=video_attachment, tag=tag_input)
 
-    def _attachment_write(self, tmb_id, topic_id=None):
+    def _attachment_write(self, tmb_id, tmb_name=None, topic_id=None):
         if tmb_id is None:
             raise TypeError("'tmb_id' must be str, not None")
-        self.chrome_driver.implicitly_wait(30)
         topics_uri = 'raw_topics/%s'
         topic_id = int(topic_id)
-        self.chrome_driver.get(self.TUTOR_PLUS_CMS_URL + (topics_uri % topic_id))
+        self.chrome_driver.get('https://tutor-plus-cms-staging.tllms.com/' + (topics_uri % topic_id))
         try:
             self.chrome_driver.find_element_by_xpath('//span[text()="LOGIN"]').click()
         except NoSuchElementException:
             pass
+        self.wait_for_locator_webdriver("//div[text()='Edit']")
         self.chrome_driver.find_element("css selector", "button[label=Edit]").click()
+        self.wait_for_locator_webdriver("//div[contains(text(), \"TMB\")]/following-sibling::div//input")
         drp_box_input = self.chrome_driver.find_element(
             "xpath", "//div[contains(text(), \"TMB\")]/following-sibling::div//input")
+        drp_box_input.clear()
         drp_box_input.click()
         drp_box_input.send_keys(Keys.CONTROL + "a" + Keys.BACKSPACE)
-        drp_box_input.send_keys(tmb_id)
-        retry = 3
-        while retry:
-            list_options = self.chrome_driver.find_elements("css selector", ".tmbTagOption .tagOptionIdText")
-            if len(list_options) != 0:
-                try:
-                    for option in list_options:
-                        if option.text == tmb_id:
-                            option.click()
-                            break
+        drp_box_input.send_keys(tmb_name)
+        self.wait_for_locator_webdriver(".tmbTagOption .tagOptionIdText")
+        list_options = self.chrome_driver.find_elements("css selector", ".tmbTagOption .tagOptionIdText")
+        if len(list_options) != 0:
+            try:
+                for option in list_options:
+                    if option.text == tmb_id:
+                        option.click()
+                        break
                     else:
-                        if retry < 1:
-                            raise TMBException(f"ID Error: \"{tmb_id}\" is not displayed in the list")
-                    break
-                except StaleElementReferenceException:
-                    pass
-            retry -= 1
-            sleep(0.5)
-        else:
-            raise TMBException("<Empty List>: contents might have taken too long to load")
-        self.chrome_driver.implicitly_wait(5)
-        chapter_input = self.chrome_driver.find_element(
-            "css selector", "input[placeholder=\"Enter Chapter\"]")
+                        raise Exception(f"ID Error: \"{tmb_id}\" is not displayed in the list")
+            except StaleElementReferenceException:
+                pass
+        chapter_input = self.chrome_driver.find_element("css selector", "input[placeholder=\"Enter Chapter\"]")
         chapter_input.clear()
         chapter_input.send_keys("null")
         self.chrome_driver.find_element("css selector", "button[label=Save]").click()
@@ -1349,9 +811,10 @@ class Stagingtllms(TutorCommonMethods):
 
     def attach_session_video(self, grade, session='today', override=False, **kwargs):
         profile, user_profile, sub_profile = kwargs["profile"], kwargs["user_profile"], kwargs["sub_profile"]
-        tmb_id = get_data("../../config/attachments.json", "one_to_mega", grade)["tmb_id"]
+        tmb_id = get_data("../config/attachments.json", "one_to_mega", grade)["tmb_id"]
+        tmb_name = get_data("../config/attachments.json", "one_to_mega", grade)["tmb_name"]
         self.get_premium_id(profile=profile, user_profile=user_profile, sub_profile=sub_profile)
-        self.chrome_driver.implicitly_wait(30)
+        self.chrome_driver.implicitly_wait(10)
         cr_details = self.student_session_details(session, profile, user_profile, sub_profile)
         try:
             channel_id = kwargs["channel_id"]
@@ -1362,11 +825,11 @@ class Stagingtllms(TutorCommonMethods):
             if channel_id == cr_detail["channel"]:
                 details = list(re.findall(r"(?i:(course\sid.*:\s\d*)(?:[^\b]*)(topic\sid\s:\s\d*))", video_details)[-1])
                 course_id, topic_id = details[0].split(':')[-1].strip(), details[-1].split(':')[-1].strip()
-                self._attachment_write(tmb_id, topic_id)
+                self._attachment_write(tmb_id, topic_id=topic_id, tmb_name=tmb_name)
             elif "no" in video_details.lower() or override:
                 details = list(re.findall(r"(?i:(course\sid.*:\s\d*)(?:[^\b]*)(topic\sid\s:\s\d*))", video_details)[-1])
                 course_id, topic_id = details[0].split(':')[-1].strip(), details[-1].split(':')[-1].strip()
-                self._attachment_write(tmb_id, topic_id)
+                self._attachment_write(tmb_id, topic_id=topic_id, tmb_name=tmb_name)
 
     @staticmethod
     def booking_time(hours, minutes, end_hour=None, end_minutes=0, day=None):
@@ -1469,17 +932,17 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.find_element("css selector", "button.submitButton[type=button]").click()
         new_slot_grp_url = self.chrome_driver.current_url
         try:
-            self.chrome_driver.implicitly_wait(30)
+            self.chrome_driver.implicitly_wait(5)
             self.chrome_driver.find_element("xpath", "//*[text()=\"Create New Slot Group\"]")
         except NoSuchElementException:
             pass
-        timeout = 30
+        timeout = 2
         while timeout:
             if self.chrome_driver.current_url != new_slot_grp_url:
                 ths = self.chrome_driver.find_elements("css selector", ".tableHeaderTextStyle")
                 id_index = [ths.index(i) for i in ths if i.text.lower() == "id"][-1]
                 tds = self.chrome_driver.find_elements("css selector", ".tableBodyTextStyle span")
-                sl_id, sl_name = tds[id_index].text, tds[id_index+1].text
+                sl_id, sl_name = tds[id_index].text, tds[id_index + 1].text
                 return sl_id, sl_name
             else:
                 timeout -= 1
@@ -1524,7 +987,7 @@ class Stagingtllms(TutorCommonMethods):
         self.chrome_driver.find_element("css selector", "ul[role=listbox] > li").click()
         topic_count.send_keys("5")
         self.chrome_driver.find_element("css selector", "button[type=button][label=Next]").click()
-        timeout = 30
+        timeout = 2
         while timeout:
             if self.chrome_driver.current_url != new_batch_url:
                 break

@@ -2,6 +2,7 @@ import re
 import time
 import os
 import traceback
+import jenkins
 import pytest
 import sys
 import subprocess
@@ -24,11 +25,16 @@ feature_job = BuildFeatureJob()
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
     # feature_job.build_and_install_apk()
+    job_start_time = time.time()
     pass
     yield
-    # Create report on demand via  API at the end of the session
+    # Get total execution time
+    job_total_execution_time = str(datetime.timedelta(seconds=int(time.time() - job_start_time)))
+    print(job_total_execution_time)
+    # Update execution time to testrail for android test run. Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
+        update_run_for_execution_time('503', job_total_execution_time)
         report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
         run_testrail_reports(report_id)
 
@@ -43,7 +49,6 @@ def capture_screenshot(request, feature_name):
     screenshot_filename = feature_name + " " + timestamp + ".png"
     driver.get_screenshot_as_file(screenshot_filename)
     return screenshot_filename
-
 
 @pytest.fixture()
 def driver(request):
@@ -151,11 +156,15 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     scenario_name = scenario.name
     elapsed = int(time.time() - py_test.__getattribute__('start'))
     elapsed_time = str(elapsed) + 's'
-    testing_device = request.getfixturevalue("driver").session['deviceModel']
-    app_version = baseClass.get_current_app_version()
     suite_name = os.getenv('suite')
     # suite_name = "Byju's Classes"
+    if suite_name == "Byju's Classes":
+        testing_device = request.getfixturevalue("driver").session['deviceModel']
+        app_version = baseClass.get_current_app_version()
+    else:
+        raise NotImplementedError()
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
+    print("\nTestcase executed: %s" %scenario_name)
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:

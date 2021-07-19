@@ -43,7 +43,7 @@ class Dashboard(RateSessionBase):
         self.feedback_options_checkbox = '//*[@resource-id="com.byjus.thelearningapp.premium:id/ivCheckBox"]'
         self.submit_rate_session = '//*[@resource-id="com.byjus.thelearningapp.premium:id/btnSubmit"]'
         self.session_end_okay_button = 'com.byjus.thelearningapp.premium:id/primaryAction'
-        self.join_now = 'com.byjus.thelearningapp.premium:id/card_strip_btn'
+        self.join_now = 'com.byjus.thelearningapp.premium:id/btnAction'
         self.session_subject = 'com.byjus.thelearningapp.premium:id/subject_name'
 
     def tap_on_tab(self, text):
