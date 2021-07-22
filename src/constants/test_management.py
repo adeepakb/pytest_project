@@ -26,7 +26,7 @@ PATH = lambda p: os.path.abspath(
 
 key = os.getenv('SECRET')
 f = Fernet(key)
-encrypted_data = getdata('../config/config.json', 'encrypted_data', 'token')
+encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
 decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
 testrail_url = decrypted_data['testrail']['url']
 testrail_username = decrypted_data['testrail']['userName']
@@ -279,10 +279,7 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, t
     """
     Update the result to testrail for the particular *run_id* and *case_id* with appropriate
     comments and status.
-
     The status will set accordingly whether or not an exception occurs during test execution.
-
-
     :param case_id: ID of the case of the particular test case. Example: `C12345`
     :param run_id: ID of the run, can be found under **Test Runs and Results**. Example: `R123`
     :param result_flag: is set True/False based on whether or not exception has occurred
@@ -291,7 +288,6 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, t
     :param elapsed_time: execution time of each scenario
     :param testing_device: device on which test execution was carried out
     :param app_version: app version
-
     :type case_id: str
     :type run_id: str
     :type result_flag: bool

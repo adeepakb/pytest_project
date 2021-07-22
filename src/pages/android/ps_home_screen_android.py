@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from constants.constants import REQUISITE_DETAILS
-from constants.load_json import getdata
 from pages.android.scroll_cards import ScrollCards
 from pages.android.session_popup import SessionAlert
+from constants.load_json import get_data
 from utilities.staging_tlms import Stagingtlms
 from utilities.tutor_common_methods import TutorCommonMethods
 from pages.android.login_android import LoginAndroid
@@ -163,7 +163,7 @@ class PS_Homescreen_Android(PSHomeScreenBase):
             return ReturnType(False, '%s button is not displayed' % text)
 
     def attach_post_requisite(self, driver, requisite_name):
-        requisite_id = getdata(REQUISITE_DETAILS, requisite_name)
+        requisite_id = get_data(REQUISITE_DETAILS,requisite_name)
         Stagingtlms(driver).attach_requisite(requisite_id)
 
     def detach_post_requisite(self, driver):

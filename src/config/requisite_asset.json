@@ -1,0 +1,28 @@
+{
+  "1348": {
+    "test_requisite": {
+        "id": "70368"
+      },
+      "post_requisite": {
+        "class_note": {
+          "id": [
+            "48",
+            "50",
+            "51",
+            "52"
+          ]
+        },
+        "journey": {
+          "id": "27263"
+        },
+        "assessment": {
+          "id": "50013"
+        }
+      }
+    },
+  "1365": {
+    "test_requisite": {
+        "id": "70368"
+      }
+  }
+}

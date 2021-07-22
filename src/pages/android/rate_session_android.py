@@ -44,6 +44,7 @@ class Dashboard(RateSessionBase):
         self.submit_rate_session = '//*[@resource-id="com.byjus.thelearningapp.premium:id/btnSubmit"]'
         self.session_end_okay_button = 'com.byjus.thelearningapp.premium:id/primaryAction'
         self.join_now = 'com.byjus.thelearningapp.premium:id/card_strip_btn'
+        self.session_subject = 'com.byjus.thelearningapp.premium:id/subject_name'
 
     def tap_on_tab(self, text):
         self.obj.get_element('xpath',
@@ -106,7 +107,7 @@ class Dashboard(RateSessionBase):
         assert (feedback_rating_bar == rating), "Verify %s selected stars in rate session card failed" % rating
 
     def tap_on_first_session_card(self):
-        session_cards_list = self.obj.get_elements('xpath', self.card)
+        session_cards_list = self.obj.get_elements('id', self.session_subject)
         card = session_cards_list[0]
         card.click()
 

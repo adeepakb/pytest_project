@@ -1,5 +1,5 @@
 """It contains all common elements and functionalities available to all pages."""
-
+from datetime import datetime
 from typing import Any, Text, List, Union, TypeVar, Optional, Tuple
 from appium.webdriver.webelement import WebElement
 from appium.webdriver.webdriver import WebDriver

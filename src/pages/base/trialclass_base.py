@@ -16,6 +16,7 @@ class TrialClassBase(ABC):
     def is_master_class_present(self):
         raise NotImplemented()
 
+
     @abstractmethod
     def is_see_all_link_displayed(self):
         raise NotImplemented()
@@ -68,8 +69,10 @@ class TrialClassBase(ABC):
     def verify_completed_trial_cards(self):
         raise NotImplemented()
 
-    def delete_completed_sessions_api(self, premium_id):
-        url = "https://api.tllms.com/internal/staging/tutor_plus/internal_api/one_to_mega/v1/courses_subscriptions/bulk_delete"
+    @staticmethod
+    def delete_completed_sessions_api(premium_id):
+        url = "https://api.tllms.com/internal/staging/" \
+              "tutor_plus/internal_api/one_to_mega/v1/courses_subscriptions/bulk_delete"
         headers = {'Content-Type': 'application/json'}
         payload = {"premium_account_id": premium_id}
         r = requests.delete(url, json=payload, headers=headers)
@@ -80,8 +83,10 @@ class TrialClassBase(ABC):
     def delete_completed_sessions(self):
         raise NotImplemented()
 
-    def expire_free_trail_subscriptions_api(self, premium_id):
-        url = "https://api.tllms.com/internal/staging/tutor_plus/internal_api/one_to_mega/v1/courses_subscriptions/bulk_expire"
+    @staticmethod
+    def expire_free_trail_subscriptions_api(premium_id):
+        url = "https://api.tllms.com/internal/staging/tutor_plus/" \
+              "internal_api/one_to_mega/v1/courses_subscriptions/bulk_expire"
         headers = {'Content-Type': 'application/json'}
         payload = {"premium_account_id": premium_id}
         r = requests.post(url, json=payload, headers=headers)

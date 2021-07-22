@@ -3,7 +3,7 @@ import re
 import time
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
-from constants.load_json import getdata
+from constants.load_json import get_data
 from pages.android.login_android import LoginAndroid
 from pages.android.scroll_cards import ScrollCards
 from pages.base.trialclass_base import TrialClassBase
@@ -280,7 +280,7 @@ class TrailClassAndroid(TrialClassBase):
                     elements = self.obj.get_elements(*self.rc_card_root)
 
     def delete_completed_sessions(self):
-        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         status_code = self.delete_completed_sessions_api(premium_id)
         if status_code == 200:
             return ReturnType(True, 'free trial sessions reset api is successful')
@@ -288,7 +288,7 @@ class TrailClassAndroid(TrialClassBase):
             return ReturnType(False, 'free trial sessions reset api failed')
 
     def expire_free_trail_subscriptions(self):
-        premium_id = str(getdata('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         status_code = self.expire_free_trail_subscriptions_api(premium_id)
         if status_code == 200:
             return ReturnType(True, 'free trial subscription expire api is successful')
@@ -325,7 +325,8 @@ class TrailClassAndroid(TrialClassBase):
     def scroll_to_regular_classes(self):
         try:
             CommonMethods.scrollToElement(self.driver, 'Regular Classes')
-            rc_section = self.obj.get_element('id', self.title)
+            rc_section = self.obj.get_elements('id', self.title)[-1]
+
             if rc_section.text.lower() == 'regular classes':
                 session_list = self.obj.get_element('id', self.course_list)
                 self.scroll_cards.scroll_by_card(rc_section, session_list)
@@ -400,8 +401,7 @@ class TrailClassAndroid(TrialClassBase):
                     try:
                         subject = self.obj.child_element_text(card, self.workshop_label)
                         if subject == 'WORKSHOP' and self.obj.get_element_text('id', self.card_topic_tv) is not None \
-                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None \
-                                and self.obj.get_element_text('id', self.other_slots_detail) is not None:
+                                and self.obj.get_element_text('id', self.rc_card_schedule_tv) is not None:
                             return ReturnType(True, 'Master class session details are present')
                     except NoSuchElementException:
                         return ReturnType(False, 'Master class session details are not present')

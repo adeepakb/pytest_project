@@ -89,6 +89,10 @@ class RequisiteTypeError(RequisiteException):
         return super().__str__()
 
 
+class RequisiteError(AppBaseException):
+    pass
+
+
 class CookiesLookupError(AppBaseException):
     pass
 
@@ -130,4 +134,16 @@ class TPCMSBaseException(AppBaseException):
 
 
 class SlotUpdateError(TPCMSBaseException):
+    pass
+
+
+class TMBException(TPCMSBaseException):
+    pass
+
+
+class SlotNotFoundException(TPCMSBaseException):
+    pass
+
+
+class BatchUpdateError(TPCMSBaseException):
     pass
