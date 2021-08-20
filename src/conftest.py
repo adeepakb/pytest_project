@@ -162,7 +162,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
                                  prj_path_only in summary or
                                  summaries.index(summary) == 0 or
                                  ("exception" in summary.lower() and prj_path_only in summary) or
-                                 ("error" in summary.lower() and prj_path_only in summary), summaries))
+                                  ("error" in summary.lower() and prj_path_only in summary), summaries))
         while _exception.count(trc) > 0:
             _exception.remove(trc)
         _exception.insert(0, trc)

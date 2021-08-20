@@ -43,6 +43,7 @@ class ClassNotesAndroid(ClassNotesBase):
         self.dialog_title = f'{package_name}/dialog_title'
         self.save_button = 'android:id/button1'
         self.save_to_drive_title = "com.google.android.apps.docs:id/title"
+        self.session_details_cn_download = 'com.byjus.thelearningapp.premium:id/ivDownload'
 
     def is_classnote_icon_present(self):
         if self.obj.is_element_present('id', self.classNotesImg):
@@ -270,3 +271,7 @@ class ClassNotesAndroid(ClassNotesBase):
     # def install_pdf_reader_apps(self):
     #     self.install_app('com.microsoft.skydrive.apk')
     #     self.install_app('com.trustedapp.pdfreaderpdfviewer.apk')
+
+    def download_from_session_detals(self):
+        self.obj.wait_for_locator('id', self.session_details_cn_download)
+        self.obj.element_click('id', self.session_details_cn_download)

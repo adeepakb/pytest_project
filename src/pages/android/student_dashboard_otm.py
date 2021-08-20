@@ -20,6 +20,11 @@ import pytest_check as check
 
 
 
+class ReturnType():
+    def __init__(self, result, reason):
+        self.result = result
+        self.reason = reason
+
 class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
     def __init__(self, driver):
         """
@@ -348,8 +353,7 @@ class StudentDashboardOneToMega(StudentDashboardBase, TutorCommonMethods):
         self.login.implicit_wait_for(20)
         try:
             displayed = self.get_element(*self.pr_view).is_displayed()
-            return ReturnType(True, "Session is completed ") if displayed else ReturnType(False,
-                                                                                          "Session is not completed ")
+            return ReturnType(True, "Session is completed ") if displayed else ReturnType(False,"Session is not completed ")
         except NoSuchElementException:
             return ReturnType(False, "Session is not completed ")
 

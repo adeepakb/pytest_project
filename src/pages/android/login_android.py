@@ -38,6 +38,7 @@ class LoginAndroid(Login):
         self.next_btn = "//*[contains(@resource-id, 'btnNext')]"
         self.login_btn = "//*[contains(@resource-id, 'btnLogin')]"
         self.btn_session_board = '//*[contains(@resource-id,"ScheduleCard")]'
+        self.cards = 'com.byjus.thelearningapp.premium:id/card_root'
         self.app_icon = '//*[contains(@content-desc,"Tutor+")]'
         self.app_list = '//*[@content-desc="Apps list"]'
         self.permission_alert = '//*[contains(@resource-id,"alert")]'
@@ -87,28 +88,21 @@ class LoginAndroid(Login):
         self.byjus_class_card = '//*[@resource-id = "com.byjus.thelearningapp.premium:id/home_card_title_text" and @text="Byju\'s Classes"]'
         self.home_card_layout = "com.byjus.thelearningapp.premium:id/home_card_layout"
         self.marketing_classes_image = 'com.byjus.thelearningapp.premium:id/marketing_classes_dynamic_image'
+        self.subject_names = 'com.byjus.thelearningapp.premium:id/subject_name'
 
     def implicit_wait_for(self, pool):
         self.driver.implicitly_wait(pool)
 
     def click_on_premium_school(self):
-        try:
-            self.obj.wait_for_locator('id', self.home_card_layout)
-            self.obj.get_element('android_uiautomator',
-                                 'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(text("Byju\'s Classes"))')
-            self.obj.element_click('xpath', self.byjus_class_card)
-            if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',
-                                                                                                              self.permission_container_tab):
-                self.allow_deny_permission(["Allow", "Allow", "Allow"])
-        except NoSuchElementException:
-            self.obj.element_click('id', 'com.byjus.thelearningapp.premium:id/backToTopClick')
-            element = self.obj.get_element('android_uiautomator',
-                                           'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("' + self.marketing_classes_image + '"))')
-            width = element.size['width']
-            height = element.size['height']
-            self.action.press(None, element.location['x'] + (width / 2), height).wait(3000).move_to(
-                x=element.location['x'] + (width / 2), y=2 * height).release().perform()
-            element.click()
+        self.obj.wait_for_locator('id', self.home_card_layout)
+        element = self.obj.get_element('android_uiautomator','new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(resourceId("' + self.marketing_classes_image + '"))')
+        width = element.size['width']
+        height = element.size['height']
+        self.action.press(None, element.location['x'] + (width / 2), height).wait(3000).move_to(
+            x=element.location['x'] + (width / 2), y=2 * height).release().perform()
+        element.click()
+        if self.obj.is_element_present('xpath', self.permission_container) or self.obj.is_element_present('xpath',self.permission_container_tab):
+            self.allow_deny_permission(["Allow", "Allow", "Allow"])
 
     # This step is only applicable in web. Hence skipping this for android
     def click_on_hamburger(self):
@@ -351,8 +345,11 @@ class LoginAndroid(Login):
         self.obj.is_button_enabled(text2)
 
     def click_on_link(self, parameter=None):
-        link = self.obj.get_element('xpath', '//android.widget.TextView[@text="' + parameter + '"]')
-        link.click()
+        try:
+            link = self.obj.get_element('xpath', '//android.widget.TextView[@text="' + parameter + '"]')
+            link.click()
+        except NoSuchElementException:
+            pass  # one to many subscription is not available.Hence no live classes screen
 
     def wait_for_dialog_to_be_invisible(self):
         self.obj.wait_for_invisibility_of_element('xpath', self.offline_validation_layout)
@@ -525,7 +522,7 @@ class LoginAndroid(Login):
         except NoSuchElementException:
             pass
 
-    #this is an old method
+    # this is an old method
     # def reset_and_login_with_otp(self):
     #     self.obj.execute_command('adb shell pm clear com.byjus.tutorplus')
     #     self.obj.execute_command('adb shell monkey -p com.byjus.tutorplus -c android.intent.category.LAUNCHER 1')
@@ -1057,6 +1054,10 @@ class LoginAndroid(Login):
 
     def login_as_free_user(self):
         HomePage(self.driver).reset_and_login_with_otp(self.driver, "free")
+
+    def click_on_completed_card(self, index):
+        cards_list = self.obj.get_elements('id', self.subject_names)
+        cards_list[index].click()
 
 
 class LoginException(Exception):

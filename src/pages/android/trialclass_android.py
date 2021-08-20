@@ -70,7 +70,7 @@ class TrailClassAndroid(TrialClassBase):
     def scroll_rc_in_view(self):
         try:
             session_list = self.obj.get_element(*self.card_list)
-            self.scroll_cards.scroll_by_card(session_list, session_list)
+            # self.scroll_cards.scroll_by_card(session_list, session_list)
             rc_text = 'recommended classes'
             rc_section = self.obj.get_elements(*self.section_name)[-1]
             if rc_section.text.lower() == 'recommended classes':
