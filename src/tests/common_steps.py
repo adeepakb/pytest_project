@@ -155,9 +155,9 @@ def m_class(driver, request):
 @given('navigate to the home screen')
 @given('launch the app and navigate to home screen')
 def launch_and_nav_to_home(login):
-    # if login.toggle_wifi_connection('on'):
-    #     login.driver.close_app()
-    #     login.driver.activate_app(login.driver.capabilities['appPackage'])
+    if login.toggle_wifi_connection('on'):
+        login.driver.close_app()
+        login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.verify_home_screen()
     pass
 

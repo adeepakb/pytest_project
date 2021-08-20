@@ -10,7 +10,7 @@ import logging
 from utilities.base_page import BaseClass
 from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_feature_file
+# from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
@@ -156,8 +156,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     scenario_name = scenario.name
     elapsed = int(time.time() - py_test.__getattribute__('start'))
     elapsed_time = str(elapsed) + 's'
-    suite_name = os.getenv('suite')
-    # suite_name = "Byju's Classes"
+    # suite_name = os.getenv('suite')
+    suite_name = "Byju's Classes"
     if suite_name == "Byju's Classes":
         testing_device = request.getfixturevalue("driver").session['deviceModel']
         app_version = baseClass.get_current_app_version()
