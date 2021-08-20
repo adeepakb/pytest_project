@@ -43,6 +43,7 @@ class ClassNotesAndroid(ClassNotesBase):
         self.dialog_title = f'{package_name}/dialog_title'
         self.save_button = 'android:id/button1'
         self.save_to_drive_title = "com.google.android.apps.docs:id/title"
+        self.session_details_cn_download = 'com.byjus.thelearningapp.premium:id/ivDownload'
 
     def is_classnote_icon_present(self):
         if self.obj.is_element_present('id', self.classNotesImg):
@@ -277,3 +278,7 @@ class ClassNotesAndroid(ClassNotesBase):
             return ReturnType(True, 'toast message is displayed as expected when internet is off,class notes download icon is tapped')
         else:
             return ReturnType(False, 'toast message is not displayed as expected when internet is off,class notes download icon is tapped')
+
+    def download_from_session_detals(self):
+        self.obj.wait_for_locator('id', self.session_details_cn_download)
+        self.obj.element_click('id', self.session_details_cn_download)
