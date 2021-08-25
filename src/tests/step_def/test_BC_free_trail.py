@@ -368,3 +368,50 @@ def add_slot(driver):
 @then('Verify that user is unable to book the session less than 30 mins before the session starts')
 def is_free_trial_card_not_present(trial_class):
     trial_class.is_free_trial_card_not_present(added_slot_time)
+
+
+@given('add slot in backend which starts in greater than 30 mins')
+def add_slot(driver):
+    Stagingtlms(driver).login_and_add_slot(minutes=5, course_id=294)
+
+
+@then('Click on auto-book button')
+def click_on_book_btn_under_rebook_slot(trial_class):
+    trial_class.click_on_swap_btn()
+
+
+@then('Verify that clicking on rebook button Rebooking your slot popup should display.')
+@then('Verify that clicking of rebook slots should navigate to booking screen. verify the UI and layout of Rebook page')
+def verify_rebook_slots_page(trial_class):
+    details = trial_class.verify_rebook_slots_page()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Verify that if autobook has happened another tile is present with rebook slots option below the auto-booked session')
+@then('Verify that subject name , session time , date ,duration should display')
+def is_free_trial_class_details_present_under_reg_class(trial_class):
+    details = trial_class.is_free_trial_class_details_present_under_reg_class()
+    check.equal(details.result, True, details.reason)
+
+
+@then('No trial classes should be displayed on their paid grade')
+def verify_trial_class_in_paid_grade(trial_class):
+    details = trial_class.is_book_present_for_free_trail_classes()
+    check.equal(details.result, False, details.reason)
+
+
+@given("Launch the application online as paid user")
+def navigate_to_paid_user(login_in):
+    login_in.navigate_to_one_to_many_and_mega_user()
+
+
+@then('Verify that user is able to book from available slots for autobook scenario')
+def is_trial_class_booked_autobook(trial_class):
+    trial_class.book_trial_class()
+    details = trial_class.is_trial_class_booked()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Click on rebook button')
+def click_rebook_option(login_in):
+    login_in.button_click("Rebook")

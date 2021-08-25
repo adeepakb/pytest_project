@@ -353,8 +353,11 @@ class LoginAndroid(Login):
         self.obj.is_button_enabled(text2)
 
     def click_on_link(self, parameter=None):
-        link = self.obj.get_element('xpath', '//android.widget.TextView[@text="' + parameter + '"]')
-        link.click()
+        try:
+            link = self.obj.get_element('xpath', '//android.widget.TextView[@text="' + parameter + '"]')
+            link.click()
+        except NoSuchElementException:
+            pass  # one to many subscription is not available.Hence no live classes screen
 
     def wait_for_dialog_to_be_invisible(self):
         self.obj.wait_for_invisibility_of_element('xpath', self.offline_validation_layout)

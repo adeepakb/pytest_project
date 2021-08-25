@@ -490,7 +490,7 @@ def step_impl(ssn_req):
 
 @given('last session should be ended and should not be rated')
 def step_impl(login, std_board, db):
-    # login.toggle_wifi_connection('on')
+    login.toggle_wifi_connection('on')
     login.verify_home_screen()
     db.user_profile = 'user_1'
     check.equal(std_board.complete_last_session(rate_action='skip', db=db), True,
@@ -589,22 +589,22 @@ def step_impl(know_more):
 
 @given("login as user with free account")
 def step_impl(login):
-    # login.toggle_wifi_connection('on')
+    login.toggle_wifi_connection('on')
     login.set_user_profile(user_profile='user_1', sub_profile='profile_3').switch_profile()
 
 
 @given("login with non booked user")
 def step_impl(login):
-    # login.toggle_wifi_connection('on')
+    login.toggle_wifi_connection('on')
     login.set_user_profile(user_profile='user_1', sub_profile='profile_1')
 
 
 @when('Verify that new user launches the app')
 @given('New user launch the app and navigate to home screen')
 def new_user_launch_and_nav_to_home(login):
-    # if login.toggle_wifi_connection('on'):
-    #     login.driver.close_app()
-    #     login.driver.activate_app(login.driver.capabilities['appPackage'])
+    if login.toggle_wifi_connection('on'):
+        login.driver.close_app()
+        login.driver.activate_app(login.driver.capabilities['appPackage'])
     login.set_user_profile(user_profile='user_3', sub_profile='profile_1').verify_user_profile()
     print()
 
