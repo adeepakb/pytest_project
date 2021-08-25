@@ -27,8 +27,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
@@ -84,6 +84,8 @@ class Stagingtlms:
         elif course == 'ternary':
             session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
             premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
+        elif course == 'neo':
+            premium_id = str(get_data('../config/login_data.json', 'neo_login_detail1', 'premium_id'))
         self.navigate_to_student_sessions(premium_id)
         tutor_url = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
@@ -101,13 +103,18 @@ class Stagingtlms:
 
         for r in range(1, rows + 1):
             try:
-                status = self.chrome_driver.find_element_by_xpath(
-                    "//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
+                tagged_col_status = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(tagged_col) + "]").text
+                if 'neo' in tagged_col_status:
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
+                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").send_keys(email)
+                    tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
+                    break
+                status = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(status_col) + "]").text
                 # incase of multiple sessions in same day
                 course_details = self.chrome_driver.find_element_by_xpath(
                     "//tr[" + str(r) + "]/td[" + str(tagged_col) + "]/div[@class='course_details']").text
                 course_id = re.search(r'^.*?\bCourse id : (\d+)', course_details).group(1)
-                if 'one_to_mega' in status and course_id == session_course_id:
+                if 'one_to_mega' in status and course_id == session_course_id or 'FREE' in status:
                     self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
                         email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
                     self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
@@ -115,13 +122,6 @@ class Stagingtlms:
                     tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
                         meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
                     break
-                elif 'FREE' in status:
-                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").clear()
-                    self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                        email_col) + "]/li[@id='teacher_email_input']/input[@id='teacher_email']").send_keys(email)
-                    tutor_url = self.chrome_driver.find_element_by_xpath("//tr[" + str(r) + "]/td[" + str(
-                        meeting_col) + "]/li[@id='meeting_url_input']/input[@id='meeting_url']").get_attribute('value')
             except NoSuchElementException:
                 continue
 

@@ -39,6 +39,12 @@
         "course_id" : "167",
         "OTP": "1089"
     },
+    "neo_login_detail1": {
+        "code": "+91-",
+		"mobile_no": "5444389144",
+		"country_code": "India (+91)",
+        "premium_id" : "229324094"
+    },
     "login_details_3": {
         "user_1": {
             "mobile_number": "+91-9513357003",
