@@ -13,6 +13,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from selenium.webdriver.chrome.options import Options
 from constants.load_json import get_data
 from utilities.staging_tlms import Stagingtlms
+import pytest_check as check
 
 
 class ReturnType():
@@ -84,6 +85,22 @@ class NeoTute:
         self.student_video_container = "//div[@class='neo_cl_VideoContainer']"
         self.relaunch_error = "//*[contains(@class ,'Mui-error')]"
         self.end_button = '//span[text()= "End Class"]'
+        self.start_class_button = "//span[contains(text(), 'Start Class')]"
+        self.end_button = "//span[contains(text(), 'End Class')]"
+        self.topic_header = "//div[@class='sessionPlan__header']"
+        self.session_plan_content = '//div[@class = "sessionPlan_content"]'
+        self.session_id_ui = '//div[@class= "sessionId"]'
+        self.tab_item = '//div[@class = "tabViewContainer__tabViewText"]'
+        self.student_cards = "//div[@class='studentsDetails__outer']"
+        self.approve_button = ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
+        self.student_detail_toast = "//div[@class='studentsDetails__toastIcon']"
+        self.close_toast = "//div[@class='neo_cl_ToastIcon']"
+        self.student_name = ".//div[@class='student-name']"
+        self.reject_buttpn = ".//div[@class='reject']"
+        self.play_pause = "//div[@class='play-pause']"
+        self.full_screen_icon = "//div[@class='full-screen']"
+        self.mute_unmute = "//div[@class='volume-control']"
+        self.time_elapsed = "//div[@class='time-elapsed']"
 
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
@@ -112,17 +129,18 @@ class NeoTute:
         self.chrome_driver.find_element_by_xpath("//span[contains(text(),'LOGIN')]").click()
         return url
 
-    def wait_for_locator_webdriver(self, locator_value):
+    def wait_for_locator_webdriver(self, locator_value, timeout=15):
         try:
-            WebDriverWait(self.chrome_driver, 15).until(EC.presence_of_element_located((By.XPATH, locator_value)))
+            WebDriverWait(self.chrome_driver, timeout).until(EC.presence_of_element_located((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def wait_for_clickable_element_webdriver(self, locator_value):
+    def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
         try:
-            WebDriverWait(self.chrome_driver, 15).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
+            WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
 
     # Session slides -> whiteboard
     def is_blank_slide_selected(self):
@@ -461,3 +479,251 @@ class NeoTute:
                     return True
                 except NoSuchElementException:
                     return False
+
+    def join_a_neo_session_as_tutor(self, **kwargs):
+        db = kwargs['db']
+        self.wait_for_locator_webdriver("//div[@class='neoDashboard__classInfo']", timeout=50)
+        sessions = self.chrome_driver.find_elements_by_xpath("//div[@class='neoDashboard__classInfo']")
+        for session in sessions:
+            try:
+                if session.find_element_by_xpath(
+                        "//div[@class='neo_cl_Button Button--secondary Button--rounded']").is_displayed():
+                    db.topic_name = session.find_element_by_xpath(
+                        "//div[@class='chapter-name']").text
+                    db.grade_subject = session.find_element_by_xpath(
+                        "//div[@class='subject-standard']").text
+                    session.find_element_by_xpath(
+                        "//div[@class='neo_cl_Button Button--secondary Button--rounded']").click()
+                    break
+
+
+            except:
+                continue
+
+    def verify_start_button(self):
+        self.wait_for_locator_webdriver(self.start_class_button)
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.start_class_button).is_displayed():
+                return ReturnType(True, "Start Button is displayed")
+            else:
+                return ReturnType(False, "Start Button is not displayed")
+        except:
+            return ReturnType(False, "Start Button is not displayed")
+
+    def start_the_session(self):
+        try:
+            self.wait_for_clickable_element_webdriver(self.start_class_button, timeout=30)
+            self.chrome_driver.find_element_by_xpath(self.start_class_button).click()
+            self.wait_for_locator_webdriver(self.end_button, timeout=30)
+            check.equal(self.chrome_driver.find_element_by_xpath(self.end_button).is_displayed(), True,
+                        "End Class Button is not shown after clicking on start button")
+
+        except:
+            check.equal(False, True, "Not able to click on start class button")
+
+    def verify_topic_name(self, **kwargs):
+        db = kwargs['db']
+        grade_subject = db.grade_subject.split("\n")
+        topic_name = db.topic_name.split("\n")
+        try:
+            self.wait_for_locator_webdriver(self.topic_header)
+            header = self.chrome_driver.find_element_by_xpath(self.topic_header).text
+            header = header.split("\n")
+            return ReturnType(True, "Topic name is correct") if header[0] in topic_name else ReturnType(False,
+                                                                                                        "Topic name is incorrect ")
+        except:
+            return ReturnType(False,
+                              "Topic name is incorrect ")
+
+    def verify_session_id(self):
+        try:
+            session_id = self.chrome_driver.current_url.split("/")[-1]
+            session_id_in_UI = self.chrome_driver.find_element_by_xpath(self.session_id_ui).text
+            flag = session_id in session_id_in_UI
+            return ReturnType(True, "Session id is being shown correctly") if flag else ReturnType(True,
+                                                                                                   "Session id is being shown incorrectly {}".format(
+                                                                                                       session_id))
+        except:
+            return ReturnType(False, "Session id is being shown incorrectly")
+
+    def click_on_session_plan(self):
+        self.click_on_tab_item(tab_name="Session Plan")
+
+    def verify_session_plan_is_displayed(self, pdf_url=None):
+        try:
+            pdf_url_from_UI = \
+                self.chrome_driver.find_element_by_xpath(self.session_plan_content).get_attribute(
+                    "innerHTML").split('"')[1::2][0]
+
+            return ReturnType(True, "pdf url is correct") if pdf_url_from_UI == pdf_url else ReturnType(False,
+                                                                                                        "pdf url is incorrect")
+        except:
+            return ReturnType(False,
+                              "no pdf is shown")
+
+    def click_on_tab_item(self, tab_name='Session Plan'):
+        try:
+            items = self.chrome_driver.find_elements_by_xpath(self.tab_item )
+            for item in items:
+                if item.text.replace("\n", " ") == tab_name:
+                    item.click()
+                    break
+        except:
+            check.equal(False, True, "Couldn't click on tab item {}".format(tab_name))
+
+    def get_number_of_students_in_student_details(self):
+        try:
+            elements = self.chrome_driver.find_elements_by_xpath(self.student_cards )
+            return len(elements)
+        except:
+            return 0
+
+    def approve_profile_pic(self, name=None):
+        try:
+            self.wait_for_locator_webdriver(self.student_cards)
+            elements = self.chrome_driver.find_elements_by_xpath(self.student_cards)
+
+            for element in elements:
+                if element.find_element_by_xpath(self.student_name).text.lower() == name.lower():
+                    element.find_element_by_xpath(
+                        self.approve_button ).click()
+                    self.wait_for_locator_webdriver(self.student_detail_toast)
+                    if self.chrome_driver.find_element_by_xpath(
+                            self.student_detail_toast).is_displayed():
+
+                        self.chrome_driver.find_element_by_xpath(self.close_toast).click()
+                        return ReturnType(True, "Approved profile pic")
+                    else:
+                        return ReturnType(False, "Couldn't approve profile pic")
+            else:
+                return ReturnType(False, "No student found for approving profile pic")
+        except:
+            return ReturnType(False, "Couldn't approve profile pic")
+
+    def reject_profile_pic(self, name=None):
+        try:
+            self.wait_for_locator_webdriver(self.student_cards)
+            elements = self.chrome_driver.find_elements_by_xpath(self.student_cards)
+
+            for element in elements:
+                if element.find_element_by_xpath(self.student_name).text.lower() == name.lower():
+                    element.find_element_by_xpath(
+                        self. reject_buttpn ).click()
+                    self.wait_for_locator_webdriver(self.student_detail_toast)
+                    if self.chrome_driver.find_element_by_xpath(
+                            self.student_detail_toast).is_displayed():
+
+                        self.chrome_driver.find_element_by_xpath(self.close_toast).click()
+                        return ReturnType(True, "Approved profile pic")
+                    else:
+                        return ReturnType(False, "Couldn't approve profile pic")
+            else:
+                return ReturnType(False, "No student found for rejecting profile pic")
+
+        except:
+            return ReturnType(False, "Couldn't approve profile pic")
+
+    def play_pause_the_video(self):
+        try:
+            self.chrome_driver.find_element_by_xpath(self.play_pause).click()
+        except:
+            check.equal(True, False, "Couldn't play or pause video")
+
+    def verify_video_full_screen(self):
+        try:
+            flag = self.chrome_driver.find_element_by_xpath(
+                "//div[@class='full-screenMode playerWrapper']").is_displayed()
+            return ReturnType(True, "video full screen is being displayed") if flag else ReturnType(True,
+                                                                                                    "video full screen is being displayed")
+        except:
+            ReturnType(True,
+                       "video full screen is being displayed")
+
+    def maximize_video(self):
+        try:
+            self.chrome_driver.find_element_by_xpath(self.full_screen_icon ).click()
+            if self.verify_video_full_screen().result:
+                return ReturnType(True, "Video is maximized")
+            else:
+                return ReturnType(False, "Video is not maximized")
+        except:
+            return ReturnType(True, "Video is maximized")
+
+    def minimize_video(self):
+        try:
+            self.chrome_driver.find_element_by_xpath(self.full_screen_icon).click()
+            if not self.verify_video_full_screen().result:
+                return ReturnType(True, "Video is minimized")
+            else:
+                return ReturnType(False, "Video is not maximized")
+        except:
+            return ReturnType(True, "Video is maximized")
+
+    def mute_unmute_video(self):
+        try:
+            self.chrome_driver.find_element_by_xpath(self.mute_unmute ).click()
+        except:
+            check.equal(False , True, "Couldn't unmute the video")
+
+    def get_time_elapsed_in_video(self):
+
+        return self.chrome_driver.find_element_by_xpath(self.time_elapsed).text
+
+    def verify_video_is_presented(self):
+        try:
+            container = self.chrome_driver.find_element_by_xpath("//div[@class='presentationContainer']")
+            flag = container.find_element_by_xpath(".//div[@class='videoPresentation false']").is_displayed()
+            return ReturnType(True, "Video is being presented") if flag else ReturnType(False,
+                                                                                        "Video is not being presented")
+        except:
+            return ReturnType(False,
+                              "Video is not being presented")
+
+    def verify_image_is_presented(self):
+        try:
+            container = self.chrome_driver.find_element_by_xpath("//div[@class='presentationContainer']")
+            flag = container.find_element_by_xpath(".//div[@class='imagePresentation']").is_displayed()
+            return ReturnType(True, "Image is being presented") if flag else ReturnType(False,
+                                                                                        "Image is not being presented")
+        except:
+            return ReturnType(False,
+                              "Image is not being presented")
+
+    def verify_blank_screen_presented(self):
+        container = self.chrome_driver.find_element_by_xpath("//div[@class='presentationContainer']")
+        try:
+            flag1 = container.find_element_by_xpath(".//div[@class='imagePresentation']").is_displayed()
+        except:
+            flag1 = False
+        try:
+            flag2 = container.find_element_by_xpath(".//div[@class='videoPresentation false']").is_displayed()
+        except:
+            flag2 = False
+
+        flag = any(flag1, flag2)
+
+        return ReturnType(False, " Blank screen is not presented") if flag else ReturnType(True,
+                                                                                             "Blank screen is presented")
+
+    def verify_slide_presentation_with_slide_number(self, slide_no=1):
+        try:
+            text =self.chrome_driver.find_element_by_xpath("//div[@class='presentation-name']").text
+            text = text.split(":")[-1].strip()
+            check.equal(slide_no == int(text), True, "slide number is incorrect")
+        except:
+            check.equal(True, False, "Slide number is not shown in presentation")
+
+    def verify_video_elements(self):
+        flag = self.verify_video_is_presented()
+        check.equal(flag.result,True,flag.reason)
+        try:
+            flag = self.chrome_driver.find_element_by_xpath(self.play_pause).is_displayed()
+            check.equal(flag,True,"Play pause button not displayed")
+            flag = self.chrome_driver.find_element_by_xpath(self.full_screen_icon).is_displayed()
+            check.equal(flag, True, "Full screen button  not displayed")
+            flag = self.chrome_driver.find_element_by_xpath(self.mute_unmute).is_displayed()
+            check.equal(flag, True, "Mute unmute button  not displayed")
+            flag = self.chrome_driver.find_element_by_xpath(self.time_elapsed).is_displayed()
+            check.equal(flag, True, "Time elapsed button  not displayed")
+        except:
+            check.equal(False, True, "Video Elements not displayed")
