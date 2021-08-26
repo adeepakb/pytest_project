@@ -102,6 +102,32 @@ class NeoTute:
         self.mute_unmute = "//div[@class='volume-control']"
         self.time_elapsed = "//div[@class='time-elapsed']"
 
+        self.add_slide = "//span[text()='Add New Slide']"
+        self.signal_icon = '//div[@class="topContainer--signal"]'
+        self.chat_icon = "//img[@alt='chat']/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.audio_icon = "//img[@alt='mic']/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.video_icon = "//img[@alt='cam']/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.cam_off = "//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.mic_off = "//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.chat_off = "//img[contains(@src,'chat-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.timer = '//div[@class="topContainer--timer"]'
+        self.slides_names = '//div[contains(@class,"slide__slide_name")]'
+        self.tutor_card = '//div[@class="tutorCard"]'
+        self.tutor_cam_off = "(//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
+        self.tutor_mic_off = "(//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
+        self.continue_class_btn = "//span[text()='Continue class']"
+        self.end_class_in_popup = "//span[text()='End class']"
+        self.end_Class_button = "//span[text()='End Class']"
+        self.focus_popup = '//div[@class="focus-mode-popup"]'
+        self.blank_slide = "//*[text()='Blank Slide']"
+        self.text_in_popup = '//div[@class="text"]'
+        self.slide_name_in_presentation = '//*[@class="slide-name"]'
+        self.present_new_slide = "//*[text()='Blank Slide']/parent::div/parent::div[contains(@class,'neo_cl_slide')]/div/div/div/div/div//*[local-name()='svg']"
+        self.zoom_in_new_slide = '//*[text()="Blank Slide"]/parent::div/parent::div[contains(@class,"neo_cl_slide")]/div/div[3]'
+        self.slide_title_in_description = '//div[@class="sessionSlide--slideTitle"]'
+        self.slide_description = '//div[@class="sessionSlide--slideContent cke_editable"]'
+        self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
+
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
         password = self.decrypted_data['staging_access']['password']
@@ -561,16 +587,6 @@ class NeoTute:
             return ReturnType(False,
                               "no pdf is shown")
 
-    def click_on_tab_item(self, tab_name='Session Plan'):
-        try:
-            items = self.chrome_driver.find_elements_by_xpath(self.tab_item )
-            for item in items:
-                if item.text.replace("\n", " ") == tab_name:
-                    item.click()
-                    break
-        except:
-            check.equal(False, True, "Couldn't click on tab item {}".format(tab_name))
-
     def get_number_of_students_in_student_details(self):
         try:
             elements = self.chrome_driver.find_elements_by_xpath(self.student_cards )
@@ -727,3 +743,191 @@ class NeoTute:
             check.equal(flag, True, "Time elapsed button  not displayed")
         except:
             check.equal(False, True, "Video Elements not displayed")
+
+    def scroll_from_top_to_bottom(self, length):
+        self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
+                                          self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
+
+    # Top container
+
+    def is_audio_icon_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.audio_icon).is_displayed()
+
+    def is_video_icon_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.video_icon).is_displayed()
+
+    def is_chat_icon_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.chat_icon).is_displayed()
+
+    def is_signal_icon_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.signal_icon).is_displayed()
+
+    def is_end_class_button_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.end_Class_button).is_displayed()
+
+    def is_timer_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.timer).is_displayed()
+
+    def is_tutor_card_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.tutor_card).is_displayed()
+
+    def is_tutor_mic_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.timer).is_displayed()
+
+    def is_tutor_video_present(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.tutor_card).is_displayed()
+
+    def get_video_status(self):
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.cam_off).is_displayed():
+                return False
+        except(NoSuchElementException):
+            return True
+
+    def get_audio_status(self):
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.mic_off).is_displayed():
+                return False
+        except(NoSuchElementException):
+            return True
+
+    def get_chat_status(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.chat_off).is_displayed():
+                return False
+        except(NoSuchElementException):
+            return True
+
+    def get_tutor_video_status(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.chat_off).is_displayed():
+                return False
+        except(NoSuchElementException):
+            return True
+
+    def get_tutor_audio_status(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        try:
+            if self.chrome_driver.find_element_by_xpath(self.chat_off).is_displayed():
+                return False
+        except(NoSuchElementException):
+            return True
+
+    def verify_the_focus_mode(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        if self.chrome_driver.find_element_by_xpath(self.focus_popup).is_displayed() and \
+                self.chrome_driver.find_element_by_xpath(self.focus_popup).is_displayed() and \
+                self.chrome_driver.find_element_by_xpath(self.focus_popup).is_displayed():
+            return True
+        else:
+            self.chrome_driver.find_element_by_xpath(self.focus_popup).click()
+            self.chrome_driver.find_element_by_xpath(self.focus_popup).click()
+            return self.chrome_driver.find_element_by_xpath(self.focus_popup).is_displayed()
+
+    def click_on_end_class(self):
+        self.wait_for_clickable_element_webdriver(self.signal_icon)
+        self.chrome_driver.find_element_by_xpath(self.end_Class_button).click()
+
+    def verify_text_in_end_class_popup(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        ele = self.chrome_driver.find_element_by_xpath(self.text_in_popup).text
+        assert "Are you sure you want to end the class?" in ele, "the text in popup doesn't match"
+
+    def is_continue_class_button_present_in_popup(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.continue_class_btn).is_displayed()
+
+    def is_end_class_button_present_in_popup(self):
+        self.wait_for_locator_webdriver(self.signal_icon)
+        return self.chrome_driver.find_element_by_xpath(self.end_class_in_popup).is_displayed()
+
+    def click_on_tab_item(self, tab_name):
+        try:
+            items = self.chrome_driver.find_elements_by_xpath(self.tab_item)
+            for item in items:
+                if item.text.replace("\n", " ") == tab_name:
+                    item.click()
+                    break
+        except:
+            check.equal(False, True, "Couldn't click on tab item {}".format(tab_name))
+
+    def click_on_session_slides(self):
+        self.click_on_tab_item(tab_name="Session Slides")
+
+    # Add slide
+
+    def click_on_newly_added_slide(self):
+        elements = self.chrome_driver.find_elements_by_xpath(self.blank_slide)
+        length = len(elements)
+        self.scroll_from_top_to_bottom(length)
+        elements[0].click()
+        time.sleep(5)
+
+    def is_present_icon_available_on_new_slide(self):
+        self.wait_for_locator_webdriver(self.add_slide)
+        return self.chrome_driver.find_element_by_xpath(self.present_new_slide).is_displayed()
+
+    def is_zoom_icon_present_on_new_slide(self):
+        self.wait_for_locator_webdriver(self.add_slide)
+        return self.chrome_driver.find_element_by_xpath(self.zoom_in_new_slide).is_displayed()
+
+    def is_delete_icon_present_on_new_slide(self):
+        self.wait_for_locator_webdriver(self.blank_slide)
+        return self.chrome_driver.find_element_by_xpath(self.delete_blank_slide).is_displayed()
+
+    def is_add_slide_present(self):
+        self.wait_for_locator_webdriver(self.add_slide)
+        return self.chrome_driver.find_element_by_xpath(self.add_slide).is_displayed()
+
+    def click_on_add_slide(self):
+        self.wait_for_clickable_element_webdriver(self.add_slide)
+        self.chrome_driver.find_element_by_xpath(self.add_slide).click()
+
+    def click_on_delete_slide(self):
+        self.wait_for_clickable_element_webdriver(self.add_slide)
+        self.chrome_driver.find_element_by_xpath(self.delete_blank_slide).click()
+
+    def verify_new_slide_can_be_presented(self):
+        self.click_on_add_slide()
+        self.chrome_driver.find_element_by_xpath(self.present_new_slide).click()
+        new_slide = self.chrome_driver.find_element_by_xpath(self.blank_slide).text
+        assert new_slide == self.chrome_driver.find_element_by_xpath(
+            self.slide_name_in_presentation).text, "new slide is not presentable"
+
+    def add_slide_between_slides(self, slide_no):
+        self.wait_for_locator_webdriver(self.add_slide)
+        elements = self.chrome_driver.find_elements_by_xpath(self.slides_names)
+        len(elements)
+        elements[slide_no].click()
+        self.click_on_add_slide()
+        self.wait_for_locator_webdriver(self.blank_slide)
+        elements = self.chrome_driver.find_elements_by_xpath(self.slides_names)
+        assert "Blank Slide" in elements[slide_no + 1].text, "Slide is not added under the expected slide"
+
+    # slide description
+
+    def click_on_any_slide(self, slide_no):
+        self.wait_for_locator_webdriver(self.add_slide)
+        self.wait_for_locator_webdriver(self.add_slide)
+        elements = self.chrome_driver.find_elements_by_xpath(self.slides_names)
+        len(elements)
+        elements[slide_no].click()
+
+    def is_slide_no_present_in_description(self):
+        self.wait_for_locator_webdriver(self.blank_slide)
+        return self.chrome_driver.find_element_by_xpath(self.slide_title_in_description).is_displayed()
+
+    def is_slide_description_present(self):
+        self.wait_for_locator_webdriver(self.add_slide)
+        return self.chrome_driver.find_element_by_xpath(self.slide_description).is_displayed()
