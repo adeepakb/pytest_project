@@ -15,6 +15,8 @@ from constants.load_json import get_data
 from utilities.staging_tlms import Stagingtlms
 import pytest_check as check
 
+from utilities.tutor_common_methods import TutorCommonMethods
+
 
 class ReturnType():
     def __init__(self, result, reason):
@@ -22,7 +24,7 @@ class ReturnType():
         self.reason = reason
 
 
-class NeoTute:
+class NeoTute(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
@@ -82,26 +84,25 @@ class NeoTute:
         self.student_card_menu = "//div[contains(@class,'neo_cl_StreamCard__icon--menuOption')]"
         self.student_card_pin_student_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomLeft')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
         self.student_card_ask_question_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
-        self.student_video_container = "//div[@class='neo_cl_VideoContainer']"
-        self.relaunch_error = "//*[contains(@class ,'Mui-error')]"
-        self.end_button = '//span[text()= "End Class"]'
-        self.start_class_button = "//span[contains(text(), 'Start Class')]"
-        self.end_button = "//span[contains(text(), 'End Class')]"
-        self.topic_header = "//div[@class='sessionPlan__header']"
-        self.session_plan_content = '//div[@class = "sessionPlan_content"]'
-        self.session_id_ui = '//div[@class= "sessionId"]'
-        self.tab_item = '//div[@class = "tabViewContainer__tabViewText"]'
-        self.student_cards = "//div[@class='studentsDetails__outer']"
-        self.approve_button = ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
-        self.student_detail_toast = "//div[@class='studentsDetails__toastIcon']"
-        self.close_toast = "//div[@class='neo_cl_ToastIcon']"
-        self.student_name = ".//div[@class='student-name']"
-        self.reject_buttpn = ".//div[@class='reject']"
-        self.play_pause = "//div[@class='play-pause']"
-        self.full_screen_icon = "//div[@class='full-screen']"
-        self.mute_unmute = "//div[@class='volume-control']"
-        self.time_elapsed = "//div[@class='time-elapsed']"
-
+        self.student_video_container = "xpath","//div[@class='neo_cl_VideoContainer']"
+        self.relaunch_error = "xpath","//*[contains(@class ,'Mui-error')]"
+        self.end_button = "xpath",'//span[text()= "End Class"]'
+        self.start_class_button = "xpath","//span[contains(text(), 'Start Class')]"
+        self.end_button = "xpath","//span[contains(text(), 'End Class')]"
+        self.topic_header = "xpath","//div[@class='sessionPlan__header']"
+        self.session_plan_content ="xpath", '//div[@class = "sessionPlan_content"]'
+        self.session_id_ui = "xpath",'//div[@class= "sessionId"]'
+        self.tab_item = "xpath",'//div[@class = "tabViewContainer__tabViewText"]'
+        self.student_cards ="xpath", "//div[@class='studentsDetails__outer']"
+        self.approve_button ="xpath", ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
+        self.student_detail_toast = "xpath","//div[@class='studentsDetails__toastIcon']"
+        self.close_toast = "xpath","//div[@class='neo_cl_ToastIcon']"
+        self.student_name = "xpath",".//div[@class='student-name']"
+        self.reject_buttpn ="xpath", ".//div[@class='reject']"
+        self.play_pause = "xpath","xpath","//div[@class='play-pause']"
+        self.full_screen_icon = "xpath","//div[@class='full-screen']"
+        self.mute_unmute = "xpath","//div[@class='volume-control']"
+        self.time_elapsed ="xpath", "//div[@class='time-elapsed']"
         self.add_slide = "//span[text()='Add New Slide']"
         self.signal_icon = '//div[@class="topContainer--signal"]'
         self.chat_icon = "//img[@alt='chat']/parent::div[contains(@Class,'topContainer--action_icon')]"
@@ -743,6 +744,7 @@ class NeoTute:
         flag = self.verify_video_is_presented()
         check.equal(flag.result,True,flag.reason)
         try:
+            self.get_element()
             flag = self.chrome_driver.find_element_by_xpath(self.play_pause).is_displayed()
             check.equal(flag,True,"Play pause button not displayed")
             flag = self.chrome_driver.find_element_by_xpath(self.full_screen_icon).is_displayed()
