@@ -110,6 +110,7 @@ class CommonMethodsWeb():
         wait = WebDriverWait(self.driver, timeout)
         return wait
 
+    #prashant
     def wait_for_locator(self, locator, timeout=5):
         try:
             wait = self.webdriver_wait(timeout)
@@ -119,6 +120,12 @@ class CommonMethodsWeb():
 
     def child_element_text(self,element, locator):
         return element.find_element_by_xpath(locator).text
+
+    def get_child_element(self,element,locator_type, locator_value):
+        return element.find_element(locator_type,locator_value)
+
+    def get_child_elements(self, element, locator_type, locator_value):
+        return element.find_elements(locator_type, locator_value)
 
     def wait_for_element_visible(self, driver, locator, timeout=30):
         try:
