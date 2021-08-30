@@ -3,17 +3,13 @@ import logging
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException, \
     ElementNotSelectableException
-
-
 
 class CommonMethodsWeb():
 
     def __init__(self, driver):
-         self.driver = driver
-
+        self.driver = driver
 
     def getByType(self, locatorType):
         if locatorType == "id":
@@ -42,7 +38,7 @@ class CommonMethodsWeb():
         element = self.driver.find_element(byType, locatorValue)
         return element
 
-# this method is use to click on the element
+    # this method is use to click on the element
     def elementClick(self, locator):
         try:
             element = self.get_element(locator)
@@ -56,8 +52,8 @@ class CommonMethodsWeb():
             logging.info("Cannot click on the element with locator: " + locator)
             return False
 
-# this method first clear the data then enter the text in given element
-    def enterText(self, driver, data, locator):
+    # this method first clear the data then enter the text in given element
+    def enterText(self, data, locator):
         try:
             element = self.get_element(locator)
             element.clear()
@@ -85,7 +81,7 @@ class CommonMethodsWeb():
         elements.extend(self.driver.find_elements(byType, locatorValue))
         return elements
 
-# this method is use to check element is present or not if yes it will return True else False
+    # this method is use to check element is present or not if yes it will return True else False
     def is_element_present(self, locator):
         try:
             element = self.get_element(locator)
@@ -118,7 +114,7 @@ class CommonMethodsWeb():
         except TimeoutException:
             pass
 
-    def child_element_text(self,element, locator):
+    def child_element_text(self, element, locator):
         return element.find_element_by_xpath(locator).text
 
     def get_child_element(self,element,locator_type, locator_value):
@@ -135,19 +131,17 @@ class CommonMethodsWeb():
         except:
             return False
 
-    def wait_for_locator_webdriver(self, locator_value):
+    def wait_for_locator_webdriver(self, locator_value, timeout=15):
         try:
-            WebDriverWait(self.driver, 15).until(ec.presence_of_element_located((By.XPATH, locator_value)))
+            WebDriverWait(self.driver, timeout).until(ec.presence_of_element_located((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def wait_for_element_enabled(self, driver, element, timeout=5):
+    def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
         try:
-            wait = WebDriverWait(driver, timeout)
-            wait.until(ec.element_to_be_clickable(element))
-            return True
-        except:
-            return False
+            WebDriverWait(self.driver, timeout).until(ec.element_to_be_clickable((By.XPATH, locator_value)))
+        except TimeoutException:
+            print("Timed out while waiting for page to load")
 
     def element_click(self, locator=None, element=None):
         if element is None:
@@ -156,5 +150,3 @@ class CommonMethodsWeb():
             element.click()
         except NoSuchElementException:
             logging.info("Cannot click on the element with locator: " + locator)
-
-
