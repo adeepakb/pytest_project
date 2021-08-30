@@ -12,8 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
 from selenium.webdriver.chrome.options import Options
 from constants.load_json import get_data
-from utilities.staging_tlms import Stagingtlms
 from utilities.common_methods_web import CommonMethodsWeb
+from utilities.staging_tlms import Stagingtlms
 import pytest_check as check
 
 
@@ -37,9 +37,17 @@ class NeoTute(CommonMethodsWeb):
         encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
         self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
+        super().__init__(self.chrome_driver)
         self.action = ActionChains(self.chrome_driver)
         self.obj = CommonMethodsWeb(self.chrome_driver)
 
+        self.login_email = "//input[@id='email']"
+        self.login_submit = "//button[@type='submit']"
+        self.sign_in_with_google_email = "//input[@type='email']"
+        self.sign_in_next = "//span[contains(text(),'Next')]"
+        self.sign_in_password = "//input[@type='password']"
+        self.tllms_mentoring = "//li[@id='mentoring']"
+        self.session_login_button = "//span[contains(text(),'LOGIN')]"
         self.blank_slide_presented = "//div[@class='presentation-name']/div/span[text()=' Blank Slide']"
         self.presentation = '//*[@class = "presentationContainer"]'
         self.toggle_draw_checkbox = '//input[@name= "toggle-toolbox"]'
@@ -55,6 +63,7 @@ class NeoTute(CommonMethodsWeb):
         self.text_icon = "//img[contains(@src,'Toolbar_Text_Normal')]"
         self.eraser_icon = "//img[contains(@src,'Toolbar_Eraser_Normal')]"
         self.clear_icon = "//img[contains(@src,'Toolbar_Delete_Normal')]"
+        self.color_icon = "//div[@class='tool-box-cell-color']"
         self.size_icon = "//div[@class='tool-box-cell-font']"
         self.palette_slider = "//input[@class='palette-stroke-slider']"
         self.video = '//div[@class = "videoPresentation false"]'
@@ -86,24 +95,25 @@ class NeoTute(CommonMethodsWeb):
         self.student_card_ask_question_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
         self.student_video_container = "//div[@class='neo_cl_VideoContainer']"
         self.relaunch_error = "//*[contains(@class ,'Mui-error')]"
-        self.end_button = '//span[text()= "End Class"]'
-        self.start_class_button = "//span[contains(text(), 'Start Class')]"
-        self.end_button = "//span[contains(text(), 'End Class')]"
-        self.topic_header = "//div[@class='sessionPlan__header']"
-        self.session_plan_content = '//div[@class = "sessionPlan_content"]'
-        self.session_id_ui = '//div[@class= "sessionId"]'
-        self.tab_item = '//div[@class = "tabViewContainer__tabViewText"]'
-        self.student_cards = "//div[@class='studentsDetails__outer']"
-        self.approve_button = ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
-        self.student_detail_toast = "//div[@class='studentsDetails__toastIcon']"
-        self.close_toast = "//div[@class='neo_cl_ToastIcon']"
-        self.student_name = ".//div[@class='student-name']"
-        self.reject_buttpn = ".//div[@class='reject']"
-        self.play_pause = "//div[@class='play-pause']"
-        self.full_screen_icon = "//div[@class='full-screen']"
-        self.mute_unmute = "//div[@class='volume-control']"
-        self.time_elapsed = "//div[@class='time-elapsed']"
-
+        self.neo_dashborad_class = "xpath", "//div[@class='neoDashboard__classInfo']"
+        self.start_class_button = "xpath", "//span[contains(text(), 'Start Class')]"
+        self.end_button = "xpath", "//span[contains(text(), 'End Class')]"
+        self.topic_header = "xpath", "//div[@class='sessionPlan__header']"
+        self.session_plan_content = "xpath", '//div[@class = "sessionPlan_content"]'
+        self.session_id_ui = "xpath", '//div[@class= "sessionId"]'
+        self.tab_item = "xpath", '//div[@class = "tabViewContainer__tabViewText"]'
+        self.student_cards_details = "xpath", "//div[@class='studentsDetails__outer']"
+        self.approve_button = "xpath", ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
+        self.student_detail_toast = "xpath", "//div[@class='studentsDetails__toastIcon']"
+        self.close_toast = "xpath", "//div[@class='neo_cl_ToastIcon']"
+        self.student_name = "xpath", ".//div[@class='student-name']"
+        self.reject_buttpn = "xpath", ".//div[@class='reject']"
+        self.play_pause = "xpath", "xpath", "//div[@class='play-pause']"
+        self.full_screen_icon = "xpath", "//div[@class='full-screen']"
+        self.mute_unmute = "xpath", "//div[@class='volume-control']"
+        self.time_elapsed = "xpath", "//div[@class='time-elapsed']"
+        self.video_presentation = "xpath", ".//div[@class='videoPresentation false']"
+        self.image_presentation = "xpath", ".//div[@class='imagePresentation']"
         self.add_slide = "//span[text()='Add New Slide']"
         self.signal_icon = '//div[@class="topContainer--signal"]'
         self.chat_icon = "//img[@alt='chat']/parent::div[contains(@Class,'topContainer--action_icon')]"
@@ -131,6 +141,7 @@ class NeoTute(CommonMethodsWeb):
         self.slide_title_in_description = '//div[@class="sessionSlide--slideTitle"]'
         self.slide_description = '//div[@class="sessionSlide--slideContent cke_editable"]'
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
+        self.presentaion_name = "xpath", "//div[@class='presentation-name']"
 
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
@@ -723,6 +734,7 @@ class NeoTute(CommonMethodsWeb):
     def scroll_from_top_to_bottom(self, length):
         self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
+
     # Top container
 
     def is_audio_icon_present(self):
@@ -907,3 +919,15 @@ class NeoTute(CommonMethodsWeb):
     def is_slide_description_present(self):
         self.wait_for_locator_webdriver(self.add_slide)
         return self.is_element_displayed('xpath', self.slide_description)
+
+    def wait_for_locator_webdriver(self, locator_value, timeout=15):
+        try:
+            WebDriverWait(self.chrome_driver, timeout).until(EC.presence_of_element_located((By.XPATH, locator_value)))
+        except TimeoutException:
+            print("Timed out while waiting for page to load")
+
+    def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
+        try:
+            WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
+        except TimeoutException:
+            print("Timed out while waiting for page to load")

@@ -48,6 +48,8 @@ class TutorCommonMethods:
         except TimeoutException:
             pass
 
+
+
     def wait_for_invisibility_of_element(self, locator_type, locator_value, timeout=20):
         wait = self.webdriver_wait(timeout)
         wait.until(ec.invisibility_of_element_located((self._by(locator_type), locator_value)))
@@ -110,6 +112,8 @@ class TutorCommonMethods:
 
     def child_element_displayed(self, element, id_locator_value):
         return element.find_element_by_id(id_locator_value).is_displayed()
+
+
 
     # this method first clear the data then enter the text in given element
     def enter_text(self, data, locator_type, locator_value):
