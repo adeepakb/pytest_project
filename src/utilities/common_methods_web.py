@@ -1,12 +1,9 @@
-import math
-
+from io import BytesIO
+import cv2
+import pytesseract
 import pytest
 import logging
 from PIL import Image
-from io import BytesIO
-import cv2
-import numpy as np
-import pytesseract
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -123,6 +120,12 @@ class CommonMethodsWeb():
     def child_element_text(self, element, locator):
         return element.find_element_by_xpath(locator).text
 
+    def get_child_element(self,element,locator_type, locator_value):
+        return element.find_element(locator_type,locator_value)
+
+    def get_child_elements(self, element, locator_type, locator_value):
+        return element.find_elements(locator_type, locator_value)
+
     def wait_for_element_visible(self, driver, locator, timeout=30):
         try:
             wait = WebDriverWait(driver, timeout)
@@ -143,13 +146,31 @@ class CommonMethodsWeb():
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def element_click(self, locator=None, element=None):
+    def get_elment(self, locator_type, locator_value, wait=False):
+        self.wait_for_locator(locator_type, locator_value)
+        element = self.driver.find_element(self._by(locator_type), locator_value)
+        return element
+
+# this method is use to check element is present or not if yes it will return True else False
+    def is_element_displayed(self, locator_type, locator_value):
+        try:
+            element = self.get_elment(locator_type, locator_value)
+            if element is not None:
+                return True
+            else:
+                logging.info("Element not found")
+                return False
+        except (NoSuchElementException, TimeoutException):
+            return False
+
+ # this method is use to click on the element
+    def click_element(self, locator_type=None, locator_value=None, element=None):
         if element is None:
-            element = self.get_element(locator)
+            element = self.get_elment(locator_type, locator_value)
         try:
             element.click()
         except NoSuchElementException:
-            logging.info("Cannot click on the element with locator: " + locator)
+            logging.info("Cannot click on the element with locator: " + locator_value)
 
     # get text from image file
     @staticmethod

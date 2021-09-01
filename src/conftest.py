@@ -156,8 +156,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     scenario_name = scenario.name
     elapsed = int(time.time() - py_test.__getattribute__('start'))
     elapsed_time = str(elapsed) + 's'
-    # suite_name = os.getenv('suite')
-    suite_name = "Byju's Classes"
+    suite_name = os.getenv('suite')
+    # suite_name = "Byju's Classes"
     if suite_name == "Byju's Classes":
         testing_device = request.getfixturevalue("driver").session['deviceModel']
         app_version = baseClass.get_current_app_version()
