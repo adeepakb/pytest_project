@@ -437,8 +437,8 @@ class NeoTute:
 
     def get_student_audio_status(self):
         student_audio_status = {}
-        cards = self.chrome_driver.find_elements_by_xpath(self.student_cards)
-        video_cards = self.chrome_driver.find_elements_by_xpath(self.student_video_container)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
+        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
             student_name = cards[i].text
             stream_id = video_cards[i].get_attribute('id')
@@ -451,7 +451,7 @@ class NeoTute:
 
     # menu_item options : Pin Student,Unpin student, Ask Question,Remove from Ask Question,View Performance, Send An Award
     def click_on_menu_option(self, expected_student_name, menu_item):
-        cards = self.chrome_driver.find_elements_by_xpath(self.student_cards)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
             if expected_student_name == actual_student_name:
@@ -461,7 +461,7 @@ class NeoTute:
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):
-        cards = self.chrome_driver.find_elements_by_xpath(self.student_cards)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
         video_cards = self.obj.get_elements(('xpath',self.student_video_container))
         for i in range(len(cards)):
             actual_student_name = cards[i].text

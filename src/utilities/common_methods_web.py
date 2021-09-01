@@ -1,5 +1,12 @@
+import math
+
 import pytest
 import logging
+from PIL import Image
+from io import BytesIO
+import cv2
+import numpy as np
+import pytesseract
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -143,3 +150,51 @@ class CommonMethodsWeb():
             element.click()
         except NoSuchElementException:
             logging.info("Cannot click on the element with locator: " + locator)
+
+    # get text from image file
+    @staticmethod
+    def get_text_from_image(imagefilename):
+        img = cv2.imread(imagefilename + '.png')
+        text = pytesseract.image_to_string(img, lang='eng')
+        return text
+
+    # shape detection using opencv
+    @staticmethod
+    def detect_shapes(element):
+        png = element.screenshot_as_png
+        im = Image.open(BytesIO(png))
+        im.save('shapes.png')
+        shapes_list = []
+        # Load the image
+        img = cv2.imread('shapes.png')
+        # Convert to greyscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Convert to binary image by thresholding
+        _, threshold = cv2.threshold(img_gray, 245, 255, cv2.THRESH_BINARY_INV)
+        # Find the contours
+        contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # For each contour approximate the curve and
+        # detect the shapes.
+        for contour in contours:
+            epsilon = 0.01 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+            x = approx.ravel()[0]
+            y = approx.ravel()[1] - 5
+            # approx is the number of edges that particular shape has
+            if len(approx) == 3:
+                shapes_list.append("triangle")
+            elif len(approx) == 4:
+                x1, y1, w, h = cv2.boundingRect(approx)
+                aspect_ratio = float(w) / h
+                if 0.95 <= aspect_ratio <= 1.05:
+                    shapes_list.append("square")
+                else:
+                    shapes_list.append("rectangle")
+            elif len(approx) == 5:
+                shapes_list.append("pentagon")
+            elif len(approx) == 10:
+                shapes_list.append("star")
+            else:
+                shapes_list.append("circle")
+        print(shapes_list)
+        return shapes_list
