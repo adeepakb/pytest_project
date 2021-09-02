@@ -44,7 +44,7 @@ class CommonMethodsWeb():
         return element
 
     # this method is use to click on the element
-    def elementClick(self, locator):
+    def element_click(self, locator):
         try:
             element = self.get_element(locator)
             if element is not None:
@@ -58,7 +58,7 @@ class CommonMethodsWeb():
             return False
 
     # this method first clear the data then enter the text in given element
-    def enterText(self, data, locator):
+    def enter_text(self, data, locator):
         try:
             element = self.get_element(locator)
             element.clear()
@@ -70,7 +70,7 @@ class CommonMethodsWeb():
 
     def button_click(self, text):
 
-        ele = self.driver.find_element("xpath", "//*[text()='+text']")
+        ele = self.driver.find_element("xpath", "//*[text()="+text+"]")
         ele.click()
 
     def wait(self, sec):
@@ -97,10 +97,6 @@ class CommonMethodsWeb():
                 return False
         except (NoSuchElementException):
             return False
-
-    def get_web_elements(self, locator_type, locator_value):
-        elements = self.driver.find_elements(self._by(locator_type), locator_value)
-        return elements
 
     @staticmethod
     def _by(locator_type):
@@ -147,31 +143,6 @@ class CommonMethodsWeb():
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def get_elment(self, locator_type, locator_value, wait=False):
-        self.wait_for_locator(locator_type, locator_value)
-        element = self.driver.find_element(self._by(locator_type), locator_value)
-        return element
-
-# this method is use to check element is present or not if yes it will return True else False
-    def is_element_displayed(self, locator_type, locator_value):
-        try:
-            element = self.get_elment(locator_type, locator_value)
-            if element is not None:
-                return True
-            else:
-                logging.info("Element not found")
-                return False
-        except (NoSuchElementException, TimeoutException):
-            return False
-
- # this method is use to click on the element
-    def click_element(self, locator_type=None, locator_value=None, element=None):
-        if element is None:
-            element = self.get_elment(locator_type, locator_value)
-        try:
-            element.click()
-        except NoSuchElementException:
-            logging.info("Cannot click on the element with locator: " + locator_value)
 
     # get text from image file
     @staticmethod

@@ -125,7 +125,7 @@ class NeoInClass:
         return profile_card_details
 
     def close_info_tip(self):
-        self.obj.elementClick(('xpath', self.info_tip_close))
+        self.obj.element_click(('xpath', self.info_tip_close))
 
     # focus mode
     def is_focus_mode_icon_present(self):
@@ -190,56 +190,56 @@ class NeoInClass:
 
     def is_hand_raise_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.handraise_icon)
-        return self.obj.is_element_displayed('xpath', self.handraise_icon)
+        return self.obj.is_element_present(('xpath', self.handraise_icon))
 
     def is_thumb_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
-        return self.obj.is_element_displayed('xpath', self.thumb_icon)
+        return self.obj.is_element_present(('xpath', self.thumb_icon))
 
     def is_kebab_menu_present(self):
         self.obj.wait_for_locator_webdriver(self.kebab_menu)
-        return self.obj.is_element_displayed('xpath', self.kebab_menu)
+        return self.obj.is_element_present(('xpath', self.kebab_menu))
 
     def click_on_kebab_menu(self):
         self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
-        self.obj.click_element('xpath', self.kebab_menu)
+        self.obj.element_click(('xpath', self.kebab_menu))
 
     def is_facing_issues_option_present(self):
         self.obj.wait_for_locator_webdriver(self.facing_issues_btn)
-        return self.obj.is_element_displayed('xpath', self.facing_issues_btn)
+        return self.obj.is_element_present(('xpath', self.facing_issues_btn))
 
     def is_exit_class_btn_present(self):
         self.obj.wait_for_locator_webdriver(self.student_exit_class)
-        return self.obj.is_element_displayed('xpath', self.student_exit_class)
+        return self.obj.is_element_present(('xpath', self.student_exit_class))
 
     def click_on_exit_class_in_student(self):
         self.obj.wait_for_clickable_element_webdriver(self.student_exit_class)
-        self.obj.click_element('xpath', self.student_exit_class)
+        self.obj.element_click(('xpath', self.student_exit_class))
 
     def verify_header_in_exit_class_popup(self):
         self.obj.wait_for_locator_webdriver(self.header_text_in_exit_popup)
-        ele = self.obj.get_elment('xpath', self.header_text_in_exit_popup).text
+        ele = self.obj.get_element(('xpath', self.header_text_in_exit_popup)).text
         assert "Are you sure you want to end the class?" in ele, "the text in popup doesn't match"
 
     def is_exit_image_in_exit_popup_present(self):
         self.obj.wait_for_locator_webdriver(self.exit_img_in_exit_popup)
-        return self.obj.is_element_displayed('xpath', self.exit_img_in_exit_popup)
+        return self.obj.is_element_present(('xpath', self.exit_img_in_exit_popup))
 
     def is_stayback_in_exit_popup_present(self):
         self.obj.wait_for_locator_webdriver(self.stayback_in_exit_popup)
-        return self.obj.is_element_displayed('xpath', self.stayback_in_exit_popup)
+        return self.obj.is_element_present(('xpath', self.stayback_in_exit_popup))
 
     def is_exitclass_in_exit_popup_present(self):
         self.obj.wait_for_locator_webdriver(self.exit_class_in_exit_popup)
-        return self.obj.is_element_displayed('xpath', self.exit_class_in_exit_popup)
+        return self.obj.is_element_present(('xpath', self.exit_class_in_exit_popup))
 
     def is_close_icon_in_facing_issues_present(self):
         self.obj.wait_for_locator_webdriver(self.close_icon_in_facing_issues)
-        return self.obj.is_element_displayed('xpath', self.close_icon_in_facing_issues)
+        return self.obj.is_element_present(('xpath', self.close_icon_in_facing_issues))
 
     def is_helpline_no_in_facing_issues_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.helpline_no_in_facing_issue)
+        return self.obj.is_element_present(('xpath', self.helpline_no_in_facing_issue))
 
     def select_any_option_in_facing_issue(self, string_val):
         try:
@@ -254,9 +254,9 @@ class NeoInClass:
     def get_inclass_student_video_status(self):
         self.obj.wait_for_locator_webdriver(self.student_video)
         try:
-            if self.obj.is_element_displayed('xpath', self.student_video_off):
+            if self.obj.is_element_present(('xpath', self.student_video_off)):
                 return ReturnType(False, "off by student")
-            elif self.obj.is_element_displayed('xpath', self.student_video_off_by_tutor):
+            elif self.obj.is_element_present(('xpath', self.student_video_off_by_tutor)):
                 return ReturnType(False, "off by tutor")
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
@@ -264,78 +264,78 @@ class NeoInClass:
     def get_inclass_student_audio_status(self):
         self.obj.wait_for_locator_webdriver(self.student_audio)
         try:
-            if self.obj.is_element_displayed('xpath', self.student_audio_off):
+            if self.obj.is_element_present(('xpath', self.student_audio_off)):
                 return ReturnType(False, "off by student")
-            elif self.obj.is_element_displayed('xpath', self.student_audio_off_by_tutor):
+            elif self.obj.is_element_present(('xpath', self.student_audio_off_by_tutor)):
                 return ReturnType(False, "off by tutor")
         except(NoSuchElementException):
             return ReturnType(True, "mic is on")
 
 
     def hover_on_inclass_audio_icon(self):
-        audio_icon = self.obj.get_elment("xpath", self.student_audio)
+        audio_icon = self.obj.get_element(("xpath", self.student_audio))
         self.action.move_to_element(audio_icon).perform()
 
     def hover_on_inclass_video_icon(self):
-        video_icon = self.obj.get_elment("xpath", self.student_video)
+        video_icon = self.obj.get_element(("xpath", self.student_video))
         self.action.move_to_element(video_icon).perform()
 
     def is_turn_on_camera_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.turn_on_cam_tooltip)
+        return self.obj.is_element_present(('xpath', self.turn_on_cam_tooltip))
 
     def is_turn_off_camera_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.turn_off_cam_tooltip )
+        return self.obj.is_element_present(('xpath', self.turn_off_cam_tooltip))
 
     def is_turn_on_mic_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.turn_on_mic_tooltip)
+        return self.obj.is_element_present(('xpath', self.turn_on_mic_tooltip))
 
     def is_turn_off_mic_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.turn_off_mic_tooltip)
+        return self.obj.is_element_present(('xpath', self.turn_off_mic_tooltip))
 
     def is_cam_disabled_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.cam_disabled_tooltip)
+        return self.obj.is_element_present(('xpath', self.cam_disabled_tooltip))
 
     def is_mic_disabled_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_displayed('xpath', self.mic_disabled_tooltip)
+        return self.obj.is_element_present(('xpath', self.mic_disabled_tooltip))
 
 #session details
 
     def is_session_topic_inclass_present(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
-        return self.obj.is_element_displayed('xpath', self.session_topic_inclass)
+        return self.obj.is_element_present(('xpath', self.session_topic_inclass))
 
     def verify_session_topic_name_inclass(self, topictext):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
-        topic = self.obj.get_elment('xpath', self.session_topic_inclass).text
+        topic = self.obj.get_element(('xpath', self.session_topic_inclass)).text
         element_topic = topic.split(": ")
         flag = topictext == element_topic[1]
         check.equal(flag, True, "topic is different")
 
     def is_session_topic_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_icon)
-        return self.obj.is_element_displayed('xpath', self.session_topic_icon)
+        return self.obj.is_element_present(('xpath', self.session_topic_icon))
 
 #rating popup
 
     def verify_header_in_rating_popup(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_elment('xpath', self.rating_popup_header).text
+        ele = self.obj.get_element(('xpath', self.rating_popup_header)).text
         flag = "Rate your experience" in ele
         check.equal(flag, True, "the text in popup doesn't match")
 
     def is_close_icon_in_rating_popup_present(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_close_icon)
-        return self.obj.is_element_displayed('xpath', self.rating_popup_close_icon)
+        return self.obj.is_element_present(('xpath', self.rating_popup_close_icon))
 
     def verify_the_text_in_rating_popup(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_elment('xpath', self.text_in_rating_popup).text
+        ele = self.obj.get_element(('xpath', self.text_in_rating_popup)).text
         flag = "How was your class" in ele
         check.equal(flag, True, "the text in popup doesn't match")
 
