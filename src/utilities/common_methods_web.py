@@ -4,6 +4,7 @@ import cv2
 import pytesseract
 import logging
 from PIL import Image
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -219,3 +220,10 @@ class CommonMethodsWeb():
                 shapes_list.append("circle")
         print(shapes_list)
         return shapes_list
+
+    def move_focus_to_element(driver, element_to_hover_over):
+        try:
+            hover = ActionChains(driver).move_to_element(element_to_hover_over)
+            hover.perform()
+        except NoSuchElementException:
+            logging.info("Hover operation failed.")
