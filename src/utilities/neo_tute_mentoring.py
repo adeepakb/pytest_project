@@ -402,11 +402,9 @@ class NeoTute(CommonMethodsWeb):
 
     def is_ban_options_and_buttons_present(self):
         self.obj.wait_for_locator_webdriver(self.ban_student_popup)
-        self.wait_for_element_visible(self.chrome_driver,self.ban_student_popup)
         expected_option_list = ['Inappropriate Content', 'Abusive Language', 'Content Sharing', 'Others']
         actual_option_list = []
         options = self.obj.get_elements(('xpath',"//div[@class='popupOption']"))
-        options = self.get_elements(("xpath","//div[@class='popupOption']"))
         if len(options):
             return ReturnType(False, "Zero ban options")
         for option in options:
@@ -479,8 +477,8 @@ class NeoTute(CommonMethodsWeb):
 
     def get_student_audio_status(self):
         student_audio_status = {}
-        cards = self.chrome_driver.find_elements_by_xpath(self.student_cards)
-        video_cards = self.chrome_driver.find_elements_by_xpath(self.student_video_container)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
+        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
             student_name = cards[i].text
             stream_id = video_cards[i].get_attribute('id')
@@ -493,18 +491,18 @@ class NeoTute(CommonMethodsWeb):
 
     # menu_item options : Pin Student,Unpin student, Ask Question,Remove from Ask Question,View Performance, Send An Award
     def click_on_menu_option(self, expected_student_name, menu_item):
-        cards = self.get_element(self.student_cards)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
             if expected_student_name == actual_student_name:
                 menu_icon = card.find_element_by_xpath(self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
-                self.chrome_driver.find_element_by_xpath("//div[text()='" + menu_item + "']").click()
+                self.obj.elementClick(('xpath',"//div[text()='" + menu_item + "']"))
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):
-        cards = self.chrome_driver.find_elements_by_xpath(self.student_cards)
-        video_cards = self.chrome_driver.find_elements_by_xpath(self.student_video_container)
+        cards = self.obj.get_elements(('xpath', self.student_cards))
+        video_cards = self.obj.get_elements(('xpath',self.student_video_container))
         for i in range(len(cards)):
             actual_student_name = cards[i].text
             stream_id = video_cards[i].get_attribute('id')
@@ -560,7 +558,7 @@ class NeoTute(CommonMethodsWeb):
     def start_the_session(self):
         try:
             self.wait_for_element_visible(self.chrome_driver,self.start_class_button)
-            self.element_click(self.start_class_button)
+            self.click_element(self.start_class_button)
             self.wait_for_element_visible(self.chrome_driver,self.end_button, timeout=30)
             check.equal(self.get_element(self.end_button).is_displayed(), True,
                         "End Class Button is not shown after clicking on start button")
