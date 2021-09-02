@@ -1,5 +1,10 @@
 import pytest
+from io import BytesIO
+import cv2
+import pytesseract
 import logging
+from PIL import Image
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -39,7 +44,7 @@ class CommonMethodsWeb():
         return element
 
     # this method is use to click on the element
-    def elementClick(self, locator):
+    def element_click(self, locator):
         try:
             element = self.get_element(locator)
             if element is not None:
@@ -53,7 +58,7 @@ class CommonMethodsWeb():
             return False
 
     # this method first clear the data then enter the text in given element
-    def enterText(self, data, locator):
+    def enter_text(self, data, locator):
         try:
             element = self.get_element(locator)
             element.clear()
@@ -65,7 +70,7 @@ class CommonMethodsWeb():
 
     def button_click(self, text):
 
-        ele = self.driver.find_element("xpath", "//*[text()='+text']")
+        ele = self.driver.find_element("xpath", "//*[text()="+text+"]")
         ele.click()
 
     def wait(self, sec):
@@ -93,10 +98,6 @@ class CommonMethodsWeb():
         except (NoSuchElementException):
             return False
 
-    def get_web_elements(self, locator_type, locator_value):
-        elements = self.driver.find_elements(self._by(locator_type), locator_value)
-        return elements
-
     @staticmethod
     def _by(locator_type):
         attr = getattr(By, locator_type)
@@ -106,7 +107,6 @@ class CommonMethodsWeb():
         wait = WebDriverWait(self.driver, timeout)
         return wait
 
-    #prashant
     def wait_for_locator(self, locator, timeout=5):
         try:
             wait = self.webdriver_wait(timeout)
@@ -143,12 +143,58 @@ class CommonMethodsWeb():
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def element_click(self, locator=None, element=None):
-        if element is None:
-            element = self.get_element(locator)
+
+    # get text from image file
+    @staticmethod
+    def get_text_from_image(imagefilename):
+        img = cv2.imread(imagefilename + '.png')
+        text = pytesseract.image_to_string(img, lang='eng')
+        return text
+
+    # shape detection using opencv
+    @staticmethod
+    def detect_shapes(element):
+        png = element.screenshot_as_png
+        im = Image.open(BytesIO(png))
+        im.save('shapes.png')
+        shapes_list = []
+        # Load the image
+        img = cv2.imread('shapes.png')
+        # Convert to greyscale
+        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Convert to binary image by thresholding
+        _, threshold = cv2.threshold(img_gray, 245, 255, cv2.THRESH_BINARY_INV)
+        # Find the contours
+        contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # For each contour approximate the curve and
+        # detect the shapes.
+        for contour in contours:
+            epsilon = 0.01 * cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, epsilon, True)
+            x = approx.ravel()[0]
+            y = approx.ravel()[1] - 5
+            # approx is the number of edges that particular shape has
+            if len(approx) == 3:
+                shapes_list.append("triangle")
+            elif len(approx) == 4:
+                x1, y1, w, h = cv2.boundingRect(approx)
+                aspect_ratio = float(w) / h
+                if 0.95 <= aspect_ratio <= 1.05:
+                    shapes_list.append("square")
+                else:
+                    shapes_list.append("rectangle")
+            elif len(approx) == 5:
+                shapes_list.append("pentagon")
+            elif len(approx) == 10:
+                shapes_list.append("star")
+            else:
+                shapes_list.append("circle")
+        print(shapes_list)
+        return shapes_list
+
+    def move_focus_to_element(driver, element_to_hover_over):
         try:
-            element.click()
+            hover = ActionChains(driver).move_to_element(element_to_hover_over)
+            hover.perform()
         except NoSuchElementException:
-            logging.info("Cannot click on the element with locator: " + locator)
-
-
+            logging.info("Hover operation failed.")
