@@ -143,6 +143,41 @@ class NeoTute(CommonMethodsWeb):
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
 
+#neo inclass locators
+
+        self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
+        self.thumb_icon = "//img[contains(@src,'/static/media/thumb')]"
+        self.kebab_menu = "//img[contains(@src,'/static/media/menu')]"
+        self.student_video = '//img[contains(@src,"/static/media/cam")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_audio = '//img[contains(@src,"/static/media/mic")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_video_off = '//img[contains(@src,"/static/media/cam-off")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_audio_off = '//img[contains(@src,"/static/media/mic-off")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_video_off_by_tutor = '//img[contains(@src,"/static/media/camera-off-gray-icon")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_audio_off_by_tutor = '//img[contains(@src,"/static/media/mic_off_icon_gray")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.session_topic_inclass = "//div[contains(@class,'classInfo__text classInfo__text--mobileTxt')]"
+        self.session_topic_icon = "//div[contains(@class,'classInfo__infoIcon')]"
+        self.facing_issues_btn = "//span[text()='Facing issues?']"
+        self.student_exit_class = "//span[text()='Exit class']"
+        self.facing_issue_header = '//div[@class="reportIssue__header"]'
+        self.close_icon_in_facing_issues = '//*[@class="MuiSvgIcon-root"]/parent::div[@class="closePopup"]'
+        self.helpline_no_in_facing_issue = '//span[@class="reportIssue__helpLineNoColor"]'
+        self.header_text_in_exit_popup = '//*[contains(text(),"Are you sure")]'
+        self.exit_img_in_exit_popup = '//img[@class="exitClass__icon"]'
+        self.stayback_in_exit_popup = "//div[text()='Stay Back']"
+        self.exit_class_in_exit_popup = "//span[text()='Exit Class']"
+        self.rating_popup_header = '//div[contains(@class,"Component-title")]'
+        self.rating_popup_close_icon = '//*[contains(@class,"MuiSvgIcon-root Component-closeIcon")]'
+        self.text_in_rating_popup = "//div[text()='How was your class?']"
+        self.facing_issue_options = (By.XPATH, '//*[@class="MuiFormGroup-root"]')
+        self.rating_options = (By.XPATH, "//div[contains(@class,'rating__item')]")
+        self.turn_on_cam_tooltip = "//span[text()='Turn on Camera']"
+        self.turn_off_cam_tooltip = "//span[text()='Turn off Camera']"
+        self.turn_on_mic_tooltip = "//span[text()='Turn on Microphone']"
+        self.turn_off_mic_tooltip = "//span[text()='Turn off Microphone']"
+        self.cam_disabled_tooltip = "//span[text()='Camera disabled by tutor']"
+        self.mic_disabled_tooltip = "//span[text()='Microphone disabled by tutor']"
+
+
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
         password = self.decrypted_data['staging_access']['password']
@@ -776,40 +811,40 @@ class NeoTute(CommonMethodsWeb):
     def get_video_status(self):
         try:
             if self.is_element_displayed('xpath', self.cam_off):
-                return False
+                return ReturnType(False, "cam is off")
         except(NoSuchElementException):
-            return True
+            return ReturnType(True, "cam is on")
 
     def get_audio_status(self):
         try:
             if self.is_element_displayed('xpath', self.mic_off):
-                return False
+                return ReturnType(False, "mic is off")
         except(NoSuchElementException):
-            return True
+            return ReturnType(True, "mic is on")
 
     def get_chat_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
             if self.is_element_displayed('xpath', self.chat_off):
-                return False
+                return ReturnType(False, "chat is off")
         except(NoSuchElementException):
-            return True
+            return ReturnType(True, "chat is on")
 
     def get_tutor_video_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
             if self.is_element_displayed('xpath', self.tutor_cam_off):
-                return False
+                return ReturnType(False, "cam is off")
         except(NoSuchElementException):
-            return True
+            return ReturnType(True, "cam is on")
 
     def get_tutor_audio_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
             if self.is_element_displayed('xpath', self.tutor_mic_off):
-                return False
+                return ReturnType(False, "mic is off")
         except(NoSuchElementException):
-            return True
+            return ReturnType(True, "mic is on")
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -931,3 +966,167 @@ class NeoTute(CommonMethodsWeb):
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
+#neo inclass
+#bottom container
+
+    def is_hand_raise_icon_present(self):
+        self.wait_for_locator_webdriver(self.handraise_icon)
+        return self.is_element_displayed('xpath', self.handraise_icon)
+
+    def is_thumb_icon_present(self):
+        self.wait_for_locator_webdriver(self.thumb_icon)
+        return self.is_element_displayed('xpath', self.thumb_icon)
+
+    def is_kebab_menu_present(self):
+        self.wait_for_locator_webdriver(self.kebab_menu)
+        return self.is_element_displayed('xpath', self.kebab_menu)
+
+    def click_on_kebab_menu(self):
+        self.wait_for_clickable_element_webdriver(self.kebab_menu)
+        self.click_element('xpath', self.kebab_menu)
+
+    def is_facing_issues_option_present(self):
+        self.wait_for_locator_webdriver(self.facing_issues_btn)
+        return self.is_element_displayed('xpath', self.facing_issues_btn)
+
+    def is_exit_class_btn_present(self):
+        self.wait_for_locator_webdriver(self.student_exit_class)
+        return self.is_element_displayed('xpath', self.student_exit_class)
+
+    def click_on_exit_class_in_student(self):
+        self.wait_for_clickable_element_webdriver(self.student_exit_class)
+        self.click_element('xpath', self.student_exit_class)
+
+    def verify_header_in_exit_class_popup(self):
+        self.wait_for_locator_webdriver(self.header_text_in_exit_popup)
+        ele = self.get_elment('xpath', self.header_text_in_exit_popup).text
+        assert "Are you sure you want to end the class?" in ele, "the text in popup doesn't match"
+
+    def is_exit_image_in_exit_popup_present(self):
+        self.wait_for_locator_webdriver(self.exit_img_in_exit_popup)
+        return self.is_element_displayed('xpath', self.exit_img_in_exit_popup)
+
+    def is_stayback_in_exit_popup_present(self):
+        self.wait_for_locator_webdriver(self.stayback_in_exit_popup)
+        return self.is_element_displayed('xpath', self.stayback_in_exit_popup)
+
+    def is_exitclass_in_exit_popup_present(self):
+        self.wait_for_locator_webdriver(self.exit_class_in_exit_popup)
+        return self.is_element_displayed('xpath', self.exit_class_in_exit_popup)
+
+    def is_close_icon_in_facing_issues_present(self):
+        self.wait_for_locator_webdriver(self.close_icon_in_facing_issues)
+        return self.is_element_displayed('xpath', self.close_icon_in_facing_issues)
+
+    def is_helpline_no_in_facing_issues_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.helpline_no_in_facing_issue)
+
+    def select_any_option_in_facing_issue(self, string_val):
+        try:
+            options = self.get_elements(self.facing_issue_options)
+            for option in options:
+                if option.text in string_val:
+                    option.click()
+                    break
+        except:
+            check.equal(False, True, "Couldn't click on the option")
+
+    def get_inclass_student_video_status(self):
+        self.wait_for_locator_webdriver(self.student_video)
+        try:
+            if self.is_element_displayed('xpath', self.student_video_off):
+                return ReturnType(False, "off by student")
+            elif self.is_element_displayed('xpath', self.student_video_off_by_tutor):
+                return ReturnType(False, "off by tutor")
+        except(NoSuchElementException):
+            return ReturnType(True, "cam is on")
+
+    def get_inclass_student_audio_status(self):
+        self.wait_for_locator_webdriver(self.student_audio)
+        try:
+            if self.is_element_displayed('xpath', self.student_audio_off):
+                return ReturnType(False, "off by student")
+            elif self.is_element_displayed('xpath', self.student_audio_off_by_tutor):
+                return ReturnType(False, "off by tutor")
+        except(NoSuchElementException):
+            return ReturnType(True, "mic is on")
+
+
+    def hover_on_inclass_audio_icon(self):
+        audio_icon = self.get_elment("xpath", self.student_audio)
+        self.action.move_to_element(audio_icon).perform()
+
+    def hover_on_inclass_video_icon(self):
+        video_icon = self.get_elment("xpath", self.student_video)
+        self.action.move_to_element(video_icon).perform()
+
+    def is_turn_on_camera_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.turn_on_cam_tooltip)
+
+    def is_turn_off_camera_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.turn_off_cam_tooltip )
+
+    def is_turn_on_mic_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.turn_on_mic_tooltip)
+
+    def is_turn_off_mic_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.turn_off_mic_tooltip)
+
+    def is_cam_disabled_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.cam_disabled_tooltip)
+
+    def is_mic_disabled_tooltip_present(self):
+        self.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
+        return self.is_element_displayed('xpath', self.mic_disabled_tooltip)
+
+#session details
+
+    def is_session_topic_inclass_present(self):
+        self.wait_for_locator_webdriver(self.session_topic_inclass)
+        return self.is_element_displayed('xpath', self.session_topic_inclass)
+
+    def verify_session_topic_name_inclass(self, topictext):
+        self.wait_for_locator_webdriver(self.session_topic_inclass)
+        topic = self.get_elment('xpath', self.session_topic_inclass).text
+        element_topic = topic.split(": ")
+        flag = topictext == element_topic[1]
+        check.equal(flag, True, "topic is different")
+
+    def is_session_topic_icon_present(self):
+        self.wait_for_locator_webdriver(self.session_topic_icon)
+        return self.is_element_displayed('xpath', self.session_topic_icon)
+
+#rating popup
+
+    def verify_header_in_rating_popup(self):
+        self.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.get_elment('xpath', self.rating_popup_header).text
+        flag = "Rate your experience" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
+
+    def is_close_icon_in_rating_popup_present(self):
+        self.wait_for_locator_webdriver(self.rating_popup_close_icon)
+        return self.is_element_displayed('xpath', self.rating_popup_close_icon)
+
+    def verify_the_text_in_rating_popup(self):
+        self.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.get_elment('xpath', self.text_in_rating_popup).text
+        flag = "How was your class" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
+
+    def select_any_option_in_rating(self, rating_opt):
+        try:
+            options = self.get_elements(self.rating_options)
+            for option in options:
+                if option.text in rating_opt:
+                    option.click()
+                    break
+        except:
+            check.equal(False, True, "Couldn't click on the option")
