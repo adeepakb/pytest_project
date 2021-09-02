@@ -8,7 +8,7 @@ import sys
 import subprocess
 import logging
 from utilities.base_page import BaseClass
-from utilities.pre_execution import BuildFeatureJob
+#from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
 from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
@@ -19,7 +19,7 @@ sys.path.append(PATH('constants/'))
 from constants.test_management import *
 
 baseClass = BaseClass()
-feature_job = BuildFeatureJob()
+#feature_job = BuildFeatureJob()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -55,12 +55,12 @@ def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         android_driver = baseClass.setup_android()
-        feature_job.lock_or_unlock_device('lock')
-        serial = feature_job.connect_adb_api()
-        feature_job.connect_to_adb(serial)
+        # feature_job.lock_or_unlock_device('lock')
+        # serial = feature_job.connect_adb_api()
+        # feature_job.connect_to_adb(serial)
         yield android_driver
-        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT).communicate()
+        # subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+        #                  stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
         chrome_driver = baseClass.setup_browser()

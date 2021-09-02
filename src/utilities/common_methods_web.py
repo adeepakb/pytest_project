@@ -150,3 +150,5 @@ class CommonMethodsWeb():
             element.click()
         except NoSuchElementException:
             logging.info("Cannot click on the element with locator: " + locator)
+
+
