@@ -35,6 +35,7 @@ class NeoInClass:
         self.presentation_text_area = "//textarea[@class='readonly-textarea']"
 
         self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
+        self.hand_raised_icon = "//div[text()='Hand raised']"
         self.thumb_icon = "//img[contains(@src,'/static/media/thumb')]"
         self.kebab_menu = "//img[contains(@src,'/static/media/menu')]"
         self.student_video = '//img[contains(@src,"/static/media/cam")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
@@ -65,6 +66,17 @@ class NeoInClass:
         self.turn_off_mic_tooltip = "//span[text()='Turn off Microphone']"
         self.cam_disabled_tooltip = "//span[text()='Camera disabled by tutor']"
         self.mic_disabled_tooltip = "//span[text()='Microphone disabled by tutor']"
+        self.feedback_options = '//div[@class="rating__card-item"]'
+        self.continue_btn_in_rating_popup = "//span[text()='Continue']"
+        self.feedback_submit_btn = "//div[text()='Submit']"
+        self.tutor_details_in_feedback = '//div[@class="tutor__details"]'
+        self.header_text_in_feedback = "//div[text()='How was your experience with your tutor?']"
+        self.text_in_thank_you_popup = "//div[text()='Thank you for your feedback!']"
+        self.report_now_btn = "//span[text()='Report Now']"
+        self.issue_still_persists_text = "//div[text()='Issue still Persists?']"
+        self.suggested_tips_for_issues = '//div[@class="extraTips"]'
+        self.issue_response_text = "//*[text()='We got your issue!']"
+        self.lower_your_hand_tootip = "//*[text()='You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.']"
 
 
     # streamCardContainer
@@ -192,9 +204,38 @@ class NeoInClass:
         self.obj.wait_for_locator_webdriver(self.handraise_icon)
         return self.obj.is_element_present(('xpath', self.handraise_icon))
 
+    def verify_hand_raised(self):
+        self.obj.wait_for_locator_webdriver(self.thumb_icon)
+        if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
+            return True
+        else:
+            self.obj.element_click(('xpath', self.handraise_icon))
+            return self.obj.is_element_present(('xpath', self.hand_raised_icon))
+
+    def verify_lower_hand_tooltip(self):
+        self.obj.wait_for_locator_webdriver(self.thumb_icon)
+        if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
+            self.obj.element_click(('xpath', self.hand_raised_icon))
+            return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
+        else:
+            self.obj.is_element_present(('xpath', self.handraise_icon))
+            self.obj.element_click(('xpath', self.handraise_icon))
+            self.obj.element_click(('xpath', self.hand_raised_icon))
+            return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
+
     def is_thumb_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
         return self.obj.is_element_present(('xpath', self.thumb_icon))
+
+    def click_on_thumb_icon(self):
+        self.obj.element_click(('xpath', self.thumb_icon))
+
+    def select_any_celebration_symbol(self, celeb_symbol):
+        try:
+            option = self.obj.get_elements(('xpath', "//img[contains(@src,'/static/media/classes-emoji-"+celeb_symbol+"')]"))
+            self.action.move_to_element(option).click().perform()
+        except:
+            check.equal(False, True, "Couldn't click on the option")
 
     def is_kebab_menu_present(self):
         self.obj.wait_for_locator_webdriver(self.kebab_menu)
@@ -237,6 +278,9 @@ class NeoInClass:
         self.obj.wait_for_locator_webdriver(self.close_icon_in_facing_issues)
         return self.obj.is_element_present(('xpath', self.close_icon_in_facing_issues))
 
+    def click_on_close_icon_for_facing_issues_popup(self):
+        self.obj.element_click(('xpath', self.close_icon_in_facing_issues))
+
     def is_helpline_no_in_facing_issues_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
         return self.obj.is_element_present(('xpath', self.helpline_no_in_facing_issue))
@@ -251,25 +295,63 @@ class NeoInClass:
         except:
             check.equal(False, True, "Couldn't click on the option")
 
+    def verify_issue_response_text(self):
+        self.obj.wait_for_locator_webdriver(self.issue_response_text)
+        ele = self.obj.get_element(('xpath', self.issue_response_text)).text
+        flag = "We got your issue!" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
+
+    def verify_text_above_report_btn(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        ele = self.obj.get_element(('xpath', self.issue_still_persists_text)).text
+        flag = "Issue still Persists?" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
+
+    def is_report_now_btn_in_facing_issues_present(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        return self.obj.is_element_present(('xpath', self.report_now_btn))
+
+    def click_on_report_now_btn(self):
+        self.obj.element_click(('xpath', self.report_now_btn))
+
+    def is_suggested_tips_present(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        return self.obj.is_element_present(('xpath', self.suggested_tips_for_issues))
+
     def get_inclass_student_video_status(self):
+        student_video_status = {}
         self.obj.wait_for_locator_webdriver(self.student_video)
         try:
             if self.obj.is_element_present(('xpath', self.student_video_off)):
-                return ReturnType(False, "off by student")
+                student_video_status["video_disbled_desc"]="off by student"
+                student_video_status["video_disbled_status"] = False
+                return student_video_status
             elif self.obj.is_element_present(('xpath', self.student_video_off_by_tutor)):
-                return ReturnType(False, "off by tutor")
+                student_video_status["video_disbled_desc"] = "off by tutor"
+                student_video_status["video_disbled_status"] = False
+                return student_video_status
         except(NoSuchElementException):
-            return ReturnType(True, "cam is on")
+            student_video_status["video_disbled_desc"] = "on by student"
+            student_video_status["video_disbled_status"] = True
+            return student_video_status
+
 
     def get_inclass_student_audio_status(self):
+        student_audio_status = {}
         self.obj.wait_for_locator_webdriver(self.student_audio)
         try:
             if self.obj.is_element_present(('xpath', self.student_audio_off)):
-                return ReturnType(False, "off by student")
+                student_audio_status["video_disbled_desc"] = "off by student"
+                student_audio_status["video_disbled_status"] = False
+                return student_audio_status
             elif self.obj.is_element_present(('xpath', self.student_audio_off_by_tutor)):
-                return ReturnType(False, "off by tutor")
+                student_audio_status["video_disbled_desc"] = "off by tutor"
+                student_audio_status["video_disbled_status"] = False
+                return student_audio_status
         except(NoSuchElementException):
-            return ReturnType(True, "mic is on")
+            student_audio_status["video_disbled_desc"] = "on by student"
+            student_audio_status["video_disbled_status"] = True
+            return student_audio_status
 
 
     def hover_on_inclass_audio_icon(self):
@@ -348,3 +430,39 @@ class NeoInClass:
                     break
         except:
             check.equal(False, True, "Couldn't click on the option")
+
+    def is_continue_btn_in_rating_popup_present(self):
+        self.obj.wait_for_locator_webdriver(self.feedback_submit_btn)
+        return self.obj.is_element_present(('xpath', self.continue_btn_in_rating_popup))
+
+    def click_on_continue_btn_in_rating_popup(self):
+        self.obj.element_click(('xpath', self.continue_btn_in_rating_popup))
+
+    def is_submit_button_in_feedback_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        return self.obj.is_element_present(('xpath', self.feedback_submit_btn))
+
+    def click_on_submit_button_in_feedback(self):
+        self.obj.element_click(('xpath', self.feedback_submit_btn))
+
+    def verify_the_feedback_text(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.obj.get_element(('xpath', self.header_text_in_feedback)).text
+        flag = "How was your experience with your tutor?" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
+
+    def select_any_feedback_option(self, feedback_opt):
+        try:
+            options = self.obj.get_elements(self.feedback_options)
+            for option in options:
+                if option.text in feedback_opt:
+                    option.click()
+                    break
+        except:
+            check.equal(False, True, "Couldn't click on the option")
+
+    def verify_text_in_Thank_you_popup(self):
+        self.obj.wait_for_locator_webdriver(self.text_in_thank_you_popup)
+        ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup)).text
+        flag = "Thank you for your feedback!" in ele
+        check.equal(flag, True, "the text in popup doesn't match")
