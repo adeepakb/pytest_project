@@ -209,4 +209,3 @@ def pytest_sessionfinish():
             os.unlink(file)
         except FileNotFoundError:
             pass
-        

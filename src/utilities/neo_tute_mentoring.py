@@ -127,8 +127,8 @@ class NeoTute(CommonMethodsWeb):
         self.tutor_card = '//div[@class="tutorCard"]'
         self.tutor_cam = "//img[@alt='cam']/parent::div[contains(@Class,'tutorCard--icon')]"
         self.tutor_mic = "//img[@alt='mic']/parent::div[contains(@Class,'tutorCard--icon')]"
-        self.tutor_cam_off = "(//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
-        self.tutor_mic_off = "(//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
+        self.tutor_cam_on = "(//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'tutorCard--icon tutorCard--red_icon tutorCard--hide')])[1]"
+        self.tutor_mic_on = "(//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'tutorCard--icon tutorCard--red_icon tutorCard--hide')])[1]"
         self.continue_class_btn = "//span[text()='Continue class']"
         self.end_class_in_popup = "//span[text()='End class']"
         self.end_Class_button = "//span[text()='End Class']"
@@ -804,18 +804,18 @@ class NeoTute(CommonMethodsWeb):
     def get_tutor_video_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
-            if self.is_element_present(('xpath', self.tutor_cam_off)):
-                return ReturnType(False, "cam is off")
+            if self.is_element_present(('xpath', self.tutor_cam_on)):
+                return ReturnType(True, "cam is on")
         except(NoSuchElementException):
-            return ReturnType(True, "cam is on")
+            return ReturnType(False, "cam is off")
 
     def get_tutor_audio_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
-            if self.is_element_present(('xpath', self.tutor_mic_off)):
-                return ReturnType(False, "mic is off")
+            if self.is_element_present(('xpath', self.tutor_mic_on)):
+                return ReturnType(True, "mic is on")
         except(NoSuchElementException):
-            return ReturnType(True, "mic is on")
+            return ReturnType(False, "mic is off")
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
