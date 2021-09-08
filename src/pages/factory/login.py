@@ -1,5 +1,5 @@
 from pages.android.login_android import LoginAndroid
-from pages.web_pages.login_web import LoginWeb
+from pages.web.login_web import LoginWeb
 from constants.platform import Platform
 
 

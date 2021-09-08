@@ -12,11 +12,11 @@ class LoginBase(ABC):
         raise NotImplemented
 
     @abstractmethod
-    def enter_phone(self):
+    def enter_phone(self,mobile_num):
         raise NotImplemented('subclasses must override enter_phone()!')
 
     @abstractmethod
-    def enter_otp(self):
+    def enter_otp(self,cc,mobile_num,otp):
         raise NotImplemented('subclasses must override enter_otp()!')
 
     @abstractmethod
@@ -24,7 +24,7 @@ class LoginBase(ABC):
         raise NotImplemented('subclasses must override verify_home_page_loaded()!')
 
     @abstractmethod
-    def navigate_to_home_screen(self):
+    def navigate_to_home_screen(self, login_profile, user_profile, sub_profile):
         raise NotImplemented()
 
     @abstractmethod
