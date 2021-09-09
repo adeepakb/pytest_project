@@ -40,7 +40,6 @@ class Stagingtlms:
         password = self.decrypted_data['staging_access']['password']
         self.chrome_driver.get('https://staging.tllms.com/admin')
         self.chrome_driver.maximize_window()
-        self.chrome_driver.get_screenshot_as_file("image001.png")
         self.wait_for_locator_webdriver("//input[@id='email']")
         self.chrome_driver.find_element_by_xpath("//input[@id='email']").send_keys(email)
         self.wait_for_locator_webdriver("//button[@type='submit']")
@@ -50,9 +49,7 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
-        self.chrome_driver.get_screenshot_as_file("image002.png")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
-        self.chrome_driver.get_screenshot_as_file("image003.png")
 
     def navigate_to_student_sessions(self, premium_id):
         today = datetime.today().strftime('%Y-%m-%d')
@@ -63,14 +60,12 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//*[text()='1:M - Schedule Student Sessions']").click()
         self.wait_for_locator_webdriver("//a[text()='Scheduling Sessions(User Wise)']")
         self.chrome_driver.find_element_by_xpath("//a[text()='Scheduling Sessions(User Wise)']").click()
-        self.chrome_driver.get_screenshot_as_file("image004.png")
         self.wait_for_locator_webdriver("//input[@id ='target_date']")
         self.chrome_driver.find_element_by_xpath("//input[@id ='target_date']").send_keys(today)
         self.wait_for_locator_webdriver("//input[@id ='premium_account_id']")
         self.chrome_driver.find_element_by_xpath("//input[@id ='premium_account_id']").send_keys(premium_id)
         self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
         self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
-        self.chrome_driver.get_screenshot_as_file("image005.png")
 
     def get_tutor_url(self, course='primary'):
         email = self.decrypted_data['staging_access']['email']
@@ -190,19 +185,16 @@ class Stagingtlms:
         mobile = self.decrypted_data['account_details']['mobile']
         return mobile
 
-    def get_otp(self, account_type='many'):
-        if account_type == 'many':
-            complete_mobile = self.get_mobile_and_ccode()
-        elif account_type == 'asset_not_tagged_account_details':
-            complete_mobile = self.decrypted_data['asset_not_tagged_account_details']['mobile']
+    def get_otp(self,cc,mobile_num):
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
-        self.wait_for_locator_webdriver("//li[@id='mobile_otps']")
+        self.wait_for_clickable_element_webdriver("//li[@id='mobile_otps']")
         self.chrome_driver.find_element_by_xpath("//li[@id='mobile_otps']").click()
-        self.chrome_driver.find_element_by_css_selector("#q_mobile_no").send_keys(complete_mobile)
-        self.obj.wait_for_locator('xpath', "//*[@name='commit']", 3)
+        self.chrome_driver.find_element_by_css_selector("#q_mobile_no").send_keys(cc+""+mobile_num)
+        self.obj.wait_for_locator('xpath', "//*[@name='commit']", 5)
         self.chrome_driver.find_element_by_xpath("//*[@name='commit']").click()
+        self.wait_for_locator_webdriver("//*[contains(@id,mobile_otp)]")
         otp = self.chrome_driver.find_element_by_css_selector("td.col-otp").text
         self.chrome_driver.close()
         return otp
