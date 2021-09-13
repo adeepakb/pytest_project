@@ -27,8 +27,8 @@ class Stagingtlms:
         self.driver = driver
         self.obj = TutorCommonMethods(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)

@@ -26,12 +26,15 @@ class ReturnType():
 class NeoTute(CommonMethodsWeb):
     def __init__(self, driver):
         self.driver = driver
-        self.tlms = Stagingtlms(driver)
+        # self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
+        self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
+        self.tlms = Stagingtlms(self.chrome_driver1)
+        self.chrome_driver_tlms = self.tlms.chrome_driver
         key = os.getenv('SECRET')
         f = Fernet(key)
         encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
@@ -166,8 +169,8 @@ class NeoTute(CommonMethodsWeb):
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
-        self.obj.wait_for_locator_webdriver(self.session_login_button)
         self.obj.element_click(('xpath', self.session_login_button))
+
         return url
 
     # Session slides -> whiteboard
@@ -1047,7 +1050,17 @@ class NeoTute(CommonMethodsWeb):
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
         element.click()
 
+    def verify_a_text_in_chat(self, text):
+        chats = self.get_all_chats()
+
+        for chat_item in chats:
+            if chat_item[1] == text:
+                return ReturnType(True," Chat text is found")
+        return ReturnType(True,"Chat text is not found")
+
+
     def verify_chat_elements(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class='chatContainer__chatheader']"))
         try:
             self.send_chat(text="Hi")
             element = self.get_element(("xpath", "//div[@class='chatContainer__chatheader']"))
@@ -1064,6 +1077,18 @@ class NeoTute(CommonMethodsWeb):
             check.equal(flag, True, "Send chat button not displayed")
         except:
             check.equal(False, True, "Chat elements incorrectly displayed")
+
+    def verify_chat_elements_element_wise(self, element_type):
+        element = self.get_element(("xpath", "//div[@class='chatContainer__chatheader']"))
+        if element_type.lower() == 'students count':
+            student_count = self.get_child_element(element, "xpath", ".//span[@class='chatContainer__count']").text
+            flag = (int(student_count) > 0)
+            return ReturnType(True, "Student number is greaater") if flag else ReturnType(False,
+                                                                                          "Student number is greaater")
+        elif element_type.lower() == "type something":
+            flag = self.get_element(("xpath", "//input[@placeholder='Type something']")).is_displayed()
+            return ReturnType(True, " Type Something is displayed on chat box") if flag else ReturnType(False,
+                                                                                                        "Type some thing is not displayed on place holder")
 
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
@@ -1126,7 +1151,7 @@ class NeoTute(CommonMethodsWeb):
         except:
             return names
 
-    def get_audio_status_of_student(self,student_name):
+    def get_audio_status_of_student(self, student_name):
         try:
             elements = self.get_elements(("xpath", "//div[@class='streamList__streamItem']"))
 
@@ -1142,6 +1167,92 @@ class NeoTute(CommonMethodsWeb):
         except:
             return ReturnType(False, "Audio is off")
 
+    def launch_student_webiste(self, mobile_number="2011090130"):
+        try:
+            self.chrome_driver.get('https://learn-staging.byjus.com/login')
+            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiButton-label']"))
+            self.element_click(("xpath", "//span[@class='MuiButton-label']"))
+
+            self.enter_text(mobile_number, ("xpath", "//input[@id='enterNumber']"))
+            self.element_click(('xpath', "//div[@class='nextButtonLanding']"))
+            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//input[@class='inputEleOTP']"))
+            otp = self.get_otp(mobile_number)
+            self.enter_text(otp, ("xpath", "//input[@class='inputEleOTP']"))
+            self.element_click(("xpath", "//button[@class='PLbuttonEle']"))
+            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiIconButton-label']"))
+        except:
+            raise Exception('Student home page not launched')
+
+    def get_otp(self, mobile_number):
+        try:
+            self.tlms.login_to_staging()
+            self.wait_for_element_visible(self.chrome_driver_tlms, ("xpath", "//li[@id='otp']"))
+            self.chrome_driver_tlms.find_element_by_xpath("//li[@id='otp']").click()
+            self.chrome_driver_tlms.find_element_by_xpath(".//li[@id='mobile_otps']").click()
+            self.chrome_driver_tlms.find_element_by_xpath('//input[@id="q_mobile_no"]').send_keys(
+                "+91-" + mobile_number)
+            self.chrome_driver_tlms.find_element_by_xpath('//input[@name="commit"]')
+            self.chrome_driver_tlms.find_element_by_xpath('//input[@name="commit"]').click()
+            element = self.chrome_driver_tlms.find_elements_by_xpath('//*[@class="odd"]')
+            otp_text = self.chrome_driver_tlms.find_element_by_xpath('.//*[@class="col col-otp"]').text
+            return otp_text
+        except:
+            raise Exception("Otp not found")
+
+    def navigate_to_byjus_classes_screen(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[contains(text(),'Byju’s Classes')]"))
+        self.element_click(("xpath", "//div[contains(text(),'Byju’s Classes')]"))
+
+    def join_session_from_home_page(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiIconButton-label']"))
+        self.element_click(("xpath", "//span[contains(text(),'JOIN')]"))
+
+    def join_neo_session_from_classes_page_paid(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class = 'MuiTab-wrapper']"))
+
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class='btnCard']"))
+        elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
+        element = self.get_child_element(elements[1], "xpath",
+                                         ".//div[@class='type-video masterOrRegularCardContainer']")
+        self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
+        self.turn_off_mic_from_student_join_page()
+        self.turn_off_video_from_student_join_page()
+        self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
+
+    def turn_off_mic_from_student_join_page(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class = 'stream--overlay_icon']"))
+        elements = self.get_elements(("xpath", "//div[@class = 'stream--overlay_icon']"))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='mic']").click()
+            except:
+                pass
+
+    def turn_off_video_from_student_join_page(self):
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class = 'stream--overlay_icon']"))
+        elements = self.get_elements(("xpath", "//div[@class = 'stream--overlay_icon']"))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='cam']").click()
+            except:
+                pass
+
+    def verify_sticker_displayed(self):
+
+        elements = self.get_elements(("xpath", "//div[@class= 'message']"))
+
+
+        for element in elements:
+            if "src" in element.get_attribute('innerHTML'):
+                return ReturnType(True," Sticker is being displayed")
+        return ReturnType(False, " Sticker is not being displayed")
+
+    def send_sticker(self):
+        self.get_element(("xpath", "//*[@class='emoji']")).click()
+        self.wait_for_element_visible(self.chrome_driver,("xpath", "//*[@class='emojiItem']"))
+        self.get_element(("xpath", "//*[@class='emojiItem']")).click()
 
 
 

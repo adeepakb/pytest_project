@@ -36,8 +36,8 @@ class Stagingtllms(TutorCommonMethods):
     def __init__(self, driver):
         self.driver = driver
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--window-size=1600,900")
         try:
             with open("../../config/chrome_session.json", "r") as fp:
