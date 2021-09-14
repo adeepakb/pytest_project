@@ -130,8 +130,8 @@ class NeoTute(CommonMethodsWeb):
         self.tutor_card = '//div[@class="tutorCard"]'
         self.tutor_cam = "//img[@alt='cam']/parent::div[contains(@Class,'tutorCard--icon')]"
         self.tutor_mic = "//img[@alt='mic']/parent::div[contains(@Class,'tutorCard--icon')]"
-        self.tutor_cam_off = "(//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
-        self.tutor_mic_off = "(//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'tutorCard--icon')])[1]"
+        self.tutor_cam_on = "(//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'tutorCard--icon tutorCard--red_icon tutorCard--hide')])[1]"
+        self.tutor_mic_on = "(//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'tutorCard--icon tutorCard--red_icon tutorCard--hide')])[1]"
         self.continue_class_btn = "//span[text()='Continue class']"
         self.end_class_in_popup = "//span[text()='End class']"
         self.end_Class_button = "//span[text()='End Class']"
@@ -318,8 +318,8 @@ class NeoTute(CommonMethodsWeb):
             try:
                 self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
                 self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
-                self.obj.enterText(text, ('xpath', self.type_something_inputcard))
-                self.obj.enterText(Keys.RETURN, ('xpath', self.type_something_inputcard))
+                self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
+                self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
                 break
             except (NoSuchElementException, ElementNotInteractableException):
                 timeout -= 5
@@ -818,18 +818,18 @@ class NeoTute(CommonMethodsWeb):
     def get_tutor_video_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
-            if self.is_element_present(('xpath', self.tutor_cam_off)):
-                return ReturnType(False, "cam is off")
+            if self.is_element_present(('xpath', self.tutor_cam_on)):
+                return ReturnType(True, "cam is on")
         except(NoSuchElementException):
-            return ReturnType(True, "cam is on")
+            return ReturnType(False, "cam is off")
 
     def get_tutor_audio_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         try:
-            if self.is_element_present(('xpath', self.tutor_mic_off)):
-                return ReturnType(False, "mic is off")
+            if self.is_element_present(('xpath', self.tutor_mic_on)):
+                return ReturnType(True, "mic is on")
         except(NoSuchElementException):
-            return ReturnType(True, "mic is on")
+            return ReturnType(False, "mic is off")
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -860,9 +860,10 @@ class NeoTute(CommonMethodsWeb):
         self.wait_for_locator_webdriver(self.signal_icon)
         return self.is_element_present(('xpath', self.end_class_in_popup))
 
-    def click_on_tab_item(self, tab_name):
+    def click_on_tab_item(self, tab_name='Session Plan'):
         try:
-            items = self.chrome_driver.find_elements_by_xpath(self.tab_item)
+
+            items = self.get_elements(self.tab_item)
             for item in items:
                 if item.text.replace("\n", " ") == tab_name:
                     item.click()
@@ -1055,9 +1056,8 @@ class NeoTute(CommonMethodsWeb):
 
         for chat_item in chats:
             if chat_item[1] == text:
-                return ReturnType(True," Chat text is found")
-        return ReturnType(True,"Chat text is not found")
-
+                return ReturnType(True, " Chat text is found")
+        return ReturnType(True, "Chat text is not found")
 
     def verify_chat_elements(self):
         self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class='chatContainer__chatheader']"))
@@ -1243,20 +1243,40 @@ class NeoTute(CommonMethodsWeb):
 
         elements = self.get_elements(("xpath", "//div[@class= 'message']"))
 
-
         for element in elements:
             if "src" in element.get_attribute('innerHTML'):
-                return ReturnType(True," Sticker is being displayed")
+                return ReturnType(True, " Sticker is being displayed")
         return ReturnType(False, " Sticker is not being displayed")
 
     def send_sticker(self):
         self.get_element(("xpath", "//*[@class='emoji']")).click()
-        self.wait_for_element_visible(self.chrome_driver,("xpath", "//*[@class='emojiItem']"))
+        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//*[@class='emojiItem']"))
         self.get_element(("xpath", "//*[@class='emojiItem']")).click()
 
+    def raise_hand(self):
+        self.wait_for_element_visible(self.chrome_driver,"xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']")
+        self.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']")).click()
 
+    def unraise_hand(self):
+        if self.verify_hand_is_raised().result:
 
+            self.get_element(("xpath", "//div[@class='bottomContainer__raiseHandText']")).click()
 
-
+    def verify_lower_hand_text_is_displayed(self):
+        try:
+            text = self.get_element(("xpath", "//div[@class='insideClass__lowerHandMessage']")).text
+            flag = 'You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.' == text
+            return ReturnType(True, "Lower hand message is shown and correct") if flag else ReturnType(False,
+                                                                                                       "Lower hand message is shown and not correct")
+        except:
+            ReturnType(False,
+                       "Lower hand message is not shown")
+    def verify_hand_is_raised(self):
+        try:
+            self.wait_for_element_visible(self.chrome_driver, "xpath", "//div[@class='bottomContainer__raiseHandText']")
+            flag = self.get_element(("xpath", "//div[@class='bottomContainer__raiseHandText']")).is_displayed()
+            return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
+        except:
+            return ReturnType(False, "Hand is not raised")
 
 

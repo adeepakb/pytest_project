@@ -77,4 +77,26 @@ def step_impl(test_tut):
     check.equal(detail.result, True, detail.reason)
 
 
+@when('student raises hand')
+def step_impl(test_tut):
+    test_tut.raise_hand()
+
+
+@when('student lower hand')
+def step_impl(test_tut):
+    test_tut.unraise_hand()
+
+
+@then('verify student hand is raised')
+def step_impl(test_tut):
+    detail = test_tut.verify_hand_is_raised()
+    check.equal(detail.result, True, detail.reason)
+
+
+@then('verify lower hand message is displayed')
+def step_impl(test_tut):
+    detail = test_tut.verify_lower_hand_text_is_displayed()
+    check.equal(detail.result, True, detail.reason)
+
+
 
