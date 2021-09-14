@@ -4,6 +4,7 @@ from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.factory.neo_inclass_factory import NeoInClassFactory
 import pytest_check as check
+from utilities.neo_tute_mentoring import NeoTute
 
 
 
@@ -30,20 +31,13 @@ def neo_in_class(request, driver):
         neo_in_class = NeoInClassFactory().get_page(driver, Platform.WEB.value)
         yield neo_in_class
 
-    @fixture()
-    def neo_in_class(request, driver):
-        platform_list = request.config.getoption("--platform")
-        if Platform.ANDROID.name in platform_list:
-            neo_in_class = NeoInClassFactory().get_page(driver, Platform.ANDROID.value)
-            yield neo_in_class
-        elif Platform.WEB.name in platform_list:
-            neo_in_class = NeoInClassFactory().get_page(driver, Platform.WEB.value)
-            yield neo_in_class
-
 @given("Launch the application online")
 def login_as_neo_user(login_in):
     login_in.login_for_neo_class('+91-', '2011313229', otp=None)
 
+@given("tutor start the session")
+def step_impl(driver):
+    NeoTute(driver).start_neo_session()
 
 @when("tap on premium school card")
 @then("tap on premium school card")

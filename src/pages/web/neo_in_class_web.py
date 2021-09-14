@@ -810,7 +810,7 @@ class NeoInClass:
         else:
             return ReturnType(False, 'rating popup is not present')
 
-    def verify_selected_emoji_color(self, expected_color):
+    def get_selected_emoji_color(self, expected_color):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
         element = self.obj.get_element(('xpath', self.star_option))
         color_code = element.value_of_css_property('color')
