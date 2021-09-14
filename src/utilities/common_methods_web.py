@@ -69,21 +69,11 @@ class CommonMethodsWeb():
             return False
 
     def button_click(self, text):
-        ele = self.driver.find_element("xpath", "//*[text()='"+text+"']")
+        ele = self.driver.find_element("xpath", "//*[text()='" + text + "']")
         ele.click()
 
-    def is_text_match(self,expected_text):
-        try:
-            element = self.driver.find_element("xpath", "//*[text()='"+expected_text+"']")
-            if element is not None:
-                return True
-            else:
-                logging.info("Element not found")
-                return False
-        except NoSuchElementException:
-            return False
-
     def wait(self, sec):
+
         self.driver.implicitly_wait(sec)
 
     def get_elements(self, locator):
@@ -132,13 +122,9 @@ class CommonMethodsWeb():
     def get_child_elements(self, element, locator_type, locator_value):
         return element.find_elements(locator_type, locator_value)
 
-    def wait_for_invisibility_of_element(self, locator, timeout=20):
-        wait = self.webdriver_wait(timeout)
-        wait.until(ec.invisibility_of_element_located(locator))
-
-    def wait_for_element_visible(self, locator, timeout=15):
+    def wait_for_element_visible(self, driver, locator, timeout=30):
         try:
-            wait = WebDriverWait(self.driver, timeout)
+            wait = WebDriverWait(driver, timeout)
             wait.until(ec.visibility_of_element_located(locator))
             return True
         except:
@@ -150,14 +136,12 @@ class CommonMethodsWeb():
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
+    def wait_for_clickable_element_webdriver(self, locator_value, timeout=30):
         try:
             WebDriverWait(self.driver, timeout).until(ec.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def page_refresh(self):
-        self.driver.refresh()
 
     # get text from image file
     @staticmethod
@@ -207,9 +191,11 @@ class CommonMethodsWeb():
         print(shapes_list)
         return shapes_list
 
-    def move_focus_to_element(self,element_to_hover_over):
+    def move_focus_to_element(driver, element_to_hover_over):
         try:
-            hover = ActionChains(self.driver).move_to_element(element_to_hover_over)
+            hover = ActionChains(driver).move_to_element(element_to_hover_over)
             hover.perform()
         except NoSuchElementException:
             logging.info("Hover operation failed.")
+
+  
