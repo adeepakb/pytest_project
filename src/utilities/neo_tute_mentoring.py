@@ -26,7 +26,7 @@ class ReturnType():
 class NeoTute(CommonMethodsWeb):
     def __init__(self, driver):
         self.driver = driver
-        # self.tlms = Stagingtlms(driver)
+        self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
@@ -39,7 +39,6 @@ class NeoTute(CommonMethodsWeb):
         f = Fernet(key)
         encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
         self.decrypted_data = json.loads(f.decrypt(encrypted_data.encode('ascii')))
-        self.chrome_driver = webdriver.Chrome(chrome_options=self.chrome_options)
         super().__init__(self.chrome_driver)
         self.action = ActionChains(self.chrome_driver)
         self.obj = CommonMethodsWeb(self.chrome_driver)
@@ -51,6 +50,7 @@ class NeoTute(CommonMethodsWeb):
         self.sign_in_password = "//input[@type='password']"
         self.tllms_mentoring = "//li[@id='mentoring']"
         self.session_login_button = "//span[contains(text(),'LOGIN')]"
+        self.neo_start_button = "//div[contains(@class,'neo_cl_Button')]"
         self.blank_slide_presented = "//div[@class='presentation-name']/div/span[text()=' Blank Slide']"
         self.presentation = '//*[@class = "presentationContainer"]'
         self.toggle_draw_checkbox = '//input[@name= "toggle-toolbox"]'
@@ -169,8 +169,11 @@ class NeoTute(CommonMethodsWeb):
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
+        self.obj.wait_for_locator_webdriver(self.session_login_button)
         self.obj.element_click(('xpath', self.session_login_button))
-
+        self.obj.wait_for_clickable_element_webdriver(self.neo_start_button)
+        time.sleep(3)
+        self.obj.element_click(('xpath', self.neo_start_button))
         return url
 
     # Session slides -> whiteboard
