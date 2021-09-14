@@ -1271,6 +1271,8 @@ class NeoTute(CommonMethodsWeb):
         except:
             ReturnType(False,
                        "Lower hand message is not shown")
+
+
     def verify_hand_is_raised(self):
         try:
             self.wait_for_element_visible(self.chrome_driver, "xpath", "//div[@class='bottomContainer__raiseHandText']")
@@ -1278,5 +1280,7 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
         except:
             return ReturnType(False, "Hand is not raised")
+
+
 
 

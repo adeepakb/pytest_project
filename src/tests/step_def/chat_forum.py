@@ -17,7 +17,7 @@ def test_tut(driver):
 
 @given("Student launches in-class and navigate to home page")
 def step_impl(test_tut):
-    test_tut.launch_student_webiste(mobile_number="5444389144")
+    test_tut.launch_student_webiste(mobile_number="5444389143")
 
 
 @given("student navigates to byjus classes screen")
@@ -98,5 +98,14 @@ def step_impl(test_tut):
     detail = test_tut.verify_lower_hand_text_is_displayed()
     check.equal(detail.result, True, detail.reason)
 
+@then('student rejoins the session')
+def step_impl(test_tut):
+    test_tut.launch_student_webiste(mobile_number="5444389143")
+    test_tut.navigate_to_byjus_classes_screen()
+    test_tut.join_neo_session_from_classes_page_paid()
+
+@given("login as tutor")
+def step_impl(test_tut):
+    test_tut.start_neo_session()
 
 
