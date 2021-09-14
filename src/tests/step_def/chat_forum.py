@@ -1,6 +1,8 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 from pytest import fixture
 
+from constants.platform import Platform
+from pages.factory.neo_inclass_factory import NeoInClassFactory
 from utilities.neo_tute_mentoring import NeoTute
 
 feature_file_name = 'Chat Forum'
@@ -13,6 +15,16 @@ scenarios('../features/' + feature_file_name + '.feature')
 def test_tut(driver):
     test_tut = NeoTute(driver)
     yield test_tut
+
+@fixture()
+def neo_in_class(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        neo_in_class = NeoInClassFactory().get_page(driver, Platform.ANDROID.value)
+        yield neo_in_class
+    elif Platform.WEB.name in platform_list:
+        neo_in_class = NeoInClassFactory().get_page(driver, Platform.WEB.value)
+        yield neo_in_class
 
 
 @given("Student launches in-class and navigate to home page")
@@ -98,14 +110,44 @@ def step_impl(test_tut):
     detail = test_tut.verify_lower_hand_text_is_displayed()
     check.equal(detail.result, True, detail.reason)
 
+
 @then('student rejoins the session')
 def step_impl(test_tut):
     test_tut.launch_student_webiste(mobile_number="5444389143")
     test_tut.navigate_to_byjus_classes_screen()
     test_tut.join_neo_session_from_classes_page_paid()
 
-@given("login as tutor")
+
+@given("tutor start the session")
+def step_impl(driver):
+    NeoTute(driver).start_neo_session()
+
+
+@when('tutor unraises hand for student')
+def step_impl(test_tut, neo_in_class):
+    profile_cards = neo_in_class.click_on_menu_option(expected_student_name = 'Viviktha',menu_item = 'Hands Down')
+
+
+@then("student's hand is unraised")
 def step_impl(test_tut):
-    test_tut.start_neo_session()
+    detail = test_tut.verify_hand_is_raised()
+    check.equal(detail.result, True, detail.reason)
+
+
+@when("wifi is turned off")
+def step_impl(test_tut):
+    test_tut.set_wifi_connection_off()
+
+
+@when("students types random chat message")
+def step_impl(test_tut):
+    test_tut.type_chat("Hi")
+
+
+@then("verify no is sent in the chat")
+def step_impl(test_tut):
+    detail = test_tut.verify_wifi_off_inchat_displayed()
+    check.equal(detail.result,True, detail.reason)
+
 
 

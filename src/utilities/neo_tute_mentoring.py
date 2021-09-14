@@ -1054,6 +1054,10 @@ class NeoTute(CommonMethodsWeb):
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
         element.click()
 
+    def type_chat(self, text=""):
+        self.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
+
+
     def verify_a_text_in_chat(self, text):
         chats = self.get_all_chats()
 
@@ -1257,7 +1261,7 @@ class NeoTute(CommonMethodsWeb):
         self.get_element(("xpath", "//*[@class='emojiItem']")).click()
 
     def raise_hand(self):
-        self.wait_for_element_visible(self.chrome_driver,"xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']")
+        self.wait_for_element_visible(self.chrome_driver,("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"))
         self.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']")).click()
 
     def unraise_hand(self):
@@ -1283,6 +1287,17 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
         except:
             return ReturnType(False, "Hand is not raised")
+
+    def verify_wifi_off_inchat_displayed(self):
+        try:
+            flag = self.get_element(("xpath", "//div[@class='chatFooter']")).is_diplayed()
+            return ReturnType(True,"wifi off in chat box displayed") if flag else ReturnType(False,"wifi off in chat box not displayed")
+        except:
+            return ReturnType(False, "wifi off in chat box not displayed")
+
+
+
+
 
 
 
