@@ -7,8 +7,8 @@ from constants.load_json import get_data
 from pages.base.login_base import LoginBase
 from constants.constants import Login_Credentials
 from utilities.common_methods_web import CommonMethodsWeb
-from selenium.webdriver.common.keys import Keys
 from utilities.staging_tllms import Stagingtllms
+from utilities.staging_tlms import Stagingtlms
 
 
 class LoginWeb(LoginBase):
@@ -42,9 +42,8 @@ class LoginWeb(LoginBase):
         self.driver.maximize_window()
         self.obj.element_click(self.login_butn)
 
-
-    def enter_phone(self):
-        self.obj.enter_text((get_data(Login_Credentials, 'login_detail5', 'mobile_no')), self.phone_number)
+    def enter_phone(self, mobile_num):
+        self.obj.enter_text(mobile_num, self.phone_number)
 
     def click_on_next(self):
         self.obj.wait_for_element_visible(self.nxt_btn, 15)
@@ -67,10 +66,11 @@ class LoginWeb(LoginBase):
         print(elements)
         self.click_on_next()
 
-    def enter_otp(self):
-        self.obj.wait(5)
-        self.obj.wait_for_element_visible(self.password, 50)
-        self.obj.enter_text((get_data(Login_Credentials, 'login_detail5', 'OTP')), self.password)
+    def enter_otp(self, cc, mobile_num, otp):
+        if otp is None:
+            otp = Stagingtlms(self.driver).get_otp(cc, mobile_num)
+        self.obj.wait_for_element_visible(self.password, 10)
+        self.obj.enter_text(otp, self.password)
         self.click_on_next()
 
     def verify_home_page_loaded(self):
@@ -85,33 +85,29 @@ class LoginWeb(LoginBase):
         except (NoSuchElementException):
             return False
 
-
     # This step is not applicable in web. Hence skipping this for web
     def tap_on_prem_card(self):
         pass
 
     def click_on_hamburger(self):
-        self.obj.wait_for_element_visible(self.hamburger, 5)
         self.obj.element_click(self.hamburger)
 
-
     def click_on_byjus_classes(self):
-        self.obj.wait_for_element_visible(self.byjus_classes, 5)
         self.obj.element_click(self.byjus_classes)
 
-
     def enter_phone_expired_user(self):
-        self.driver.find_element_by_xpath("//input[@id='enterNumber']").send_keys(get_data(Login_Credentials, 'login_detail4', 'mobile_no'))
+        self.driver.find_element_by_xpath("//input[@id='enterNumber']").send_keys(
+            get_data(Login_Credentials, 'login_detail4', 'mobile_no'))
 
     def select_profile_expired_user(self):
-        #CommonMethods.wait_for_element_visible(self.driver, self.Profile_rb, 10)
         elements = self.driver.find_elements_by_xpath("//input[@type='radio']")
         elements[1].click()
         self.click_on_next()
 
     def enter_otp_expired_user(self):
         self.obj.wait_for_element_visible(self.password, 50)
-        self.driver.find_element_by_xpath("//input[@id='enterPassNumber']").send_keys(get_data(Login_Credentials, 'login_detail4', 'OTP'))
+        self.driver.find_element_by_xpath("//input[@id='enterPassNumber']").send_keys(
+            get_data(Login_Credentials, 'login_detail4', 'OTP'))
         self.click_on_next()
 
     def login_as_free_user(self):
@@ -136,54 +132,7 @@ class LoginWeb(LoginBase):
         except NoSuchElementException:
             return False
 
-    def gmail_login(self):
-        input = self.driver.find_element_by_xpath("//input[@id='identifierId']")
-        input.send_keys("prasanth.c")
-        self.obj.wait(5)
-        #input.send_keys(Keys.TAB)
-        input.send_keys(Keys.ENTER)
-        self.obj.wait(5)
-        input1 = self.driver.find_element_by_xpath("//input[@name='password']")
-        input1.send_keys("Tnl@12345")
-        input1.send_keys(Keys.ENTER)
-
-    def start_tutor_session(self):
-
-        # open the first window
-        self.driver.get('https://tutor-plus-staging.tllms.com/')
-        self.driver.find_element_by_xpath("//span[text()='LOGIN']").click()
-        self.driver.find_element_by_xpath("//input[@id='email']").send_keys("prasanth.c@byjus.com")
-        self.driver.find_element_by_xpath("//button[text()='Sign In']").click()
-        self.gmail_login()
-        self.obj.wait(5)
-        self.driver.find_element_by_xpath("(//a[text()='Schedule Page'])[1]").click()
-        self.obj.wait(2)
-        channel_ID = self.driver.find_element_by_xpath("//input[@placeholder = 'Search by Channel ID']")
-        channel_ID.send_keys("149511")
-        channel_ID.send_keys(Keys.ENTER)
-        self.driver.find_element_by_xpath("//input[@placeholder='Enter Teacher Email']").send_keys("prasanth.c@byjus.com")
-        self.driver.find_element_by_xpath("(//span[text()='Submit'])[2]").click()
-        self.obj.wait(5)
-        channel_ID.send_keys("149511")
-        channel_ID.send_keys(Keys.ENTER)
-        #clickonmeetingurl
-        self.driver.find_element_by_xpath("//a[text()='url']").click()
-        # get the window handle after the window has opened
-        window_before = self.driver.window_handles[0]
-
-    # window_before_title = self.driver.title
-    # print(window_before_title)
-        self.driver.execute_script("window.open('', 'new window')")
-
-    # get the window handle after a new window has opened
-        window_after = self.driver.window_handles[1]
-
-    # switch on to new child window
-        self.driver.switch_to.window(window_after)
-
-
     def click_on_end_session(self):
-
         window_before = self.driver.window_handles[0]
         window_after = self.driver.window_handles[1]
         self.driver.switch_to.window(window_before)
@@ -192,7 +141,6 @@ class LoginWeb(LoginBase):
         self.driver.switch_to.window(window_after)
 
     def save_login(self):
-
         with open("../../config/login_web.pkl", "wb") as fp:
             pickle.dump(self.driver.get_cookies(), fp)
 
@@ -210,39 +158,14 @@ class LoginWeb(LoginBase):
         pass
 
     def navigate_to_home_screen(self, login_profile, user_profile, sub_profile):
-
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.maximize_window()
         self.obj.element_click(self.login_butn)
-        self.enter_phone()
+        phone_num = get_data(Login_Credentials, 'login_detail5', 'mobile_no')
+        self.enter_phone(phone_num)
         self.click_on_next()
         self.select_profile(login_profile, user_profile, sub_profile)
-        self.enter_otp()
-
-    def login_for_neo_class(self):
-        phone_num = '2011313229'
-        otp = 'Prash55'
-        self.driver.get('https://learn-staging.byjus.com')
-        self.driver.maximize_window()
-        self.obj.element_click(self.login_butn)
-        # self.enter_phone()
-        self.obj.wait_for_element_visible(self.phone_number, 15)
-        self.obj.enter_text(phone_num, self.phone_number)
-        self.click_on_next()
-        # self.select_profile(login_profile, user_profile, sub_profile)
-        self.obj.wait_for_element_visible(self.password, 15)
-        self.obj.enter_text(otp, self.password)
-
-        self.enter_otp()
-
-    def navigate_to_home_screen_as_3rd_user(self):
-        self.driver.get('https://learn-staging.byjus.com')
-        self.driver.maximize_window()
-        self.obj.element_click(self.login_butn)
-        self.enter_phone()
-        self.click_on_next()
-        self.select_third_profile()
-        self.enter_otp()
+        self.enter_otp('+91-', phone_num, '1089')
 
     def navigate_to_one_to_many_and_mega_user(self):
         pass
@@ -255,7 +178,7 @@ class LoginWeb(LoginBase):
         self.premium_id = self.login_data[user_profile][sub_profile]["premium_id"]
         return self
 
-    def get_premium_id(self, profile='login_detail5', user_profile=None,):
+    def get_premium_id(self, profile='login_detail5', user_profile=None, ):
         self.set_user_profile(profile, user_profile)
         login_data = self.LOGIN_DETAILS
         m, i = self.user_mobile, self.premium_id
@@ -269,4 +192,26 @@ class LoginWeb(LoginBase):
             return user[self.PREMIUM_ID], True
         return i, False
 
+    def login_and_navigate_to_home_screen(self, cc, phone_num, otp):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.maximize_window()
+        self.obj.element_click(self.login_butn)
+        self.enter_phone(phone_num)
+        self.click_on_next()
+        self.enter_otp(cc, phone_num, otp)
 
+    def get_profile_details(self):
+        profile_details = {}
+        profile_items = self.obj.get_elements(('xpath', "//*[contains(@class,'Connect(t)-label')]"))
+        mid = int(len(profile_items) / 2)
+        for i in range(mid):
+            profile_details.update({profile_items[i], profile_items[i + 1]})
+        return profile_details
+
+    def login_for_neo_class(self, cc, phone_num, otp):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.maximize_window()
+        self.obj.element_click(self.login_butn)
+        self.enter_phone(phone_num)
+        self.click_on_next()
+        self.enter_otp(cc, phone_num, otp)

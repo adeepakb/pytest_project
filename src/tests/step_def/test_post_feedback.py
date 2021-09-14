@@ -42,12 +42,8 @@ def neo_in_class(request, driver):
 
 @given("Launch the application online")
 def login_as_neo_user(login_in):
-    login_in.login_for_neo_class()
-# def login_as_one_mega_user(login_in):
-#     login_profile = "login_detail5"
-#     user_profile = "user_1"
-#     sub_profile = "profile_1"
-#     login_in.navigate_to_home_screen(login_profile, user_profile, sub_profile)
+    login_in.login_for_neo_class('+91-', '2011313229', otp=None)
+
 
 @when("tap on premium school card")
 @then("tap on premium school card")
@@ -71,7 +67,7 @@ def join_a_neo_class(neo_in_class):
 @when('click on start class')
 @then('click on start class')
 def join_a_neo_session(neo_in_class):
-    neo_in_class.join_neo_session()
+    neo_in_class.join_neo_session_student()
 
 @when('Exit the class')
 @then('Exit the class')
