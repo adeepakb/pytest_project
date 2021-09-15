@@ -1049,6 +1049,37 @@ class NeoTute(CommonMethodsWeb):
         except:
             return chat_elements
 
+    def verify_tutor_messages_are_left_alligned(self, text="Hi I am tutor"):
+        try:
+            tutor_chat_elements = self.get_elements(("xpath", "//div[@class='text isTutor']"))
+
+            for tutor_chat_element in tutor_chat_elements:
+                if tutor_chat_element.text == text:
+                    return ReturnType(True, "Tutor chat elements are left aligned")
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+        except:
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+
+    def verify_other_student_messages_are_left_alligned(self, text ="Hi I am another student"):
+        chats = self.get_all_chats()
+
+        for chat in chats:
+            if text == chat[1]:
+                return ReturnType(True,"other student messages are left aligned")
+        return ReturnType(False, "other student messages are left aligned")
+
+    def verify_student_messages_are_right_alligned(self ,text = "Hi I am student"):
+        elements = self.get_elements(("xpath","//div[@class = 'chatCard isMe']"))
+
+        for element in elements:
+            child_element = self.get_child_element(element,"xpath",".//div[@class='messageBox']")
+            if child_element.text == text:
+                return ReturnType(True,"Student chat elements are right aligned")
+        return ReturnType(False, "Student chat elements are right aligned")
+
+
+
+
     def send_chat(self, text=""):
         self.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
@@ -1056,7 +1087,6 @@ class NeoTute(CommonMethodsWeb):
 
     def type_chat(self, text=""):
         self.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
-
 
     def verify_a_text_in_chat(self, text):
         chats = self.get_all_chats()
@@ -1096,6 +1126,13 @@ class NeoTute(CommonMethodsWeb):
             flag = self.get_element(("xpath", "//input[@placeholder='Type something']")).is_displayed()
             return ReturnType(True, " Type Something is displayed on chat box") if flag else ReturnType(False,
                                                                                                         "Type some thing is not displayed on place holder")
+        elif element_type.lower =="tutor name":
+            flag = self.get_element(("xpath","//div[@class = 'tutorStreamCard__name--big']")).is_displayed()
+            return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
+        elif element_type.lower() == 'tutor tag':
+            flag = self.get_element(("xpath", "//div[@class = 'tutorStreamCard__name--small']")).is_displayed()
+            return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
+
 
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
@@ -1174,26 +1211,26 @@ class NeoTute(CommonMethodsWeb):
         except:
             return ReturnType(False, "Audio is off")
 
-    def launch_student_webiste(self, mobile_number="2011090130"):
+    def launch_student_webiste(self, mobile_number="2013795859"):
         try:
             self.chrome_driver.get('https://learn-staging.byjus.com/login')
-            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiButton-label']"))
+            self.wait_for_element_visible(("xpath", "//span[@class='MuiButton-label']"))
             self.element_click(("xpath", "//span[@class='MuiButton-label']"))
 
             self.enter_text(mobile_number, ("xpath", "//input[@id='enterNumber']"))
             self.element_click(('xpath', "//div[@class='nextButtonLanding']"))
-            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//input[@class='inputEleOTP']"))
+            self.wait_for_element_visible(("xpath", "//input[@class='inputEleOTP']"))
             otp = self.get_otp(mobile_number)
             self.enter_text(otp, ("xpath", "//input[@class='inputEleOTP']"))
             self.element_click(("xpath", "//button[@class='PLbuttonEle']"))
-            self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiIconButton-label']"))
+            self.wait_for_element_visible(("xpath", "//span[@class='MuiIconButton-label']"))
         except:
             raise Exception('Student home page not launched')
 
     def get_otp(self, mobile_number):
         try:
             self.tlms.login_to_staging()
-            self.wait_for_element_visible(self.chrome_driver_tlms, ("xpath", "//li[@id='otp']"))
+            self.wait_for_element_visible_driver(self.chrome_driver_tlms, ("xpath", "//li[@id='otp']"))
             self.chrome_driver_tlms.find_element_by_xpath("//li[@id='otp']").click()
             self.chrome_driver_tlms.find_element_by_xpath(".//li[@id='mobile_otps']").click()
             self.chrome_driver_tlms.find_element_by_xpath('//input[@id="q_mobile_no"]').send_keys(
@@ -1207,27 +1244,29 @@ class NeoTute(CommonMethodsWeb):
             raise Exception("Otp not found")
 
     def navigate_to_byjus_classes_screen(self):
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[contains(text(),'Byju’s Classes')]"))
+        self.wait_for_element_visible(("xpath", "//div[contains(text(),'Byju’s Classes')]"))
         self.element_click(("xpath", "//div[contains(text(),'Byju’s Classes')]"))
 
     def join_session_from_home_page(self):
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class='MuiIconButton-label']"))
+        self.wait_for_element_visible(("xpath", "//span[@class='MuiIconButton-label']"))
         self.element_click(("xpath", "//span[contains(text(),'JOIN')]"))
 
     def join_neo_session_from_classes_page_paid(self):
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//span[@class = 'MuiTab-wrapper']"))
+        self.wait_for_element_visible(("xpath", "//span[@class = 'MuiTab-wrapper']"))
 
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class='btnCard']"))
+        self.wait_for_element_visible(("xpath", "//div[@class='btnCard']"))
         elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
         element = self.get_child_element(elements[1], "xpath",
                                          ".//div[@class='type-video masterOrRegularCardContainer']")
         self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
         self.turn_off_mic_from_student_join_page()
         self.turn_off_video_from_student_join_page()
+        self.wait_for_clickable_element_webdriver( "//span[contains(text(),'Join Class')]")
+
         self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
 
     def turn_off_mic_from_student_join_page(self):
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class = 'stream--overlay_icon']"))
+        self.wait_for_element_visible(("xpath", "//div[@class = 'stream--overlay_icon']"))
         elements = self.get_elements(("xpath", "//div[@class = 'stream--overlay_icon']"))
 
         for ele in elements:
@@ -1237,7 +1276,7 @@ class NeoTute(CommonMethodsWeb):
                 pass
 
     def turn_off_video_from_student_join_page(self):
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//div[@class = 'stream--overlay_icon']"))
+        self.wait_for_element_visible(("xpath", "//div[@class = 'stream--overlay_icon']"))
         elements = self.get_elements(("xpath", "//div[@class = 'stream--overlay_icon']"))
 
         for ele in elements:
@@ -1257,16 +1296,33 @@ class NeoTute(CommonMethodsWeb):
 
     def send_sticker(self):
         self.get_element(("xpath", "//*[@class='emoji']")).click()
-        self.wait_for_element_visible(self.chrome_driver, ("xpath", "//*[@class='emojiItem']"))
+        self.wait_for_element_visible(("xpath", "//*[@class='emojiItem']"))
         self.get_element(("xpath", "//*[@class='emojiItem']")).click()
 
+    def verify_no_of_default_stickers(self):
+        try:
+            self.wait_for_element_visible(("xpath", "//*[@class='emojiItem']"))
+            stickers = self.get_elements(("xpath", "//*[@class='emojiItem']"))
+            flag = len(stickers) == 8
+            return ReturnType(True, "All eight default stickers are shown") if flag else ReturnType(False,
+                                                                                                    "All eight "
+                                                                                                    "default stickers "
+                                                                                                    "are not shown")
+        except:
+            return ReturnType(False,
+                              "All eight default stickers are not shown")
+
+    def click_on_sticker_icon(self):
+        self.wait_for_element_visible(("xpath", "//*[@class='emoji']"))
+        self.get_element(("xpath", "//*[@class='emoji']")).click()
+
     def raise_hand(self):
-        self.wait_for_element_visible(self.chrome_driver,("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"))
+        self.wait_for_element_visible(
+            ("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"))
         self.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']")).click()
 
     def unraise_hand(self):
         if self.verify_hand_is_raised().result:
-
             self.get_element(("xpath", "//div[@class='bottomContainer__raiseHandText']")).click()
 
     def verify_lower_hand_text_is_displayed(self):
@@ -1279,10 +1335,9 @@ class NeoTute(CommonMethodsWeb):
             ReturnType(False,
                        "Lower hand message is not shown")
 
-
     def verify_hand_is_raised(self):
         try:
-            self.wait_for_element_visible(self.chrome_driver, "xpath", "//div[@class='bottomContainer__raiseHandText']")
+            self.wait_for_element_visible(("xpath", "//div[@class='bottomContainer__raiseHandText']"))
             flag = self.get_element(("xpath", "//div[@class='bottomContainer__raiseHandText']")).is_displayed()
             return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
         except:
@@ -1291,14 +1346,7 @@ class NeoTute(CommonMethodsWeb):
     def verify_wifi_off_inchat_displayed(self):
         try:
             flag = self.get_element(("xpath", "//div[@class='chatFooter']")).is_diplayed()
-            return ReturnType(True,"wifi off in chat box displayed") if flag else ReturnType(False,"wifi off in chat box not displayed")
+            return ReturnType(True, "wifi off in chat box displayed") if flag else ReturnType(False,
+                                                                                              "wifi off in chat box not displayed")
         except:
             return ReturnType(False, "wifi off in chat box not displayed")
-
-
-
-
-
-
-
-

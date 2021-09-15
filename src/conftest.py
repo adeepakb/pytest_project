@@ -2,15 +2,14 @@ import re
 import time
 import os
 import traceback
-import jenkins
 import pytest
 import sys
 import subprocess
 import logging
 from utilities.base_page import BaseClass
-from utilities.pre_execution import BuildFeatureJob
+#from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
-from constants.loadFeatureFile import fetch_feature_file
+#from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
 PATH = lambda p: os.path.abspath(
@@ -19,22 +18,17 @@ sys.path.append(PATH('constants/'))
 from constants.test_management import *
 
 baseClass = BaseClass()
-feature_job = BuildFeatureJob()
+#feature_job = BuildFeatureJob()
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
     # feature_job.build_and_install_apk()
-    job_start_time = time.time()
     pass
     yield
-    # Get total execution time
-    job_total_execution_time = str(datetime.timedelta(seconds=int(time.time() - job_start_time)))
-    print(job_total_execution_time)
-    # Update execution time to testrail for android test run. Create report on demand via  API at the end of the session
+    # Create report on demand via  API at the end of the session
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
-        update_run_for_execution_time('503', job_total_execution_time)
         report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
         run_testrail_reports(report_id)
 
@@ -50,17 +44,18 @@ def capture_screenshot(request, feature_name):
     driver.get_screenshot_as_file(screenshot_filename)
     return screenshot_filename
 
+
 @pytest.fixture()
 def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
         android_driver = baseClass.setup_android()
-        feature_job.lock_or_unlock_device('lock')
-        serial = feature_job.connect_adb_api()
-        feature_job.connect_to_adb(serial)
+        # feature_job.lock_or_unlock_device('lock')
+        # serial = feature_job.connect_adb_api()
+        # feature_job.connect_to_adb(serial)
         yield android_driver
-        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT).communicate()
+        # subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+        #                 stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
         chrome_driver = baseClass.setup_browser()
@@ -156,15 +151,11 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     scenario_name = scenario.name
     elapsed = int(time.time() - py_test.__getattribute__('start'))
     elapsed_time = str(elapsed) + 's'
-    suite_name = os.getenv('suite')
-    # suite_name = "Byju's Classes"
-    if suite_name == "Byju's Classes":
-        testing_device = request.getfixturevalue("driver").session['deviceModel']
-        app_version = baseClass.get_current_app_version()
-    else:
-        raise NotImplementedError()
+    testing_device = request.getfixturevalue("driver").session['deviceModel']
+    app_version = baseClass.get_current_app_version()
+    #suite_name = os.getenv('suite')
+    suite_name = "Byju's Classes"
     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
-    print("\nTestcase executed: %s" %scenario_name)
     if py_test.__getattribute__("exception") or value:
         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
         _exception = list(filter(lambda summary:
