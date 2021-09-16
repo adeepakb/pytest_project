@@ -209,8 +209,20 @@ class LoginWeb(LoginBase):
         return profile_details
 
     def login_for_neo_class(self, cc, phone_num, otp):
+
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.maximize_window()
+        self.obj.element_click(self.login_butn)
+        self.enter_phone(phone_num)
+        self.click_on_next()
+        self.enter_otp(cc, phone_num, otp)
+
+    def login_for_neo_class_mobile(self, cc, phone_num, otp):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.set_window_size(1280, 800)
+        # time.sleep(5)
+        size = self.driver.get_window_size()
+        print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
         self.obj.element_click(self.login_butn)
         self.enter_phone(phone_num)
         self.click_on_next()
