@@ -18,6 +18,9 @@ class NeoInClass(CommonMethodsWeb):
         self.obj = CommonMethodsWeb(driver)
         self.action = ActionChains(self.driver)
         super().__init__(self.driver)
+        self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
+        self.tlms = Stagingtlms(self.chrome_driver1)
+        self.chrome_driver_tlms = self.tlms.chrome_driver
 
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
