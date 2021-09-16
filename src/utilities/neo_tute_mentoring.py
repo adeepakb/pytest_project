@@ -984,11 +984,6 @@ class NeoTute(CommonMethodsWeb):
             print("Timed out while waiting for page to load")
 
     # in class presentation
-    def join_class(self):
-        self.chrome_driver.get("https://learn-staging.byjus.com/live-classes/457828")
-        self.send_chat()
-        print()
-
     def is_image_presented(self):
         try:
             element = self.get_element(("xpath", "//div[@class='presentation__view']"))
