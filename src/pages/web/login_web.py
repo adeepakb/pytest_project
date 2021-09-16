@@ -208,10 +208,3 @@ class LoginWeb(LoginBase):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
 
-    def login_for_neo_class(self, cc, phone_num, otp):
-        self.driver.get('https://learn-staging.byjus.com')
-        self.driver.maximize_window()
-        self.obj.element_click(self.login_butn)
-        self.enter_phone(phone_num)
-        self.click_on_next()
-        self.enter_otp(cc, phone_num, otp)

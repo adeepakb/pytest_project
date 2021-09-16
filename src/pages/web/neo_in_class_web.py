@@ -1,7 +1,6 @@
 import time
 
 import re
-from datetime import time
 from io import BytesIO
 from PIL import Image
 from selenium.webdriver.common.by import By
@@ -786,11 +785,14 @@ class NeoInClass:
         else:
             return ReturnType(True, 'continue button is enabled')
 
-    def join_neo_session_student(self):
-        self.obj.wait(10)
+#by default the cam and mic is 'on' so passing the parameters as cam and mic on
+
+    def join_neo_session_student(self, mic_status, cam_status):
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/mic-on')]"))
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/cam-on')]"))
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
+        time.sleep(2)
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
