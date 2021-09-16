@@ -163,6 +163,7 @@ class NeoTute(CommonMethodsWeb):
         self.student_cards_items = "//div[@class='streamList__streamItem']"
         self.current_student_card = "//div[@class='streamList__streamItem streamList__streamItem--localStream']"
         self.learn_login_url = 'https://learn-staging.byjus.com/login'
+        self.sticker_item = "//*[@class='emojiItem']"
         self.byju_home_icon = "//span[@class='MuiButton-label']"
         self.byjus_login_number_field = "//input[@id='enterNumber']"
         self.next_button = "//div[@class='nextButtonLanding']"
@@ -1322,13 +1323,13 @@ class NeoTute(CommonMethodsWeb):
 
     def send_sticker(self):
         self.get_element(("xpath", self.emoji_icon)).click()
-        self.wait_for_element_visible(("xpath", "//*[@class='emojiItem']"))
-        self.get_element(("xpath", "//*[@class='emojiItem']")).click()
+        self.wait_for_element_visible(("xpath", self.sticker_item))
+        self.get_element(("xpath", self.sticker_item)).click()
 
     def verify_no_of_default_stickers(self):
         try:
-            self.wait_for_element_visible(("xpath", "//*[@class='emojiItem']"))
-            stickers = self.get_elements(("xpath", "//*[@class='emojiItem']"))
+            self.wait_for_element_visible(("xpath", self.sticker_item))
+            stickers = self.get_elements(("xpath", self.sticker_item))
             flag = len(stickers) == 8
             return ReturnType(True, "All eight default stickers are shown") if flag else ReturnType(False,
                                                                                                     "All eight "
