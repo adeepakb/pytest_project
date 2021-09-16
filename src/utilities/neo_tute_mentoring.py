@@ -622,16 +622,6 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False,
                               "no pdf is shown")
 
-    def click_on_tab_item(self, tab_name='Session Plan'):
-        try:
-
-            items = self.get_elements(self.tab_item)
-            for item in items:
-                if item.text.replace("\n", " ") == tab_name:
-                    item.click()
-                    break
-        except:
-            check.equal(False, True, "Couldn't click on tab item {}".format(tab_name))
 
     def get_number_of_students_in_student_details(self):
         try:
