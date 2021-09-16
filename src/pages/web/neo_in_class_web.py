@@ -4,6 +4,10 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from utilities.common_methods_web import CommonMethodsWeb
 import pytest_check as check
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+from utilities.staging_tlms import Stagingtlms
 
 
 class ReturnType():
@@ -17,11 +21,16 @@ class NeoInClass(CommonMethodsWeb):
         self.driver = driver
         self.obj = CommonMethodsWeb(driver)
         self.action = ActionChains(self.driver)
+
         super().__init__(self.driver)
+        self.chrome_options = Options()
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
         self.tlms = Stagingtlms(self.chrome_driver1)
         self.chrome_driver_tlms = self.tlms.chrome_driver
-
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"

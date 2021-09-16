@@ -17,10 +17,16 @@ def test_tut(driver):
     test_tut = NeoTute(driver)
     yield test_tut
 
-@fixture
-def test_tut_tutor(driver):
-    test_tut_tutor = NeoTute(driver)
-    yield test_tut_tutor
+
+@fixture()
+def test_student_2(request, driver):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        test_student_2 = NeoInClassFactory().get_page(driver, Platform.ANDROID.value)
+        yield test_student_2
+    elif Platform.WEB.name in platform_list:
+        test_student_2 = NeoInClassFactory().get_page(driver, Platform.WEB.value)
+        yield test_student_2
 
 
 @fixture()
@@ -191,15 +197,15 @@ def step_impl(neo_in_class):
 
 
 @when("another student joins the session")
-def step_impl(test_tut_tutor):
-    test_tut_tutor.launch_student_webiste(mobile_number="2017607448")
-    test_tut_tutor.navigate_to_byjus_classes_screen()
-    test_tut_tutor.join_neo_session_from_classes_page_paid()
+def step_impl(test_student_2):
+    test_student_2.launch_student_webiste(mobile_number="2017607448")
+    test_student_2.navigate_to_byjus_classes_screen()
+    test_student_2.join_neo_session_from_classes_page_paid()
 
 
 @when("another student sends a chat")
-def step_impl(test_tut_tutor):
-    test_tut_tutor.send_chat("Hi I am another student")
+def step_impl(test_student_2):
+    test_student_2.send_chat("Hi I am another student")
 
 
 @then("verify tutor messages are left alligned")
