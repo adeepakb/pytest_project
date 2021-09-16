@@ -1060,25 +1060,22 @@ class NeoTute(CommonMethodsWeb):
         except:
             return ReturnType(False, "Tutor chat elements are not left aligned")
 
-    def verify_other_student_messages_are_left_alligned(self, text ="Hi I am another student"):
+    def verify_other_student_messages_are_left_alligned(self, text="Hi I am another student"):
         chats = self.get_all_chats()
 
         for chat in chats:
             if text == chat[1]:
-                return ReturnType(True,"other student messages are left aligned")
+                return ReturnType(True, "other student messages are left aligned")
         return ReturnType(False, "other student messages are left aligned")
 
-    def verify_student_messages_are_right_alligned(self ,text = "Hi I am student"):
-        elements = self.get_elements(("xpath","//div[@class = 'chatCard isMe']"))
+    def verify_student_messages_are_right_alligned(self, text="Hi I am student"):
+        elements = self.get_elements(("xpath", "//div[@class = 'chatCard isMe']"))
 
         for element in elements:
-            child_element = self.get_child_element(element,"xpath",".//div[@class='messageBox']")
+            child_element = self.get_child_element(element, "xpath", ".//div[@class='messageBox']")
             if child_element.text == text:
-                return ReturnType(True,"Student chat elements are right aligned")
+                return ReturnType(True, "Student chat elements are right aligned")
         return ReturnType(False, "Student chat elements are right aligned")
-
-
-
 
     def send_chat(self, text=""):
         self.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
@@ -1125,14 +1122,21 @@ class NeoTute(CommonMethodsWeb):
         elif element_type.lower() == "type something":
             flag = self.get_element(("xpath", "//input[@placeholder='Type something']")).is_displayed()
             return ReturnType(True, " Type Something is displayed on chat box") if flag else ReturnType(False,
-                                                                                                        "Type some thing is not displayed on place holder")
-        elif element_type.lower =="tutor name":
-            flag = self.get_element(("xpath","//div[@class = 'tutorStreamCard__name--big']")).is_displayed()
+                                                                                                        "Type some "
+                                                                                                        "thing is not "
+                                                                                                        "displayed on "
+                                                                                                        "place holder")
+        elif element_type.lower == "tutor name":
+            flag = self.get_element(("xpath", "//div[@class = 'tutorStreamCard__name--big']")).is_displayed()
             return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
         elif element_type.lower() == 'tutor tag':
             flag = self.get_element(("xpath", "//div[@class = 'tutorStreamCard__name--small']")).is_displayed()
             return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
 
+        elif element_type.lower() == 'tutor thumbnail':
+            flag = self.get_element(("xpath", "//div[@class = 'neo_cl_VideoContainer__overlay']")).is_deplayed()
+            return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
+                                                                                         "Tutor thumbnail is shown ")
 
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
@@ -1261,7 +1265,7 @@ class NeoTute(CommonMethodsWeb):
         self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
         self.turn_off_mic_from_student_join_page()
         self.turn_off_video_from_student_join_page()
-        self.wait_for_clickable_element_webdriver( "//span[contains(text(),'Join Class')]")
+        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Join Class')]")
 
         self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
 

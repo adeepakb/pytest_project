@@ -213,3 +213,4 @@ def step_impl(test_tut):
     check.equal(detail.result, True, detail.reason)
     detail = test_tut.verify_chat_elements_element_wise(element_type="Tutor tag")
     check.equal(detail.result, True, detail.reason)
+
