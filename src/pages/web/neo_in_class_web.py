@@ -12,11 +12,12 @@ class ReturnType():
         self.reason = reason
 
 
-class NeoInClass:
+class NeoInClass(CommonMethodsWeb):
     def __init__(self, driver):
         self.driver = driver
         self.obj = CommonMethodsWeb(driver)
         self.action = ActionChains(self.driver)
+        super().__init__(self.driver)
 
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
@@ -48,6 +49,7 @@ class NeoInClass:
         self.student_exit_class = "//span[text()='Exit class']"
         self.facing_issue_header = '//div[@class="reportIssue__header"]'
         self.checked_issue_text = '//label[contains(@class,"activeItem")]//span[contains(@class,"MuiFormControlLabel-label")]'
+        self.type_something_inputcard = '//input[@placeholder="Type something"]'
         self.checked_issue_radio_button = '//label[contains(@class,"activeItem")]//div'
         self.others_option_comment = "//input[@id='outlined-basic']"
         self.facing_issues_label = '//span[contains(@class,"MuiFormControlLabel-label")]'
@@ -81,6 +83,44 @@ class NeoInClass:
         self.suggested_tips_for_issues = '//div[@class="extraTips"]'
         self.issue_response_text = "//*[text()='We got your issue!']"
         self.lower_your_hand_tootip = "//*[text()='You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.']"
+        self.chat_container = "//div[@class='cardWrapper']"
+        self.chat_by_me_name = ".//div[@class='nameContainer isMe']"
+        self.chat_sender = ".//div[@class='nameContainer']"
+        self.chat_message = ".//div[@class='messageBox']"
+        self.chat_by_tutor = "//div[@class='text isTutor']"
+        self.chat_by_me = "//div[@class = 'chatCard isMe']"
+        self.send_chat_button = "//*[@class='sendAction']"
+        self.chat_header = "//div[@class='chatContainer__chatheader']"
+        self.chat_container_title = ".//div[@class='chatContainer__title']"
+        self.chat_member_count = ".//span[@class='chatContainer__count']"
+        self.tutor_name = "//div[@class = 'tutorStreamCard__name--big']"
+        self.tutor_title = "//div[@class = 'tutorStreamCard__name--small']"
+        self.tutor_thumbnail = "//div[@class = 'neo_cl_VideoContainer__overlay']"
+        self.tutor_controls_container = "//div[@class='iconWrapper tutorStreamCard__icon']"
+        self.chat_controls = ".//*[@class='iconWrapper__icon']"
+        self.student_cards_items = "//div[@class='streamList__streamItem']"
+        self.current_student_card = "//div[@class='streamList__streamItem streamList__streamItem--localStream']"
+        self.learn_login_url = 'https://learn-staging.byjus.com/login'
+        self.sticker_item = "//*[@class='emojiItem']"
+        self.byju_home_icon = "//span[@class='MuiButton-label']"
+        self.byjus_login_number_field = "//input[@id='enterNumber']"
+        self.next_button = "//div[@class='nextButtonLanding']"
+        self.login_otp_field = "//input[@class='inputEleOTP']"
+        self.otp_proeed_button = "//button[@class='PLbuttonEle']"
+        self.home_join_field = "//span[@class='MuiIconButton-label']"
+        self.tlms_otp_tab = "//li[@id='otp']"
+        self.tlms_otp_tab_list = ".//li[@id='mobile_otps']"
+        self.tlms_mobile_field = '//input[@id="q_mobile_no"]'
+        self.tlms_otp_submit = '//input[@name="commit"]'
+        self.tlms_otp_number_field = './/*[@class="col col-otp"]'
+        self.home_byjus_classes_button = "//div[contains(text(),'Byju’s Classes')]"
+        self.home_join_button = "//span[contains(text(),'JOIN')]"
+        self.mic_video_buttons_on_join_screen = "//div[@class = 'stream--overlay_icon']"
+        self.sticker_onchat = "//div[@class= 'message']"
+        self.emoji_icon = "//*[@class='emoji']"
+        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
+        self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
 
     def home_click_on_join(self):
         self.obj.wait_for_element_visible(('xpath',"//span[text()='JOIN']"))
@@ -634,10 +674,49 @@ class NeoInClass:
         except:
             return chat_elements
 
+    def verify_tutor_messages_are_left_alligned(self, text="Hi I am tutor"):
+        try:
+            tutor_chat_elements = self.get_elements(("xpath", self.chat_by_tutor))
+
+            for tutor_chat_element in tutor_chat_elements:
+                if tutor_chat_element.text == text:
+                    return ReturnType(True, "Tutor chat elements are left aligned")
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+        except:
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+
+    def verify_other_student_messages_are_left_alligned(self, text="Hi I am another student"):
+        chats = self.get_all_chats()
+
+        for chat in chats:
+            if text == chat[1]:
+                return ReturnType(True, "other student messages are left aligned")
+        return ReturnType(False, "other student messages are left aligned")
+
+    def verify_student_messages_are_right_alligned(self, text="Hi I am student"):
+        elements = self.get_elements(("xpath",self.chat_by_me))
+
+        for element in elements:
+            child_element = self.get_child_element(element, "xpath", self.chat_message)
+            if child_element.text == text:
+                return ReturnType(True, "Student chat elements are right aligned")
+        return ReturnType(False, "Student chat elements are right aligned")
+
     def send_chat(self, text=""):
         self.obj.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
         element.click()
+
+    def type_chat(self, text=""):
+        self.get_element(('xpath', self.type_something_inputcard)).send_keys(text)
+
+    def verify_a_text_in_chat(self, text):
+        chats = self.get_all_chats()
+
+        for chat_item in chats:
+            if chat_item[1] == text:
+                return ReturnType(True, " Chat text is found")
+        return ReturnType(True, "Chat text is not found")
 
     def verify_chat_elements(self):
         try:
@@ -656,6 +735,32 @@ class NeoInClass:
             check.equal(flag, True, "Send chat button not displayed")
         except:
             check.equal(False, True, "Chat elements incorrectly displayed")
+
+    def verify_chat_elements_element_wise(self, element_type):
+        element = self.get_element(("xpath", self.chat_header))
+        if element_type.lower() == 'students count':
+            student_count = self.get_child_element(element, "xpath", self.chat_member_count).text
+            flag = (int(student_count) > 0)
+            return ReturnType(True, "Student number is greaater") if flag else ReturnType(False,
+                                                                                          "Student number is greaater")
+        elif element_type.lower() == "type something":
+            flag = self.get_element(("xpath", "//input[@placeholder='Type something']")).is_displayed()
+            return ReturnType(True, " Type Something is displayed on chat box") if flag else ReturnType(False,
+                                                                                                        "Type some "
+                                                                                                        "thing is not "
+                                                                                                        "displayed on "
+                                                                                                        "place holder")
+        elif element_type.lower == "tutor name":
+            flag = self.get_element(("xpath", self.tutor_name)).is_displayed()
+            return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
+        elif element_type.lower() == 'tutor tag':
+            flag = self.get_element(("xpath", self.tutor_title)).is_displayed()
+            return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
+
+        elif element_type.lower() == 'tutor thumbnail':
+            flag = self.get_element(("xpath",self.tutor_thumbnail)).is_deplayed()
+            return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
+                                                                                         "Tutor thumbnail is shown ")
 
     # tutorStreamCard
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
@@ -735,3 +840,143 @@ class NeoInClass:
                     return ReturnType(True, "Audio is on") if audio_status else ReturnType(False, "Audio is off")
         except:
             return ReturnType(False, "Audio is off")
+
+    def launch_student_webiste(self, mobile_number="2013795859"):
+        try:
+            self.chrome_driver.get(self.learn_login_url)
+            self.wait_for_element_visible("xpath", self.byju_home_icon)
+            self.element_click(("xpath",self.byju_home_icon))
+
+            self.enter_text(mobile_number, ("xpath", self.byjus_login_number_field))
+            self.element_click(('xpath', self.next_button))
+            self.wait_for_element_visible(("xpath",self.login_otp_field))
+            otp = self.get_otp(mobile_number)
+            self.enter_text(otp, ("xpath", self.login_otp_field))
+            self.element_click(("xpath",self.otp_proeed_button))
+            self.wait_for_element_visible(("xpath", self.tlms_mobile_field))
+        except:
+            raise Exception('Student home page not launched')
+
+    def get_otp(self, mobile_number):
+        try:
+            self.tlms.login_to_staging()
+            self.wait_for_element_visible_driver(self.chrome_driver_tlms, ("xpath", self.tlms_otp_tab))
+            self.chrome_driver_tlms.find_element_by_xpath(self.tlms_otp_tab).click()
+            self.chrome_driver_tlms.find_element_by_xpath(self.tlms_otp_tab_list).click()
+            self.chrome_driver_tlms.find_element_by_xpath(self.tlms_mobile_field).send_keys(
+                "+91-" + mobile_number)
+            self.chrome_driver_tlms.find_element_by_xpath(self.tlms_otp_submit)
+            self.chrome_driver_tlms.find_element_by_xpath(self.tlms_otp_submit).click()
+            element = self.chrome_driver_tlms.find_elements_by_xpath('//*[@class="odd"]')
+            otp_text = self.chrome_driver_tlms.find_element_by_xpath(self.tlms_otp_number_field).text
+            return otp_text
+        except:
+            raise Exception("Otp not found")
+
+    def navigate_to_byjus_classes_screen(self):
+        self.wait_for_element_visible(("xpath", self.home_byjus_classes_button))
+        self.element_click(("xpath", self.home_byjus_classes_button))
+
+    def join_session_from_home_page(self):
+        self.wait_for_element_visible(("xpath",self.tlms_mobile_field))
+        self.element_click(("xpath", self.home_join_button))
+
+    def join_neo_session_from_classes_page_paid(self):
+        self.wait_for_element_visible(("xpath", "//span[@class = 'MuiTab-wrapper']"))
+
+        self.wait_for_element_visible(("xpath", "//div[@class='btnCard']"))
+        elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
+        element = self.get_child_element(elements[1], "xpath",
+                                         ".//div[@class='type-video masterOrRegularCardContainer']")
+        self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
+        self.turn_off_mic_from_student_join_page()
+        self.turn_off_video_from_student_join_page()
+        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Join Class')]")
+
+        self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
+
+    def turn_off_mic_from_student_join_page(self):
+        self.wait_for_element_visible(("xpath", self.mic_video_buttons_on_join_screen))
+        elements = self.get_elements(("xpath", self.mic_video_buttons_on_join_screen))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='mic']").click()
+            except:
+                pass
+
+    def turn_off_video_from_student_join_page(self):
+        self.wait_for_element_visible(("xpath", self.mic_video_buttons_on_join_screen))
+        elements = self.get_elements(("xpath",self.mic_video_buttons_on_join_screen))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='cam']").click()
+            except:
+                pass
+
+    def verify_sticker_displayed(self):
+
+        elements = self.get_elements(("xpath",self.sticker_onchat))
+
+        for element in elements:
+            if "src" in element.get_attribute('innerHTML'):
+                return ReturnType(True, " Sticker is being displayed")
+        return ReturnType(False, " Sticker is not being displayed")
+
+    def send_sticker(self):
+        self.get_element(("xpath", self.emoji_icon)).click()
+        self.wait_for_element_visible(("xpath", self.sticker_item))
+        self.get_element(("xpath", self.sticker_item)).click()
+
+    def verify_no_of_default_stickers(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.sticker_item))
+            stickers = self.get_elements(("xpath", self.sticker_item))
+            flag = len(stickers) == 8
+            return ReturnType(True, "All eight default stickers are shown") if flag else ReturnType(False,
+                                                                                                    "All eight "
+                                                                                                    "default stickers "
+                                                                                                    "are not shown")
+        except:
+            return ReturnType(False,
+                              "All eight default stickers are not shown")
+
+    def click_on_sticker_icon(self):
+        self.wait_for_element_visible(("xpath", self.emoji_icon))
+        self.get_element(("xpath", self.emoji_icon)).click()
+
+    def raise_hand(self):
+        self.wait_for_element_visible(
+            ("xpath",self.raise_hand))
+        self.get_element(("xpath", self.raise_hand)).click()
+
+    def unraise_hand(self):
+        if self.verify_hand_is_raised().result:
+            self.get_element(("xpath", self.raise_hand_text)).click()
+
+    def verify_lower_hand_text_is_displayed(self):
+        try:
+            text = self.get_element(("xpath", self.low_hand_text)).text
+            flag = 'You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.' == text
+            return ReturnType(True, "Lower hand message is shown and correct") if flag else ReturnType(False,
+                                                                                                       "Lower hand message is shown and not correct")
+        except:
+            ReturnType(False,
+                       "Lower hand message is not shown")
+
+    def verify_hand_is_raised(self):
+        try:
+            self.wait_for_element_visible(("xpath",self.raise_hand_text))
+            flag = self.get_element(("xpath",self.raise_hand_text)).is_displayed()
+            return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
+        except:
+            return ReturnType(False, "Hand is not raised")
+
+    def verify_wifi_off_inchat_displayed(self):
+        try:
+            flag = self.get_element(("xpath", "//div[@class='chatFooter']")).is_diplayed()
+            return ReturnType(True, "wifi off in chat box displayed") if flag else ReturnType(False,
+                                                                                              "wifi off in chat box not displayed")
+        except:
+            return ReturnType(False, "wifi off in chat box not displayed")
