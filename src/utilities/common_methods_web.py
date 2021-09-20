@@ -213,3 +213,9 @@ class CommonMethodsWeb():
             hover.perform()
         except NoSuchElementException:
             logging.info("Hover operation failed.")
+
+    def set_wifi_connection_off(self):
+        self.driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
+
+    def set_wifi_connection_on(self):
+        self.driver.set_network_conditions(offline=False, latency=5, throughput=500 * 1024)
