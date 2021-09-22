@@ -54,7 +54,7 @@ class CommonMethodsWeb():
                 logging.info(locator + 'Not clicked')
                 return False
         except:
-            logging.info("Cannot click on the element with locator: " + locator)
+            logging.info("Cannot click on the element with locator ")
             return False
 
     # this method first clear the data then enter the text in given element

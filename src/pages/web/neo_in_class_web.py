@@ -343,6 +343,11 @@ class NeoInClass:
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
         return self.obj.is_element_present(('xpath', self.helpline_no_in_facing_issue))
 
+    def verify_issue_popup_present(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        ele = self.obj.get_element(('xpath', self.facing_issue_header)).text
+        return True if "Choose the issue you are facing" in ele and self.obj.is_element_present(('xpath', "//div[@class='reportIssue']"))  else False
+
     def select_any_option_in_facing_issue(self, string_val):
         options = self.obj.get_elements(self.facing_issue_options)
         for option in options:
@@ -404,8 +409,7 @@ class NeoInClass:
     def verify_text_above_report_btn(self):
         self.obj.wait_for_locator_webdriver(self.facing_issue_header)
         ele = self.obj.get_element(('xpath', self.issue_still_persists_text)).text
-        flag = "Issue still Persists?" in ele
-        check.equal(flag, True, "the text in popup doesn't match")
+        return True if "Issue still Persists?" in ele else False
 
     def scroll_down_facing_issues_popup(self, length):
         self.driver.execute_script("arguments[0].scrollIntoView(true);",
@@ -427,9 +431,10 @@ class NeoInClass:
     def click_on_report_now_btn(self):
         self.obj.element_click(('xpath', self.report_now_btn))
 
-    def is_email_icon_present(self):
+    def is_email_icon_present_and_text(self):
         self.obj.wait_for_locator_webdriver(self.email_icon)
-        return self.obj.is_element_present(('xpath',self.email_icon))
+        value = self.obj.get_element(('xpath', "//div[@class='reportIssue__submitted']/p")).text
+        return [self.obj.is_element_present(('xpath',self.email_icon)),value]
 
     def submitted_popup_disappear(self):
         self.obj.wait_for_invisibility_of_element(('xpath',"//*[@class='timeRemaining']"),10)

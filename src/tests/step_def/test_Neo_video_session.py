@@ -58,9 +58,10 @@ def step_impl(neo_in_class):
 
 
 @then("tutor play video in the session and turn off focus mode")
-def step_impl(neo_tute):
-    neo_tute.present_any_slide(4)
+def step_impl(neo_tute,neo_in_class):
+    neo_tute.present_any_slide(6)
     neo_tute.select_focus_mode('off')
+    neo_in_class.turn_on_off_student_mic('ON')
 
 
 @then("Verify that default layout of the screen when session video is playing (not Focused)")
@@ -353,13 +354,13 @@ def step_impl(neo_tute,neo_in_class):
     check.equal(neo_in_class.is_full_screen_presentation_present(), False,"Focus mode is disabled and screen transitioned to default screen")
 
 
-@then('Verify that mic controls of the students become enabled after focus mode is turned off')
+@then('Verify that mic controls of the students become enabled after focus mode is turned off, but the state of button should be off')
 def step_impl(neo_in_class):
     student_audio_status = neo_in_class.get_inclass_student_audio_status()
-    check.equal(student_audio_status == "ON", True, 'Mic is turned on for the students while focus mode is off')
+    check.equal(student_audio_status == "OFF", True, 'Mic is turned off,not disabled for the students while focus mode is off')
 
 
-@then('Verify that mic status of students are retained as they were before focus mode was on after focus mode is turned off')
+@then('Verify that camera status of students is retained as it was before focus mode was on after focus mode is turned off')
 def step_impl(neo_in_class):
-    students_audio_status = neo_in_class.get_student_audio_status()
-    check.equal(students_audio_status['You'] is True, True, "Student's mic is turned on while focus mode is off")
+    students_video_status = neo_in_class.get_inclass_student_video_status()
+    check.equal(students_video_status == "ON", True, "Student's mic is turned on while focus mode is off")

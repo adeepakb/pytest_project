@@ -358,14 +358,16 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
     suite = client.send_get('get_suite/' + suite_id)
     run_id = None
     data = []
-    test_runs = client.send_get('get_runs/%s' % project_id)
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    test_runs = test_runs_dict['runs']
     # print("*************",test_runs)
     for test_run in test_runs:
         if test_run['name'] == test_run_name:
             run_id = test_run['id']
             break
     data.append(str(run_id))
-    cases = client.send_get('get_tests/' + str(run_id))
+    cases_dict = client.send_get('get_tests/' + str(run_id))
+    cases = cases_dict['tests']
     # print(cases)
     for case in cases:
         if case['title'] == scenario_name:
