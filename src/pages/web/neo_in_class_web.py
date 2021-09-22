@@ -1,7 +1,6 @@
 import time
 
 import re
-from datetime import time
 from io import BytesIO
 from PIL import Image
 from selenium.webdriver.common.by import By
@@ -100,6 +99,15 @@ class NeoInClass:
         self.what_did_you_like_text = "//div[text()='What did you like the most?']"
         self.what_could_be_improved_text = "//div[text()='What could be improved?']"
 
+        self.celebrations_icons = '//div[@class="reactionButton__types reactionButton__types--visible"]'
+        self.floating_emojis = "//span[contains(@class,'floaters')]"
+        self.like_btn = "//img[contains(@src,'/static/media/classes-emoji-like')]"
+        self.clap_btn = "//img[contains(@src,'/static/media/classes-emoji-clap')]"
+        self.heart_btn = "//img[contains(@src,'/static/media/classes-emoji-heart')]"
+        self.curious_btn = "//img[contains(@src,'/static/media/classes-emoji-curious')]"
+        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        self.chat_member_count = ".//span[@class='chatContainer__count']"
+
 
     def home_click_on_join(self):
         self.obj.wait_for_element_visible(('xpath',"//span[text()='JOIN']"))
@@ -110,6 +118,7 @@ class NeoInClass:
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         time.sleep(3)
         self.obj.element_click(("xpath","//div[contains(@class,'neo_cl_Button')]"))
+        time.sleep(3)
 
     # streamCardContainer
     def get_all_student_names(self):
@@ -256,16 +265,52 @@ class NeoInClass:
 
     def is_thumb_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
-        return self.obj.is_element_present(('xpath', self.thumb_icon))
+        if self.obj.is_element_present(('xpath', self.thumb_icon)):
+            return ReturnType(False, 'thumb icon is present')
+        else:
+            return ReturnType(True, 'thumb icon is not present')
+
+    def is_floating_emojis_present(self):
+        self.obj.wait_for_locator_webdriver(self.floating_emojis)
+        if self.obj.is_element_present(('xpath', self.floating_emojis)):
+            return ReturnType(True, 'floaters are displayed')
+        else:
+            return ReturnType(False, 'floaters are not displayed')
 
     def click_on_thumb_icon(self):
+        self.obj.wait_for_locator_webdriver(self.thumb_icon)
+        time.sleep(3)
         self.obj.element_click(('xpath', self.thumb_icon))
 
+    def get_the_no_of_elements(self):
+        ele = self.obj.get_elements(('xpath', "//script[@type='text/javascript' and @rel = 'nofollow' and contains(@src,'type=push')]"))
+        return len(ele)
+        time.sleep(2)
+
+    def is_celebrations_icons_present(self):
+        self.obj.wait_for_locator_webdriver(self.celebrations_icons)
+        if self.obj.is_element_present(('xpath', self.celebrations_icons)):
+            return ReturnType(True, 'celebrations icons are displayed')
+        else:
+            return ReturnType(False, 'celebrations icons are not displayed')
+
+    def is_reactions_icons_present(self):
+        self.obj.wait_for_locator_webdriver(self.celebrations_icons)
+        if self.obj.is_element_present(('xpath', self.like_btn)) and\
+                self.obj.is_element_present(('xpath', self.clap_btn)) and\
+                self.obj.is_element_present(('xpath', self.heart_btn)) and\
+                self.obj.is_element_present(('xpath', self.curious_btn)):
+            return ReturnType(True, 'celebrations icons are displayed')
+        else:
+            return ReturnType(False, 'celebrations icons are not displayed')
+
     def select_any_celebration_symbol(self, celeb_symbol):
+        self.obj.wait_for_locator_webdriver(self.celebrations_icons)
         try:
-            option = self.obj.get_elements(
+            option = self.obj.get_element(
                 ('xpath', "//img[contains(@src,'/static/media/classes-emoji-" + celeb_symbol + "')]"))
             self.action.move_to_element(option).click().perform()
+            self.obj.wait(1)
         except:
             check.equal(False, True, "Couldn't click on the option")
 
@@ -786,11 +831,14 @@ class NeoInClass:
         else:
             return ReturnType(True, 'continue button is enabled')
 
-    def join_neo_session_student(self):
-        self.obj.wait(10)
+#by default the cam and mic is 'on' so passing the parameters as cam and mic on
+
+    def join_neo_session_student(self, mic_status, cam_status):
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/mic-on')]"))
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/cam-on')]"))
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
+        time.sleep(2)
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
@@ -876,3 +924,51 @@ class NeoInClass:
     def enter_comments_in_comments_box(self, text):
         self.obj.wait_for_locator_webdriver(self.comments_textbox)
         self.obj.enter_text(text, ('xpath', self.comments_textbox))
+
+    def switch_to_alt_window(self):
+        window_before = self.driver.window_handles[0]
+        window_after = self.driver.window_handles[1]
+        self.driver.switch_to.window(window_after)
+
+    def is_reaction_icon_disbled(self):
+        self.obj.wait_for_locator_webdriver(self.celebrations_icons)
+        # ele = self.obj.get_element(('xpath', self.celebrations_icons))
+        # if ele.enabled():
+        #     return ReturnType(True, 'celebrations are disabled')
+        # else:
+        #     return ReturnType(False, 'celebrations are enabled')
+        #
+        element = self.obj.get_element(('xpath', self.celebrations_icons))
+        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
+        if 'Button--disabled' in parent_classname:
+            return ReturnType(False, 'submit button is disabled')
+        else:
+            return ReturnType(True, 'submit button is enabled')
+
+    def wait_until_enabled(self):
+        self.obj.wait(10)
+
+    def set_network_flaky(self):
+        self.obj.set_wifi_connection_off()
+
+    def verify_student_count(self, element_type):
+        element = self.obj.get_element(("xpath", self.session_topic_inclass))
+        if element_type.lower() == 'students count':
+            student_count = self.obj.get_child_element(element, "xpath", self.student_count).text
+            flag = (int(student_count) > 0)
+            return ReturnType(True, "Student number is greaater") if flag else ReturnType(False,
+                                                                                          "Student number is greater")
+
+    def click_on_session_topic(self):
+        self.obj.wait_for_element_visible(("xpath", self.session_topic_inclass))
+        self.obj.element_click(("xpath", self.session_topic_inclass))
+
+    def refresh_and_join_the_session(self, mic_status, cam_status):
+        self.obj.page_refresh()
+        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
+        time.sleep(2)
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        time.sleep(2)
+        self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))

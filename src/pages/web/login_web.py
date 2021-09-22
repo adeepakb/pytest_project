@@ -49,6 +49,7 @@ class LoginWeb(LoginBase):
         self.obj.wait_for_element_visible(self.nxt_btn, 15)
         self.obj.element_click(self.nxt_btn)
 
+
     def select_profile(self, login_profile, user_profile, sub_profile):
         self.login_data = get_data(Login_Credentials, login_profile)
         self.profile_name = self.login_data[user_profile][sub_profile]["profile_value"]
@@ -208,19 +209,9 @@ class LoginWeb(LoginBase):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
 
-    def login_for_neo_class(self, cc, phone_num, otp):
-
-        self.driver.get('https://learn-staging.byjus.com')
-        self.driver.maximize_window()
-        self.obj.element_click(self.login_butn)
-        self.enter_phone(phone_num)
-        self.click_on_next()
-        self.enter_otp(cc, phone_num, otp)
-
     def login_for_neo_class_mobile(self, cc, phone_num, otp):
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.set_window_size(1280, 800)
-        # time.sleep(5)
         size = self.driver.get_window_size()
         print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
         self.obj.element_click(self.login_butn)

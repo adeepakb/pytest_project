@@ -33,7 +33,7 @@ def neo_in_class(request, driver):
 
 @given("Launch the application online")
 def login_as_neo_user(login_in):
-    login_in.login_for_neo_class('+91-', '2011313229', otp=None)
+    login_in.login_and_navigate_to_home_screen('+91-', '2011313229', otp=None)
 
 @given("tutor start the session")
 def step_impl(driver):
@@ -61,7 +61,7 @@ def join_a_neo_class(neo_in_class):
 @when('click on start class')
 @then('click on start class')
 def join_a_neo_session(neo_in_class):
-    neo_in_class.join_neo_session_student()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
 
 @when('Exit the class')
 @then('Exit the class')
