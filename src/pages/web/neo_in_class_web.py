@@ -90,7 +90,7 @@ class NeoInClass(CommonMethodsWeb):
         self.mic_disabled_tooltip = "//span[text()='Microphone disabled by tutor']"
         self.feedback_options = '//div[@class="rating__card-item"]'
         self.continue_btn_in_rating_popup = "//span[text()='Continue']"
-        self.feedback_submit_btn = "//div[text()='Submit']"
+        self.feedback_submit_btn = "//span[text()='Submit']"
         self.tutor_details_in_feedback = '//div[@class="tutor__details"]'
         self.header_text_in_feedback = "//div[text()='How was your experience with your tutor?']"
         self.text_in_thank_you_popup = "//div[text()='Thank you for your feedback!']"
@@ -137,6 +137,20 @@ class NeoInClass(CommonMethodsWeb):
         self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
         self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
+
+        self.join_btn = "//span[text()='JOIN']"
+        self.comments_textbox = '//*[@placeholder="Add your comments here"]'
+        self.star_option = '//img[@alt="Terrible"]'
+        self.tutor_name_in_feedback = '//div[@class="name"]/parent::div[@class="tutor__details"]'
+        self.tutor_avatar_in_feedback = '//img[@alt="tutor avatar"]/parent::div[@class="tutor__details"]'
+        self.selected_rating_option = '//img[contains(@src,"/static/media/terrible_active")]'
+        self.selected_bad_rating_option = '//img[contains(@src,"/static/media/not_good_active")]'
+        self.selected_okay_rating_option = '//img[contains(@src,"/static/media/okay_active")]'
+        self.selected_good_rating_option = '//img[contains(@src,"/static/media/good_active")]'
+        self.selected_great_rating_option = '//img[contains(@src,"/static/media/awesome_active")]'
+        self.what_did_you_like_text = "//div[text()='What did you like the most?']"
+        self.what_could_be_improved_text = "//div[text()='What could be improved?']"
+
 
         self.join_btn = "//span[text()='JOIN']"
         self.comments_textbox = '//*[@placeholder="Add your comments here"]'
@@ -1100,6 +1114,115 @@ class NeoInClass(CommonMethodsWeb):
 
 
 
+
+        ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup))
+        if "Thank you for your feedback!" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def is_continue_btn_enabled(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.continue_btn_in_rating_popup))
+        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
+        if 'Button--disabled' in parent_classname:
+            return ReturnType(False, 'continue button is disabled')
+        else:
+            return ReturnType(True, 'continue button is enabled')
+
+#by default the cam and mic is 'on' so passing the parameters as cam and mic on
+
+    def join_neo_session_student(self, mic_status, cam_status):
+        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
+        time.sleep(2)
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        time.sleep(2)
+        self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
+
+    def is_submit_btn_enabled(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.feedback_submit_btn))
+        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
+        if 'Button--disabled' in parent_classname:
+            return ReturnType(False, 'submit button is disabled')
+        else:
+            return ReturnType(True, 'submit button is enabled')
+
+    def is_rating_popup_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.rating_popup_header)):
+            return ReturnType(True, 'rating popup is displayed')
+        else:
+            return ReturnType(False, 'rating popup is not present')
+
+    def get_selected_emoji_color(self, expected_color):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.star_option))
+        color_code = element.value_of_css_property('color')
+        return ReturnType(True, 'yellow color is displayed') if color_code == expected_color \
+            else ReturnType(False, 'color is doesnot match with expected color %s' % color_code)
+
+    def is_star_options_present_in_rating_popup(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.rating_options)):
+            return ReturnType(True, 'rating options are displayed')
+        else:
+            return ReturnType(False, 'rating options are not present')
+
+    def is_tutor_details_present_in_popup(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.tutor_avatar_in_feedback)) and \
+            self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
+            return ReturnType(True, 'tutor details are displayed')
+        else:
+            return ReturnType(False, 'tutor details are not present')
+
+    def is_selected_rating_option_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.selected_rating_option)):
+            return ReturnType(True, 'rating option is selected')
+        else:
+            return ReturnType(False, 'rating option is not selected')
+
+    def verify_the_what_did_you_like_text(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.obj.get_element(('xpath', self.what_did_you_like_text))
+        if "What did you like the most?" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def verify_multiple_selected_rating_options(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.selected_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_bad_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_okay_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_good_rating_option)) and \
+                self.obj.is_element_present(('xpath', self.selected_great_rating_option)):
+            return ReturnType(True, 'multiple rating options are selected')
+        else:
+            return ReturnType(False, 'multiple options can not be selected')
+
+    def verify_the_what_could_be_improved_text(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.obj.get_element(('xpath', self.what_could_be_improved_text))
+        if "What could be improved?" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def is_add_your_comments_box_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.comments_textbox)):
+            return ReturnType(True, 'comments box is displayed')
+        else:
+            return ReturnType(False, 'comments box is not displayed')
+
+    def enter_comments_in_comments_box(self, text):
+        self.obj.wait_for_locator_webdriver(self.comments_textbox)
+        self.obj.enter_text(text, ('xpath', self.comments_textbox))
 
         ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup))
         if "Thank you for your feedback!" in ele.text:
