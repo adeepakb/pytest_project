@@ -137,10 +137,10 @@ def step_impl(neo_in_class):
 
 
 @then('student rejoins the session')
-def step_impl(neo_in_class):
-    neo_in_class.launch_student_webiste(mobile_number="2013795859")
-    neo_in_class.navigate_to_byjus_classes_screen()
-    neo_in_class.join_neo_session_from_classes_page_paid()
+def step_impl(neo_in_class,login_in):
+    login_in.login_and_navigate_to_home_screen('+91-', '2016490550', otp=None)
+    neo_in_class.home_click_on_join()
+    neo_in_class.join_neo_session()
 
 
 @given("tutor start the session")
