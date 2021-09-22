@@ -32,9 +32,6 @@ class NeoTute(CommonMethodsWeb):
         # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtlms(self.chrome_driver1)
-        self.chrome_driver_tlms = self.tlms.chrome_driver
         key = os.getenv('SECRET')
         f = Fernet(key)
         encrypted_data = get_data('../config/config.json', 'encrypted_data', 'token')
