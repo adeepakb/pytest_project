@@ -30,11 +30,6 @@ class NeoInClass(CommonMethodsWeb):
         self.chrome_options = Options()
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtlms(self.chrome_driver1)
-        self.chrome_driver_tlms = self.tlms.chrome_driver
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
