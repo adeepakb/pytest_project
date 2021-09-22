@@ -8,6 +8,10 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from utilities.common_methods_web import CommonMethodsWeb
 import pytest_check as check
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+from utilities.staging_tlms import Stagingtlms
 
 
 class ReturnType():
@@ -16,12 +20,16 @@ class ReturnType():
         self.reason = reason
 
 
-class NeoInClass:
+class NeoInClass(CommonMethodsWeb):
     def __init__(self, driver):
         self.driver = driver
         self.obj = CommonMethodsWeb(driver)
         self.action = ActionChains(self.driver)
 
+        super().__init__(self.driver)
+        self.chrome_options = Options()
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
@@ -52,6 +60,7 @@ class NeoInClass:
         self.student_exit_class = "//span[text()='Exit class']"
         self.facing_issue_header = '//div[@class="reportIssue__header"]'
         self.checked_issue_text = '//label[contains(@class,"activeItem")]//span[contains(@class,"MuiFormControlLabel-label")]'
+        self.type_something_inputcard = '//input[@placeholder="Type something"]'
         self.checked_issue_radio_button = '//label[contains(@class,"activeItem")]//div'
         self.others_option_comment = "//input[@id='outlined-basic']"
         self.facing_issues_label = '//span[contains(@class,"MuiFormControlLabel-label")]'
@@ -85,6 +94,58 @@ class NeoInClass:
         self.suggested_tips_for_issues = '//div[@class="extraTips"]'
         self.issue_response_text = "//*[text()='We got your issue!']"
         self.lower_your_hand_tootip = "//*[text()='You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.']"
+        self.chat_container = "//div[@class='cardWrapper']"
+        self.chat_by_me_name = ".//div[@class='nameContainer isMe']"
+        self.chat_sender = ".//div[@class='nameContainer']"
+        self.chat_message = ".//div[@class='messageBox']"
+        self.chat_by_tutor = "//div[@class='text isTutor']"
+        self.chat_by_me = "//div[@class = 'chatCard isMe']"
+        self.send_chat_button = "//*[@class='sendAction']"
+        self.chat_header = "//div[@class='chatContainer__chatheader']"
+        self.chat_container_title = ".//div[@class='chatContainer__title']"
+        self.chat_member_count = ".//span[@class='chatContainer__count']"
+        self.tutor_name = "//div[@class = 'tutorStreamCard__name--big']"
+        self.tutor_title = "//div[@class = 'tutorStreamCard__name--small']"
+        self.tutor_thumbnail = "//div[@class = 'neo_cl_VideoContainer__overlay']"
+        self.tutor_controls_container = "//div[@class='iconWrapper tutorStreamCard__icon']"
+        self.chat_controls = ".//*[@class='iconWrapper__icon']"
+        self.student_cards_items = "//div[@class='streamList__streamItem']"
+        self.current_student_card = "//div[@class='streamList__streamItem streamList__streamItem--localStream']"
+        self.learn_login_url = 'https://learn-staging.byjus.com/login'
+        self.sticker_item = "//*[@class='emojiItem']"
+        self.byju_home_icon = "//span[@class='MuiButton-label']"
+        self.byjus_login_number_field = "//input[@id='enterNumber']"
+        self.next_button = "//div[@class='nextButtonLanding']"
+        self.login_otp_field = "//input[@class='inputEleOTP']"
+        self.otp_proeed_button = "//button[@class='PLbuttonEle']"
+        self.home_join_field = "//span[@class='MuiIconButton-label']"
+        self.tlms_otp_tab = "//li[@id='otp']"
+        self.tlms_otp_tab_list = ".//li[@id='mobile_otps']"
+        self.tlms_mobile_field = '//input[@id="q_mobile_no"]'
+        self.tlms_otp_submit = '//input[@name="commit"]'
+        self.tlms_otp_number_field = './/*[@class="col col-otp"]'
+        self.home_byjus_classes_button = "//div[contains(text(),'Byju’s Classes')]"
+        self.home_join_button = "//span[contains(text(),'JOIN')]"
+        self.mic_video_buttons_on_join_screen = "//div[@class = 'stream--overlay_icon']"
+        self.sticker_onchat = "//div[@class= 'message']"
+        self.emoji_icon = "//*[@class='emoji']"
+        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
+        self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
+
+        self.join_btn = "//span[text()='JOIN']"
+        self.comments_textbox = '//*[@placeholder="Add your comments here"]'
+        self.star_option = '//img[@alt="Terrible"]'
+        self.tutor_name_in_feedback = '//div[@class="name"]/parent::div[@class="tutor__details"]'
+        self.tutor_avatar_in_feedback = '//img[@alt="tutor avatar"]/parent::div[@class="tutor__details"]'
+        self.selected_rating_option = '//img[contains(@src,"/static/media/terrible_active")]'
+        self.selected_bad_rating_option = '//img[contains(@src,"/static/media/not_good_active")]'
+        self.selected_okay_rating_option = '//img[contains(@src,"/static/media/okay_active")]'
+        self.selected_good_rating_option = '//img[contains(@src,"/static/media/good_active")]'
+        self.selected_great_rating_option = '//img[contains(@src,"/static/media/awesome_active")]'
+        self.what_did_you_like_text = "//div[text()='What did you like the most?']"
+        self.what_could_be_improved_text = "//div[text()='What could be improved?']"
+
 
         self.join_btn = "//span[text()='JOIN']"
         self.comments_textbox = '//*[@placeholder="Add your comments here"]'
@@ -101,14 +162,14 @@ class NeoInClass:
 
 
     def home_click_on_join(self):
-        self.obj.wait_for_element_visible(('xpath',"//span[text()='JOIN']"))
+        self.obj.wait_for_element_visible(('xpath', "//span[text()='JOIN']"))
         self.obj.button_click('JOIN')
 
     def join_neo_session(self):
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         time.sleep(3)
-        self.obj.element_click(("xpath","//div[contains(@class,'neo_cl_Button')]"))
+        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
     # streamCardContainer
     def get_all_student_names(self):
@@ -668,10 +729,49 @@ class NeoInClass:
         except:
             return chat_elements
 
+    def verify_tutor_messages_are_left_alligned(self, text="Hi I am tutor"):
+        try:
+            tutor_chat_elements = self.get_elements(("xpath", self.chat_by_tutor))
+
+            for tutor_chat_element in tutor_chat_elements:
+                if tutor_chat_element.text == text:
+                    return ReturnType(True, "Tutor chat elements are left aligned")
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+        except:
+            return ReturnType(False, "Tutor chat elements are not left aligned")
+
+    def verify_other_student_messages_are_left_alligned(self, text="Hi I am another student"):
+        chats = self.get_all_chats()
+
+        for chat in chats:
+            if text == chat[1]:
+                return ReturnType(True, "other student messages are left aligned")
+        return ReturnType(False, "other student messages are left aligned")
+
+    def verify_student_messages_are_right_alligned(self, text="Hi I am student"):
+        elements = self.get_elements(("xpath", self.chat_by_me))
+
+        for element in elements:
+            child_element = self.get_child_element(element, "xpath", self.chat_message)
+            if child_element.text == text:
+                return ReturnType(True, "Student chat elements are right aligned")
+        return ReturnType(False, "Student chat elements are right aligned")
+
     def send_chat(self, text=""):
         self.obj.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
         element.click()
+
+    def type_chat(self, text=""):
+        self.get_element(('xpath', self.type_something_inputcard)).send_keys(text)
+
+    def verify_a_text_in_chat(self, text):
+        chats = self.get_all_chats()
+
+        for chat_item in chats:
+            if chat_item[1] == text:
+                return ReturnType(True, " Chat text is found")
+        return ReturnType(True, "Chat text is not found")
 
     def verify_chat_elements(self):
         try:
@@ -691,6 +791,32 @@ class NeoInClass:
         except:
             check.equal(False, True, "Chat elements incorrectly displayed")
 
+    def verify_chat_elements_element_wise(self, element_type):
+        element = self.get_element(("xpath", self.chat_header))
+        if element_type.lower() == 'students count':
+            student_count = self.get_child_element(element, "xpath", self.chat_member_count).text
+            flag = (int(student_count) > 0)
+            return ReturnType(True, "Student number is greaater") if flag else ReturnType(False,
+                                                                                          "Student number is greaater")
+        elif element_type.lower() == "type something":
+            flag = self.get_element(("xpath", "//input[@placeholder='Type something']")).is_displayed()
+            return ReturnType(True, " Type Something is displayed on chat box") if flag else ReturnType(False,
+                                                                                                        "Type some "
+                                                                                                        "thing is not "
+                                                                                                        "displayed on "
+                                                                                                        "place holder")
+        elif element_type.lower == "tutor name":
+            flag = self.get_element(("xpath", self.tutor_name)).is_displayed()
+            return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
+        elif element_type.lower() == 'tutor tag':
+            flag = self.get_element(("xpath", self.tutor_title)).is_displayed()
+            return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
+
+        elif element_type.lower() == 'tutor thumbnail':
+            flag = self.get_element(("xpath",self.tutor_thumbnail)).is_deplayed()
+            return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
+                                                                                         "Tutor thumbnail is shown ")
+
     # tutorStreamCard
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
@@ -707,7 +833,7 @@ class NeoInClass:
             child_element = self.obj.get_child_element(elements[1], "xpath", ".//*[@class='iconWrapper__icon']")
             flag = self.action.move_to_element(child_element).click().perform()
             flag2 = self.obj.get_child_element(elements[1], "xpath",
-                                           ".//*[@class='iconWrapper__icon']").is_displayed()
+                                               ".//*[@class='iconWrapper__icon']").is_displayed()
             return ReturnType(True, "Tutor  Video is on.") if not flag2 else ReturnType(False,
                                                                                         "Tutor  Video is not on.")
         except:
@@ -719,7 +845,7 @@ class NeoInClass:
             child_element = self.obj.get_child_element(elements[0], "xpath", ".//*[@class='iconWrapper__icon']")
             flag = self.action.move_to_element(child_element).click().perform()
             flag2 = self.obj.get_child_element(elements[0], "xpath",
-                                           ".//*[@class='iconWrapper__icon']").is_displayed()
+                                               ".//*[@class='iconWrapper__icon']").is_displayed()
             return ReturnType(False, "Tutor is not unmute.") if flag2 else ReturnType(True, "Tutor is unmute")
         except:
             return ReturnType(True, "Tutor is unmute. except")
@@ -760,15 +886,338 @@ class NeoInClass:
 
             for element in elements:
                 name = self.obj.get_child_element(element, "xpath",
-                                              './/div[@class="streamNameClass neo_cl_StreamCard__name '
-                                              'neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded '
-                                              'neo_cl_StreamCard__name--remote"]').text
+                                                  './/div[@class="streamNameClass neo_cl_StreamCard__name '
+                                                  'neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded '
+                                                  'neo_cl_StreamCard__name--remote"]').text
                 if student_name.lower() == name.lower():
                     audio_status = self.obj.get_child_element(elements[1], "xpath",
-                                                          ".//div[@class='neo_cl_StreamCard__icon--withRebBg neo_cl_StreamCard__icon']").is_diplayed()
+                                                              ".//div[@class='neo_cl_StreamCard__icon--withRebBg neo_cl_StreamCard__icon']").is_diplayed()
                     return ReturnType(True, "Audio is on") if audio_status else ReturnType(False, "Audio is off")
         except:
             return ReturnType(False, "Audio is off")
+
+
+
+
+    def navigate_to_byjus_classes_screen(self):
+        self.wait_for_element_visible(("xpath", self.home_byjus_classes_button))
+        self.element_click(("xpath", self.home_byjus_classes_button))
+
+    def join_session_from_home_page(self):
+        self.wait_for_element_visible(("xpath", self.tlms_mobile_field))
+        self.element_click(("xpath", self.home_join_button))
+
+    def join_neo_session_from_classes_page_paid(self):
+        self.wait_for_element_visible(("xpath", "//span[@class = 'MuiTab-wrapper']"))
+
+        self.wait_for_element_visible(("xpath", "//div[@class='btnCard']"))
+        elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
+        element = self.get_child_element(elements[1], "xpath",
+                                         ".//div[@class='type-video masterOrRegularCardContainer']")
+        self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
+        self.turn_off_mic_from_student_join_page()
+        self.turn_off_video_from_student_join_page()
+        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Join Class')]")
+
+        self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
+
+    def turn_off_mic_from_student_join_page(self):
+        self.wait_for_element_visible(("xpath", self.mic_video_buttons_on_join_screen))
+        elements = self.get_elements(("xpath", self.mic_video_buttons_on_join_screen))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='mic']").click()
+            except:
+                pass
+
+    def turn_off_video_from_student_join_page(self):
+        self.wait_for_element_visible(("xpath", self.mic_video_buttons_on_join_screen))
+        elements = self.get_elements(("xpath", self.mic_video_buttons_on_join_screen))
+
+        for ele in elements:
+            try:
+                self.get_child_element(ele, "xpath", ".//img[@alt='cam']").click()
+            except:
+                pass
+
+    def verify_sticker_displayed(self):
+
+        elements = self.get_elements(("xpath", self.sticker_onchat))
+
+        for element in elements:
+            if "src" in element.get_attribute('innerHTML'):
+                return ReturnType(True, " Sticker is being displayed")
+        return ReturnType(False, " Sticker is not being displayed")
+
+    def send_sticker(self):
+        self.get_element(("xpath", self.emoji_icon)).click()
+        self.wait_for_element_visible(("xpath", self.sticker_item))
+        self.get_element(("xpath", self.sticker_item)).click()
+
+    def verify_no_of_default_stickers(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.sticker_item))
+            stickers = self.get_elements(("xpath", self.sticker_item))
+            flag = len(stickers) == 8
+            return ReturnType(True, "All eight default stickers are shown") if flag else ReturnType(False,
+                                                                                                    "All eight "
+                                                                                                    "default stickers "
+                                                                                                    "are not shown")
+        except:
+            return ReturnType(False,
+                              "All eight default stickers are not shown")
+
+    def click_on_sticker_icon(self):
+        self.wait_for_element_visible(("xpath", self.emoji_icon))
+        self.get_element(("xpath", self.emoji_icon)).click()
+
+    def raise_hand(self):
+        self.wait_for_element_visible(
+            (("xpath", self.raise_hand)))
+        self.get_element(("xpath", self.raise_hand)).click()
+
+    def unraise_hand(self):
+        if self.verify_hand_is_raised().result:
+            self.get_element(("xpath", self.raise_hand_text)).click()
+
+    def verify_lower_hand_text_is_displayed(self):
+        try:
+            text = self.get_element(("xpath", self.low_hand_text)).text
+            flag = 'You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.' == text
+            return ReturnType(True, "Lower hand message is shown and correct") if flag else ReturnType(False,
+                                                                                                       "Lower hand message is shown and not correct")
+        except:
+            ReturnType(False,
+                       "Lower hand message is not shown")
+
+    def verify_hand_is_raised(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.raise_hand_text))
+            flag = self.get_element(("xpath", self.raise_hand_text)).is_displayed()
+            return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
+        except:
+            return ReturnType(False, "Hand is not raised")
+
+    def verify_wifi_off_inchat_displayed(self):
+        try:
+            flag = self.get_element(("xpath", "//div[@class='chatFooter']")).is_diplayed()
+            return ReturnType(True, "wifi off in chat box displayed") if flag else ReturnType(False,
+                                                                                              "wifi off in chat box not displayed")
+        except:
+            return ReturnType(False, "wifi off in chat box not displayed")
+
+    def current_student_has_video_enlarged(self):
+        try:
+
+            text = self.get_element(("xpath",
+                                     "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']"))
+            if text.lower() == 'you':
+                return ReturnType(True, "Current student has video enlarged")
+            else:
+                return ReturnType(False, "Current student has not video enlarged")
+        except:
+            return ReturnType(False, "Current student has not video enlarged")
+
+    def hover_over_info_button(self):
+        self.wait_for_element_visible(("xpath", self.session_topic_icon))
+        self.element_click(("xpath", self.session_topic_icon))
+
+    def hover_over_reaction_button(self):
+        elements = self.get_elements(("xpath","//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+        self.action.move_to_element(elements[1]).perform()
+
+
+
+    def verify_info_pop_up(self):
+        try:
+            flag = self.get_element(("xpath", "//div[@class = 'classInfo__infoPopup']")).is_displayed()
+            text = self.get_element(("xpath", "//div[@class = 'classInfo__topicName']")).text
+            flag2 = (text == 'Biology: Control and Coordination')
+            flag3 = self.get_element(("xpath", "//div[@class = 'classInfo__dateTime']")).is_displayed()
+
+            return ReturnType(True, " info popup elements are correct and shown") if all((flag3, flag2,
+                                                                                         flag)) else ReturnType(False,
+                                                                                                               "info "
+                                                                                                               "popup "
+                                                                                                               "elements are incorrect or not shown")
+
+        except:
+            return ReturnType(False, "info popup elements are incorrect or not shown")
+
+
+    def tool_tip_message(self,message):
+        try:
+            tooltip_elements = self.get_elements(("xpath", "//span[@class = 'neo_cl_ToolTipText']"))
+            selected_tool_tip_element = None
+            for element in tooltip_elements:
+                if element.text == message:
+                    selected_tool_tip_element = element
+                    break
+            flag = selected_tool_tip_element.is_displayed()
+            return ReturnType(True, "Tool tip message {}  is being shown".format(message)) if flag else ReturnType(False, "Tool tip message {}  is not being shown".format(message))
+        except:
+            return ReturnType(False, "Tool tip message {}  is not being shown".format(message))
+
+
+    def turn_on_mic(self):
+        try:
+            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
+            elements = self.get_elements(("xpath","//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+            for element in elements:
+                if "mic-off" in element.get_attribute("innerHTML"):
+                    element.click()
+                    break
+
+        except:
+            pass
+
+    def turn_on_camera(self):
+        try:
+            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
+            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+            for element in elements:
+                if "cam-off" in element.get_attribute("innerHTML"):
+                    element.click()
+                    break
+        except:
+            pass
+
+
+    def turn_off_mic(self):
+        try:
+            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
+            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
+            for element in elements:
+                if "mic-on" in element.get_attribute("innerHTML"):
+                    element.click()
+                    break
+        except:
+            pass
+
+
+    def turn_off_camera(self):
+        try:
+            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
+            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
+            for element in elements:
+                if "cam-on" in element.get_attribute("innerHTML"):
+                    element.click()
+                    break
+        except:
+            pass
+
+
+
+
+        ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup))
+        if "Thank you for your feedback!" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def is_continue_btn_enabled(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.continue_btn_in_rating_popup))
+        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
+        if 'Button--disabled' in parent_classname:
+            return ReturnType(False, 'continue button is disabled')
+        else:
+            return ReturnType(True, 'continue button is enabled')
+
+#by default the cam and mic is 'on' so passing the parameters as cam and mic on
+
+    def join_neo_session_student(self, mic_status, cam_status):
+        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
+        time.sleep(2)
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        time.sleep(2)
+        self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
+
+    def is_submit_btn_enabled(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.feedback_submit_btn))
+        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
+        if 'Button--disabled' in parent_classname:
+            return ReturnType(False, 'submit button is disabled')
+        else:
+            return ReturnType(True, 'submit button is enabled')
+
+    def is_rating_popup_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.rating_popup_header)):
+            return ReturnType(True, 'rating popup is displayed')
+        else:
+            return ReturnType(False, 'rating popup is not present')
+
+    def get_selected_emoji_color(self, expected_color):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        element = self.obj.get_element(('xpath', self.star_option))
+        color_code = element.value_of_css_property('color')
+        return ReturnType(True, 'yellow color is displayed') if color_code == expected_color \
+            else ReturnType(False, 'color is doesnot match with expected color %s' % color_code)
+
+    def is_star_options_present_in_rating_popup(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.rating_options)):
+            return ReturnType(True, 'rating options are displayed')
+        else:
+            return ReturnType(False, 'rating options are not present')
+
+    def is_tutor_details_present_in_popup(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.tutor_avatar_in_feedback)) and \
+            self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
+            return ReturnType(True, 'tutor details are displayed')
+        else:
+            return ReturnType(False, 'tutor details are not present')
+
+    def is_selected_rating_option_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.selected_rating_option)):
+            return ReturnType(True, 'rating option is selected')
+        else:
+            return ReturnType(False, 'rating option is not selected')
+
+    def verify_the_what_did_you_like_text(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.obj.get_element(('xpath', self.what_did_you_like_text))
+        if "What did you like the most?" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def verify_multiple_selected_rating_options(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.selected_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_bad_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_okay_rating_option)) or \
+                self.obj.is_element_present(('xpath', self.selected_good_rating_option)) and \
+                self.obj.is_element_present(('xpath', self.selected_great_rating_option)):
+            return ReturnType(True, 'multiple rating options are selected')
+        else:
+            return ReturnType(False, 'multiple options can not be selected')
+
+    def verify_the_what_could_be_improved_text(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        ele = self.obj.get_element(('xpath', self.what_could_be_improved_text))
+        if "What could be improved?" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def is_add_your_comments_box_present(self):
+        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        if self.obj.is_element_present(('xpath', self.comments_textbox)):
+            return ReturnType(True, 'comments box is displayed')
+        else:
+            return ReturnType(False, 'comments box is not displayed')
+
+    def enter_comments_in_comments_box(self, text):
+        self.obj.wait_for_locator_webdriver(self.comments_textbox)
+        self.obj.enter_text(text, ('xpath', self.comments_textbox))
 
         ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup))
         if "Thank you for your feedback!" in ele.text:
