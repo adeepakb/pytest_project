@@ -508,7 +508,7 @@ class NeoTute(CommonMethodsWeb):
 
     def join_a_neo_session_as_tutor(self, **kwargs):
         db = kwargs['db']
-        self.wait_for_element_visible(self.chrome_driver, self.neo_dashborad_class, timeout=50)
+        self.wait_for_element_visible(("xpath", self.neo_dashborad_class), timeout=50)
         sessions = self.get_element(self.neo_dashborad_class)
         for session in sessions:
             try:
@@ -946,6 +946,8 @@ class NeoTute(CommonMethodsWeb):
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
+
 
 
 
