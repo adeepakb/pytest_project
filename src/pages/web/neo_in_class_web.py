@@ -694,8 +694,8 @@ class NeoInClass(CommonMethodsWeb):
 
     def are_emojis_displayed(self):
         try:
-            element = self.obj.get_element(("xpath", "//div[@class='neo_cl_Reaction']"))
-            elements = self.obj.get_child_elements(element, "xpath", ".//*")
+            elements = self.get_elements(( "xpath", "//div[@class = 'iconWrapper reactionButton__icon reactionButton__icon--margin item item']"))
+            elements += self.get_elements(("xpath", "//div[@class = 'iconWrapper reactionButton__icon item item']"))
             return ReturnType(True, "Emojis are  being displayed") if len(elements) > 0 else ReturnType(False,
                                                                                                         "Emojis are not being displayed")
         except:
@@ -1043,9 +1043,8 @@ class NeoInClass(CommonMethodsWeb):
         self.wait_for_element_visible(("xpath", self.session_topic_icon))
         self.element_click(("xpath", self.session_topic_icon))
 
-    def hover_over_video_button(self):
-        elements = self.get_elements(("xpath","//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
-        self.action.move_to_element(elements[1]).perform()
+    def hover_over_reaction_button(self):
+        self.element_click(("xpath","//div[@class = 'reactionButton']"))
 
 
 

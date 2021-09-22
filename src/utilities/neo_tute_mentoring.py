@@ -655,6 +655,8 @@ class NeoTute(CommonMethodsWeb):
             ReturnType(True,
                        "video full screen is being displayed")
 
+
+
     def maximize_video(self):
         try:
             self.chrome_driver.find_element_by_xpath(self.full_screen_icon).click()
@@ -793,6 +795,25 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(False, "cam is off")
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
+
+
+    def turn_tutor_video_on_off(self, status= 'off'):
+        if status.lower() == 'on':
+            elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                   "tutorCard--red_icon']"))
+            desired_element =None
+            for element in elements:
+                if "cam-off" in element.get_attribute('innerHTML'):
+                    desired_element = element
+            desired_element.click()
+        else:
+            elements = self.get_elements(
+                ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+            desired_element = None
+            for element in elements:
+                if "cam-on" in element.get_attribute('innerHTML'):
+                    desired_element = element
+            desired_element.click()
 
     def get_audio_status(self):
         try:

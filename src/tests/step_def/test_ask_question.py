@@ -185,3 +185,19 @@ def step_impl(neo_in_class, text):
         neo_in_class.turn_on_mic()
     else:
         neo_in_class.turn_off_mic()
+
+
+@when("student hover over reaction button")
+def step_impl(neo_in_class):
+    neo_in_class.hover_over_reaction_button()
+
+
+@then("default reactions are shown")
+def step_impl(neo_in_class):
+    details = neo_in_class.are_emojis_displayed()
+    check.equal(details.result, True, details.reason)
+
+
+@when("tutor turns on his video")
+def step_impl(test_tut):
+    test_tut.turn_tutor_video_on_off(status= 'on')
