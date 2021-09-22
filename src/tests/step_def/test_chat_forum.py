@@ -137,8 +137,8 @@ def step_impl(neo_in_class):
 
 
 @then('student rejoins the session')
-def step_impl(neo_in_class):
-    neo_in_class.launch_student_webiste(mobile_number="2013795859")
+def step_impl(neo_in_class,login_in):
+    login_in.launch_student_webiste(mobile_number="2013795859")
     neo_in_class.navigate_to_byjus_classes_screen()
     neo_in_class.join_neo_session_from_classes_page_paid()
 

@@ -199,6 +199,8 @@ class Stagingtlms:
         self.chrome_driver.close()
         return otp
 
+
+
     def wait_for_locator_webdriver(self, locator_value):
         try:
             WebDriverWait(self.chrome_driver, 15, ignored_exceptions=[StaleElementReferenceException]).until(
