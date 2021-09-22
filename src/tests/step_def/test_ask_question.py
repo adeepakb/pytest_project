@@ -64,7 +64,7 @@ def login_in(request, driver):
 
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
-    login_in.login_and_navigate_to_home_screen('+91-', '2016490550', otp=None)
+    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
 
 
 @when("tutor start the session")
@@ -201,3 +201,10 @@ def step_impl(neo_in_class):
 @when("tutor turns on his video")
 def step_impl(test_tut):
     test_tut.turn_tutor_video_on_off(status= 'on')
+
+
+@then("tutor videos should be displayed")
+def step_impl(neo_in_class):
+    details = neo_in_class.is_tutor_video_on()
+    check.equal(details.result, True, details.reason)
+

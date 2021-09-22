@@ -30,11 +30,8 @@ class NeoInClass(CommonMethodsWeb):
         self.chrome_options = Options()
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        self.chrome_ogiptions.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
-        self.chrome_driver1 = webdriver.Chrome(options=self.chrome_options)
-        self.tlms = Stagingtlms(self.chrome_driver1)
-        self.chrome_driver_tlms = self.tlms.chrome_driver
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
@@ -821,16 +818,27 @@ class NeoInClass(CommonMethodsWeb):
     def is_tutor_video_on(self):
         elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
         try:
-            child_element = self.obj.get_child_element(elements[1], "xpath", ".//*[@class='iconWrapper__icon']")
-            flag = self.action.move_to_element(child_element).click().perform()
-            flag2 = self.obj.get_child_element(elements[1], "xpath",
-                                               ".//*[@class='iconWrapper__icon']").is_displayed()
-            return ReturnType(True, "Tutor  Video is on.") if not flag2 else ReturnType(False,
-                                                                                        "Tutor  Video is not on.")
-        except:
-            return ReturnType(True, "Tutor  Video is  on. except")
+            for element in elements:
+                if "camera-off" in element.get_attribute("innerHTML"):
+                    return ReturnType(False, "Tutor camera is off")
 
-    def is_tutor_unmute(self):
+                return ReturnType(True, "Tutor camera is on")
+        except:
+            return ReturnType(True, "Tutor camera is on")
+
+    def is_tutor_mute(self):
+
+        elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
+        try:
+            for element in elements:
+                if "mic_off" in element.get_attribute("innerHTML"):
+                    return ReturnType(True, "Tutor  is mute")
+
+                return ReturnType(False, "Tutor is unmute")
+        except:
+            return ReturnType(False, "Tutor is unmute")
+
+
         try:
             elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
             child_element = self.obj.get_child_element(elements[0], "xpath", ".//*[@class='iconWrapper__icon']")

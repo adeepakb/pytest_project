@@ -798,22 +798,27 @@ class NeoTute(CommonMethodsWeb):
 
 
     def turn_tutor_video_on_off(self, status= 'off'):
-        if status.lower() == 'on':
-            elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                   "tutorCard--red_icon']"))
-            desired_element =None
-            for element in elements:
-                if "cam-off" in element.get_attribute('innerHTML'):
-                    desired_element = element
-            desired_element.click()
-        else:
-            elements = self.get_elements(
-                ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-            desired_element = None
-            for element in elements:
-                if "cam-on" in element.get_attribute('innerHTML'):
-                    desired_element = element
-            desired_element.click()
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
 
     def get_audio_status(self):
         try:
