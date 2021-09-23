@@ -49,7 +49,6 @@ class LoginWeb(LoginBase):
         self.obj.wait_for_element_visible(self.nxt_btn, 15)
         self.obj.element_click(self.nxt_btn)
 
-
     def select_profile(self, login_profile, user_profile, sub_profile):
         self.login_data = get_data(Login_Credentials, login_profile)
         self.profile_name = self.login_data[user_profile][sub_profile]["profile_value"]

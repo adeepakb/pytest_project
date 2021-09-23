@@ -143,6 +143,7 @@ class NeoTute(CommonMethodsWeb):
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
 
+
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
         password = self.decrypted_data['staging_access']['password']
@@ -582,6 +583,7 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False,
                               "no pdf is shown")
 
+
     def get_number_of_students_in_student_details(self):
         try:
             elements = self.get_elements(self.student_cards_details)
@@ -941,3 +943,6 @@ class NeoTute(CommonMethodsWeb):
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
+
+

@@ -144,6 +144,14 @@ class CommonMethodsWeb():
         except:
             return False
 
+    def wait_for_element_visible_driver(self,driver, locator, timeout=15):
+        try:
+            wait = WebDriverWait(driver, timeout)
+            wait.until(ec.visibility_of_element_located(locator))
+            return True
+        except:
+            return False
+
     def wait_for_locator_webdriver(self, locator_value, timeout=15):
         try:
             WebDriverWait(self.driver, timeout).until(ec.presence_of_element_located((By.XPATH, locator_value)))
@@ -214,14 +222,8 @@ class CommonMethodsWeb():
         except NoSuchElementException:
             logging.info("Hover operation failed.")
 
-    def switch_between_windows(self, window_name):
-        window_before = self.driver.window_handles[0]
-        window_after = self.driver.window_handles[1]
-        self.driver.switch_to.window(window_name)
-
     def set_wifi_connection_off(self):
         self.driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
 
     def set_wifi_connection_on(self):
         self.driver.set_network_conditions(offline=False, latency=5, throughput=500 * 1024)
-
