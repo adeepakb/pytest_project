@@ -8,7 +8,7 @@ import sys
 import subprocess
 import logging
 from utilities.base_page import BaseClass
-# from utilities.pre_execution import BuildFeatureJob
+from utilities.pre_execution import BuildFeatureJob
 from constants.test_management import *
 # from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
@@ -19,7 +19,6 @@ sys.path.append(PATH('constants/'))
 from constants.test_management import *
 
 baseClass = BaseClass()
-# feature_job = BuildFeatureJob()
 
 
 # @pytest.fixture(scope="session", autouse=True)
@@ -55,13 +54,14 @@ def capture_screenshot(request, feature_name):
 def driver(request):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:
+        feature_job = BuildFeatureJob()
         android_driver = baseClass.setup_android()
-        # feature_job.lock_or_unlock_device('lock')
-        # serial = feature_job.connect_adb_api()
-        # feature_job.connect_to_adb(serial)
+        feature_job.lock_or_unlock_device('lock')
+        serial = feature_job.connect_adb_api()
+        feature_job.connect_to_adb(serial)
         yield android_driver
-        # subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
-        #                  stderr=subprocess.STDOUT).communicate()
+        subprocess.Popen('adb disconnect ' + serial, shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT).communicate()
         android_driver.quit()
     elif Platform.WEB.name in platform_list:
         chrome_driver = baseClass.setup_browser()
@@ -134,12 +134,12 @@ def pytest_bdd_step_error(request ,feature, step):
     """
     py_test.exception = True
     py_test.failed_step_name = step.name
-    if '[MergedTest]' in step.name:
+    # suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
+    if get_custom_field_scenario(suite_name, step.name, "24"):
         e_type, value, tb = sys.exc_info()
         summaries = traceback.format_exception(e_type, value, tb)
         prj_path_only = os.path.abspath(os.getcwd() + "/../..")
-        # suite_name = os.getenv('suite')
-        suite_name = "Neo Classes Web"
         feature_name = feature.name
         testing_device = request.getfixturevalue("driver").capabilities['browserName']
         app_version = request.getfixturevalue("driver").capabilities['browserVersion']
@@ -176,11 +176,12 @@ def pytest_bdd_step_error(request ,feature, step):
 
 
 def pytest_bdd_after_step(request, step):
-    if '[MergedTest]' in step.name:
+    #  "custom_merged_case": null or "custom_merged_case": 1
+    # suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
+    if get_custom_field_scenario(suite_name, step.name, "24"):
         from pytest_check.check_methods import get_failures,clear_failures
         failures = get_failures()
-        # suite_name = os.getenv('suite')
-        suite_name = "Neo Classes Web"
         testing_device = request.getfixturevalue("driver").capabilities['browserName']
         app_version = request.getfixturevalue("driver").capabilities['browserVersion']
         step_name = step.name

@@ -21,6 +21,7 @@ class NeoInClass:
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
+        self.stream_list = '//section[@class="streamList__itemList"]'
         self.profile_cards = "//div[contains(@class,'profileCard bottomContainer')]"
         self.info_tip_close = "//div[@class='infoTip__closeBtn']"
         self.focus_mode_icon = "//div[contains(@class,'presentation__focusIcon')]"
@@ -141,6 +142,14 @@ class NeoInClass:
 
     def get_request_message(self):
         return self.obj.get_element(('xpath', self.request_message)).text
+
+    def verify_alignment_stream_list(self):
+        display_block = self.obj.get_element(('xpath',self.stream_list)).value_of_css_property('display')
+        content_alignment = self.obj.get_element(('xpath',self.stream_list)).value_of_css_property('justify-content')
+        if display_block == 'grid' and content_alignment == 'center':
+            return True
+        else:
+            return False
 
     # returns bottom container profile card details, profile card name or profile picture src if attached
     def get_profile_cards(self):
