@@ -1,6 +1,9 @@
 import logging
 import pickle
 import json
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from constants.load_json import get_data
@@ -13,8 +16,8 @@ from utilities.staging_tlms import Stagingtlms
 
 class LoginWeb(LoginBase):
     def __init__(self, driver):
-        self.driver = driver
-        self.obj = CommonMethodsWeb(driver)
+        self.driver = driver or webdriver.Chrome(options=Options())
+        self.obj = CommonMethodsWeb(self.driver)
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.login_butn = (By.XPATH, "//span[text() = 'LOGIN']")
         self.phone_number = (By.XPATH, "//input[@id='enterNumber']")
@@ -195,6 +198,7 @@ class LoginWeb(LoginBase):
     def login_and_navigate_to_home_screen(self, cc, phone_num, otp):
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.maximize_window()
+        self.obj.wait_for_element_visible(self.login_butn)
         self.obj.element_click(self.login_butn)
         self.enter_phone(phone_num)
         self.click_on_next()
@@ -207,3 +211,19 @@ class LoginWeb(LoginBase):
         for i in range(mid):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
+
+    # ['2014947581']
+    def login_as_extra_users(self,list_of_numbers):
+        for login_number in list_of_numbers:
+            chrome_options = Options()
+            chrome_options.add_argument("--use-fake-ui-for-media-stream")
+            chrome_driver = webdriver.Chrome(options=chrome_options)
+            chrome_driver.get('https://learn-staging.byjus.com')
+            chrome_driver.maximize_window()
+            chrome_driver.find_element_by_xpath(self.login_butn[1]).click()
+            chrome_driver.find_element_by_xpath(self.phone_number[1]).send_keys(login_number)
+            # self.click_on_next()
+            # self.enter_otp('+91-', login_number, otp=None)
+            pass
+
+

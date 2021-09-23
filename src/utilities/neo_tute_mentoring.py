@@ -954,3 +954,49 @@ class NeoTute(CommonMethodsWeb):
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
+    def turn_tutor_video_on_off(self, status='off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
+
+    def turn_tutor_audio_on_off(self, status='off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
