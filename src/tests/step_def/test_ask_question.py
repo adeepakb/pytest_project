@@ -100,13 +100,9 @@ def step_impl(neo_in_class):
 @given("another student joins the session")
 @when("another student joins the session")
 def step_impl(test_student_2):
-    # login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
-    # test_student_2.home_click_on_join()
-    # test_student_2.join_neo_session()
-
-    test_student_2.launch_student_webiste(mobile_number="2014170985")
-    test_student_2.navigate_to_byjus_classes_screen()
-    test_student_2.join_neo_session_from_classes_page_paid()
+    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
+    test_student_2.home_click_on_join()
+    test_student_2.join_neo_session()
 
 
 @when("tutor start the session")
@@ -123,9 +119,9 @@ def step_impl(test_tut):
 @given("another second student joins the session")
 @when("another second student joins the session")
 def step_impl(test_student_3):
-    test_student_3.launch_student_webiste(mobile_number="2016275078")
-    test_student_3.navigate_to_byjus_classes_screen()
-    test_student_3.join_neo_session_from_classes_page_paid()
+    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
+    test_student_3.home_click_on_join()
+    test_student_3.join_neo_session()
 
 
 @then("verify user asking question has enlarged video")
@@ -141,7 +137,7 @@ def step_impl(neo_in_class):
 
 @then("verify info pop_up is shown")
 def step_impl(neo_in_class):
-    details = neo_in_class.verify_info_pop_up()
+    details = neo_in_class.verify_info_pop_up(subject_name = 'Biology: Control and Coordination')
     check.equal(details.result, True, details.reason)
 
 
@@ -158,9 +154,9 @@ def step_impl(neo_in_class):
 @when(parsers.parse('student turn "{text}" camera'))
 def step_impl(neo_in_class, text):
     if text.lower() == 'on':
-        neo_in_class.turn_on_camera()
+        neo_in_class.turn_on_off_camera(status='on')
     else:
-        neo_in_class.turn_off_camera()
+        neo_in_class.turn_on_off_camera(status='off')
 
 
 @then(parsers.parse('verify tool tip message "{text}" is being displayed'))
@@ -175,16 +171,13 @@ def step_impl(neo_in_class, text):
         check.equal(neo_in_class.is_turn_on_mic_tooltip_present(), True, "{} is not present".format(text))
 
 
-    else:
-        neo_in_class.turn_off_camera()
-
 
 @when(parsers.parse('student turn "{text}" mic'))
 def step_impl(neo_in_class, text):
     if text.lower() == 'on':
-        neo_in_class.turn_on_mic()
+        neo_in_class.turn_on_off_mic(status='on')
     else:
-        neo_in_class.turn_off_mic()
+        neo_in_class.turn_on_off_mic(status='off')
 
 
 @when("student hover over reaction button")

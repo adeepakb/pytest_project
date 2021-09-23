@@ -13,7 +13,6 @@ from constants.test_management import *
 from constants.loadFeatureFile import fetch_feature_file
 from tests.common_steps import *
 
-
 PATH = lambda p: os.path.abspath(
     os.path.join(os.path.dirname(__file__), p))
 sys.path.append(PATH('constants/'))
