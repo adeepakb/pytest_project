@@ -1041,7 +1041,6 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(False, "info popup elements are incorrect or not shown")
 
-
     def is_continue_btn_enabled(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
         element = self.obj.get_element(('xpath', self.continue_btn_in_rating_popup))
@@ -1151,157 +1150,6 @@ class NeoInClass(CommonMethodsWeb):
         else:
             return ReturnType(False, 'the text in popup doesnt match')
 
-    def join_session_from_home_page(self):
-        self.wait_for_element_visible(("xpath", self.tlms_mobile_field))
-        self.element_click(("xpath", self.home_join_button))
-
-    def is_continue_btn_enabled(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.continue_btn_in_rating_popup))
-        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
-        if 'Button--disabled' in parent_classname:
-            return ReturnType(False, 'continue button is disabled')
-        else:
-            return ReturnType(True, 'continue button is enabled')
-
-    # by default the cam and mic is 'on' so passing the parameters as cam and mic on
-
-    def join_neo_session_student(self, mic_status, cam_status):
-        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
-        time.sleep(2)
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
-        time.sleep(2)
-        self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
-
-    def is_submit_btn_enabled(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.feedback_submit_btn))
-        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
-        if 'Button--disabled' in parent_classname:
-            return ReturnType(False, 'submit button is disabled')
-        else:
-            return ReturnType(True, 'submit button is enabled')
-
-    def is_rating_popup_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.rating_popup_header)):
-            return ReturnType(True, 'rating popup is displayed')
-        else:
-            return ReturnType(False, 'rating popup is not present')
-
-    def get_selected_emoji_color(self, expected_color):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.star_option))
-        color_code = element.value_of_css_property('color')
-        return ReturnType(True, 'yellow color is displayed') if color_code == expected_color \
-            else ReturnType(False, 'color is doesnot match with expected color %s' % color_code)
-
-    def is_star_options_present_in_rating_popup(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.rating_options)):
-            return ReturnType(True, 'rating options are displayed')
-        else:
-            return ReturnType(False, 'rating options are not present')
-
-    def is_tutor_details_present_in_popup(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.tutor_avatar_in_feedback)) and \
-                self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
-            return ReturnType(True, 'tutor details are displayed')
-        else:
-            return ReturnType(False, 'tutor details are not present')
-
-    def is_selected_rating_option_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.selected_rating_option)):
-            return ReturnType(True, 'rating option is selected')
-        else:
-            return ReturnType(False, 'rating option is not selected')
-
-    def verify_the_what_did_you_like_text(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_element(('xpath', self.what_did_you_like_text))
-        if "What did you like the most?" in ele.text:
-            return ReturnType(True, 'the text in popup doesnt match')
-        else:
-            return ReturnType(False, 'the text in popup doesnt match')
-
-    def verify_multiple_selected_rating_options(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.selected_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_bad_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_okay_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_good_rating_option)) and \
-                self.obj.is_element_present(('xpath', self.selected_great_rating_option)):
-            return ReturnType(True, 'multiple rating options are selected')
-        else:
-            return ReturnType(False, 'multiple options can not be selected')
-
-    def verify_the_what_could_be_improved_text(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_element(('xpath', self.what_could_be_improved_text))
-        if "What could be improved?" in ele.text:
-            return ReturnType(True, 'the text in popup doesnt match')
-        else:
-            return ReturnType(False, 'the text in popup doesnt match')
-
-    def is_add_your_comments_box_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.comments_textbox)):
-            return ReturnType(True, 'comments box is displayed')
-        else:
-            return ReturnType(False, 'comments box is not displayed')
-
-    def raise_hand(self):
-        self.wait_for_element_visible(
-            (("xpath", self.raise_hand)))
-        self.get_element(("xpath", self.raise_hand)).click()
-
-    def unraise_hand(self):
-        if self.verify_hand_is_raised().result:
-            self.get_element(("xpath", self.raise_hand_text)).click()
-
-    def verify_lower_hand_text_is_displayed(self):
-        try:
-            text = self.get_element(("xpath", self.low_hand_text)).text
-            flag = 'You lowered your hand. Incase if you have any doubt, you can raise hand so that tutor can approach you.' == text
-            return ReturnType(True, "Lower hand message is shown and correct") if flag else ReturnType(False,
-                                                                                                       "Lower hand message is shown and not correct")
-        except:
-            ReturnType(False,
-                       "Lower hand message is not shown")
-
-    def verify_hand_is_raised(self):
-        try:
-            self.wait_for_element_visible(("xpath", self.raise_hand_text))
-            flag = self.get_element(("xpath", self.raise_hand_text)).is_displayed()
-            return ReturnType(True, "Hand is raised") if flag else ReturnType(False, "Hand is not raised")
-        except:
-            return ReturnType(False, "Hand is not raised")
-
-    def verify_wifi_off_inchat_displayed(self):
-        try:
-            flag = self.get_element(("xpath", "//div[@class='chatFooter']")).is_diplayed()
-            return ReturnType(True, "wifi off in chat box displayed") if flag else ReturnType(False,
-                                                                                              "wifi off in chat box not displayed")
-        except:
-            return ReturnType(False, "wifi off in chat box not displayed")
-
-    def current_student_has_video_enlarged(self):
-        try:
-
-            text = self.get_element(("xpath",
-                                     "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']"))
-            if text.lower() == 'you':
-                return ReturnType(True, "Current student has video enlarged")
-            else:
-                return ReturnType(False, "Current student has not video enlarged")
-        except:
-            return ReturnType(False, "Current student has not video enlarged")
-
-
     def tool_tip_message(self, message):
         try:
             tooltip_elements = self.get_elements(("xpath", "//span[@class = 'neo_cl_ToolTipText']"))
@@ -1357,111 +1205,19 @@ class NeoInClass(CommonMethodsWeb):
         except:
             pass
 
-
-
-    def is_continue_btn_enabled(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.continue_btn_in_rating_popup))
-        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
-        if 'Button--disabled' in parent_classname:
-            return ReturnType(False, 'continue button is disabled')
-        else:
-            return ReturnType(True, 'continue button is enabled')
-
-    # by default the cam and mic is 'on' so passing the parameters as cam and mic on
-
-    def join_neo_session_student(self, mic_status, cam_status):
-        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
-        time.sleep(2)
-        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
-        time.sleep(2)
-        self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
-        self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
-
-    def is_submit_btn_enabled(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.feedback_submit_btn))
-        parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
-        if 'Button--disabled' in parent_classname:
-            return ReturnType(False, 'submit button is disabled')
-        else:
-            return ReturnType(True, 'submit button is enabled')
-
-    def is_rating_popup_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.rating_popup_header)):
-            return ReturnType(True, 'rating popup is displayed')
-        else:
-            return ReturnType(False, 'rating popup is not present')
-
-    def get_selected_emoji_color(self, expected_color):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        element = self.obj.get_element(('xpath', self.star_option))
-        color_code = element.value_of_css_property('color')
-        return ReturnType(True, 'yellow color is displayed') if color_code == expected_color \
-            else ReturnType(False, 'color is doesnot match with expected color %s' % color_code)
-
-    def is_star_options_present_in_rating_popup(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.rating_options)):
-            return ReturnType(True, 'rating options are displayed')
-        else:
-            return ReturnType(False, 'rating options are not present')
-
-    def is_tutor_details_present_in_popup(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.tutor_avatar_in_feedback)) and \
-                self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
-            return ReturnType(True, 'tutor details are displayed')
-        else:
-            return ReturnType(False, 'tutor details are not present')
-
-    def is_selected_rating_option_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.selected_rating_option)):
-            return ReturnType(True, 'rating option is selected')
-        else:
-            return ReturnType(False, 'rating option is not selected')
-
-    def verify_the_what_did_you_like_text(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_element(('xpath', self.what_did_you_like_text))
-        if "What did you like the most?" in ele.text:
-            return ReturnType(True, 'the text in popup doesnt match')
-        else:
-            return ReturnType(False, 'the text in popup doesnt match')
-
-    def verify_multiple_selected_rating_options(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.selected_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_bad_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_okay_rating_option)) or \
-                self.obj.is_element_present(('xpath', self.selected_good_rating_option)) and \
-                self.obj.is_element_present(('xpath', self.selected_great_rating_option)):
-            return ReturnType(True, 'multiple rating options are selected')
-        else:
-            return ReturnType(False, 'multiple options can not be selected')
-
-    def verify_the_what_could_be_improved_text(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        ele = self.obj.get_element(('xpath', self.what_could_be_improved_text))
-        if "What could be improved?" in ele.text:
-            return ReturnType(True, 'the text in popup doesnt match')
-        else:
-            return ReturnType(False, 'the text in popup doesnt match')
-
-    def is_add_your_comments_box_present(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
-        if self.obj.is_element_present(('xpath', self.comments_textbox)):
-            return ReturnType(True, 'comments box is displayed')
-        else:
-            return ReturnType(False, 'comments box is not displayed')
-
-    def enter_comments_in_comments_box(self, text):
-        self.obj.wait_for_locator_webdriver(self.comments_textbox)
-        self.obj.enter_text(text, ('xpath', self.comments_textbox))
-
-    def enter_comments_in_comments_box(self, text):
-        self.obj.wait_for_locator_webdriver(self.comments_textbox)
-        self.obj.enter_text(text, ('xpath', self.comments_textbox))
+    def verify_ask_question_popup_is_displayed(self,
+                                               message='Tutor want to discuss doubt with you. Please turn on your mic and camera'):
+        try:
+            element = self.get_element(("xpath", "//div[@class = 'bottomContainer__profile']"))
+            flag = element.is_displayed()
+            text = self.get_element(("xpath", "//div[@class= 'bottomContainer__requestMessage']")).text
+            flag2 = message == text
+            elements = self.get_elements(("xpath",
+                                          "//div[@class = 'profileCard bottomContainer__profileCard bottomContainer__profileCard--main']"))
+            elements += self.get_elements(("xpath",
+                                           "//div[@class = 'profileCard bottomContainer__profileCard bottomContainer__profileCard--sec']"))
+            flag3 = len(elements) > 0
+            return ReturnType(True, "Ask question pop is verified and correct") if all(
+                (flag, flag2, flag3)) else ReturnType(False, "Ask question pop is not correct or displayed")
+        except:
+            return ReturnType(False, "Ask question pop is not correct or displayed")

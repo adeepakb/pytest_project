@@ -319,8 +319,6 @@ class NeoTute(CommonMethodsWeb):
             try:
                 self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
                 self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
-                self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
-                self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
                 break
             except (NoSuchElementException, ElementNotInteractableException):
                 timeout -= 5

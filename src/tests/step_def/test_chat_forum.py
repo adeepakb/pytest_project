@@ -220,7 +220,7 @@ def step_impl(neo_in_class):
     check.equal(detail.result, True, detail.reason)
 
 
-@then("verify student chat is left alligned")
+@then("verify student chat is right alligned")
 def step_impl(neo_in_class):
     neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
 

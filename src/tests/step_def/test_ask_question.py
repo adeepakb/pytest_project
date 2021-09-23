@@ -113,7 +113,7 @@ def step_impl(test_tut):
 
 @when("tutor allows student to ask question")
 def step_impl(test_tut):
-    test_tut.click_on_menu_option(expected_student_name= "Test 4",menu_item= "Ask Question")
+    test_tut.click_on_menu_option(expected_student_name= "Swastika1",menu_item= "Ask Question")
 
 
 @given("another second student joins the session")
@@ -201,3 +201,39 @@ def step_impl(neo_in_class):
     details = neo_in_class.is_tutor_video_on()
     check.equal(details.result, True, details.reason)
 
+
+@then("ask question pop up is displayed")
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_ask_question_popup_is_displayed()
+    check.equal(details.result, True, details.reason)
+
+
+@then("verify tutor name is shown in tutor box")
+def step_impl(neo_in_class):
+    detail = neo_in_class.verify_chat_elements_element_wise(element_type=  "Tutor name")
+    check.equal(detail.result, True, detail.reason)
+    detail = neo_in_class.verify_chat_elements_element_wise(element_type="Tutor tag")
+    check.equal(detail.result, True, detail.reason)
+
+
+@then("Verify that students count besides chat Forum.")
+def step_impl(neo_in_class):
+    neo_in_class.verify_chat_elements_element_wise(element_type='students count')
+
+
+@when("tutor types the chat")
+def step_impl(test_tut):
+    test_tut.send_message_in_chat(text="Hi I am tutor")
+
+
+@when("student sends chat message")
+def step_impl(neo_in_class):
+    neo_in_class.send_chat(text="Hi I am student")
+
+
+@then("verify live chat by tutor and student")
+def step_impl(neo_in_class):
+    detail = neo_in_class.verify_tutor_messages_are_left_alligned(text="Hi I am tutor")
+    check.equal(detail.result, True, detail.reason)
+    details = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
+    check.equal(details.result, True, details.reason)
