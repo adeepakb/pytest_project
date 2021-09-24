@@ -50,6 +50,8 @@ def capture_screenshot(request, feature_name):
     driver.get_screenshot_as_file(screenshot_filename)
     return screenshot_filename
 
+
+
 @pytest.fixture()
 def driver(request):
     platform_list = request.config.getoption("--platform")
