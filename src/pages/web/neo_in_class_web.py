@@ -30,6 +30,8 @@ class NeoInClass(CommonMethodsWeb):
         self.chrome_options = Options()
         # self.chrome_options.add_argument('--no-sandbox')
         # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
@@ -43,6 +45,14 @@ class NeoInClass(CommonMethodsWeb):
         self.blank_slide = "//div[contains(@class,'presentation__slide--blank')]"
         self.presentation_container = "//div[contains(@class,'presentation__container')]"
         self.presentation_text_area = "//textarea[@class='readonly-textarea']"
+        self.student_card_names = "//div[contains(@class,'neo_cl_StreamCard__name')]"
+        self.neo_presentation = "//div[@class='presentation']"
+        self.full_screen_toggle ="//div[contains(@class,'presentation__fullScreenToggle')]"
+        self.class_info_popup = "//div[@class='classInfo__infoPopup']"
+        self.class_info_popup_tutor_name = "//div[@class='classInfo__tutorName']"
+        self.class_info_popup_topic_name = "//div[@class='classInfo__topicName']"
+        self.class_info_popup_date_time = "//div[@class='classInfo__dateTime']"
+        self.class_info_popup_desc = "//div[@class='classInfo__desc']"
 
         self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
         self.hand_raised_icon = "//div[text()='Hand raised']"
@@ -55,7 +65,7 @@ class NeoInClass(CommonMethodsWeb):
         self.student_video_off_by_tutor = '//img[contains(@src,"/static/media/camera-off-gray-icon")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_audio_off_by_tutor = '//img[contains(@src,"/static/media/mic_off_icon_gray")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.session_topic_inclass = "//div[contains(@class,'classInfo__text classInfo__text--mobileTxt')]"
-        self.session_topic_icon = "//div[contains(@class,'classInfo__infoIcon')]"
+        self.class_info_icon = "//div[contains(@class,'classInfo__infoIcon')]"
         self.facing_issues_btn = "//span[text()='Facing issues?']"
         self.student_exit_class = "//span[text()='Exit class']"
         self.facing_issue_header = '//div[@class="reportIssue__header"]'
@@ -146,7 +156,6 @@ class NeoInClass(CommonMethodsWeb):
         self.what_did_you_like_text = "//div[text()='What did you like the most?']"
         self.what_could_be_improved_text = "//div[text()='What could be improved?']"
 
-
         self.join_btn = "//span[text()='JOIN']"
         self.comments_textbox = '//*[@placeholder="Add your comments here"]'
         self.star_option = '//img[@alt="Terrible"]'
@@ -183,19 +192,18 @@ class NeoInClass(CommonMethodsWeb):
     # streamCardContainer
     def get_all_student_names(self):
         student_names = []
-        cards = self.obj.get_elements(('xpath', self.student_cards))
+        cards = self.obj.get_elements(('xpath', self.student_card_names))
         for card in cards:
-            student_name = card.text
+            student_name = card.get_attribute('innerHTML')
             student_names.append(student_name)
-        print(student_names)
         return student_names
 
     def get_student_video_status(self):
         student_video_status = {}
-        cards = self.obj.get_elements(('xpath', self.student_cards))
+        cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
-            student_name = cards[i].text
+            student_name = cards[i].get_attribute('innerHTML')
             stream_id = video_cards[i].get_attribute('id')
             try:
                 self.obj.get_element(
@@ -207,10 +215,10 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_audio_status(self):
         student_audio_status = {}
-        cards = self.obj.get_elements(('xpath', self.student_cards))
+        cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
-            student_name = cards[i].text
+            student_name = cards[i].get_attribute('innerHTML')
             stream_id = video_cards[i].get_attribute('id')
             try:
                 self.obj.get_element(('xpath',
@@ -228,7 +236,7 @@ class NeoInClass(CommonMethodsWeb):
         profile_card_details = []
         cards = self.obj.get_elements(('xpath', "//div[contains(@class,'profileCard bottomContainer')]"))
         for card in cards:
-            student_name = card.text
+            student_name = card.get_attribute('innerHTML')
             if student_name == '':
                 profile_pic_src = card.find_element_by_xpath(".//img").get_attribute("src")
                 profile_card_details.append(profile_pic_src)
@@ -246,11 +254,17 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.focus_mode_icon))
 
     def focus_mode_class_info(self):
+        element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
+        hover = self.action.move_to_element(element_to_hover_over)
+        hover.perform()
         class_info = []
         info_elements = self.obj.get_elements(('xpath', "//div[contains(@class,'classInfo__text')]"))
         for element in info_elements:
             class_info.append(element.text)
         return class_info
+
+    def focus_mode_switch_present(self):
+        return self.obj.is_element_present(('xpath', "//div[@class='focus-mode-container']/label[@class='switch']"))
 
     def is_full_screen_presentation_present(self):
         self.obj.wait_for_locator_webdriver(self.full_screen_presentation)
@@ -260,6 +274,22 @@ class NeoInClass(CommonMethodsWeb):
         title = self.obj.get_element(('xpath', self.toast_container_title)).text
         subtitle = self.obj.get_element(('xpath', self.toast_container_subtitle)).text
         return [title, subtitle]
+
+    def focus_mode_bottom_container_not_active(self):
+        element = self.obj.get_element(('xpath', "//section[contains(@class,'insideClass__bottomContainer--fullScreenMode')]"))
+        index = element.value_of_css_property('z-index')
+        position = element.value_of_css_property('position')
+        background_color = element.value_of_css_property('background-color')  # transparent - rgba(0, 0, 0, 0)
+        return ReturnType(True, 'bottom container controls are not active on screen') if all([position == 'fixed',background_color =='rgba(0, 0, 0, 0)', index == '4']) \
+            else ReturnType(False, 'bottom container controls are still active on screen')
+
+    def focus_mode_transition(self):
+        element = self.obj.get_element(('xpath', "//section[contains(@class,'insideClass__bottomContainer--fullScreenMode')]"))
+        try:
+            transition_value = element.value_of_css_property('transition')
+            return transition_value
+        except:
+            return False
 
     # whiteboard
     def is_blank_slide_present(self):
@@ -280,9 +310,9 @@ class NeoInClass(CommonMethodsWeb):
         return True if (text in actual_text_whiteboard) else False
 
     # parameter :expected_colors_list like ['rgba(255, 199, 0, 1)']
-    def verify_colors_in_student_whiteboard(self,expected_colors_list):
+    def verify_colors_in_student_whiteboard(self, expected_colors_list):
         self.obj.wait_for_locator_webdriver(self.presentation_text_area)
-        elements = self.obj.get_elements(('xpath',self.presentation_text_area))
+        elements = self.obj.get_elements(('xpath', self.presentation_text_area))
         flag = False
         for expected_color in expected_colors_list:
             for element in elements:
@@ -293,9 +323,9 @@ class NeoInClass(CommonMethodsWeb):
         return flag
 
     # parameter :expected_shapes_list like ['circle', 'square', 'rectangle', 'triangle']
-    def verify_shapes_in_student_whiteboard(self,expected_shapes_list):
+    def verify_shapes_in_student_whiteboard(self, expected_shapes_list):
         self.obj.wait_for_locator_webdriver(self.blank_slide)
-        element = self.obj.get_element(('xpath',self.presentation_container))
+        element = self.obj.get_element(('xpath', self.presentation_container))
         shapes_list = self.obj.detect_shapes(element)
         return True if (set(shapes_list) == set(expected_shapes_list)) else False
 
@@ -310,17 +340,20 @@ class NeoInClass(CommonMethodsWeb):
             return True
         else:
             self.obj.element_click(('xpath', self.handraise_icon))
+            self.obj.wait_for_locator_webdriver(self.hand_raised_icon)
             return self.obj.is_element_present(('xpath', self.hand_raised_icon))
 
     def verify_lower_hand_tooltip(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
         if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
             self.obj.element_click(('xpath', self.hand_raised_icon))
+            self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
             return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
         else:
             self.obj.is_element_present(('xpath', self.handraise_icon))
             self.obj.element_click(('xpath', self.handraise_icon))
             self.obj.element_click(('xpath', self.hand_raised_icon))
+            self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
             return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
 
     def is_thumb_icon_present(self):
@@ -345,7 +378,7 @@ class NeoInClass(CommonMethodsWeb):
     def get_the_no_of_elements(self):
         ele = self.obj.get_elements(('xpath', "//script[@type='text/javascript' and @rel = 'nofollow' and contains(@src,'type=push')]"))
         return len(ele)
-        time.sleep(1)
+
 
 
     def is_celebrations_icons_present(self):
@@ -373,22 +406,7 @@ class NeoInClass(CommonMethodsWeb):
             self.action.move_to_element(option).click().perform()
             self.obj.wait(1)
         except:
-            check.equal(False, True, "Couldn't click on the option")
-
-    def is_kebab_menu_present(self):
-        # self.obj.wait_for_locator_webdriver(self.kebab_menu)
-        # return self.obj.is_element_present(('xpath', self.kebab_menu))
-        flag = self.obj.is_element_present(('xpath', self.kebab_menu))
-        return ReturnType(True, 'Extra tips present') if flag \
-        else ReturnType(False, 'Extra tips is not present')
-
-    def click_on_kebab_menu(self):
-        self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
-        self.obj.element_click(('xpath', self.kebab_menu))
-
-    def is_facing_issues_option_present(self):
-        self.obj.wait_for_locator_webdriver(self.facing_issues_btn)
-        return self.obj.is_element_present(('xpath', self.facing_issues_btn))
+            return False
 
     def is_exit_class_btn_present(self):
         self.obj.wait_for_locator_webdriver(self.student_exit_class)
@@ -401,7 +419,7 @@ class NeoInClass(CommonMethodsWeb):
     def verify_header_in_exit_class_popup(self):
         self.obj.wait_for_locator_webdriver(self.header_text_in_exit_popup)
         ele = self.obj.get_element(('xpath', self.header_text_in_exit_popup)).text
-        assert "Are you sure you want to end the class?" in ele, "the text in popup doesn't match"
+        return True if "Are you sure you want to end the class?" in ele else False
 
     def is_exit_image_in_exit_popup_present(self):
         self.obj.wait_for_locator_webdriver(self.exit_img_in_exit_popup)
@@ -415,9 +433,26 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.exit_class_in_exit_popup)
         return self.obj.is_element_present(('xpath', self.exit_class_in_exit_popup))
 
+    def click_on_stayback_in_exit_popup(self):
+        self.obj.wait_for_locator_webdriver(self.stayback_in_exit_popup)
+        return self.obj.element_click(('xpath', self.stayback_in_exit_popup))
+
     def click_on_exit_class_in_exit_popup(self):
-        self.obj.wait_for_clickable_element_webdriver(self.exit_class_in_exit_popup)
-        self.obj.element_click(('xpath', self.exit_class_in_exit_popup))
+        self.obj.wait_for_locator_webdriver(self.exit_class_in_exit_popup)
+        return self.obj.element_click(('xpath', self.exit_class_in_exit_popup))
+
+    # facing issues
+    def is_kebab_menu_present(self):
+        self.obj.wait_for_locator_webdriver(self.kebab_menu)
+        return self.obj.is_element_present(('xpath', self.kebab_menu))
+
+    def click_on_kebab_menu(self):
+        self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
+        self.obj.element_click(('xpath', self.kebab_menu))
+
+    def is_facing_issues_option_present(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issues_btn)
+        return self.obj.is_element_present(('xpath', self.facing_issues_btn))
 
     def button_click(self, text):
         self.obj.button_click(text)
@@ -434,6 +469,11 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
         return self.obj.is_element_present(('xpath', self.helpline_no_in_facing_issue))
 
+    def verify_issue_popup_present(self):
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        ele = self.obj.get_element(('xpath', self.facing_issue_header)).text
+        return True if "Choose the issue you are facing" in ele and self.obj.is_element_present(('xpath', "//div[@class='reportIssue']"))  else False
+
     def select_any_option_in_facing_issue(self, string_val):
         options = self.obj.get_elements(self.facing_issue_options)
         for option in options:
@@ -442,7 +482,8 @@ class NeoInClass(CommonMethodsWeb):
                 break
 
     def verify_issue_checked(self, expected_issue):
-        return ReturnType(True, 'Student able to select issue') if self.obj.get_element(('xpath', self.checked_issue_text)).text == expected_issue \
+        return ReturnType(True, 'Student able to select issue') if self.obj.get_element(
+            ('xpath', self.checked_issue_text)).text == expected_issue \
             else ReturnType(False, 'Unable to select radio button for issue %s' % expected_issue)
 
     def verify_bold_font_selected_issue(self):
@@ -495,8 +536,7 @@ class NeoInClass(CommonMethodsWeb):
     def verify_text_above_report_btn(self):
         self.obj.wait_for_locator_webdriver(self.facing_issue_header)
         ele = self.obj.get_element(('xpath', self.issue_still_persists_text)).text
-        flag = "Issue still Persists?" in ele
-        check.equal(flag, True, "the text in popup doesn't match")
+        return True if "Issue still Persists?" in ele else False
 
     def scroll_down_facing_issues_popup(self, length):
         self.driver.execute_script("arguments[0].scrollIntoView(true);",
@@ -518,55 +558,58 @@ class NeoInClass(CommonMethodsWeb):
     def click_on_report_now_btn(self):
         self.obj.element_click(('xpath', self.report_now_btn))
 
-    def is_email_icon_present(self):
+    def is_email_icon_present_and_text(self):
         self.obj.wait_for_locator_webdriver(self.email_icon)
-        return self.obj.is_element_present(('xpath',self.email_icon))
+        value = self.obj.get_element(('xpath', "//div[@class='reportIssue__submitted']/p")).text
+        return [self.obj.is_element_present(('xpath',self.email_icon)),value]
 
     def submitted_popup_disappear(self):
-        self.obj.wait_for_invisibility_of_element(('xpath',"//*[@class='timeRemaining']"),10)
-        return self.obj.is_element_present(('xpath',"//*[@class='reportIssue__submitted']"))
+        self.obj.wait_for_invisibility_of_element(('xpath', "//*[@class='timeRemaining']"), 10)
+        return self.obj.is_element_present(('xpath', "//*[@class='reportIssue__submitted']"))
 
     def page_refresh_issue_popup_disappear(self):
         self.obj.page_refresh()
-        return self.obj.is_element_present(('xpath',self.facing_issue_header))
+        return self.obj.is_element_present(('xpath', self.facing_issue_header))
 
     def page_refresh_issue_submitted_issue_popup_disappear(self):
         self.obj.page_refresh()
-        return self.obj.is_element_present(('xpath',"//*[@class='reportIssue__submitted']"))
+        return self.obj.is_element_present(('xpath', "//*[@class='reportIssue__submitted']"))
 
     def get_inclass_student_video_status(self):
-        student_video_status = {}
         self.obj.wait_for_locator_webdriver(self.student_video)
-        try:
-            if self.obj.is_element_present(('xpath', self.student_video_off)):
-                student_video_status["video_disbled_desc"] = "off by student"
-                student_video_status["video_disbled_status"] = False
-                return student_video_status
-            elif self.obj.is_element_present(('xpath', self.student_video_off_by_tutor)):
-                student_video_status["video_disbled_desc"] = "off by tutor"
-                student_video_status["video_disbled_status"] = False
-                return student_video_status
-        except(NoSuchElementException):
-            student_video_status["video_disbled_desc"] = "on by student"
-            student_video_status["video_disbled_status"] = True
-            return student_video_status
+        if self.obj.is_element_present(('xpath', self.student_video_off_by_tutor)):
+            return "DISABLED"
+        elif self.obj.is_element_present(('xpath', self.student_video_off)):
+            return "OFF"
+        else:
+            return "ON"
 
     def get_inclass_student_audio_status(self):
-        student_audio_status = {}
         self.obj.wait_for_locator_webdriver(self.student_audio)
-        try:
-            if self.obj.is_element_present(('xpath', self.student_audio_off)):
-                student_audio_status["video_disbled_desc"] = "off by student"
-                student_audio_status["video_disbled_status"] = False
-                return student_audio_status
-            elif self.obj.is_element_present(('xpath', self.student_audio_off_by_tutor)):
-                student_audio_status["video_disbled_desc"] = "off by tutor"
-                student_audio_status["video_disbled_status"] = False
-                return student_audio_status
-        except(NoSuchElementException):
-            student_audio_status["video_disbled_desc"] = "on by student"
-            student_audio_status["video_disbled_status"] = True
-            return student_audio_status
+        if self.obj.is_element_present(('xpath', self.student_audio_off_by_tutor)):
+            return "DISABLED"
+        elif self.obj.is_element_present(('xpath', self.student_audio_off)):
+            return "OFF"
+        else:
+            return "ON"
+
+    def click_on_inclass_audio_icon(self):
+        audio_icon = self.obj.get_element(("xpath", self.student_audio))
+        audio_icon.click()
+
+    def click_on_inclass_video_icon(self):
+        video_icon = self.obj.get_element(("xpath", self.student_video))
+        video_icon.click()
+
+    def turn_on_off_student_mic(self, action):
+        audio_status = self.get_inclass_student_audio_status()
+        if all([audio_status != action, audio_status != 'DISABLED']):
+            self.click_on_inclass_audio_icon()
+
+    def turn_on_off_student_video(self, action):
+        video_status = self.get_inclass_student_video_status()
+        if all([video_status != action, video_status != 'DISABLED']):
+            self.click_on_inclass_video_icon()
 
     def hover_on_inclass_audio_icon(self):
         audio_icon = self.obj.get_element(("xpath", self.student_audio))
@@ -601,21 +644,43 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.mic_disabled_tooltip))
 
     # session details
-
     def is_session_topic_inclass_present(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
         return self.obj.is_element_present(('xpath', self.session_topic_inclass))
 
-    def verify_session_topic_name_inclass(self, topictext):
+    def get_session_topic_name_inclass(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
         topic = self.obj.get_element(('xpath', self.session_topic_inclass)).text
-        element_topic = topic.split(": ")
-        flag = topictext == element_topic[1]
-        check.equal(flag, True, "topic is different")
+        subject_topic = topic.split(": ")
+        return [subject_topic[0],subject_topic[1]]
 
     def is_session_topic_icon_present(self):
-        self.obj.wait_for_locator_webdriver(self.session_topic_icon)
-        return self.obj.is_element_present(('xpath', self.session_topic_icon))
+        self.obj.wait_for_locator_webdriver(self.class_info_icon)
+        return self.obj.is_element_present(('xpath', self.class_info_icon))
+
+    def click_on_class_info_icon(self):
+        self.obj.wait_for_locator_webdriver(self.class_info_icon)
+        self.obj.element_click(('xpath', self.class_info_icon))
+
+    def get_classinfo_popup_session_details(self):
+        class_info_details_dict = {}
+        self.obj.wait_for_locator_webdriver(self.class_info_popup_topic_name)
+        tutor_name = self.obj.get_element(('xpath', self.class_info_popup_tutor_name)).text
+        class_info_details_dict.update({"Tutor": tutor_name})
+        subject_topic = self.obj.get_element(('xpath', self.class_info_popup_topic_name)).text
+        elements = subject_topic.split(": ")
+        class_info_details_dict.update({"Subject": elements[0],"Topic": elements[1]})
+        session_date_time = self.obj.get_element(('xpath', self.class_info_popup_date_time)).text
+        class_info_details_dict.update({"Session Time": session_date_time})
+        session_desc = self.obj.get_element(('xpath', self.class_info_popup_desc)).text
+        class_info_details_dict.update({"Session Description": session_desc})
+        return class_info_details_dict
+
+    def tap_outside_dialog_layout(self):
+        self.action.move_by_offset(100, 100).click().perform()
+
+    def is_class_info_popup_present(self):
+        self.obj.is_element_present(('xpath', self.class_info_popup))
 
     # rating popup
     def verify_header_in_rating_popup(self):
@@ -731,6 +796,73 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(False, "Video is not being presented")
 
+    # video session
+    def video_alignment(self):
+        try:
+            self.obj.wait_for_locator_webdriver(self.neo_presentation)
+            alignment = self.obj.get_element(('xpath', self.neo_presentation)).value_of_css_property('justify-content')
+            if alignment == 'center':
+                return ReturnType(True, "Video is center aligned as expected")
+            else:
+                return ReturnType(False, "Video is not center aligned as expected")
+        except NoSuchElementException:
+            return ReturnType(False, "Alignment property is not found")
+
+    def verify_presentation_dimension_ratio(self):
+        self.obj.wait_for_locator_webdriver(self.presentation_container)
+        presentation_container = self.driver.find_element_by_xpath(self.presentation_container)
+        size = presentation_container.size
+        canvas_width = int(size['width'])
+        canvas_height = int(size['height'])
+        ratio = format(canvas_width / canvas_height, ".2f")
+        return ReturnType(True, "slide displayed on the whiteboard is of size 16:9") if any([ratio == format(16 / 9, ".2f")]) else \
+            ReturnType(False, "slide displayed on the whiteboard is not of size 16:9")
+
+    def hover_over_full_screen_toggle(self):
+        element_to_hover_over = self.obj.get_element(("xpath", self.full_screen_toggle))
+        hover = self.action.move_to_element(element_to_hover_over)
+        hover.perform()
+
+    def get_full_screen_toggle_visibility(self):
+        self.obj.wait_for_locator_webdriver(self.neo_presentation)
+        full_screen_toggle_elt = self.obj.get_element(('xpath', self.full_screen_toggle))
+        visibility = full_screen_toggle_elt.value_of_css_property('visibility')
+        return visibility
+
+    def is_minimize_full_screen_present(self):
+        return self.obj.is_element_present(("xpath","//div[@class='iconWrapper icon icon--whitebg icon--marginLeft icon--lightBlack']"))
+
+    def get_video_src(self):
+        video_url = self.driver.find_element_by_xpath("//div[@class='shaka-video-container']/video")
+        video_src = video_url.get_attribute("src")
+        print(video_src)
+        return video_src
+
+    def hover_over_and_verify_bottom_container_focus_mode(self):
+        element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
+        hover = self.action.move_to_element(element_to_hover_over)
+        hover.perform()
+        flag1 = self.is_hand_raise_icon_present()
+        flag2 = self.is_thumb_icon_present()
+        flag3 = self.is_kebab_menu_present()
+        flag4 = self.is_turn_off_camera_tooltip_present()
+        return ReturnType(True, "hover over presentation it shows all controls; camera, Raise/Lower hand thumbs up icon and menu option") \
+            if any((flag1, flag2, flag3, flag4)) else ReturnType(False, "hover over presentation it shows all controls")
+
+    def hover_over_and_verify_bottom_container_full_screen(self):
+        element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
+        hover = self.action.move_to_element(element_to_hover_over)
+        hover.perform()
+        flag1 = self.is_hand_raise_icon_present()
+        flag2 = self.is_thumb_icon_present()
+        flag3 = self.is_kebab_menu_present()
+        flag4 = self.is_turn_on_camera_tooltip_present()
+        flag5 = self.is_turn_off_mic_tooltip_present()
+        return ReturnType(True, "hover over presentation it shows all controls; camera, mic, Raise/Lower hand, "
+                                "thumbs up icon and menu option") \
+            if any((flag1, flag2, flag3,flag4,flag5)) else ReturnType(False, "Bottom container controls are not "
+                                                                                   "shown on hover over presentation")
+
     def is_presentation_displayed(self):
         flag1 = self.is_image_presented().result
         flag2 = self.is_blank_screen_presented().result
@@ -743,9 +875,9 @@ class NeoInClass(CommonMethodsWeb):
         self.action.move_to_element(maximize_icon).click().perform()
 
     def minimize_full_screen_presentation(self):
-        maximize_icon = self.obj.get_element(
-            ("xpath", "//div[@class='iconWrapper icon icon--whitebg icon--marginLeft icon--lightBlack']"))
-        self.action.move_to_element(maximize_icon).click().perform()
+        self.obj.get_element(('xpath', self.presentation_container)).click()
+        minimize_icon = self.obj.get_element(("xpath", "//img[contains(@src,'/static/media/fullscreenOn')]"))
+        minimize_icon.click()
 
     def are_emojis_displayed(self):
         try:
@@ -859,7 +991,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
 
         elif element_type.lower() == 'tutor thumbnail':
-            flag = self.get_element(("xpath",self.tutor_thumbnail)).is_deplayed()
+            flag = self.get_element(("xpath", self.tutor_thumbnail)).is_deplayed()
             return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
                                                                                          "Tutor thumbnail is shown ")
 
@@ -876,25 +1008,25 @@ class NeoInClass(CommonMethodsWeb):
     def is_tutor_video_on(self):
         elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
         try:
-            child_element = self.obj.get_child_element(elements[1], "xpath", ".//*[@class='iconWrapper__icon']")
-            flag = self.action.move_to_element(child_element).click().perform()
-            flag2 = self.obj.get_child_element(elements[1], "xpath",
-                                               ".//*[@class='iconWrapper__icon']").is_displayed()
-            return ReturnType(True, "Tutor  Video is on.") if not flag2 else ReturnType(False,
-                                                                                        "Tutor  Video is not on.")
-        except:
-            return ReturnType(True, "Tutor  Video is  on. except")
+            for element in elements:
+                if "camera-off" in element.get_attribute("innerHTML"):
+                    return ReturnType(False, "Tutor camera is off")
 
-    def is_tutor_unmute(self):
-        try:
-            elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
-            child_element = self.obj.get_child_element(elements[0], "xpath", ".//*[@class='iconWrapper__icon']")
-            flag = self.action.move_to_element(child_element).click().perform()
-            flag2 = self.obj.get_child_element(elements[0], "xpath",
-                                               ".//*[@class='iconWrapper__icon']").is_displayed()
-            return ReturnType(False, "Tutor is not unmute.") if flag2 else ReturnType(True, "Tutor is unmute")
+            return ReturnType(True, "Tutor camera is on")
         except:
-            return ReturnType(True, "Tutor is unmute. except")
+            return ReturnType(True, "Tutor camera is on")
+
+    def is_tutor_mute(self):
+
+        elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
+        try:
+            for element in elements:
+                if "mic_off" in element.get_attribute("innerHTML"):
+                    return ReturnType(True, "Tutor  is mute")
+
+            return ReturnType(False, "Tutor is unmute")
+        except:
+            return ReturnType(False, "Tutor is unmute")
 
     def get_no_of_students_card(self):
         elements = self.obj.get_elements(("xpath", "//div[@class='streamList__streamItem']"))
@@ -910,9 +1042,9 @@ class NeoInClass(CommonMethodsWeb):
 
             for element in elements:
                 name = self.obj.get_child_element(element, "xpath",
-                                              './/div[@class="streamNameClass neo_cl_StreamCard__name '
-                                              'neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded '
-                                              'neo_cl_StreamCard__name--remote"]').text
+                                                  './/div[@class="streamNameClass neo_cl_StreamCard__name '
+                                                  'neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded '
+                                                  'neo_cl_StreamCard__name--remote"]').text
                 names.append(name)
 
             my_name = self.obj.get_child_element(
@@ -942,6 +1074,11 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(False, "Audio is off")
 
+    def set_wifi_connection_off(self):
+        self.obj.set_wifi_connection_off()
+
+    def set_wifi_connection_on(self):
+        self.obj.set_wifi_connection_on()
 
     def navigate_to_byjus_classes_screen(self):
         self.wait_for_element_visible(("xpath", self.home_byjus_classes_button))
@@ -1064,92 +1201,28 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, "Current student has not video enlarged")
 
     def hover_over_info_button(self):
-        self.wait_for_element_visible(("xpath", self.session_topic_icon))
-        self.element_click(("xpath", self.session_topic_icon))
+        self.wait_for_element_visible(("xpath", self.class_info_icon))
+        self.element_click(("xpath", self.class_info_icon))
 
     def hover_over_reaction_button(self):
-        elements = self.get_elements(("xpath","//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+        elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
         self.action.move_to_element(elements[1]).perform()
 
-
-
-    def verify_info_pop_up(self):
+    def verify_info_pop_up(self, subject_name='Biology: Control and Coordination'):
         try:
             flag = self.get_element(("xpath", "//div[@class = 'classInfo__infoPopup']")).is_displayed()
             text = self.get_element(("xpath", "//div[@class = 'classInfo__topicName']")).text
-            flag2 = (text == 'Biology: Control and Coordination')
+            flag2 = (text == subject_name)
             flag3 = self.get_element(("xpath", "//div[@class = 'classInfo__dateTime']")).is_displayed()
 
             return ReturnType(True, " info popup elements are correct and shown") if all((flag3, flag2,
-                                                                                         flag)) else ReturnType(False,
-                                                                                                               "info "
-                                                                                                               "popup "
-                                                                                                               "elements are incorrect or not shown")
+                                                                                          flag)) else ReturnType(False,
+                                                                                                                 "info "
+                                                                                                                 "popup "
+                                                                                                                 "elements are incorrect or not shown")
 
         except:
             return ReturnType(False, "info popup elements are incorrect or not shown")
-
-
-    def tool_tip_message(self,message):
-        try:
-            tooltip_elements = self.get_elements(("xpath", "//span[@class = 'neo_cl_ToolTipText']"))
-            selected_tool_tip_element = None
-            for element in tooltip_elements:
-                if element.text == message:
-                    selected_tool_tip_element = element
-                    break
-            flag = selected_tool_tip_element.is_displayed()
-            return ReturnType(True, "Tool tip message {}  is being shown".format(message)) if flag else ReturnType(False, "Tool tip message {}  is not being shown".format(message))
-        except:
-            return ReturnType(False, "Tool tip message {}  is not being shown".format(message))
-
-
-    def turn_on_mic(self):
-        try:
-            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
-            elements = self.get_elements(("xpath","//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
-            for element in elements:
-                if "mic-off" in element.get_attribute("innerHTML"):
-                    element.click()
-                    break
-
-        except:
-            pass
-
-    def turn_on_camera(self):
-        try:
-            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
-            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
-            for element in elements:
-                if "cam-off" in element.get_attribute("innerHTML"):
-                    element.click()
-                    break
-        except:
-            pass
-
-
-    def turn_off_mic(self):
-        try:
-            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
-            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
-            for element in elements:
-                if "mic-on" in element.get_attribute("innerHTML"):
-                    element.click()
-                    break
-        except:
-            pass
-
-
-    def turn_off_camera(self):
-        try:
-            self.wait_for_element_visible(("xpath","//img[@class = 'iconWrapper__icon']"))
-            elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
-            for element in elements:
-                if "cam-on" in element.get_attribute("innerHTML"):
-                    element.click()
-                    break
-        except:
-            pass
 
     def is_continue_btn_enabled(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
@@ -1160,7 +1233,7 @@ class NeoInClass(CommonMethodsWeb):
         else:
             return ReturnType(True, 'continue button is enabled')
 
-#by default the cam and mic is 'on' so passing the parameters as cam and mic on
+    # by default the cam and mic is 'on' so passing the parameters as cam and mic on
 
     def join_neo_session_student(self, mic_status, cam_status):
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
@@ -1204,7 +1277,7 @@ class NeoInClass(CommonMethodsWeb):
     def is_tutor_details_present_in_popup(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
         if self.obj.is_element_present(('xpath', self.tutor_avatar_in_feedback)) and \
-            self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
+                self.obj.is_element_present(('xpath', self.tutor_name_in_feedback)):
             return ReturnType(True, 'tutor details are displayed')
         else:
             return ReturnType(False, 'tutor details are not present')
@@ -1293,3 +1366,59 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.page_refresh()
         self.join_neo_session_student(mic_status, cam_status)
 
+
+
+    def tool_tip_message(self, message):
+        try:
+            tooltip_elements = self.get_elements(("xpath", "//span[@class = 'neo_cl_ToolTipText']"))
+            selected_tool_tip_element = None
+            for element in tooltip_elements:
+                if element.text == message:
+                    selected_tool_tip_element = element
+                    break
+            flag = selected_tool_tip_element.is_displayed()
+            return ReturnType(True, "Tool tip message {}  is being shown".format(message)) if flag else ReturnType(
+                False, "Tool tip message {}  is not being shown".format(message))
+        except:
+            return ReturnType(False, "Tool tip message {}  is not being shown".format(message))
+
+    def turn_on_off_mic(self, status):
+        try:
+            if status.lower() == 'on':
+                self.wait_for_element_visible(("xpath", "//img[@class = 'iconWrapper__icon']"))
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+                for element in elements:
+                    if "mic-off" in element.get_attribute("innerHTML"):
+                        element.click()
+                        break
+            else:
+                self.wait_for_element_visible(("xpath", "//img[@class = 'iconWrapper__icon']"))
+                elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
+                for element in elements:
+                    if "mic-on" in element.get_attribute("innerHTML"):
+                        element.click()
+                        break
+
+        except:
+            pass
+
+    def turn_on_off_camera(self, status):
+        try:
+            if status.lower() == 'on':
+                self.wait_for_element_visible(("xpath", "//img[@class = 'iconWrapper__icon']"))
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
+                for element in elements:
+                    if "cam-off" in element.get_attribute("innerHTML"):
+                        element.click()
+                        break
+            else:
+                self.wait_for_element_visible(("xpath", "//img[@class = 'iconWrapper__icon']"))
+                elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--on']"))
+                for element in elements:
+                    if "cam-on" in element.get_attribute("innerHTML"):
+                        element.click()
+                        break
+        except:
+            pass

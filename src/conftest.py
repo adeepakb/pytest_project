@@ -198,12 +198,6 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     else:
         msg_body = "all steps are passed"
         update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)
-    file = '../../config/chrome_session.json'
-    try:
-        os.unlink(file)
-    except FileNotFoundError:
-        pass
-
 
 def pytest_sessionfinish():
     for file in ['../../config/login.pkl', '../../config/chrome_session.json']:

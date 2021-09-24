@@ -505,7 +505,7 @@ class NeoTute(CommonMethodsWeb):
 
     def join_a_neo_session_as_tutor(self, **kwargs):
         db = kwargs['db']
-        self.wait_for_element_visible(self.chrome_driver, self.neo_dashborad_class, timeout=50)
+        self.wait_for_element_visible(("xpath", self.neo_dashborad_class), timeout=50)
         sessions = self.get_element(self.neo_dashborad_class)
         for session in sessions:
             try:
@@ -652,6 +652,8 @@ class NeoTute(CommonMethodsWeb):
             ReturnType(True,
                        "video full screen is being displayed")
 
+
+
     def maximize_video(self):
         try:
             self.chrome_driver.find_element_by_xpath(self.full_screen_icon).click()
@@ -746,6 +748,11 @@ class NeoTute(CommonMethodsWeb):
         self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
+    def present_any_slide(self,select_slide_num):
+        self.click_on_tab_item(tab_name="Session Slides")
+        slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
+        slide_select_icon.click()
+
     # Top container
 
     def is_audio_icon_present(self):
@@ -791,6 +798,30 @@ class NeoTute(CommonMethodsWeb):
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
 
+
+    def turn_tutor_video_on_off(self, status= 'off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
+
     def get_audio_status(self):
         try:
             if self.is_element_present(('xpath', self.mic_off)):
@@ -821,6 +852,14 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(True, "mic is on")
         except(NoSuchElementException):
             return ReturnType(False, "mic is off")
+
+    # status : on/off
+    def select_focus_mode(self,status):
+        self.wait_for_locator_webdriver("//label[@class='switch']")
+        if status == 'on':
+            self.element_click(("xpath","//span[@class='off']"))
+        else:
+            self.element_click(("xpath", "//span[@class='on']"))
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -943,6 +982,8 @@ class NeoTute(CommonMethodsWeb):
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
             print("Timed out while waiting for page to load")
+
+
 
 
 

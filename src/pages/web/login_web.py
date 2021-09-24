@@ -55,7 +55,7 @@ class LoginWeb(LoginBase):
         self.profile = self.profile.replace("VAL", self.profile_name)
         self.obj.wait_for_locator_webdriver('//*[@value="{}"]'.format(self.profile))
         element = self.obj.get_element((By.XPATH, self.profile))
-        print(self.obj.wait_for_clickable_element_webdriver(element, 10))
+        self.obj.wait_for_clickable_element_webdriver(element, 10)
         self.obj.get_element((By.XPATH, self.profile)).click()
         self.obj.element_click(self.nxt_btn)
 
