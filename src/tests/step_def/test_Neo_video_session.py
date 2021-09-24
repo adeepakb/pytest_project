@@ -224,8 +224,9 @@ def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
     neo_in_class.click_on_exit_class_in_student()
     neo_in_class.click_on_exit_class_in_exit_popup()
-    check.equal(neo_in_class.verify_header_in_rating_popup(),True,"User able to exit Class and it shows rating popup")
-    neo_in_class.close_rating_popup()
+    details = neo_in_class.verify_header_in_rating_popup()
+    check.equal(details.result,True,details.reason)
+    neo_in_class.click_on_close_icon_in_rating()
 
 
 @then('Verify that user is able to rejoin the session after exiting the session')
