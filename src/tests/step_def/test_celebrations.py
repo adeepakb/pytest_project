@@ -43,7 +43,7 @@ def login_as_neo_user(login_in):
 
 @given("Launch the application online in mobile")
 def login_as_neo_user(login_in):
-    login_in.login_for_neo_class_mobile('+91-', '2016795330', otp=None)
+    login_in.login_for_neo_class_mweb('+91-', '2016795330', otp=None)
 
 
 @given("tutor start the session")
@@ -58,7 +58,6 @@ def join_a_neo_class(neo_in_class):
 @when('click on start class')
 @then('click on start class')
 def join_a_neo_session(neo_in_class):
-    # neo_in_class.switch_to_alt_window('window_before')
     neo_in_class.join_neo_session_student('mic-on', 'cam-on')
 
 @then('click on thumb icon')
@@ -82,17 +81,15 @@ def step_impl(neo_in_class):
 @then('Verify that 4 celebrations icon appear when student tap on celebration icon when logged in from mobile browser')
 @then('Verify the emoji clicking once')
 def step_impl(neo_in_class):
-    ele_count = neo_in_class.get_the_no_of_elements()
-    # neo_in_class.click_on_thumb_icon()
+    # ele_count = neo_in_class.get_the_no_of_elements()
     neo_in_class.select_any_celebration_symbol('like')
-    ele_count2 = neo_in_class.get_the_no_of_elements()
-    check.greater(ele_count2, ele_count, "celebration is not clicked")
+    details = neo_in_class.is_floating_emojis_present()
+    check.equal(details.result, True, details.reason)
 
 
 @then('Verify the emoji clicking multiple times')
 @then('Verify that student should be able to tap all the 4 celebrations icon')
 def step_impl(neo_in_class):
-    neo_in_class.wait_until_enabled()
     neo_in_class.select_any_celebration_symbol('clap')
     neo_in_class.select_any_celebration_symbol('heart')
     neo_in_class.select_any_celebration_symbol('curious')
@@ -100,12 +97,6 @@ def step_impl(neo_in_class):
     details = neo_in_class.is_floating_emojis_present()
     check.equal(details.result, True, details.reason)
 
-# @then('Verify the emoji clicking multiple times')
-# def step_impl(neo_in_class):
-#     # neo_in_class.click_on_thumb_icon()
-#     neo_in_class.select_any_celebration_symbol('Like')
-#     details = neo_in_class.is_thumb_icon_present()
-#     check.equal(details.result, False, details.reason)
 
 @then('Verify the interval time after sending 5 emojis')
 def step_impl(neo_in_class):
@@ -157,14 +148,12 @@ def step_impl(neo_in_class):
     neo_in_class.select_any_celebration_symbol('like')
     details = neo_in_class.is_reaction_icon_disbled()
     check.equal(details.result, True, details.reason)
-    neo_in_class.wait_until_enabled()
-    details = neo_in_class.is_reaction_icon_disbled()
-    check.equal(details.result, True, details.reason)
+    # details = neo_in_class.is_reaction_icon_disbled()
+    # check.equal(details.result, True, details.reason)
 
 @then("Verify that when student tap on celebrations icon in mobile browser, same emoji's reaction keeps coming")
 @then('Verify that same celebration icons are seen when student tap any specific celebration icon multiple times')
 def step_impl(neo_in_class):
-    neo_in_class.wait_until_enabled()
     neo_in_class.select_any_celebration_symbol('clap')
     neo_in_class.select_any_celebration_symbol('clap')
     neo_in_class.select_any_celebration_symbol('clap')
