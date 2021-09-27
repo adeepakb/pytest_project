@@ -55,7 +55,7 @@ class LoginWeb(LoginBase):
         self.profile = self.profile.replace("VAL", self.profile_name)
         self.obj.wait_for_locator_webdriver('//*[@value="{}"]'.format(self.profile))
         element = self.obj.get_element((By.XPATH, self.profile))
-        # print(self.obj.wait_for_element_enabled(element, 10))
+        self.obj.wait_for_clickable_element_webdriver(element, 10)
         self.obj.get_element((By.XPATH, self.profile)).click()
         self.obj.element_click(self.nxt_btn)
 
@@ -208,3 +208,12 @@ class LoginWeb(LoginBase):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
 
+    def login_for_neo_class_mweb(self, cc, phone_num, otp):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.set_window_size(1280, 800)
+        size = self.driver.get_window_size()
+        print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
+        self.obj.element_click(self.login_butn)
+        self.enter_phone(phone_num)
+        self.click_on_next()
+        self.enter_otp(cc, phone_num, otp)
