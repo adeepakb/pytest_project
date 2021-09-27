@@ -28,12 +28,12 @@ class LoginWeb(LoginBase):
         self.rcmd_section = (By.XPATH, "//div[text()='Recommended Classes']")
         self.nxt_btn = (By.XPATH, "//div[text()='NEXT']")
         self.byjus_classes = (By.XPATH, "//div[text()='BYJU’S Classes']")
-        self.hamburger = (By.XPATH, "//div[@class='ee-hamburger-64']")
+        self.hamburger = (By.XPATH, "//div[contains(@class,'ee-hamburger-')]")
         self.multiple_accnt = (By.XPATH, "//div[text()='Multiple Accounts']")
         self.profile = '//*[@value="VAL"]'
         self.profile_form = (By.XPATH, '//*[@id="form"]')
         self.PREMIUM_ID = 'premium_id'
-        self.profiles = (By.XPATH, "//input[@class='profile-radio-button']")
+        self.profiles = (By.XPATH,"//input[@class='profile-radio-button']")
 
     # This step is not applicable in web. Hence skipping this for web
     def click_on_premium_school(self):
@@ -53,12 +53,12 @@ class LoginWeb(LoginBase):
         self.obj.element_click(self.nxt_btn)
 
     def select_profile(self, login_profile, user_profile, sub_profile):
-        login_data = get_data(Login_Credentials, login_profile)
-        profile_name = login_data[user_profile][sub_profile]["profile_value"]
-        profile = self.profile.replace("VAL", profile_name)
-        self.obj.wait_for_locator_webdriver('//*[@value="{}"]'.format(profile))
+        self.login_data = get_data(Login_Credentials, login_profile)
+        self.profile_name = self.login_data[user_profile][sub_profile]["profile_value"]
+        self.profile = self.profile.replace("VAL", self.profile_name)
+        self.obj.wait_for_locator_webdriver('//*[@value="{}"]'.format(self.profile))
         element = self.obj.get_element((By.XPATH, self.profile))
-        self.obj.wait_for_element_visible(element, 10)
+        self.obj.wait_for_clickable_element_webdriver(element, 10)
         self.obj.get_element((By.XPATH, self.profile)).click()
         self.obj.element_click(self.nxt_btn)
 
@@ -211,3 +211,15 @@ class LoginWeb(LoginBase):
         for i in range(mid):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
+
+
+    def login_for_neo_class_mweb(self, cc, phone_num, otp):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.set_window_size(1280, 800)
+        size = self.driver.get_window_size()
+        print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
+        self.obj.element_click(self.login_butn)
+        self.enter_phone(phone_num)
+        self.click_on_next()
+        self.enter_otp(cc, phone_num, otp)
+

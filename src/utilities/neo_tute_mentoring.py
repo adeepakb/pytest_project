@@ -143,6 +143,7 @@ class NeoTute(CommonMethodsWeb):
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
 
+
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
         password = self.decrypted_data['staging_access']['password']
@@ -504,7 +505,7 @@ class NeoTute(CommonMethodsWeb):
 
     def join_a_neo_session_as_tutor(self, **kwargs):
         db = kwargs['db']
-        self.wait_for_element_visible(self.chrome_driver, self.neo_dashborad_class, timeout=50)
+        self.wait_for_element_visible(("xpath", self.neo_dashborad_class), timeout=50)
         sessions = self.get_element(self.neo_dashborad_class)
         for session in sessions:
             try:
@@ -582,6 +583,7 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False,
                               "no pdf is shown")
 
+
     def get_number_of_students_in_student_details(self):
         try:
             elements = self.get_elements(self.student_cards_details)
@@ -649,6 +651,8 @@ class NeoTute(CommonMethodsWeb):
         except:
             ReturnType(True,
                        "video full screen is being displayed")
+
+
 
     def maximize_video(self):
         try:
