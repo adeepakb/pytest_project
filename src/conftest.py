@@ -136,7 +136,7 @@ def pytest_bdd_step_error(request ,feature, step):
     py_test.failed_step_name = step.name
     suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
-        if '[MergedTest]' in step.name:
+        if get_custom_field_scenario(suite_name, step.name, "24"):
             e_type, value, tb = sys.exc_info()
             summaries = traceback.format_exception(e_type, value, tb)
             prj_path_only = os.path.abspath(os.getcwd() + "/../..")
@@ -178,7 +178,7 @@ def pytest_bdd_step_error(request ,feature, step):
 def pytest_bdd_after_step(request, step):
     suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
-        if '[MergedTest]' in step.name:
+        if get_custom_field_scenario(suite_name, step.name, "24"):
             from pytest_check.check_methods import get_failures,clear_failures
             failures = get_failures()
             testing_device = request.getfixturevalue("driver").capabilities['browserName']
