@@ -237,3 +237,9 @@ def step_impl(neo_in_class):
     check.equal(detail.result, True, detail.reason)
     details = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
     check.equal(details.result, True, details.reason)
+
+
+#another student impletation needed
+@then("Verify that other students should able to hear when a student asks doubts to Tutor ")
+def step_impl(neo_in_class):
+    neo_in_class.get_audio_status_of_student(student_name="Swastika1")

@@ -62,13 +62,19 @@ def step_impl(neo_in_class):
     neo_in_class.navigate_to_byjus_classes_screen()
 
 
-@when("student joins sessions")
-@given("student joins sessions")
+@given('click on "JOIN" button in home page')
+@when('click on "JOIN" button in home page')
 def step_impl(neo_in_class):
-    neo_in_class.join_neo_session_from_classes_page_paid()
+    neo_in_class.home_click_on_join()
 
 
-@then("verify chat sestion is displayed in class")
+@when("student join neo session")
+@then("student join neo session")
+def step_impl(neo_in_class):
+    neo_in_class.join_neo_session()
+
+
+@then("Verify the chat section Class Forum below the tutor's screen.")
 def step_impl(neo_in_class):
     neo_in_class.verify_chat_elements()
 
@@ -83,7 +89,7 @@ def step_impl(neo_in_class, text):
     neo_in_class.verify_chat_elements_element_wise(element_type=text)
 
 
-@then("Verify alphanumeric messages are sent in chat")
+@then("Verify messages when users typed any combination of alphanumeric & special characters in the chat box.")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='a1!2% N n')
     detail = neo_in_class.verify_a_text_in_chat(text='a1!2% N n')
@@ -156,7 +162,7 @@ def step_impl(test_tut):
 @then("student's hand is unraised")
 def step_impl(neo_in_class):
     detail = neo_in_class.verify_hand_is_raised()
-    check.equal(detail.result, True, detail.reason)
+    check.equal(detail.result, False, detail.reason)
 
 
 @when("wifi is turned off")
@@ -196,11 +202,12 @@ def step_impl(neo_in_class):
     neo_in_class.send_chat(text="Hi I am student")
 
 
+@given("another student joins the session")
 @when("another student joins the session")
 def step_impl(test_student_2):
-    test_student_2.launch_student_webiste(mobile_number="2017607448")
-    test_student_2.navigate_to_byjus_classes_screen()
-    test_student_2.join_neo_session_from_classes_page_paid()
+    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
+    test_student_2.home_click_on_join()
+    test_student_2.join_neo_session()
 
 
 @when("another student sends a chat")

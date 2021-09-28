@@ -1021,6 +1021,12 @@ class NeoInClass(CommonMethodsWeb):
         self.wait_for_element_visible(("xpath", self.session_topic_icon))
         self.element_click(("xpath", self.session_topic_icon))
 
+    def close_info_pop_up(self):
+        element = self.get_element(("xpath", "//div[@class = 'classInfo__infoPopup']")).is_displayed()
+        if element.is_displayed():
+            self.wait_for_element_visible(("xpath", self.session_topic_icon))
+            self.element_click(("xpath", self.session_topic_icon))
+
     def hover_over_reaction_button(self):
         elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
         self.action.move_to_element(elements[1]).perform()
@@ -1221,3 +1227,106 @@ class NeoInClass(CommonMethodsWeb):
                 (flag, flag2, flag3)) else ReturnType(False, "Ask question pop is not correct or displayed")
         except:
             return ReturnType(False, "Ask question pop is not correct or displayed")
+
+    def click_on_camera_mic_disabled(self):
+        elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
+        try:
+            for element in elements:
+                if "camera-off" in element.get_attribute("innerHTML"):
+                    element.click()
+            for element in elements:
+                if "mic_off" in element.get_attribute("innerHTML"):
+                    element.click()
+
+            return ReturnType(True, "Tutor camera or mic is not clickable")
+        except:
+            return ReturnType(False, "Tutor camera or mic is clickable")
+
+    def are_steam_student_arrow_button_displayed(self):
+        try:
+            flag_left = self.get_element(("xpath",
+                                          "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--left streamList__scrollerBtns--disabled']")).is_displayed()
+            flag_right = self.get_element(
+                ("xpath", "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--right']")).is_displayed()
+
+            return ReturnType(True, "Stream arrow buttons are displayed") if all(
+                (flag_right, flag_left)) else ReturnType(False, "Stream arrow buttons are not displayed")
+        except:
+            return ReturnType(False, "Stream arrow buttons are not displayed")
+
+    def scroll_students_card(self, towards='right'):
+        try:
+            if towards.lower() == 'right':
+                self.element_click(
+                    ("xpath", "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--right']"))
+            else:
+                self.element_click(("xpath",
+                                    "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--left']"))
+        except:
+            pass
+
+    def verify_students_after_scrolling_right(self):
+        try:
+            elements = self.get_elements(
+                ("xpath", "//div[@class= 'streamList__streamItem streamList__streamItem--localStream']"))
+            elements += self.get_elements(("xpath", "//div[@class= 'streamList__streamItem']"))
+            initial_number = len(elements)
+            self.scroll_students_card()
+            elements = []
+            elements = self.get_elements(
+                ("xpath", "//div[@class= 'streamList__streamItem streamList__streamItem--localStream']"))
+            elements += self.get_elements(("xpath", "//div[@class= 'streamList__streamItem']"))
+            final_number = len(elements)
+            flag = final_number >= initial_number
+
+            return ReturnType(True, "Students are scrolled to right if clicked on right arrow") if flag else ReturnType(
+                False, "Students are not scrolled to right if clicked on right arrow")
+        except:
+            return ReturnType(False, "Students are not scrolled to right if clicked on right arrow")
+
+    def scroll_till_end_on_student_card(self):
+        try:
+            while (True):
+                self.scroll_students_card()
+                if self.get_element(("xpath",
+                                     "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--right streamList__scrollerBtns--disabled']")).is_displayed():
+                    return ReturnType(True, "Able to scroll to rightmost")
+        except:
+            return ReturnType(False, "Not able to scroll to rightmost")
+
+    def scroll_till_left_end_on_student_card(self):
+        try:
+            while (True):
+                self.scroll_students_card(towards="left")
+                if self.get_element(("xpath",
+                                     "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--left streamList__scrollerBtns--disabled']")).is_displayed():
+                    return ReturnType(True, "Able to scroll to leftmost")
+        except:
+            return ReturnType(False, "Not able to scroll to lefttmost")
+
+    def verify_hand_is_raised_for_student(self, student_name='you'):
+        if student_name == 'you':
+            return self.verify_hand_is_raised()
+        else:
+            try:
+                elements = self.get_elements(("xpath", self.student_cards_items))
+                required_student = None
+                for element in elements:
+                    self.action.move_to_element(element).perform()
+                    name = self.get_child_element(element, "xpath",
+                                                  ".//div[@class = 'neo_cl_VideoContainer__overlay_view  neo_cl_VideoContainer__overlay_view--bottomLeft']").text
+                    if name.lower() == student_name.lower():
+                        required_student = element
+                        break
+                if required_student is not None:
+                    try:
+                        flag = self.get_child_element(required_student, "xpath",
+                                                      ".//div[@class = 'neo_cl_StreamCard__icon--withDarkBlackBg neo_cl_StreamCard__icon']").is_displayed()
+                        return ReturnType(True, "Student raise hand icon is shown") if flag else ReturnType(False,
+                                                                                                            "Student raise hand icon is shown")
+                    except:
+                        return ReturnType(False, "Raise hand icon is not displayed")
+                else:
+                    return ReturnType(False, "Student card is not shown with name {}".format(student_name))
+            except:
+                return ReturnType(False, "Student card is not shown with name {}".format(student_name))
