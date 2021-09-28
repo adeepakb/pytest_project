@@ -319,6 +319,8 @@ class NeoTute(CommonMethodsWeb):
             try:
                 self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
                 self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
+                self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
+                self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
                 break
             except (NoSuchElementException, ElementNotInteractableException):
                 timeout -= 5
@@ -746,6 +748,11 @@ class NeoTute(CommonMethodsWeb):
         self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
+    def present_any_slide(self,select_slide_num):
+        self.click_on_tab_item(tab_name="Session Slides")
+        slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
+        slide_select_icon.click()
+
     # Top container
 
     def is_audio_icon_present(self):
@@ -793,55 +800,6 @@ class NeoTute(CommonMethodsWeb):
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
 
-
-
-    def turn_tutor_video_on_off(self, status= 'off'):
-        try:
-            if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-            else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-on" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-        except:
-            pass
-
-
-    def turn_tutor_audio_on_off(self, status= 'off'):
-        try:
-            if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "mic-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-            else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "mic-on" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-        except:
-            pass
-
     def get_audio_status(self):
         try:
             if self.is_element_present(('xpath', self.mic_off)):
@@ -872,6 +830,14 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(True, "mic is on")
         except(NoSuchElementException):
             return ReturnType(False, "mic is off")
+
+    # status : on/off
+    def select_focus_mode(self,status):
+        self.wait_for_locator_webdriver("//label[@class='switch']")
+        if status == 'on':
+            self.element_click(("xpath","//span[@class='off']"))
+        else:
+            self.element_click(("xpath", "//span[@class='on']"))
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -995,7 +961,48 @@ class NeoTute(CommonMethodsWeb):
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
+    def turn_tutor_video_on_off(self, status='off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
 
-
-
-
+    def turn_tutor_audio_on_off(self, status='off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass

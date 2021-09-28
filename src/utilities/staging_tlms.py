@@ -80,7 +80,8 @@ class Stagingtlms:
             session_course_id = str(get_data('../config/login_data.json', 'login_detail3', 'course_id_ternary'))
             premium_id = str(get_data('../config/login_data.json', 'login_detail3', 'free_user_premium_id'))
         elif course == 'neo':
-            premium_id = str(get_data('../config/login_data.json', 'neo_login_detail1', 'premium_id'))
+            neo_details = get_data('../config/login_data.json', 'neo_login_detail1', 'student1')
+            premium_id = neo_details['premium_id']
         self.navigate_to_student_sessions(premium_id)
         tutor_url = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
