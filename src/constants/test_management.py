@@ -454,3 +454,16 @@ def get_run_id(test_run_name, project_name):
             run_id = test_run['id']
             break
     return run_id
+
+
+def get_custom_field_scenario(test_run_name, scenario_name, project_id):
+    client = get_testrail_client()
+    run_id = None
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    for test_run in test_runs_dict['runs']:
+        if test_run['name'] == test_run_name:
+            run_id = test_run['id']
+            break
+    cases = client.send_get('get_tests/' + str(run_id))['tests']
+    for case in cases:
+        return True if case['title'] == scenario_name and case['custom_merged_case'] == 1 else False
