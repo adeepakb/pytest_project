@@ -1,6 +1,7 @@
 import logging
 import pickle
 import json
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -15,7 +16,14 @@ from utilities.staging_tlms import Stagingtlms
 
 class LoginWeb(LoginBase):
     def __init__(self, driver):
-        self.driver = driver or webdriver.Chrome(options=Options())
+        if driver is None:
+            chrome_options = Options()
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument("--use-fake-ui-for-media-stream")
+            self.driver = webdriver.Chrome(options=chrome_options)
+        else :
+            self.driver = driver
         self.obj = CommonMethodsWeb(self.driver)
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.login_butn = (By.XPATH, "//span[text() = 'LOGIN']")
@@ -197,6 +205,7 @@ class LoginWeb(LoginBase):
     def login_and_navigate_to_home_screen(self, cc, phone_num, otp):
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.maximize_window()
+        self.obj.wait_for_element_visible(self.login_butn)
         self.obj.element_click(self.login_butn)
         self.enter_phone(phone_num)
         self.click_on_next()
@@ -219,3 +228,4 @@ class LoginWeb(LoginBase):
         self.enter_phone(phone_num)
         self.click_on_next()
         self.enter_otp(cc, phone_num, otp)
+

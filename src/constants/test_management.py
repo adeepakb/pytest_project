@@ -358,20 +358,36 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
     suite = client.send_get('get_suite/' + suite_id)
     run_id = None
     data = []
-    test_runs = client.send_get('get_runs/%s' % project_id)
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    test_runs = test_runs_dict['runs']
     # print("*************",test_runs)
     for test_run in test_runs:
         if test_run['name'] == test_run_name:
             run_id = test_run['id']
             break
     data.append(str(run_id))
-    cases = client.send_get('get_tests/' + str(run_id))
+    cases_dict = client.send_get('get_tests/' + str(run_id))
+    cases = cases_dict['tests']
     # print(cases)
     for case in cases:
         if case['title'] == scenario_name:
             case_suite = client.send_get('get_case/' + str(case['case_id']))
             data.append(str(case_suite['id']))
             return data
+
+
+def get_custom_field_scenario(test_run_name, scenario_name, project_id):
+    client = get_testrail_client()
+    run_id = None
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    for test_run in test_runs_dict['runs']:
+        if test_run['name'] == test_run_name:
+            run_id = test_run['id']
+            break
+    cases = client.send_get('get_tests/' + str(run_id))['tests']
+    for case in cases:
+        if case['title'] == scenario_name:
+            return True if case['custom_merged_case'] == 1 else False
 
 
 # returns a list of API available reports by project
@@ -438,3 +454,16 @@ def get_run_id(test_run_name, project_name):
             run_id = test_run['id']
             break
     return run_id
+
+
+def get_custom_field_scenario(test_run_name, scenario_name, project_id):
+    client = get_testrail_client()
+    run_id = None
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    for test_run in test_runs_dict['runs']:
+        if test_run['name'] == test_run_name:
+            run_id = test_run['id']
+            break
+    cases = client.send_get('get_tests/' + str(run_id))['tests']
+    for case in cases:
+        return True if case['title'] == scenario_name and case['custom_merged_case'] == 1 else False

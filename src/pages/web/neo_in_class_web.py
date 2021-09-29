@@ -5,13 +5,12 @@ from io import BytesIO
 from PIL import Image
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
+    MoveTargetOutOfBoundsException
 from utilities.common_methods_web import CommonMethodsWeb
 import pytest_check as check
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from utilities.neo_tute_mentoring import NeoTute
-from utilities.staging_tlms import Stagingtlms
 
 
 class ReturnType():
@@ -25,16 +24,11 @@ class NeoInClass(CommonMethodsWeb):
         self.driver = driver
         self.obj = CommonMethodsWeb(driver)
         self.action = ActionChains(self.driver)
-
         super().__init__(self.driver)
-        self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
-        # self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
+        self.stream_list = '//section[@class="streamList__itemList"]'
         self.profile_cards = "//div[contains(@class,'profileCard bottomContainer')]"
         self.info_tip_close = "//div[@class='infoTip__closeBtn']"
         self.focus_mode_icon = "//div[contains(@class,'presentation__focusIcon')]"
@@ -190,7 +184,8 @@ class NeoInClass(CommonMethodsWeb):
         self.student_speaking = "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass']"
 
     def home_click_on_join(self):
-        self.obj.wait_for_element_visible(('xpath', "//span[text()='JOIN']"))
+        self.obj.wait(2)
+        self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
         self.obj.button_click('JOIN')
 
     def join_neo_session(self):
@@ -210,6 +205,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_video_status(self):
         student_video_status = {}
+        self.obj.wait(1)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -225,6 +221,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_audio_status(self):
         student_audio_status = {}
+        self.obj.wait(1)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -241,18 +238,23 @@ class NeoInClass(CommonMethodsWeb):
     def get_request_message(self):
         return self.obj.get_element(('xpath', self.request_message)).text
 
+    def verify_alignment_stream_list(self):
+        self.obj.wait_for_locator_webdriver(self.stream_list)
+        display_block = self.obj.get_element(('xpath',self.stream_list)).value_of_css_property('display')
+        content_alignment = self.obj.get_element(('xpath',self.stream_list)).value_of_css_property('justify-content')
+        if display_block == 'grid' and content_alignment == 'center':
+            return True
+        else:
+            return False
+
     # returns bottom container profile card details, profile card name or profile picture src if attached
     def get_profile_cards(self):
         profile_card_details = []
-        cards = self.obj.get_elements(('xpath', "//div[contains(@class,'profileCard bottomContainer')]"))
+        cards = self.obj.get_elements(('xpath', "//div[@class ='neo_cl_VideoContainer__profilePic']"))
         for card in cards:
-            student_name = card.get_attribute('innerHTML')
-            if student_name == '':
-                profile_pic_src = card.find_element_by_xpath(".//img").get_attribute("src")
-                profile_card_details.append(profile_pic_src)
-            else:
-                profile_card_details.append(student_name)
-        print(profile_card_details)
+            # student_name = card.get_attribute('innerHTML')
+            profile_pic_src = card.find_element_by_xpath(".//img").get_attribute("src")
+            profile_card_details.append(profile_pic_src)
         return profile_card_details
 
     def close_info_tip(self):
@@ -372,9 +374,9 @@ class NeoInClass(CommonMethodsWeb):
     def is_thumb_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
         if self.obj.is_element_present(('xpath', self.thumb_icon)):
-            return ReturnType(False, 'thumb icon is present')
+            return True
         else:
-            return ReturnType(True, 'thumb icon is not present')
+            return False
 
     def is_floating_emojis_present(self):
         self.obj.wait_for_locator_webdriver(self.floating_emojis)
@@ -416,8 +418,9 @@ class NeoInClass(CommonMethodsWeb):
         try:
             option = self.obj.get_element(
                 ('xpath', "//img[contains(@src,'/static/media/classes-emoji-" + celeb_symbol + "')]"))
-            self.action.move_to_element(option).click().perform()
+            option.click()
             self.obj.wait(1)
+            return True
         except:
             return False
 
@@ -607,12 +610,16 @@ class NeoInClass(CommonMethodsWeb):
             return "ON"
 
     def click_on_inclass_audio_icon(self):
+        self.obj.wait_for_clickable_element_webdriver(self.student_audio)
         audio_icon = self.obj.get_element(("xpath", self.student_audio))
         audio_icon.click()
+        self.obj.wait(1)
 
     def click_on_inclass_video_icon(self):
+        self.obj.wait_for_clickable_element_webdriver(self.student_video)
         video_icon = self.obj.get_element(("xpath", self.student_video))
         video_icon.click()
+        self.obj.wait(1)
 
     def turn_on_off_student_mic(self, action):
         audio_status = self.get_inclass_student_audio_status()
@@ -675,7 +682,6 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.class_info_icon))
 
     def click_on_class_info_icon(self):
-        time.sleep(5)
         self.obj.wait_for_locator_webdriver(self.class_info_icon)
         self.obj.element_click(('xpath', self.class_info_icon))
 
@@ -694,10 +700,14 @@ class NeoInClass(CommonMethodsWeb):
         return class_info_details_dict
 
     def tap_outside_dialog_layout(self):
-        self.action.move_by_offset(100, 100).click().perform()
+        try:
+            self.action.move_by_offset(100, 100).double_click().perform()
+        except (ElementNotInteractableException,MoveTargetOutOfBoundsException):
+           pass
 
     def is_class_info_popup_present(self):
-        self.obj.is_element_present(('xpath', self.class_info_popup))
+        self.obj.wait_for_locator_webdriver(self.class_info_popup)
+        return self.obj.is_element_present(('xpath', self.class_info_popup))
 
     # rating popup
     def verify_header_in_rating_popup(self):
@@ -807,7 +817,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def is_video_being_presented(self):
         try:
-
+            self.obj.wait_for_locator_webdriver("//div[@class='presentation__view']")
             element = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
             element2 = self.obj.get_child_element(element, "xpath",".//div[@class='presentation__slide']")
             return ReturnType(True, "Video is being presented") if element2 else ReturnType(False,
@@ -858,14 +868,13 @@ class NeoInClass(CommonMethodsWeb):
         return video_src
 
     def hover_over_and_verify_bottom_container_focus_mode(self):
-        time.sleep(5)
         element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
         hover = self.action.move_to_element(element_to_hover_over)
         hover.perform()
         flag1 = self.is_hand_raise_icon_present()
         flag2 = self.is_thumb_icon_present()
         flag3 = self.is_kebab_menu_present()
-        flag4 = self.is_turn_off_camera_tooltip_present()
+        flag4 = self.is_turn_on_camera_tooltip_present()
         return ReturnType(True, "hover over presentation it shows all controls; camera, Raise/Lower hand thumbs up icon and menu option") \
             if any((flag1, flag2, flag3, flag4)) else ReturnType(False, "hover over presentation it shows all controls")
 
@@ -877,7 +886,7 @@ class NeoInClass(CommonMethodsWeb):
         flag2 = self.is_thumb_icon_present()
         flag3 = self.is_kebab_menu_present()
         flag4 = self.is_turn_on_camera_tooltip_present()
-        flag5 = self.is_turn_off_mic_tooltip_present()
+        flag5 = self.is_turn_on_mic_tooltip_present()
         return ReturnType(True, "hover over presentation it shows all controls; camera, mic, Raise/Lower hand, "
                                 "thumbs up icon and menu option") \
             if any((flag1, flag2, flag3,flag4,flag5)) else ReturnType(False, "Bottom container controls are not "
@@ -891,7 +900,6 @@ class NeoInClass(CommonMethodsWeb):
                                                                                                                 "Presentation is not being displayed")
 
     def do_full_screen_presentation(self):
-        time.sleep(5)
         maximize_icon = self.obj.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         self.action.move_to_element(maximize_icon).click().perform()
 
@@ -1175,8 +1183,9 @@ class NeoInClass(CommonMethodsWeb):
         self.get_element(("xpath", self.emoji_icon)).click()
 
     def raise_hand(self):
-        self.obj.wait_for_element_visible(("xpath", self.raise_hand))
-        self.obj.get_element(("xpath", self.raise_hand)).click()
+        self.wait_for_element_visible(
+            (("xpath", self.raise_hand)))
+        self.get_element(("xpath", self.raise_hand)).click()
 
     def unraise_hand(self):
         if self.verify_hand_is_raised().result:
@@ -1259,7 +1268,7 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
         time.sleep(2)
-        # self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
+        self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + cam_status + "')]"))
         time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))

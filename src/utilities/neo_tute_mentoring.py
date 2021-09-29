@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -142,6 +142,7 @@ class NeoTute(CommonMethodsWeb):
         self.slide_description = '//div[@class="sessionSlide--slideContent cke_editable"]'
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
+        self.floating_emojis = "//span[contains(@class,'floaters')]"
 
 
     def login_as_tutor(self):
@@ -451,6 +452,7 @@ class NeoTute(CommonMethodsWeb):
 
     def get_student_audio_status(self):
         student_audio_status = {}
+        self.obj.wait(1)
         cards = self.obj.get_elements(('xpath', self.student_cards))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -472,8 +474,7 @@ class NeoTute(CommonMethodsWeb):
             if expected_student_name == actual_student_name:
                 menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
-                # self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
-                self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
+                self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):
@@ -992,3 +993,33 @@ class NeoTute(CommonMethodsWeb):
 
         url = slide_select_icon.get_attribute("innerHTML").split("src=")[1].split("alt=")[0].replace('"', '')
         return url
+
+    def turn_tutor_audio_on_off(self, status='off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "mic-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
+
+    def is_floating_emojis_present_in_tute(self):
+        self.obj.wait_for_locator_webdriver(self.floating_emojis)
+        if self.obj.is_element_present(('xpath', self.floating_emojis)):
+            return ReturnType(True, 'floaters are displayed')
+        else:
+            return ReturnType(False, 'floaters are not displayed')
