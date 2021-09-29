@@ -54,17 +54,14 @@ def navigate_to_one_to_mega_homescreen(login_in):
     login_in.click_on_byjus_classes()
 
 @when('join neo session')
-@then('join neo session')
 def join_a_neo_class(neo_in_class):
     neo_in_class.home_click_on_join()
 
 @when('click on start class')
-@then('click on start class')
 def join_a_neo_session(neo_in_class):
     neo_in_class.join_neo_session_student('mic-on', 'cam-on')
 
 @when('Exit the class')
-@then('Exit the class')
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
     neo_in_class.click_on_exit_class_in_student()
@@ -78,142 +75,172 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.click_on_exit_class_in_exit_popup()
 
-@then('verify the rating popup')
+
+@then('Verify the post the session Feedback popup should display on top of the video screen')
 def step_impl(neo_in_class):
     details = neo_in_class.verify_header_in_rating_popup()
     check.equal(details.result, True, details.reason)
 
-
-@then('choose any rating option')
+@then("Verify that the Feedback3 screen should be displayed with 'How was your experience with our tutor'( with five smileys)")
+@then('Verify that the rating should include the class rating and tutor rating')
 def step_impl(neo_in_class):
     neo_in_class.select_any_option_in_rating("Terrible")
-
-@then('choose any feedback option')
-@then('choose the feedback option for rating')
-def step_impl(neo_in_class):
     neo_in_class.select_any_feedback_option("Teaching Technique")
-
-@then('verify the tutor rating')
-def step_impl(neo_in_class):
+    neo_in_class.click_on_continue_btn_in_rating_popup()
     check.equal(neo_in_class.verify_the_feedback_text(),True,"popup is present")
 
-@then("verify 'How was your class text' in rating popup")
+@then("Verify the class rating feedback screen should display with 'How was your class' (with 5 smiley options)")
 def step_impl(neo_in_class):
     details = neo_in_class.verify_the_text_in_rating_popup()
     check.equal(details.result, True, details.reason)
+    details1 = neo_in_class.is_star_options_present_in_rating_popup()
+    check.equal(details1.result, True, details1.reason)
 
-@then('verify the smileys with options in rating popup')
-def step_impl(neo_in_class):
-    details = neo_in_class.is_star_options_present_in_rating_popup()
-    check.equal(details.result, True, details.reason)
-
-@then('verify the close icon in rating popup')
+@then("Verify that the students can skip the ratings at any point")
+@then('Verify that close icon should present on the feedback popup and it is clickable')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.is_close_icon_in_rating_popup_present(), True, "close icon is present")
 
-@then('choose tutor rating option')
-def step_impl(neo_in_class):
-    neo_in_class.select_any_option_in_rating("Good")
 
-@then('verify continue button enabled')
+@then('Verify that feed-back popup should close when user clicks on the close icon')
 def step_impl(neo_in_class):
+    neo_in_class.click_on_close_icon_in_rating()
+    details = neo_in_class.is_rating_popup_present()
+    check.equal(details.result, False, details.reason)
+
+
+@then('Verify that continue button should be enabled when user selects any emoji')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
     details = neo_in_class.is_continue_btn_enabled()
     check.equal(details.result, True, details.reason)
 
-@then('verify the selected rating option')
-def step_impl(neo_in_class):
-    details = neo_in_class.is_selected_rating_option_present()
-    check.equal(details.result, True, details.reason)
 
-@then('click on continue button')
-def step_impl(neo_in_class):
-    neo_in_class.click_on_continue_btn_in_rating_popup()
-
-@then('verify submit button enabled')
-def step_impl(neo_in_class):
-    details = neo_in_class.is_submit_btn_enabled()
-    check.equal(details.result, True, details.reason)
-
-@then('click on submit button')
-def step_impl(neo_in_class):
-    neo_in_class.click_on_submit_button_in_feedback()
-
-@then('close the feedback popup')
-def step_impl(neo_in_class):
-    neo_in_class.click_on_close_icon_in_rating()
-
-@then('choose any rating option good or great')
+@then("Verify that the next screen should be display the selected emoji with other emojis and 'What did you like the most'")
 def step_impl(neo_in_class):
     neo_in_class.select_any_option_in_rating("Good")
-
-@then('verify the what did you like the most text')
-def step_impl(neo_in_class):
     details = neo_in_class.verify_the_what_did_you_like_text()
     check.equal(details.result, False, details.reason)
 
-@then('verify Thank you popup')
-def step_impl(neo_in_class):
-    check.equal(neo_in_class.verify_text_in_Thank_you_popup(),True,"popup is present")
 
-@then('select multiple rating options')
+@then('Verify that the emoji which is selected in the previous screen should be highlighted in the next screen')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    details = neo_in_class.is_selected_rating_option_present()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Verify that submitted button should be enabled when user selects any option from what did you like the most? and clicking on the submit button feedback3 should display')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_continue_btn_in_rating_popup()
+    neo_in_class.select_any_option_in_rating("Good")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    details = neo_in_class.is_submit_btn_enabled()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify that tutor's name, profile picture and number of sessions assisted should be displayed in Feedback3 screen")
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_continue_btn_in_rating_popup()
+    details = neo_in_class.is_tutor_details_present_in_popup()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify that user can't select multiple emojis")
 def step_impl(neo_in_class):
     neo_in_class.select_any_option_in_rating("Terrible")
     neo_in_class.select_any_option_in_rating("Bad")
     neo_in_class.select_any_option_in_rating("Okay")
     neo_in_class.select_any_option_in_rating("Good")
     neo_in_class.select_any_option_in_rating("Great")
+    details = neo_in_class.verify_multiple_selected_rating_options()
+    check.equal(details.result, False, details.reason)
 
-
-@then('choose any rating option bad or okay or Terrible')
+@then("verify that the details of feedback4 should be displayed with 'what can be improved?' with different options in feedback5 popup.")
 def step_impl(neo_in_class):
     neo_in_class.select_any_option_in_rating("Terrible")
-
-@then('verify "What could be improved" text')
-def step_impl(neo_in_class):
     details = neo_in_class.verify_the_what_could_be_improved_text()
     check.equal(details.result, True, details.reason)
 
-@then('choose more than one feedback options')
+@then("Verify that the user should able to select multiple options from 'What can be improved?'")
 def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    details = neo_in_class.verify_the_what_could_be_improved_text()
+    check.equal(details.result, True, details.reason)
     neo_in_class.select_any_feedback_option("Teaching Technique")
     neo_in_class.select_any_feedback_option("Solution Provided")
 
-@then('choose others feedback option')
+
+@then("Verify that when user selects others option from 'What can be improved?' , an additional comments textbox should display with the text' Add your comment here")
 def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
     neo_in_class.select_any_feedback_option("Other")
-
-@then('verify the comments box')
-def step_impl(neo_in_class):
     details = neo_in_class.is_add_your_comments_box_present()
-    check.equal(details.result, False, details.reason)
+    check.equal(details.result, True, details.reason)
 
-@then('add comments in the feedback')
+@then('Verify submit button after adding comments in the feedback section')
 def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Other")
     neo_in_class.enter_comments_in_comments_box("other issue")
+    details = neo_in_class.is_submit_btn_enabled()
+    check.equal(details.result, True, details.reason)
 
-@then('verify the selected rating options')
+@then("Verify that when user submit the ratings 'thank you' popup should be displayed")
 def step_impl(neo_in_class):
-    details = neo_in_class.is_rating_popup_present()
-    check.equal(details.result, False, details.reason)
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_continue_btn_in_rating_popup()
+    neo_in_class.select_any_option_in_rating("Good")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_submit_button_in_feedback()
+    details = neo_in_class.verify_text_in_Thank_you_popup()
+    check.equal(details.result, True, details.reason)
 
-@then('close the rating popup and verify')
+
+@then('Verify that the rating popup should display whether the student leaves the session or the session ends')
 def step_impl(neo_in_class):
+    details = neo_in_class.verify_header_in_rating_popup()
+    check.equal(details.result, True, details.reason)
+
+@then("Verify that student should able to rejoin the class after submitting the ratings")
+@then('Verify that feedback popup should display when user rejoins the class who has already submitted the feedback')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Terrible")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_continue_btn_in_rating_popup()
+    neo_in_class.select_any_option_in_rating("Good")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
+    neo_in_class.click_on_submit_button_in_feedback()
+    neo_in_class.home_click_on_join()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
+    neo_in_class.click_on_kebab_menu()
+    neo_in_class.click_on_exit_class_in_student()
+    neo_in_class.click_on_exit_class_in_exit_popup()
+    details = neo_in_class.verify_header_in_rating_popup()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Verify that rating popup should display when user close the ratings and rejoins the session again')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Good")
+    neo_in_class.select_any_feedback_option("Teaching Technique")
     neo_in_class.click_on_close_icon_in_rating()
-    details = neo_in_class.is_rating_popup_present()
-    check.equal(details.result, False, details.reason)
-
-@then('verify tutor details in tutor rating popup')
-def step_impl(neo_in_class):
-    details = neo_in_class.is_tutor_details_present_in_popup()
+    neo_in_class.home_click_on_join()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
+    neo_in_class.click_on_kebab_menu()
+    neo_in_class.click_on_exit_class_in_student()
+    neo_in_class.click_on_exit_class_in_exit_popup()
+    details = neo_in_class.verify_header_in_rating_popup()
     check.equal(details.result, True, details.reason)
 
-@then('verify the menu in bottom container')
+@then("Verify the colour's of the emojis")
 def step_impl(neo_in_class):
-    details = neo_in_class.is_kebab_menu_present()
-    check.equal(details.result, True, details.reason)
-
-@then('verify color of emoji')
-def step_impl(neo_in_class):
+    neo_in_class.select_any_option_in_rating("Great")
     details = neo_in_class.get_selected_emoji_color('rgba(51, 51, 51, 1)')
     check.equal(details.result, True, details.reason)
-

@@ -219,7 +219,6 @@ class LoginWeb(LoginBase):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
 
-
     def login_for_neo_class_mweb(self, cc, phone_num, otp):
         self.driver.get('https://learn-staging.byjus.com')
         self.driver.set_window_size(1280, 800)

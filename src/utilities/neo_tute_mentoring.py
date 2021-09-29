@@ -142,6 +142,7 @@ class NeoTute(CommonMethodsWeb):
         self.slide_description = '//div[@class="sessionSlide--slideContent cke_editable"]'
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
+        self.floating_emojis = "//span[contains(@class,'floaters')]"
 
 
     def login_as_tutor(self):
@@ -471,7 +472,7 @@ class NeoTute(CommonMethodsWeb):
         for card in cards:
             actual_student_name = card.text
             if expected_student_name == actual_student_name:
-                menu_icon = card.find_element_by_xpath(self.student_card_menu)
+                menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
                 self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
                 break
@@ -799,6 +800,30 @@ class NeoTute(CommonMethodsWeb):
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
 
+
+    def turn_tutor_video_on_off(self, status= 'off'):
+        try:
+            if status.lower() == 'on':
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
+                                                       "tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+            else:
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+        except:
+            pass
+
     def get_audio_status(self):
         try:
             if self.is_element_present(('xpath', self.mic_off)):
@@ -960,28 +985,14 @@ class NeoTute(CommonMethodsWeb):
         except TimeoutException:
             print("Timed out while waiting for page to load")
 
-    def turn_tutor_video_on_off(self, status='off'):
-        try:
-            if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-            else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-on" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-        except:
-            pass
+
+    def get_url_of_presented_slide(self, select_slide_num):
+        self.click_on_tab_item(tab_name="Session Slides")
+        slide_select_icon = self.obj.get_element(('css',
+                                                  "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
+
+        url = slide_select_icon.get_attribute("innerHTML").split("src=")[1].split("alt=")[0].replace('"', '')
+        return url
 
     def turn_tutor_audio_on_off(self, status='off'):
         try:
@@ -1005,3 +1016,10 @@ class NeoTute(CommonMethodsWeb):
                 self.action.move_to_element(desired_element).click().perform()
         except:
             pass
+
+    def is_floating_emojis_present_in_tute(self):
+        self.obj.wait_for_locator_webdriver(self.floating_emojis)
+        if self.obj.is_element_present(('xpath', self.floating_emojis)):
+            return ReturnType(True, 'floaters are displayed')
+        else:
+            return ReturnType(False, 'floaters are not displayed')
