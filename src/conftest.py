@@ -137,72 +137,72 @@ def pytest_bdd_step_error(step):
     py_test.failed_step_name = step.name
 
 
-# def pytest_bdd_after_scenario(request, feature, scenario):
-#     """
-#     Called after scenario is executed even if one of steps has failed.
-#     Occurred exceptions during test execution is written to ``sys.stderr``
-#     with appropriate information, the same will be written on console.
-#     The exit status is updated with valid message to the
-#     `testrail <https://tnl.testrail.com/index.php?/dashboard>`_
-#     :type scenario: Scenario
-#     :type feature: Feature
-#     :var str suite_name: Name of the `TestSuite`
-#     :return: None
-#     .. note:: If there occurs an exception during the testrail update,
-#         the results might not reflect on the testrail.
-#     """
-#     e_type, value, tb = sys.exc_info()
-#     summaries = traceback.format_exception(e_type, value, tb)
-#     prj_path_only = os.path.abspath(os.getcwd() + "/../..")
-#     feature_name = feature.name
-#     scenario_name = scenario.name
-#     elapsed = int(time.time() - py_test.__getattribute__('start'))
-#     elapsed_time = str(elapsed) + 's'
-#     suite_name = os.getenv('suite')
-#     # suite_name = "Byju's Classes"
-#     if suite_name == "Byju's Classes":
-#         testing_device = request.getfixturevalue("driver").session['deviceModel']
-#         app_version = baseClass.get_current_app_version()
-#     else:
-#         raise NotImplementedError()
-#     data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
-#     print("\nTestcase executed: %s" %scenario_name)
-#     if py_test.__getattribute__("exception") or value:
-#         trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
-#         _exception = list(filter(lambda summary:
-#                                  prj_path_only in summary or
-#                                  summaries.index(summary) == 0 or
-#                                  ("exception" in summary.lower() and prj_path_only in summary) or
-#                                  ("error" in summary.lower() and prj_path_only in summary), summaries))
-#         while _exception.count(trc) > 0:
-#             _exception.remove(trc)
-#         _exception.insert(0, trc)
-#         _exception.append(summaries[-1])
-#         _exception = "".join(_exception)
-#         screenshot_filename = capture_screenshot(request,feature_name)
-#         if not value:
-#             step_name = py_test.__getattribute__('failed_step_name')
-#         else:
-#             step_name = py_test.__getattribute__('step_name')
-#         stdout_err = (
-#                 "\n" + "=" * 100 +
-#                 "Failures" + "=" * 100 +
-#                 "\nFailed Feature Name: %s\nFailed Scenario Name: %s\nFailed Step Name: %s\n"
-#                 % (feature_name, scenario_name, step_name) +
-#                 "-" * 50 + "Test Exception" + "-" * 50 + "\n" + _exception +
-#                 "=" * 100 + "Failures" + "=" * 100
-#         )
-#         sys.stderr.writelines(stdout_err)
-#         update_testrail(data[1], data[0], False, step_name, _exception, elapsed_time, testing_device, app_version)
-#         add_attachment_to_result(data[0], data[1], screenshot_filename)
-#     else:
-#         msg_body = "all steps are passed"
-#         update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)
-#     file = '../../config/chrome_session.json'
-#     try:
-#         os.unlink(file)
-#     except FileNotFoundError:
-#         pass
+def pytest_bdd_after_scenario(request, feature, scenario):
+    """
+    Called after scenario is executed even if one of steps has failed.
+    Occurred exceptions during test execution is written to ``sys.stderr``
+    with appropriate information, the same will be written on console.
+    The exit status is updated with valid message to the
+    `testrail <https://tnl.testrail.com/index.php?/dashboard>`_
+    :type scenario: Scenario
+    :type feature: Feature
+    :var str suite_name: Name of the `TestSuite`
+    :return: None
+    .. note:: If there occurs an exception during the testrail update,
+        the results might not reflect on the testrail.
+    """
+    e_type, value, tb = sys.exc_info()
+    summaries = traceback.format_exception(e_type, value, tb)
+    prj_path_only = os.path.abspath(os.getcwd() + "/../..")
+    feature_name = feature.name
+    scenario_name = scenario.name
+    elapsed = int(time.time() - py_test.__getattribute__('start'))
+    elapsed_time = str(elapsed) + 's'
+    suite_name = os.getenv('suite')
+    # suite_name = "Byju's Classes"
+    if suite_name == "Byju's Classes":
+        testing_device = request.getfixturevalue("driver").session['deviceModel']
+        app_version = baseClass.get_current_app_version()
+    else:
+        raise NotImplementedError()
+    data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
+    print("\nTestcase executed: %s" %scenario_name)
+    if py_test.__getattribute__("exception") or value:
+        trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
+        _exception = list(filter(lambda summary:
+                                 prj_path_only in summary or
+                                 summaries.index(summary) == 0 or
+                                 ("exception" in summary.lower() and prj_path_only in summary) or
+                                 ("error" in summary.lower() and prj_path_only in summary), summaries))
+        while _exception.count(trc) > 0:
+            _exception.remove(trc)
+        _exception.insert(0, trc)
+        _exception.append(summaries[-1])
+        _exception = "".join(_exception)
+        screenshot_filename = capture_screenshot(request,feature_name)
+        if not value:
+            step_name = py_test.__getattribute__('failed_step_name')
+        else:
+            step_name = py_test.__getattribute__('step_name')
+        stdout_err = (
+                "\n" + "=" * 100 +
+                "Failures" + "=" * 100 +
+                "\nFailed Feature Name: %s\nFailed Scenario Name: %s\nFailed Step Name: %s\n"
+                % (feature_name, scenario_name, step_name) +
+                "-" * 50 + "Test Exception" + "-" * 50 + "\n" + _exception +
+                "=" * 100 + "Failures" + "=" * 100
+        )
+        sys.stderr.writelines(stdout_err)
+        update_testrail(data[1], data[0], False, step_name, _exception, elapsed_time, testing_device, app_version)
+        add_attachment_to_result(data[0], data[1], screenshot_filename)
+    else:
+        msg_body = "all steps are passed"
+        update_testrail(data[1], data[0], True, '', msg_body, elapsed_time, testing_device ,app_version)
+    file = '../../config/chrome_session.json'
+    try:
+        os.unlink(file)
+    except FileNotFoundError:
+        pass
 
 
 def pytest_sessionfinish():
