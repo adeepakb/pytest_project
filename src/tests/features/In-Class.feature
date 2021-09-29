@@ -15,7 +15,6 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	And Verify that student is muted when mic is turned off by the student
 	And Verify that camera and mic icons change when same are toggled On/Off
 	And Verify that a translucent window encases the student's name on their thumbnail
-	And Verify that if the student has turned off their camera and have their profile picture set, profile picture should be displayed on the thumbnail
 	And Verify that if the student has turned off their camera and do not have their profile picture set, initials of their first name should be displayed on the thumbnail
 	And Verify the tutor's video section when video of the tutor is turned off
 	And Verify that tutor's audio is muted when mic of the tutor is turned off

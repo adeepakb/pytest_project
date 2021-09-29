@@ -16,7 +16,14 @@ from utilities.staging_tlms import Stagingtlms
 
 class LoginWeb(LoginBase):
     def __init__(self, driver):
-        self.driver = driver or webdriver.Chrome(options=Options())
+        if driver is None:
+            chrome_options = Options()
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument("--use-fake-ui-for-media-stream")
+            self.driver = webdriver.Chrome(options=chrome_options)
+        else :
+            self.driver = driver
         self.obj = CommonMethodsWeb(self.driver)
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.login_butn = (By.XPATH, "//span[text() = 'LOGIN']")

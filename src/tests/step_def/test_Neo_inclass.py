@@ -157,7 +157,7 @@ def step_impl(student1_login):
 @given("tutor start the session")
 def step_impl(neo_tute):
     neo_tute.start_neo_session()
-    neo_tute.present_any_slide(4)
+    # neo_tute.present_any_slide(1)
 
 
 @when('click on "JOIN" button in home page')
@@ -189,31 +189,41 @@ def step_impl(student1_neo):
     check.equal(student1_audio_status == student1_video_status == "ON", True, 'Camera and mic states are retained with the state they are set before joining the session')
 
 
+@then("Verify the alignment of Tutor's video when student joins the class")
+def step_impl(student1_neo):
+    details = student1_neo.verify_presentation_dimension_ratio()
+    check.equal(details.result, True, details.reason)
+
+
 @then("Verify that the student can enable/disable their A/V during the session using the camera and mic buttons")
 @then("Verify that audio/video state transition is smooth when user toggles the controls ON/OFF")
 @then("Verify that audio/video state transition is maintained when students toggle the controls ON/OFF who are not present on active screen")
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_mic('OFF')
     student1_neo.turn_on_off_student_video('OFF')
-    check.equal(student1_neo.get_student_video_status()['You'] is False and student1_neo.get_student_audio_status()['You'] is False, True,
-                "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    students_audio_status = student1_neo.get_student_audio_status()
+    students_video_status = student1_neo.get_student_video_status()
+    check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
     student1_neo.turn_on_off_student_mic('ON')
     student1_neo.turn_on_off_student_video('ON')
-    check.equal(student1_neo.get_student_video_status()['You'] is True and student1_neo.get_student_audio_status()['You'] is True, True,
-                "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    students_audio_status = student1_neo.get_student_audio_status()
+    students_video_status = student1_neo.get_student_video_status()
+    check.equal(students_video_status['You'] is True and students_audio_status['You'] is True, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then("Verify that video of student is not displayed when camera is turned off by the student")
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_video('OFF')
-    check.equal(student1_neo.get_student_video_status()['You'] is False,"Student is not displayed when camera is turned off by the student")
+    student_video_status = student1_neo.get_student_video_status()
+    check.equal(student_video_status['You'] is False,True,"Student is not displayed when camera is turned off by the student")
 
 
 @then("Verify that student is muted when mic is turned off by the student")
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_mic('OFF')
-    check.equal(student1_neo.get_student_audio_status()['You'] is False,True,"Student is muted when mic is turned off by the student")
+    student_audio_status = student1_neo.get_student_audio_status()
+    check.equal(student_audio_status['You'] is False,True,"Student is muted when mic is turned off by the student")
 
 
 @then("Verify that camera and mic icons change when same are toggled On/Off")
@@ -233,19 +243,23 @@ def step_impl(student1_neo):
 @then("Verify the tutor's video section when video of the tutor is turned off")
 def step_impl(neo_tute,student1_neo):
     neo_tute.turn_tutor_video_on_off(status='off')
-    check.equal(student1_neo.is_tutor_video_on(), False," Video of the tutor is turned off")
+    details = student1_neo.is_tutor_video_on()
+    check.equal(details.result, False,details.reason)
 
 
 @then("Verify that tutor's audio is muted when mic of the tutor is turned off")
 def step_impl(neo_tute,student1_neo):
     neo_tute.turn_tutor_audio_on_off(status='off')
-    check.equal(student1_neo.is_tutor_unmute(), False," Audio of the tutor is turned off")
+    details = student1_neo.is_tutor_mute()
+    check.equal(details.result, True,details.reason)
+
 
 @then('Verify that if the student has turned off their camera and do not have their profile picture set, initials of their first name should be displayed on the thumbnail')
-@then('Verify that if the student has turned off their camera and have their profile picture set, profile picture should be displayed on the thumbnail')
 def step_impl(student1_neo):
-    check.equal('.png' or '.jpg' in student1_neo.get_profile_cards(), True, "Profile picture should be displayed on the thumbnail")
-
+    student1_neo.turn_on_off_student_video('OFF')
+    profile_card_details = student1_neo.get_profile_cards()
+    check.equal('https://static.tllms.com/assets/k12/premium_online/byjus_classes/common/initial_avatars/' in profile_card_details[0], True, "Profile picture is not displayed on the thumbnail")
+    student1_neo.turn_on_off_student_video('ON')
 
 @then("Verify the default alignment of student's thumbnails when two students join and enter the class")
 def step_impl(student2,student2_neo):
@@ -259,31 +273,33 @@ def step_impl(student2,student2_neo):
 @then("Verify that the student's thumbnails update dynamically when any new student joins while session is in progress")
 def step_impl(student2_neo):
     student_names = student2_neo.get_all_student_names()
-    check.equal(len(student_names) == 2, True, "student names displayed on thumbnails")
+    check.equal(len(student_names) >= 2, True, "student names displayed on thumbnails")
 
 
 @then("Verify that audio/video state transition is smooth when many students toggle the controls ON/OFF at different times")
 def step_impl(student2_neo):
     student2_neo.turn_on_off_student_mic('OFF')
     student2_neo.turn_on_off_student_video('OFF')
-    check.equal(student2_neo.get_student_video_status()['You'] is False and student2_neo.get_student_audio_status()['You'] is False, True,
+    check.equal(student2_neo.get_student_audio_status()['You'] is False and student2_neo.get_student_video_status()['You'] is False, True,
                 "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
     student2_neo.turn_on_off_student_mic('ON')
     student2_neo.turn_on_off_student_video('ON')
-    check.equal(student2_neo.get_student_video_status()['You'] is True and student2_neo.get_student_audio_status()['You'] is True, True,
+    check.equal(student2_neo.get_student_audio_status()['You'] is True and student2_neo.get_student_video_status()['You'] is True, True,
                 "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then("Verify the browser's performance during In-class when one or more students have A/V enabled")
 def step_impl(student2_neo):
-    check.equal(student2_neo.is_presentation_displayed(),True,"Verified browser's performance when one or more students have A/V enabled")
+    details  = student2_neo.is_presentation_displayed()
+    check.equal(details.result,True,details.reason)
 
 
 @then("Verify that there are no glitches when one or many students are casting A/V and the network is flaky")
 def step_impl(student2_neo):
     student2_neo.set_wifi_connection_off()
-    check.equal(student2_neo.is_presentation_displayed(), True, "Verified browser's performance when one or more students have A/V enabled and the network is flaky")
+    details = student2_neo.is_presentation_displayed()
+    check.equal(details.result, True,details.reason)
     student2_neo.set_wifi_connection_on()
 
 
@@ -293,7 +309,8 @@ def step_impl(student1_neo,student2_neo):
     student1_neo.turn_on_off_student_video('OFF')
     student2_neo.turn_on_off_student_mic('OFF')
     student2_neo.turn_on_off_student_video('OFF')
-    check.equal(student2_neo.is_presentation_displayed(),True,"Verified browser's performance when one or more students have A/V enabled")
+    details = student2_neo.is_presentation_displayed()
+    check.equal(details.result, True, details.reason)
 
 
 @then("Verify that camera and mic button's states are retained with the state they are set when network is lost and then connection is established again")

@@ -386,7 +386,8 @@ def get_custom_field_scenario(test_run_name, scenario_name, project_id):
             break
     cases = client.send_get('get_tests/' + str(run_id))['tests']
     for case in cases:
-        return True if case['title'] == scenario_name and case['custom_merged_case'] == 1 else False
+        if case['title'] == scenario_name:
+            return True if case['custom_merged_case'] == 1 else False
 
 
 # returns a list of API available reports by project
