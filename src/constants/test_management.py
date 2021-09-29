@@ -376,6 +376,20 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
             return data
 
 
+def get_custom_field_scenario(test_run_name, scenario_name, project_id):
+    client = get_testrail_client()
+    run_id = None
+    test_runs_dict = client.send_get('get_runs/%s' % project_id)
+    for test_run in test_runs_dict['runs']:
+        if test_run['name'] == test_run_name:
+            run_id = test_run['id']
+            break
+    cases = client.send_get('get_tests/' + str(run_id))['tests']
+    for case in cases:
+        if case['title'] == scenario_name:
+            return True if case['custom_merged_case'] == 1 else False
+
+
 # returns a list of API available reports by project
 def get_testrail_reports(project_ID, report_name):
     client = get_testrail_client()

@@ -1,5 +1,8 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
+
+from constants.constants import Login_Credentials
+from constants.load_json import get_data
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.factory.neo_inclass_factory import NeoInClassFactory
@@ -32,7 +35,8 @@ def neo_in_class(request, driver):
 
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
-    login_in.login_and_navigate_to_home_screen('+91-', '2013274689', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("tutor start the session")
@@ -50,19 +54,19 @@ def step_impl(neo_in_class):
     neo_in_class.join_neo_session()
 
 
-@then("Verify that kebab menu icon is present below the video screen [MergedTest]")
+@then("Verify that kebab menu icon is present below the video screen")
 def tap_on_premium_card(neo_in_class):
     check.equal(neo_in_class.is_kebab_menu_present(), True, "kebab menu icon is present below the video screen")
 
 
-@then("Verify that kebab icon is clickable and clicking on the this different options should be displayed [MergedTest]")
+@then("Verify that kebab icon is clickable and clicking on the this different options should be displayed")
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
-    check.equal(neo_in_class.is_facing_issues_option_present(), True, "Facing Issues? icon is present under kebab menu [MergedTest]")
-    check.equal(neo_in_class.is_exit_class_btn_present(), True, "Exit class icon is present under kebab menu [MergedTest]")
+    check.equal(neo_in_class.is_facing_issues_option_present(), True, "Facing Issues? icon is present under kebab menu")
+    check.equal(neo_in_class.is_exit_class_btn_present(), True, "Exit class icon is present under kebab menu")
 
 
-@then(parsers.parse("Verify the different issue types present in the popup when user clicks on '{text}' in the kebab menu [MergedTest]"))
+@then(parsers.parse("Verify the different issue types present in the popup when user clicks on '{text}' in the kebab menu"))
 def step_impl(neo_in_class, text):
     neo_in_class.button_click(text)
     expected_issues_list = ['Video Stopped playing', 'Video buffering', 'Chat stopped responding', 'Chat player lagging', 'Unable to type responses', 'Unable to switch on audio', 'Unable to switch on video', 'Unable to exit class', 'Unable to view whiteboard', 'Celebrations not working', 'Others']
@@ -70,25 +74,25 @@ def step_impl(neo_in_class, text):
     check.equal(expected_issues_list,actual_issues_list," All expected issues present in popup for user to select")
 
 
-@then("Verify that the pop up should display on the top of the video screen  clicking the kebab menu [MergedTest]")
+@then("Verify that the pop up should display on the top of the video screen  clicking the kebab menu")
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_issue_popup_present(),True,"Issue pop up displayed on the top of the video screen")
 
 
-@then("Verify that by-default 'Report Now' button should be disabled [MergedTest]")
+@then("Verify that by-default 'Report Now' button should be disabled")
 def step_impl(neo_in_class):
     details = neo_in_class.is_report_now_btn_enabled()
     check.equal(details.result, False, details.reason)
 
 
-@then("Verify that once user selects any option the button should be enabled [MergedTest]")
+@then("Verify that once user selects any option the button should be enabled")
 def step_impl(neo_in_class):
     neo_in_class.select_any_option_in_facing_issue('Video Stopped playing')
     details = neo_in_class.is_report_now_btn_enabled()
     check.equal(details.result, True, details.reason)
 
 
-@then('Verify that user should able to select multiple options [MergedTest]')
+@then('Verify that user should able to select multiple options')
 def step_impl(neo_in_class):
     options_list = ['Video Stopped playing', 'Video buffering', 'Chat stopped responding', 'Chat player lagging',
                     'Unable to type responses']
@@ -98,25 +102,25 @@ def step_impl(neo_in_class):
         check.equal(details.result, True, details.reason)
 
 
-@then('Verify that the selected option toggle should display in sky colour [MergedTest]')
+@then('Verify that the selected option toggle should display in sky colour')
 def step_impl(neo_in_class):
     details = neo_in_class.get_selected_issue_radio_btn_color('rgba(63, 81, 181, 1)')
     check.equal(details.result, True, details.reason)
 
 
-@then(parsers.parse('Verify that once select any option the "{text}" should be displayed below the issue [MergedTest]'))
+@then(parsers.parse('Verify that once select any option the "{text}" should be displayed below the issue'))
 def step_impl(neo_in_class, text):
     details = neo_in_class.verify_extra_tips(text)
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that once user select any option , that option should be highlighted with bold text [MergedTest]")
+@then("Verify that once user select any option , that option should be highlighted with bold text")
 def step_impl(neo_in_class):
     details = neo_in_class.verify_bold_font_selected_issue()
     check.equal(details.result, True, details.reason)
 
 
-@then('Verify the pop should be scrollable [MergedTest]')
+@then('Verify the pop should be scrollable')
 def step_impl(neo_in_class):
     neo_in_class.join_neo_session()
     neo_in_class.click_on_kebab_menu()
@@ -124,29 +128,29 @@ def step_impl(neo_in_class):
     neo_in_class.scroll_down_facing_issues_popup(8)
 
 
-@then('Verify that close icon is present the popup and its clickable [MergedTest]')
+@then('Verify that close icon is present the popup and its clickable')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.is_close_icon_in_facing_issues_present(),True,"close icon is present")
 
 
-@then('Verify that popup should close when user clicks on the close icon [MergedTest]')
+@then('Verify that popup should close when user clicks on the close icon')
 def step_impl(neo_in_class):
     neo_in_class.click_on_close_icon_for_facing_issues_popup()
 
 
-@then(parsers.parse('Verify that "{text}" text should be displayed [MergedTest]'))
+@then(parsers.parse('Verify that "{text}" text should be displayed'))
 def step_impl(neo_in_class, text):
     check.equal(neo_in_class.is_text_match(text), True, "%s text should be displayed " % text)
 
 
 @then(parsers.parse('Verify when user selects the issue type as "{issue_text}" one text box should be appear with '
-                    'ghost text "{default_label_text}" [MergedTest]'))
+                    'ghost text "{default_label_text}"'))
 def step_impl(neo_in_class, issue_text, default_label_text):
     neo_in_class.select_any_option_in_facing_issue(issue_text)
     check.equal(neo_in_class.is_text_match(default_label_text), True,"%s text should is displayed " % default_label_text)
 
 
-@then(parsers.parse('Verify the alignment of the email icon on the popup after user writes "{comment_text}" in the text box and clicks on "{button_text}" button [MergedTest]'))
+@then(parsers.parse('Verify the alignment of the email icon on the popup after user writes "{comment_text}" in the text box and clicks on "{button_text}" button'))
 def step_impl(neo_in_class,comment_text,button_text):
     neo_in_class.provide_other_comments(comment_text)
     neo_in_class.button_click(button_text)
@@ -155,30 +159,30 @@ def step_impl(neo_in_class,comment_text,button_text):
     check.equal(values[0], True,"email icon is present on the popup")
 
 
-@then(parsers.parse('Verify that when the user clicks on report now button,"{text}" popup should be displayed [MergedTest]'))
+@then(parsers.parse('Verify that when the user clicks on report now button,"{text}" popup should be displayed'))
 def step_impl(text):
     check.equal(values[1], text, "%s text popup should be displayed " % text)
 
 
-@then('Verify the popup should be disappeared automatically in 5 secs [MergedTest]')
+@then('Verify the popup should be disappeared automatically in 5 secs')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.submitted_popup_disappear(),False,"Submitted issue popup disappeared automatically")
 
 
-@then('Verify the popup when user refresh the page [MergedTest]')
+@then('Verify the popup when user refresh the page')
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
     neo_in_class.button_click('Facing issues?')
     check.equal(neo_in_class.page_refresh_issue_popup_disappear(),False,"popup is not present after user refresh the page")
 
 
-@then('Verify the popup should be disappeared if user refresh the page [MergedTest]')
+@then('Verify the popup should be disappeared if user refresh the page')
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
     neo_in_class.button_click("Facing issues?")
     check.equal(neo_in_class.page_refresh_issue_submitted_issue_popup_disappear(),False,"popup is not present after user refresh the page")
 
 
-@then('Verify the alignment of the suggested  tips. [MergedTest]')
+@then('Verify the alignment of the suggested  tips.')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.extra_tips_alignment(),True,"suggested tips is left aligned and has block display as expected")

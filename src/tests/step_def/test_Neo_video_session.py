@@ -1,5 +1,7 @@
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
+from constants.constants import Login_Credentials
+from constants.load_json import get_data
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.factory.neo_inclass_factory import NeoInClassFactory
@@ -39,7 +41,8 @@ def neo_tute(driver):
 
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
-    login_in.login_and_navigate_to_home_screen('+91-', '2013274689', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("tutor start the session")
@@ -52,14 +55,15 @@ def step_impl(neo_in_class):
     neo_in_class.home_click_on_join()
 
 
-@then("student join neo session")
+@when("student join neo session")
 def step_impl(neo_in_class):
     neo_in_class.join_neo_session()
 
 
-@then("tutor play video in the session and turn off focus mode")
+@when("tutor play video in the session and turn off focus mode")
 def step_impl(neo_tute,neo_in_class):
-    neo_tute.present_any_slide(6)
+    neo_tute.present_any_slide(1)
+    neo_tute.present_any_slide(8)
     neo_tute.select_focus_mode('off')
     neo_in_class.turn_on_off_student_mic('ON')
 
@@ -111,8 +115,8 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.turn_on_off_student_mic('OFF')
     neo_in_class.turn_on_off_student_video('OFF')
-    students_video_status = neo_in_class.get_student_video_status()
     students_audio_status = neo_in_class.get_student_audio_status()
+    students_video_status = neo_in_class.get_student_video_status()
     check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
@@ -162,14 +166,16 @@ def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_hand_raised(),True,"User able to hand raise")
     neo_in_class.click_on_thumb_icon()
     check.equal(neo_in_class.select_any_celebration_symbol('heart'),True,"User able to send celebration")
+    neo_in_class.tap_outside_dialog_layout()
     neo_in_class.turn_on_off_student_mic('ON')
     neo_in_class.turn_on_off_student_video('ON')
-    students_video_status = neo_in_class.get_student_video_status()
     students_audio_status = neo_in_class.get_student_audio_status()
-    check.equal(students_video_status['You'] is True and students_audio_status['You'] is True, True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    students_video_status = neo_in_class.get_student_video_status()
+    check.equal(students_audio_status['You'] is True and students_video_status['You'] is True, True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
     neo_in_class.click_on_kebab_menu()
     check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),
                 True, "Kebab menu is clickable and options are present")
+    neo_in_class.tap_outside_dialog_layout()
 
 
 @then("Verify that Subject and Topic name is displayed at the top left corner of the video window, "
@@ -232,6 +238,7 @@ def step_impl(neo_in_class):
 @then('Verify that user is able to rejoin the session after exiting the session')
 def step_impl(neo_in_class):
     neo_in_class.home_click_on_join()
+    neo_in_class.join_neo_session()
     details = neo_in_class.is_video_being_presented()
     check.equal(details.result,True,details.reason)
 
@@ -325,7 +332,7 @@ def step_impl(neo_in_class):
 @then('Verify the animation of the reactions when students send reactions while focus mode is on, verify that these should not cover the content video or distort the A/V of the on going session')
 def step_impl(neo_in_class):
     neo_in_class.click_on_thumb_icon()
-    neo_in_class.select_any_celebration_symbol('heart')
+    check.equal(neo_in_class.select_any_celebration_symbol('heart'), True, "User able to send celebration")
     neo_in_class.tap_outside_dialog_layout()
     details = neo_in_class.verify_presentation_dimension_ratio()
     check.equal(details.result, True, details.reason)
@@ -333,6 +340,7 @@ def step_impl(neo_in_class):
 
 
 @then('Verify the transition of student video is smooth when same dismisses from screen')
+@then("Verify student's video thumbnail not visible while focus mode is on")
 def step_impl(neo_in_class):
     value = neo_in_class.focus_mode_transition()
     check.equal(all([value is not None,value is not False]), True ,"Verify student's video thumbnail not visible while focus mode is on")
@@ -343,7 +351,7 @@ def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
     neo_in_class.click_on_exit_class_in_student()
     neo_in_class.click_on_exit_class_in_exit_popup()
-    neo_in_class.close_rating_popup()
+    neo_in_class.click_on_close_icon_in_rating()
     neo_in_class.home_click_on_join()
     neo_in_class.join_neo_session()
     check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present(), True,"User is in Focus mode")
