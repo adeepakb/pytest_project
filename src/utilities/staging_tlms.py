@@ -45,11 +45,14 @@ class Stagingtlms:
         self.wait_for_locator_webdriver("//button[@type='submit']")
         self.chrome_driver.find_element_by_xpath("//button[@type='submit']").click()
         self.wait_for_locator_webdriver("//input[@type='email']")
+        self.chrome_driver.save_screenshot('image1.png')
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(email)
         self.chrome_driver.find_element_by_xpath("//input[@type='email']").send_keys(Keys.ENTER)
+        self.chrome_driver.save_screenshot('image2.png')
         self.wait_for_clickable_element_webdriver("//input[@type='password']")
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
+        self.chrome_driver.save_screenshot('image3.png')
 
     def navigate_to_student_sessions(self, premium_id):
         today = datetime.today().strftime('%Y-%m-%d')
@@ -189,6 +192,7 @@ class Stagingtlms:
     def get_otp(self,cc,mobile_num):
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
+        self.chrome_driver.save_screenshot('image5.png')
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
         self.wait_for_clickable_element_webdriver("//li[@id='mobile_otps']")
         self.chrome_driver.find_element_by_xpath("//li[@id='mobile_otps']").click()

@@ -135,62 +135,63 @@ def pytest_bdd_step_error(request ,feature, step):
     py_test.exception = True
     py_test.failed_step_name = step.name
     suite_name = os.getenv('suite')
-    if get_custom_field_scenario(suite_name, step.name, "24"):
-        e_type, value, tb = sys.exc_info()
-        summaries = traceback.format_exception(e_type, value, tb)
-        prj_path_only = os.path.abspath(os.getcwd() + "/../..")
-        feature_name = feature.name
-        testing_device = request.getfixturevalue("driver").capabilities['browserName']
-        app_version = request.getfixturevalue("driver").capabilities['browserVersion']
-        step_name = step.name
-        data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
-        print("\nTestcase executed: %s" % step.name)
-        if py_test.__getattribute__("exception") or value:
-            trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
-            _exception = list(filter(lambda summary:
-                                     prj_path_only in summary or
-                                     summaries.index(summary) == 0 or
-                                     ("exception" in summary.lower() and prj_path_only in summary) or
-                                     ("error" in summary.lower() and prj_path_only in summary), summaries))
-            while _exception.count(trc) > 0:
-                _exception.remove(trc)
-            _exception.insert(0, trc)
-            _exception.append(summaries[-1])
-            _exception = "".join(_exception)
-            screenshot_filename = capture_screenshot(request, step_name)
-            if not value:
-                step_name = py_test.__getattribute__('failed_step_name')
-            else:
-                step_name = py_test.__getattribute__('step_name')
-            stdout_err = (
-                    "\n" + "=" * 100 +
-                    "Failures" + "=" * 100 +
-                    "\nFailed Feature Name: %s\nFailed Step Name: %s\n"
-                    % (feature_name, step_name) +
-                    "-" * 50 + "Test Exception" + "-" * 50 + "\n" + _exception +
-                    "=" * 100 + "Failures" + "=" * 100
-            )
-            sys.stderr.writelines(stdout_err)
-            update_testrail(data[1], data[0], False, step_name, _exception, '', testing_device, app_version)
+    if suite_name == "Neo Classes Web":
+        if get_custom_field_scenario(suite_name, step.name, "24"):
+            e_type, value, tb = sys.exc_info()
+            summaries = traceback.format_exception(e_type, value, tb)
+            prj_path_only = os.path.abspath(os.getcwd() + "/../..")
+            feature_name = feature.name
+            testing_device = request.getfixturevalue("driver").capabilities['browserName']
+            app_version = request.getfixturevalue("driver").capabilities['browserVersion']
+            step_name = step.name
+            data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
+            print("\nTestcase executed: %s" % step.name)
+            if py_test.__getattribute__("exception") or value:
+                trc = re.findall(r'Traceback.*', ''.join(summaries))[-1] + "\n"
+                _exception = list(filter(lambda summary:
+                                         prj_path_only in summary or
+                                         summaries.index(summary) == 0 or
+                                         ("exception" in summary.lower() and prj_path_only in summary) or
+                                         ("error" in summary.lower() and prj_path_only in summary), summaries))
+                while _exception.count(trc) > 0:
+                    _exception.remove(trc)
+                _exception.insert(0, trc)
+                _exception.append(summaries[-1])
+                _exception = "".join(_exception)
+                screenshot_filename = capture_screenshot(request, step_name)
+                if not value:
+                    step_name = py_test.__getattribute__('failed_step_name')
+                else:
+                    step_name = py_test.__getattribute__('step_name')
+                stdout_err = (
+                        "\n" + "=" * 100 +
+                        "Failures" + "=" * 100 +
+                        "\nFailed Feature Name: %s\nFailed Step Name: %s\n"
+                        % (feature_name, step_name) +
+                        "-" * 50 + "Test Exception" + "-" * 50 + "\n" + _exception +
+                        "=" * 100 + "Failures" + "=" * 100
+                )
+                sys.stderr.writelines(stdout_err)
+                update_testrail(data[1], data[0], False, step_name, _exception, '', testing_device, app_version)
 
 
 def pytest_bdd_after_step(request, step):
-    #  "custom_merged_case": null or "custom_merged_case": 1
     suite_name = os.getenv('suite')
-    if get_custom_field_scenario(suite_name, step.name, "24"):
-        from pytest_check.check_methods import get_failures,clear_failures
-        failures = get_failures()
-        testing_device = request.getfixturevalue("driver").capabilities['browserName']
-        app_version = request.getfixturevalue("driver").capabilities['browserVersion']
-        step_name = step.name
-        data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
-        print("\nTestcase executed: %s" % step.name)
-        if len(failures) != 0:
-            update_testrail(data[1], data[0], False, step_name, failures, '', testing_device, app_version)
-            clear_failures()
-        else:
-            msg_body = "testcase passed successfully"
-            update_testrail(data[1], data[0], True, '', msg_body, '', testing_device, app_version)
+    if suite_name == "Neo Classes Web":
+        if get_custom_field_scenario(suite_name, step.name, "24"):
+            from pytest_check.check_methods import get_failures,clear_failures
+            failures = get_failures()
+            testing_device = request.getfixturevalue("driver").capabilities['browserName']
+            app_version = request.getfixturevalue("driver").capabilities['browserVersion']
+            step_name = step.name
+            data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
+            print("\nTestcase executed: %s" % step.name)
+            if len(failures) != 0:
+                update_testrail(data[1], data[0], False, step_name, failures, '', testing_device, app_version)
+                clear_failures()
+            else:
+                msg_body = "testcase passed successfully"
+                update_testrail(data[1], data[0], True, '', msg_body, '', testing_device, app_version)
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
@@ -216,12 +217,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         scenario_name = scenario.name
         elapsed = int(time.time() - py_test.__getattribute__('start'))
         elapsed_time = str(elapsed) + 's'
-        # suite_name = "Byju's Classes"
-        if suite_name == "Byju's Classes":
-            testing_device = request.getfixturevalue("driver").session['deviceModel']
-            app_version = baseClass.get_current_app_version()
-        else:
-            raise NotImplementedError()
+        testing_device = request.getfixturevalue("driver").session['deviceModel']
+        app_version = baseClass.get_current_app_version()
         data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
         print("\nTestcase executed: %s" %scenario_name)
         if py_test.__getattribute__("exception") or value:

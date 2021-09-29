@@ -157,7 +157,7 @@ def step_impl(student1_login):
 @given("tutor start the session")
 def step_impl(neo_tute):
     neo_tute.start_neo_session()
-    # neo_tute.present_any_slide(1)
+    neo_tute.select_focus_mode('off')
 
 
 @when('click on "JOIN" button in home page')
@@ -201,15 +201,15 @@ def step_impl(student1_neo):
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_mic('OFF')
     student1_neo.turn_on_off_student_video('OFF')
-    students_audio_status = student1_neo.get_student_audio_status()
-    students_video_status = student1_neo.get_student_video_status()
-    check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    students_audio_status_before = student1_neo.get_student_audio_status()
+    students_video_status_before = student1_neo.get_student_video_status()
+    check.equal(students_audio_status_before['You'] is False and students_video_status_before['You'] is False, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
     student1_neo.turn_on_off_student_mic('ON')
     student1_neo.turn_on_off_student_video('ON')
-    students_audio_status = student1_neo.get_student_audio_status()
-    students_video_status = student1_neo.get_student_video_status()
-    check.equal(students_video_status['You'] is True and students_audio_status['You'] is True, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    students_audio_status_after = student1_neo.get_student_audio_status()
+    students_video_status_after = student1_neo.get_student_video_status()
+    check.equal(students_audio_status_after['You'] is True and students_video_status_after['You'] is True, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then("Verify that video of student is not displayed when camera is turned off by the student")
