@@ -61,17 +61,11 @@ def student2_neo(request, student2):
 @given("Launch the application online")
 def login_as_neo_user(student1_login):
     student1_login.login_and_navigate_to_home_screen('+91-', '2011313229', otp=None)
-    # student1_login.login_and_navigate_to_home_screen('+91-', '2016795330', otp=None)
-
-
-@given("Launch the application online as 2nd user")
-def login_as_neo_user(student1_login):
-    student1_login.login_and_navigate_to_home('+91-', '2011313229', otp=None)
 
 
 @given("Launch the application online in mobile")
 def login_as_neo_user(student1_login):
-    student1_login.login_for_neo_class_mweb('+91-', '2016795330', otp=None)
+    student1_login.login_for_neo_class_mweb('+91-', '2011313229', otp=None)
 
 @given("tutor start the session")
 def step_impl(neo_tute):

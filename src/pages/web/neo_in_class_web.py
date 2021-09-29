@@ -667,9 +667,9 @@ class NeoInClass(CommonMethodsWeb):
     def is_session_topic_inclass_present(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
         if self.obj.is_element_present(('xpath', self.session_topic_inclass)):
-            return ReturnType(True, 'weak signal indicator is displayed')
+            return ReturnType(True, 'session topic is displayed')
         else:
-            return ReturnType(False, 'weak signal indicator is not present')
+            return ReturnType(False, 'session topic is not present')
 
     def get_session_topic_name_inclass(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
