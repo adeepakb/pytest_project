@@ -172,6 +172,17 @@ class NeoInClass(CommonMethodsWeb):
         self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
 
+#inclass
+        self.weak_signal_indicator = '//*[@class="neo_cl_SignalStrength--text weak"]'
+        self.students_right_arrow = '//div[contains(@class,"streamList__scrollerBtns streamList__scrollerBtns--right")]'
+        self.students_left_arrow = '//div[contains(@class,"streamList__scrollerBtns streamList__scrollerBtns--left")]'
+        self.discuss_doubt_msg = '//div[@class="bottomContainer__requestMessage"]'
+        self.play_video_btn = "//*[contains(@src,'/static/media/playVideo')]"
+        self.pause_video_btn = "//*[contains(@src,'/static/media/pauseVideo')]"
+        self.mic_disabled_by_tutor = '(//*[contains(@src,"/static/media/mic_off_icon_gray")])[1]'
+        self.student_cam_on = '//img[contains(@src,"/static/media/cam-on")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.student_speaking = "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass']"
+
     def home_click_on_join(self):
         self.obj.wait(2)
         self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
@@ -252,7 +263,10 @@ class NeoInClass(CommonMethodsWeb):
     # focus mode
     def is_focus_mode_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.focus_mode_icon)
-        return self.obj.is_element_present(('xpath', self.focus_mode_icon))
+        if self.obj.is_element_present(('xpath', self.focus_mode_icon)):
+            return ReturnType(True, 'focus mode is displayed')
+        else:
+            return ReturnType(False, 'focus mode is not present')
 
     def focus_mode_class_info(self):
         element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
@@ -652,7 +666,10 @@ class NeoInClass(CommonMethodsWeb):
     # session details
     def is_session_topic_inclass_present(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
-        return self.obj.is_element_present(('xpath', self.session_topic_inclass))
+        if self.obj.is_element_present(('xpath', self.session_topic_inclass)):
+            return ReturnType(True, 'session topic is displayed')
+        else:
+            return ReturnType(False, 'session topic is not present')
 
     def get_session_topic_name_inclass(self):
         self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
@@ -761,9 +778,11 @@ class NeoInClass(CommonMethodsWeb):
 
     def verify_text_in_Thank_you_popup(self):
         self.obj.wait_for_locator_webdriver(self.text_in_thank_you_popup)
-        ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup)).text
-        flag = "Thank you for your feedback!" in ele
-        check.equal(flag, True, "the text in popup doesn't match")
+        ele = self.obj.get_element(('xpath', self.text_in_thank_you_popup))
+        if "Thank you for your feedback!" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
 
     # in class presentation
     def is_image_presented(self):
@@ -1344,12 +1363,6 @@ class NeoInClass(CommonMethodsWeb):
 
     def is_reaction_icon_disbled(self):
         self.obj.wait_for_locator_webdriver(self.celebrations_icons)
-        # ele = self.obj.get_element(('xpath', self.celebrations_icons))
-        # if ele.enabled():
-        #     return ReturnType(True, 'celebrations are disabled')
-        # else:
-        #     return ReturnType(False, 'celebrations are enabled')
-        #
         element = self.obj.get_element(('xpath', self.celebrations_icons))
         parent_classname = self.driver.execute_script('return arguments[0].parentNode.className', element)
         if 'Button--disabled' in parent_classname:
@@ -1363,7 +1376,7 @@ class NeoInClass(CommonMethodsWeb):
     def verify_student_count(self, element_type):
         element = self.obj.get_element(("xpath", self.session_topic_inclass))
         if element_type.lower() == 'students count':
-            student_count = self.obj.get_child_element(element, "xpath", self.student_count).text
+            student_count = self.obj.get_element(("xpath", self.chat_member_count)).text
             flag = (int(student_count) > 0)
             return ReturnType(True, "Student number is greaater") if flag else ReturnType(False,
                                                                                           "Student number is greater")
@@ -1432,3 +1445,62 @@ class NeoInClass(CommonMethodsWeb):
                         break
         except:
             pass
+
+    def is_weak_signal_present(self):
+        self.obj.wait_for_locator_webdriver(self.weak_signal_indicator)
+        if self.obj.is_element_present(('xpath', self.weak_signal_indicator)):
+            return ReturnType(True, 'weak signal indicator is displayed')
+        else:
+            return ReturnType(False, 'weak signal indicator is not present')
+
+    def is_discuss_doubt_msg_present(self):
+        self.obj.wait_for_locator_webdriver(self.discuss_doubt_msg)
+        ele = self.obj.get_element(('xpath', self.discuss_doubt_msg))
+        if "Tutor want to discuss doubt with you. Please turn on your mic and camera" in ele.text:
+            return ReturnType(True, 'the text in popup doesnt match')
+        else:
+            return ReturnType(False, 'the text in popup doesnt match')
+
+    def click_on_hand_raise(self):
+        time.sleep(5)
+        self.obj.wait_for_clickable_element_webdriver(self.handraise_icon)
+        self.obj.element_click(('xpath', self.handraise_icon))
+
+    def is_play_pause_btn_present(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_icon)
+        if self.obj.is_element_present(('xpath', self.pause_video_btn)) or self.obj.is_element_present(('xpath', self.play_video_btn)):
+            return ReturnType(True, 'play or pause btn is displayed')
+        else:
+            return ReturnType(False, 'play or pause btn is not present')
+
+    def mic_cam_status_in_focus_mode(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_icon)
+        if self.obj.is_element_present(('xpath', self.mic_disabled_by_tutor)) and \
+                self.obj.is_element_present(('xpath', self.student_video_off)) or \
+                self.obj.is_element_present(('xpath', self.student_cam_on)):
+            return ReturnType(True, 'mic and cam status are displayed as expected')
+        else:
+            return ReturnType(False, 'mic and cam status are not displayed as expected')
+
+    def is_student_speaking(self):
+        self.obj.wait_for_locator_webdriver(self.student_speaking)
+        if self.obj.is_element_present(('xpath', self.student_speaking)):
+            return ReturnType(True, 'student audio is on and speaking')
+        else:
+            return ReturnType(False, 'none of the students are speaking')
+
+
+    def verify_users_in_chronological_order(self, user1, user2, user3):
+        users = self.obj.get_elements(('xpath', '//div[contains(@class,"streamNameClass")]'))
+        user_name = [user1, user2, user3]
+        for i,user in enumerate(users):
+            print(user.text)
+            if user_name[i] == user.text:
+               print(user_name[i])
+            else:
+                return ReturnType(False, 'users are not in chronological order')
+
+        return ReturnType(True, 'users are in chronological order')
+
+
+
