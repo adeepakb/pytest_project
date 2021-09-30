@@ -37,7 +37,7 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	And Verify that user is able to rejoin the session after exiting the session
 
 
-Scenario: Verify hand raise,focus mode,network issues in neo
+Scenario: Verify hand raise,focus mode on/off,network issues in neo during video session
 	Given launch the application online as neo user and navigate to home screen
 	And tutor start the session
 	When click on "JOIN" button in home page

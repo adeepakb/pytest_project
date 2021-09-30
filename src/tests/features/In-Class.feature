@@ -1,6 +1,6 @@
 Feature:  In-Class
 
-Scenario: Verify video session is being presented,full screen, default screen,student video/audio scenarios, stay back and exit class options in neo
+Scenario: Verify default alignment for multi users, student and tutor audio/video toggle,browser performance,student thumbnail for neo
 	Given launch the application online as neo user and navigate to home screen
 	And tutor start the session
 	When click on "JOIN" button in home page
