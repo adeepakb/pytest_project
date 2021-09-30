@@ -6,10 +6,13 @@ from PIL import Image
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+
 from utilities.common_methods_web import CommonMethodsWeb
 import pytest_check as check
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as ec
 
 from utilities.staging_tlms import Stagingtlms
 
@@ -62,6 +65,7 @@ class NeoInClass(CommonMethodsWeb):
         self.student_video = '//img[contains(@src,"/static/media/cam")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_audio = '//img[contains(@src,"/static/media/mic")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_video_off = '//img[contains(@src,"/static/media/cam-off")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
+        self.thumbs_sticker_icon = '//img[contains(@src,"/static/media/thumbDark")]/parent::div[contains(@class,"iconWrapper icon icon--marginLeft icon--whitebg")]'
         self.student_audio_off = '//img[contains(@src,"/static/media/mic-off")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_video_off_by_tutor = '//img[contains(@src,"/static/media/camera-off-gray-icon")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_audio_off_by_tutor = '//img[contains(@src,"/static/media/mic_off_icon_gray")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
@@ -140,7 +144,8 @@ class NeoInClass(CommonMethodsWeb):
         self.mic_video_buttons_on_join_screen = "//div[@class = 'stream--overlay_icon']"
         self.sticker_onchat = "//div[@class= 'message']"
         self.emoji_icon = "//*[@class='emoji']"
-        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        self.raise_hand_button = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        #self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
         self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
 
@@ -176,7 +181,6 @@ class NeoInClass(CommonMethodsWeb):
         self.clap_btn = "//img[contains(@src,'/static/media/classes-emoji-clap')]"
         self.heart_btn = "//img[contains(@src,'/static/media/classes-emoji-heart')]"
         self.curious_btn = "//img[contains(@src,'/static/media/classes-emoji-curious')]"
-        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
 
 
@@ -958,7 +962,7 @@ class NeoInClass(CommonMethodsWeb):
         for chat_item in chats:
             if chat_item[1] == text:
                 return ReturnType(True, " Chat text is found")
-        return ReturnType(True, "Chat text is not found")
+        return ReturnType(False, "Chat text is not found")
 
     def verify_chat_elements(self):
         try:
@@ -1164,8 +1168,8 @@ class NeoInClass(CommonMethodsWeb):
 
     def raise_hand(self):
         self.wait_for_element_visible(
-            (("xpath", self.raise_hand)))
-        self.get_element(("xpath", self.raise_hand)).click()
+            (("xpath", self.raise_hand_button)))
+        self.get_element(("xpath", self.raise_hand_button)).click()
 
     def unraise_hand(self):
         if self.verify_hand_is_raised().result:
@@ -1199,9 +1203,10 @@ class NeoInClass(CommonMethodsWeb):
 
     def current_student_has_video_enlarged(self):
         try:
-
-            text = self.get_element(("xpath",
+            self.wait_for_element_visible(("xpath",
                                      "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']"))
+            text = self.get_element(("xpath",
+                                     "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']")).text
             if text.lower() == 'you':
                 return ReturnType(True, "Current student has video enlarged")
             else:
@@ -1220,8 +1225,8 @@ class NeoInClass(CommonMethodsWeb):
             self.element_click(("xpath", self.session_topic_icon))
 
     def hover_over_reaction_button(self):
-        elements = self.get_elements(("xpath", "//div[@class = 'iconWrapper icon icon--marginRight icon--off']"))
-        self.action.move_to_element(elements[1]).perform()
+        element = self.get_element(("xpath", self.thumbs_sticker_icon))
+        self.action.move_to_element(element).click().perform()
 
     def verify_info_pop_up(self, subject_name='Biology: Control and Coordination'):
         try:
@@ -1557,3 +1562,43 @@ class NeoInClass(CommonMethodsWeb):
                     return ReturnType(False, "Student card is not shown with name {}".format(student_name))
             except:
                 return ReturnType(False, "Student card is not shown with name {}".format(student_name))
+
+    def verify_hands_down_message(self):
+        try:
+            self.wait_for_element_visible(("xpath","//div[@class = 'messageClass__toastContent']"))
+            flag = self.get_element(("xpath","//div[@class = 'messageClass__toastContent']")).is_displayed()
+            return ReturnType(True, "Tutor hands down message is displayed") if flag else ReturnType(False, "Tutor hands down message is not displayed")
+        except:
+            return ReturnType(False, "Tutor hands down message is not displayed")
+
+    def verify_thumbs_reaction_icon_displayed(self):
+        try:
+            flag = self.get_element(("xpath",self.thumbs_sticker_icon)).is_displayed()
+            return ReturnType(True,"Thumb icon is displayed") if flag else ReturnType(False,"Thumb icon is not being displayed")
+
+        except:
+            return ReturnType(False, "Thumb icon is not being displayed")
+
+    def click_on_reaction_thumb_icon(self):
+        self.wait_for_element_visible(("xpath", self.thumbs_sticker_icon))
+        self.get_element(("xpath", self.thumbs_sticker_icon)).click()
+
+    def is_chat_disabled_message_dislayed(self, message = 'Live Chat is disabled'):
+        try:
+            text = self.get_element(("xpath", "//div[@class = 'chatFooter']")).text
+            return ReturnType(True, "Chat disabled message is displayed") if text == message else  ReturnType(False, "Chat disabled message is now displayed")
+        except:
+            return ReturnType(False, "Chat disabled message is not displayed")
+
+
+    def verify_other_student_mic_cam_cannt_be_controlled(self):
+        try:
+            WebDriverWait(self.driver, 2).until(
+                ec.element_to_be_clickable((By.XPATH, "neo_cl_StreamCard__icon--withRebBg neo_cl_StreamCard__icon")))
+            return ReturnType(False, "other student mic camera are controllable")
+        except:
+            return ReturnType(True, "other student mic camera are not controllable")
+
+
+
+

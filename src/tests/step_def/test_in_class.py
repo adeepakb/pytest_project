@@ -1,6 +1,8 @@
 from pytest_bdd import scenarios, given, when, then, parsers
 from pytest import fixture
 
+from constants.constants import Login_Credentials
+from constants.load_json import get_data
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.factory.neo_inclass_factory import NeoInClassFactory
@@ -16,17 +18,6 @@ scenarios('../features/' + feature_file_name + '.feature')
 def test_tut(driver):
     test_tut = NeoTute(driver)
     yield test_tut
-
-
-@fixture()
-def test_student_2(request, driver):
-    platform_list = request.config.getoption("--platform")
-    if Platform.ANDROID.name in platform_list:
-        test_student_2 = NeoInClassFactory().get_page(driver, Platform.ANDROID.value)
-        yield test_student_2
-    elif Platform.WEB.name in platform_list:
-        test_student_2 = NeoInClassFactory().get_page(driver, Platform.WEB.value)
-        yield test_student_2
 
 
 @fixture()
@@ -51,9 +42,120 @@ def login_in(request, driver):
         yield login_in
 
 
+@fixture()
+def student2(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student2
+    elif Platform.WEB.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student2
+
+
+@fixture()
+def student2_neo(request, student2):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.ANDROID.value)
+        yield student2_neo
+    elif Platform.WEB.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.WEB.value)
+        yield student2_neo
+
+
+@fixture()
+def student3(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student3 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student3
+    elif Platform.WEB.name in platform_list:
+        student3 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student3
+
+
+@fixture()
+def student3_neo(request, student3):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student3_neo = NeoInClassFactory().get_page(student3.driver, Platform.ANDROID.value)
+        yield student3_neo
+    elif Platform.WEB.name in platform_list:
+        student3_neo = NeoInClassFactory().get_page(student3.driver, Platform.WEB.value)
+        yield student3_neo
+
+@fixture()
+def student4(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student4 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student4
+    elif Platform.WEB.name in platform_list:
+        student4 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student4
+
+
+@fixture()
+def student4_neo(request, student4):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student4_neo = NeoInClassFactory().get_page(student4.driver, Platform.ANDROID.value)
+        yield student4_neo
+    elif Platform.WEB.name in platform_list:
+        student4_neo = NeoInClassFactory().get_page(student4.driver, Platform.WEB.value)
+        yield student4_neo
+
+
+@fixture()
+def student5(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student5 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student5
+    elif Platform.WEB.name in platform_list:
+        student5 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student5
+
+
+@fixture()
+def student5_neo(request, student5):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student5_neo = NeoInClassFactory().get_page(student5.driver, Platform.ANDROID.value)
+        yield student5_neo
+    elif Platform.WEB.name in platform_list:
+        student5_neo = NeoInClassFactory().get_page(student5.driver, Platform.WEB.value)
+        yield student5_neo
+
+
+@fixture()
+def student6(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student6 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student6
+    elif Platform.WEB.name in platform_list:
+        student6 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student6
+
+
+@fixture()
+def student6_neo(request, student6):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student6_neo = NeoInClassFactory().get_page(student6.driver, Platform.ANDROID.value)
+        yield student6_neo
+    elif Platform.WEB.name in platform_list:
+        student6_neo = NeoInClassFactory().get_page(student6.driver, Platform.WEB.value)
+        yield student6_neo
+
+
+
 @given("Student launches in-class and navigate to home page")
 def step_impl(login_in):
-    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
+    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("student navigates to byjus classes screen")
@@ -69,7 +171,7 @@ def step_impl(neo_in_class):
 
 @given("tutor start the session")
 def step_impl(test_tut):
-    test_tut.start_neo_session()
+    test_tut.start_neo_session(login_data="neo_login_detail2", user='student1')
 
 
 @when("tutor turns off his video")
@@ -263,13 +365,69 @@ def step_impl(neo_in_class):
 
 @then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text "Lower Hand" button should again change to "Raise Hand" and button goes to default state')
 def step_impl(neo_in_class):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     neo_in_class.raise_hand()
-    test_tut.click_on_menu_option(expected_student_name='Swastika1', menu_item='Hands Down')
+    test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
     detail = neo_in_class.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 
+
 @then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail")
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_hand_is_raised_for_student(student_name='Test 7')
+def step_impl(neo_in_class, student2_neo, student2):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
+    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+    student2_neo.home_click_on_join()
+    student2_neo.join_neo_session()
+    student2_neo.raise_hand()
+    detail = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
+    check.equal(detail.result, True, detail.reason)
+
+
+@then("Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail")
+def step_impl(neo_in_class, student2_neo, student2):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
+    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+    student2_neo.home_click_on_join()
+    student2_neo.join_neo_session()
+    student2_neo.unraise_hand()
+    detail = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
     check.equal(detail.result, False, detail.reason)
+
+@then('Verify the status of "Lower Hand" button if a student has raised hand and then drops from session, the tutor lowers the hand for that student and then the student rejoins the class')
+def step_impl(neo_in_class, student2_neo, student2,test_tut):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
+    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+    student2_neo.home_click_on_join()
+    student2_neo.join_neo_session()
+    student2_neo.raise_hand()
+    test_tut.click_on_menu_option(expected_student_name=student2_details['name'], menu_item='Hands Down')
+    detail= student2_neo.verify_hands_down_message()
+    check.equal(detail.result, False, detail.reason)
+
+@then('Verify that "Thumbs Up" button is present at the bottom of the screen')
+def step_impl(neo_in_class):
+    detail = neo_in_class.verify_thumbs_reaction_icon_displayed()
+    check.equal(detail.result,True, detail.reason)
+
+
+@then('Verify that clicking on "Thumbs Up" icon expands the expression tab and list of expressions are displayed')
+def step_impl(neo_in_class):
+    neo_in_class. click_on_reaction_thumb_icon()
+    detail = neo_in_class.is_reactions_icons_present()
+    check.equal(detail.result, True, detail.reason)
+
+
+@then("Verify that animation of the expressions on the session screen ")
+@then('Verify that student is able to send expression during the session')
+def step_impl(neo_in_class):
+    neo_in_class.select_any_celebration_symbol(celeb_symbol='clap')
+    detail = neo_in_class.are_emojis_displayed()
+    check.equal(detail.result, True, detail.reason)
+
+
+
+#
+# @then('Verify that "Thumbs Up" button is present at the bottom of the screen')
+# def step_impl(neo_in_class):
+

@@ -90,7 +90,7 @@ class NeoTute(CommonMethodsWeb):
         self.stream_card_profilepic = "//div[@class='neo_cl_VideoContainer__profilePic']"
         self.stream_card_unmute_icon = "//div[contains(@class,'neo_cl_StreamCard__icon--withRebBg neo_cl_StreamCard__icon--unvisible')]"
         self.student_cards = "//div[@class='steamCardContainer']"
-        self.student_card_menu = "//div[contains(@class,'neo_cl_StreamCard__icon--menuOption')]"
+        self.student_card_menu = ".//div[contains(@class,'neo_cl_StreamCard__icon--menuOption')]"
         self.student_card_pin_student_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomLeft')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
         self.student_card_ask_question_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
         self.student_video_container = "//div[@class='neo_cl_VideoContainer']"
@@ -122,6 +122,7 @@ class NeoTute(CommonMethodsWeb):
         self.cam_off = "//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.mic_off = "//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.chat_off = "//img[contains(@src,'chat-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.chat_on = "//img[contains(@src,'chat-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.timer = '//div[@class="topContainer--timer"]'
         self.slides_names = '//div[contains(@class,"slide__slide_name")]'
         self.tutor_card = '//div[@class="tutorCard"]'
@@ -162,8 +163,8 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.sign_in_next)
         self.obj.element_click(('xpath', self.sign_in_next))
 
-    def start_neo_session(self):
-        url = self.tlms.get_tutor_url('neo')
+    def start_neo_session(self,login_data="neo_login_detail1", user='student1'):
+        url = self.tlms.get_tutor_url('neo',login_data= login_data, user=user)
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -319,8 +320,8 @@ class NeoTute(CommonMethodsWeb):
             try:
                 self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
                 self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
-                self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
-                self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
+                # self.obj.enter_text(text, ('xpath', self.type_something_inputcard))
+                # self.obj.enter_text(Keys.RETURN, ('xpath', self.type_something_inputcard))
                 break
             except (NoSuchElementException, ElementNotInteractableException):
                 timeout -= 5
@@ -470,9 +471,11 @@ class NeoTute(CommonMethodsWeb):
         for card in cards:
             actual_student_name = card.text
             if expected_student_name == actual_student_name:
-                menu_icon = card.find_element_by_xpath(self.student_card_menu)
+                menu_icon = self.get_child_element(card,"xpath",self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
-                self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
+                #self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
+                self.wait_for_clickable_element_webdriver(".//div[text()='" + menu_item + "']")
+                self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):
@@ -1006,3 +1009,13 @@ class NeoTute(CommonMethodsWeb):
                 self.action.move_to_element(desired_element).click().perform()
         except:
             pass
+
+    def enable_disable_chat(self, flag = "enable"):
+        if flag == "enable":
+            self.wait_for_clickable_element_webdriver(self.chat_off)
+            self.element_click(("xpath",self.chat_off))
+        else:
+            self.wait_for_clickable_element_webdriver(self.chat_on)
+            self.element_click(("xpath", self.chat_on))
+
+

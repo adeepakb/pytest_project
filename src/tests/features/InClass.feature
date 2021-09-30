@@ -30,4 +30,10 @@ Feature: InClass
 #    Then Verify the "Lower Hand" button doesn't change if reconnection happens due to flaky network
 #    Then Verify the state of "Lower Hand" button if user leaves and then rejoins the session
 #    Then Verify that when student clicks on "Lower Hand" button, button should change to "Raise Hand" button. Also on the chat forum same should be notified as "You lowered hand"
-    Then Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail
+    #Then Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail
+  #Then Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail
+  #Then Verify the status of "Lower Hand" button if a student has raised hand and then drops from session, the tutor lowers the hand for that student and then the student rejoins the class
+#    Then Verify that "Thumbs Up" button is present at the bottom of the screen
+#    Then Verify that clicking on "Thumbs Up" icon expands the expression tab and list of expressions are displayed
+#    Then Verify that student is able to send expression during the session
+#    Then Verify that animation of the expressions on the session screen
