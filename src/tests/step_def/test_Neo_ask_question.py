@@ -431,7 +431,15 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
 
 
 @then("Verify the default alignment of student's thumbnails when five students join and enter the class")
-def step_impl(student5,student5_neo):
+def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo):
+    student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
+    student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
+    student3_neo.home_click_on_join()
+    student3_neo.join_neo_session()
+    student4_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
+    student4.login_and_navigate_to_home_screen(student4_details['code'], student4_details['mobile_no'], otp=None)
+    student4_neo.home_click_on_join()
+    student4_neo.join_neo_session()
     student5_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
     student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
     student5_neo.home_click_on_join()
