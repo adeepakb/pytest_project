@@ -29,8 +29,8 @@ Feature: Chat Forum
     And Verify that tutor's name & tutor tag with time is showing in the chat forum.
     And Verify tutor's thumbnail in the chat forum.
     And Verify message count in Class Forum when tutor send messages
-    Then Verify the message count in tutor's reply when tutor replies to students message.
-    Then Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.
+    And Verify the message count in tutor's reply when tutor replies to students message.
+    And Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.
     Then Verify that students cant type when message is disabled from the tutor's end.
     Then Verify that students chat is disabled and network goes off when he/she rejoin chat must be in disabled state.
     Then Verify that students chat is enabled and network goes off when he/she rejoin chat must be in the same state.
