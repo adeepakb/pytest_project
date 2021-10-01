@@ -34,7 +34,6 @@ Scenario: Verify default alignment for multi users, student and tutor audio/vide
 	And Verify the default alignment of student's thumbnails when five students join and enter the class
 	And Verify the default alignment of student's thumbnails(six students) when they join and enter the class
 	#deepak
-	Then student hover over the info button
     And Verify the tutor's video section when video of the tutor is turned off
     And Verify that tutor's video is not displayed when camera of the tutor is turned off
     And Verify that Tutor's first name is displayed on the tutor's video thumbnail
