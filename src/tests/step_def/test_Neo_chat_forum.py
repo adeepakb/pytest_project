@@ -43,17 +43,6 @@ def student2_neo(request, student2):
 
 
 @fixture()
-def student3(request):
-    platform_list = request.config.getoption("--platform")
-    if Platform.ANDROID.name in platform_list:
-        student3 = LoginFactory().get_page(None, Platform.ANDROID.value)
-        yield student3
-    elif Platform.WEB.name in platform_list:
-        student3 = LoginFactory().get_page(None, Platform.WEB.value)
-        yield student3
-
-
-@fixture()
 def neo_in_class(request, driver):
     platform_list = request.config.getoption("--platform")
     if Platform.ANDROID.name in platform_list:

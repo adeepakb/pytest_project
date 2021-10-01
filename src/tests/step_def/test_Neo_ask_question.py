@@ -216,9 +216,6 @@ def step_impl(neo_in_class):
     check.equal(details.result, True, details.reason)
 
 
-@when("student hover over the info button")
-def step_impl(neo_in_class):
-    neo_in_class.hover_over_info_button()
 
 
 @then("verify info pop_up is shown")
@@ -430,8 +427,9 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
     check.equal(details.result, False, details.reason)
 
 
-@then("Verify the default alignment of student's thumbnails when five students join and enter the class")
-def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo):
+@then("Verify that when a student is on focus mode, five thumbnails should be displayed on the screen.")
+def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo,test_tut):
+    test_tut.select_focus_mode()
     student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
