@@ -429,7 +429,7 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
 
 @then("Verify that when a student is on focus mode, five thumbnails should be displayed on the screen.")
 def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo,test_tut):
-    test_tut.select_focus_mode()
+    test_tut.select_focus_mode(status= 'on')
     student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
@@ -443,3 +443,4 @@ def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo,
     student5_neo.home_click_on_join()
     student5_neo.join_neo_session()
     check.equal(student5_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 5 students join")
+    test_tut.select_focus_mode(status='off')
