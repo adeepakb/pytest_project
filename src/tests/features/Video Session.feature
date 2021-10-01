@@ -4,9 +4,9 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	Given launch the application online as neo user and navigate to home screen
 	And tutor start the session
 	When click on "JOIN" button in home page
-	Then student join neo session
+	And student join neo session
 	And tutor play video in the session and turn off focus mode
-	And Verify that default layout of the screen when session video is playing (not Focused)
+	Then Verify that default layout of the screen when session video is playing (not Focused)
 	And Verify that aspect ratio of the session video window is 16:9 through out the session
 	And Verify that the student is able to "Raise Hand" any time during the video session
 	And Verify that the student is able to "Lower Hand" after raising hand, any time during the video session
@@ -37,12 +37,12 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	And Verify that user is able to rejoin the session after exiting the session
 
 
-Scenario: Verify hand raise,focus mode,network issues in neo
+Scenario: Verify hand raise,focus mode on/off,network issues in neo during video session
 	Given launch the application online as neo user and navigate to home screen
 	And tutor start the session
 	When click on "JOIN" button in home page
-	Then student join neo session
-	And Verify that when focus mode is enabled by tutor the transition of screen from windowed to full screen mode is smooth
+	And student join neo session
+	Then Verify that when focus mode is enabled by tutor the transition of screen from windowed to full screen mode is smooth
 	And Verify that student should not be able to exit focus mode
 	And Verify that aspect ratio of video is maintained in focused mode
 	And Verify that if reconnection happens due to network issue, focus mode is retained when student is back in the session

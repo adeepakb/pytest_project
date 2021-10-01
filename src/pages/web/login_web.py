@@ -22,7 +22,7 @@ class LoginWeb(LoginBase):
             chrome_options.add_argument('--headless')
             chrome_options.add_argument("--use-fake-ui-for-media-stream")
             self.driver = webdriver.Chrome(options=chrome_options)
-        else:
+        else :
             self.driver = driver
         self.obj = CommonMethodsWeb(self.driver)
         self.LOGIN_DETAILS = '../../config/login_data.json'
@@ -222,7 +222,6 @@ class LoginWeb(LoginBase):
         for i in range(mid):
             profile_details.update({profile_items[i], profile_items[i + 1]})
         return profile_details
-
 
     def login_for_neo_class_mweb(self, cc, phone_num, otp):
         self.driver.get('https://learn-staging.byjus.com')

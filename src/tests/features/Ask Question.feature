@@ -22,3 +22,5 @@ Feature: Ask Question
     Then Verify that student should able to ask doubt when the Tutor allow the student to come on the screen
     Then Verify that alignment of the thumbnail when tutor allow student to ask question
     Then Verify that other students should able to hear when a student asks doubts to Tutor
+    Then Verify that when the Tutor remove a student from ask question , the thumbnail should be realigned
+    Then Verify that alignment of the thumbnail when tutor allow student to ask question

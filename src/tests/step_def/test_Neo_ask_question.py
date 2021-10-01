@@ -293,7 +293,8 @@ def step_impl(neo_in_class):
     details = neo_in_class.verify_ask_question_popup_is_displayed()
     check.equal(details.result, True, details.reason)
 
-@then("Verify the Tutor name should display on the screen ")
+
+@then("Verify the Tutor name should display on the screen")
 @then("verify tutor name is shown in tutor box")
 def step_impl(neo_in_class):
     detail = neo_in_class.verify_chat_elements_element_wise(element_type=  "Tutor name")
@@ -418,3 +419,21 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
 def step_impl(student2_neo):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     student2_neo.get_audio_status_of_student(student_name=student1_details['name'])
+
+
+@then("Verify that when the Tutor remove a student from ask question , the thumbnail should be realigned")
+def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
+    test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
+    test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
+    details = neo_in_class.current_student_has_video_enlarged()
+    check.equal(details.result, False, details.reason)
+
+
+@then("Verify the default alignment of student's thumbnails when five students join and enter the class")
+def step_impl(student5,student5_neo):
+    student5_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
+    student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
+    student5_neo.home_click_on_join()
+    student5_neo.join_neo_session()
+    check.equal(student5_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 5 students join")
