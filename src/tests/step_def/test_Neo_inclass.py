@@ -534,6 +534,7 @@ def step_impl(neo_tute, student1_neo):
     check.equal(all(audio_status is not None for audio_status in students_audio_status), True,
                 "Audio/Mic status is displayed for other students on their thumbnail")
 
+@then("Verify that clicking on previous (<) icon should scroll the students thumbnails towards the left and screen should update, right most column moving out of the screen and new column appearing on the left ")
 @then('Verify the functionality when student rejoins after"Tutor want to discuss doubt with you" is triggered')
 def step_impl(neo_tute, student1_neo):
     neo_tute.present_any_slide(2)

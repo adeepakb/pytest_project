@@ -10,6 +10,7 @@ Feature: Chat Forum
     And Verify that "students count" in chat Forum.
     And Verify that "Type Something" in chat Forum.
     And Verify messages when users typed any combination of alphanumeric & special characters in the chat box.
+    And Verify that text wrapping should happen without truncation or spill over the window when texts include multiple lines.
     Then Verify when more than one students sent messages in chat box at the same time.
     And Verify that stickers option when user clicked on expand (upward arrow) beside emojis in chat forum & then selects sticker option.
     And Verify stickers in chat when user selects any sticker from the list.
@@ -20,6 +21,7 @@ Feature: Chat Forum
     And Verify that when student clicks on "Lower Hand" button, button should change to "Raise Hand" button. Also on the chat forum same should be notified as "You lowered hand"
     And Verify that messages should not get posted while user is typing and network goes off.
     And Verify that messages is showing in the chat when user sent & then network goes off.
+    And Verify that by default 2 rows of stickers are showing in sticker menu with a scroll option.
     And Verify typing messages when the network is flaky.
     And Verify that all the messages from tutor side is left aligned.
     And Verify that all the messages from other students side is left aligned.

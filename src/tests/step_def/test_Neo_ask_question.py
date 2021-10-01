@@ -327,7 +327,7 @@ def step_impl(neo_in_class):
     check.equal(details.result, True, details.reason)
 
 
-
+@then("Verify that student should able to ask doubt clicking on the 'Raise hand' option")
 @then("Verify that when the user click on the 'raise hand' the hand icon be displayed on the student’s screen")
 def step_impl(neo_in_class):
     neo_in_class.raise_hand()
@@ -377,7 +377,7 @@ def step_impl(neo_in_class):
     neo_in_class.hover_on_inclass_audio_icon()
     check.equal(neo_in_class.is_turn_on_mic_tooltip_present(), True, "")
 
-
+@then("Verify that a student should not be able to answer other student's questions in the chat")
 @then("Verify that student can't control other student's video & mic when they ask questions")
 def step_impl(neo_in_class):
     neo_in_class.verify_other_student_mic_cam_cannt_be_controlled()

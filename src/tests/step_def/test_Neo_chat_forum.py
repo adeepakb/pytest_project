@@ -227,6 +227,7 @@ def step_impl(neo_in_class):
     check.equal(detail.result, True, detail.reason)
 
 
+@then("Verify that by default 2 rows of stickers are showing in sticker menu with a scroll option.")
 @when("tutor types the chat")
 def step_impl(test_tut):
     test_tut.send_message_in_chat(text="Hi I am tutor")
@@ -410,6 +411,7 @@ def step_impl(neo_in_class,test_tut):
     check.equal(flag, True, "Message count is not increased when tutor replies a message")
 
 
+
 @then('Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.')
 def step_impl(neo_in_class,test_tut):
     test_tut.enable_disable_chat(flag = "disable")
@@ -456,3 +458,6 @@ def step_impl(neo_in_class, test_tut, login_in):
     neo_in_class.join_neo_session()
     detail = neo_in_class.is_chat_disabled_message_dislayed(message='Live Chat is disabled')
     check.equal(detail.result, False , detail.reason)
+
+
+

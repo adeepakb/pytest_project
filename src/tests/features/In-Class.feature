@@ -48,12 +48,14 @@ Scenario: Verify default alignment for multi users, student and tutor audio/vide
     And Verify that when few students drop and total count drops below 7, previous (<) and next (>) icon disappears from below the students video thumbnails
     And Verify that clicking on next (>) icon should scroll the students thumbnails towards the right and screen should update left most column moving out of the screen and new column appearing on the right
     And Verify that next (>) icon is clickable until all thumbnails of students have been displayed
+    And Verify that clicking on previous (<) icon should scroll the students thumbnails towards the left and screen should update, right most column moving out of the screen and new column appearing on the left
     And Verify that previous (<) icon is clickable until the user reaches the first column of the thumbnails
     And Verify that user should be able to use "Raise Hand" functionality anytime during the session
     And Verify that "Raise Hand" button is present at the bottom of the screen next to camera and mic controls
     And Verify that when student clicks on "Raise Hand" button, button should change to "Lower Hand" button. Also on the chat forum same should be notified as "You raised hand"
     And Verify the "Lower Hand" button doesn't change if reconnection happens due to flaky network
     And Verify the state of "Lower Hand" button if user leaves and then rejoins the session
+    And Verify that user should be able to use "Lower Hand" functionality anytime during the session
     And Verify that when student clicks on "Lower Hand" button, button should change to "Raise Hand" button. Also on the chat forum same should be notified as "You lowered hand"
     And Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail
     And Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail
