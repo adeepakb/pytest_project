@@ -211,6 +211,10 @@ class LoginWeb(LoginBase):
         self.click_on_next()
         self.enter_otp(cc, phone_num, otp)
 
+    def relaunch_staging(self):
+        self.driver.get('https://learn-staging.byjus.com')
+        self.driver.maximize_window()
+
     def get_profile_details(self):
         profile_details = {}
         profile_items = self.obj.get_elements(('xpath', "//*[contains(@class,'Connect(t)-label')]"))
