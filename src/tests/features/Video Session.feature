@@ -25,9 +25,6 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	And Verify that aspect ratio of video is maintained in full screen mode
 	And Verify that on hovering/clicking over the video screen while playback is happening in full screen mode, should show all controls; camera, mic, Raise/Lower hand and thumbs up icons
 	And Verify that all above buttons function as intended even when video is playing in full screen mode
-	And Verify the animation of the reactions when students send reactions while on full screen mode, verify that these should not cover the content video or distort the A/V of the on going session
-	And Verify that Subject and Topic name is displayed at the top left corner of the video window, also verify that click in 'i' icon should display the class details
-	And Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, should dismiss the pop-up
 	And Verify that there is a kebab menu at the bottom corner of the session window beside the thumbs up icon which is clickable
 	And Verify that clicking on kebab menu should show "Facing Issue" and "Exit Class" options
 	And Verify that clicking on "Exit Class" option should open confirmation popup
@@ -35,6 +32,9 @@ Scenario: Verify video session is being presented,full screen, default screen,st
 	And Verify that clicking on "Stay Back" option on "Exit Class" confirmation popup, should take the user back to session
 	And Verify that clicking on 'Exit Class' option on 'Exit Class' confirmation popup, should exit the session to Byju's classes page
 	And Verify that user is able to rejoin the session after exiting the session
+	And Verify that Subject and Topic name is displayed at the top left corner of the video window, also verify that click in 'i' icon should display the class details
+	And Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, should dismiss the pop-up
+	And Verify the animation of the reactions when students send reactions while on full screen mode, verify that these should not cover the content video or distort the A/V of the on going session
 
 
 Scenario: Verify hand raise,focus mode on/off,network issues in neo during video session

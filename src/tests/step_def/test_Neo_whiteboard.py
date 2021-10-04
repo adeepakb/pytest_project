@@ -1,4 +1,4 @@
-from pytest_bdd import scenarios, given, then, when, parsers
+from pytest_bdd import scenarios, given, then, when
 from pytest import fixture
 from constants.constants import Login_Credentials
 from constants.load_json import get_data
@@ -57,11 +57,15 @@ def step_impl(neo_in_class):
 
 @when("student join neo session")
 def step_impl(neo_in_class):
-    neo_in_class.join_neo_session()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
 
 
 @then("Verify the elements in default whiteboard screen when user lands on.")
-def step_impl(neo_in_class):
+def step_impl(neo_tute,neo_in_class):
+    n = 1
+    neo_tute.present_any_slide(n)
+    neo_tute.click_on_add_slide()
+    neo_tute.present_any_slide(n + 1)
     details = neo_in_class.presentation_alignment()
     check.equal(details.result, True, details.reason)
 
@@ -90,21 +94,22 @@ def step_impl(neo_tute,neo_in_class):
 @then("Verify the tutor's video section when video of the tutor is turned off in the right side.")
 def step_impl(neo_tute,neo_in_class):
     neo_tute.turn_tutor_video_on_off(status='off')
-    details = neo_in_class.is_tutor_video_on()
-    check.equal(details.result, False,details.reason)
+    neo_in_class.verify_tutor_ui_elements()
+    tutor_video_details = neo_in_class.is_tutor_video_on()
+    check.equal(tutor_video_details.result, False,tutor_video_details.reason)
 
 
 @then("Verify the tutor's audio/video quality when network is flaky.")
 def step_impl(neo_tute,neo_in_class):
     neo_tute.turn_tutor_video_on_off(status='on')
     neo_in_class.set_wifi_connection_off()
+    neo_in_class.verify_tutor_ui_elements()
     tutor_video_details =neo_in_class.is_tutor_video_on()
     check.equal(tutor_video_details.result, True, tutor_video_details.reason)
     tutor_audio_details = neo_in_class.is_tutor_mute()
     check.equal(tutor_audio_details.result == False, True,tutor_audio_details.reason)
 
 
-# need to update
 @then('Verify the "Lower Hand" button doesnt change if reconnection happens due to flaky network.')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_hand_raised(),True,"User able to hand raise")
@@ -130,8 +135,7 @@ def step_impl(neo_in_class):
 
 @then("Verify that student cant control other student's camera & mic.")
 def step_impl(neo_in_class):
-    check.equal(neo_in_class.global_video_icon_present() == neo_in_class.global_audio_icon_present() == False,
-                True, "Student cant control other student's camera & mic")
+    check.equal(neo_in_class.global_video_icon_present() == neo_in_class.global_audio_icon_present() == False,True, "Student cant control other student's camera & mic")
 
 
 @then("Verify that if student joins the session during Whiteboard presentation, already entered texts, shapes, markers are also visible to the students")
@@ -140,28 +144,26 @@ def verify_whiteboard_contents(neo_tute,neo_in_class):
     neo_tute.click_on_clear_icon()
     neo_tute.draw_shapes_on_neo_tutor_whiteboard()
     neo_tute.perform_text_action_on_neo_tutor_whiteboard('Welcome')
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'rectangle', 'triangle']), True,
-                "Whiteboard presentation shapes are also visible to the students")
-    check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,
-                "Whiteboard presentation text visible to the students")
+    check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
 @then('Verify that alignment of texts, handwritten shapes, markers on Whiteboard presentation in different browser window sizes')
 def step_impl(neo_in_class):
-    verify_whiteboard_contents()
-    neo_in_class.change_browser_size(1600, 900)
-    verify_whiteboard_contents()
-    neo_in_class.change_browser_size(800, 450)
-    verify_whiteboard_contents()
-    neo_in_class.change_browser_size()
+    neo_in_class.change_browser_size(1024, 768)
+    check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    neo_in_class.change_browser_size(1080,800)
+    check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    neo_in_class.change_browser_size('default','default')
 
 
 @then('Verify that contents presented on Whiteboard is available if user refreshes/rejoins the session')
 def step_impl(neo_in_class):
     neo_in_class.refresh_and_join_the_session('mic-on', 'cam-on')
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True, "Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'rectangle', 'triangle']), True,
-                "Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
 @then('Verify that contents presented on Whiteboard is available if reconnection happens')
@@ -169,7 +171,6 @@ def step_impl(neo_in_class):
     neo_in_class.set_wifi_connection_off()
     neo_in_class.set_wifi_connection_on()
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True, "Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'rectangle', 'triangle']), True,
-                "Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 

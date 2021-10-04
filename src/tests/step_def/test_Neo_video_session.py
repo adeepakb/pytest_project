@@ -125,7 +125,7 @@ def step_impl(neo_in_class):
       'initials of their name is displayed on the thumbnail')
 def step_impl(neo_in_class):
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False, True , "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
+    check.equal(students_video_status['You'], False , "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
 
 
 @then('Verify that when control is not on the video window, '
@@ -165,18 +165,11 @@ def step_impl(neo_in_class):
 @then('Verify that all above buttons function as intended even when video is playing in full screen mode')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_hand_raised(),True,"User able to hand raise")
-    neo_in_class.click_on_thumb_icon()
-    check.equal(neo_in_class.select_any_celebration_symbol('heart'),True,"User able to send celebration")
-    neo_in_class.tap_outside_dialog_layout()
     neo_in_class.turn_on_off_student_mic('ON')
     neo_in_class.turn_on_off_student_video('ON')
     students_audio_status = neo_in_class.get_student_audio_status()
     students_video_status = neo_in_class.get_student_video_status()
     check.equal(students_audio_status['You'] is True and students_video_status['You'] is True, True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
-    neo_in_class.click_on_kebab_menu()
-    check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),
-                True, "Kebab menu is clickable and options are present")
-    neo_in_class.tap_outside_dialog_layout()
 
 
 @then("Verify that Subject and Topic name is displayed at the top left corner of the video window, "
@@ -192,13 +185,16 @@ def step_impl(neo_in_class):
 
 @then("Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, should dismiss the pop-up")
 def step_impl(neo_in_class):
-    neo_in_class.tap_outside_dialog_layout()
+    neo_in_class.click_on_class_info_icon()
     check.equal(neo_in_class.is_class_info_popup_present(),False,"Class Info pop up not dismissed, on clicking outside pop-up")
+    # neo_in_class.do_full_screen_presentation()
 
 
 @then("Verify that there is a kebab menu at the bottom corner of the session window beside the thumbs up icon which is clickable")
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
+    check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),
+                True, "Kebab menu is clickable and options are present")
 
 
 @then('Verify that clicking on kebab menu should show "Facing Issue" and "Exit Class" options')
@@ -321,7 +317,7 @@ def step_impl(neo_in_class):
     neo_in_class.tap_outside_dialog_layout()
     neo_in_class.turn_on_off_student_video('OFF')
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False, True,"User able to update camera status")
+    check.equal(students_video_status['You'], False,"User able to update camera status")
     neo_in_class.turn_on_off_student_video('ON')
     neo_in_class.click_on_kebab_menu()
     check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),True, "Kebab menu is clickable and options are present")

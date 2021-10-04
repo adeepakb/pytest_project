@@ -21,21 +21,25 @@ from constants.test_management import *
 baseClass = BaseClass()
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def setup_teardown():
-#     # feature_job.build_and_install_apk()
-#     job_start_time = time.time()
-#     pass
-#     yield
-#     # Get total execution time
-#     job_total_execution_time = str(datetime.timedelta(seconds=int(time.time() - job_start_time)))
-#     print(job_total_execution_time)
-#     # Update execution time to testrail for android test run. Create report on demand via  API at the end of the session
-#     suitename = os.getenv('suite')
-#     if suitename == "Byju's Classes":
-#         update_run_for_execution_time('503', job_total_execution_time)
-#         report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
-#         run_testrail_reports(report_id)
+@pytest.fixture(scope="session", autouse=True)
+def setup_teardown():
+    # feature_job.build_and_install_apk()
+    job_start_time = time.time()
+    pass
+    yield
+    # Get total execution time
+    job_total_execution_time = str(datetime.timedelta(seconds=int(time.time() - job_start_time)))
+    print(job_total_execution_time)
+    # Update execution time to testrail for android test run. Create report on demand via  API at the end of the session
+    suitename = os.getenv('suite')
+    if suitename == "Byju's Classes":
+        update_run_for_execution_time('503', job_total_execution_time)
+        report_id = get_testrail_reports(24, "Daily Regression automation report For Neo Classes Web %date%")
+        run_testrail_reports(report_id)
+    elif suitename == "Neo Classes Web":
+        update_run_for_execution_time('1434', job_total_execution_time)
+        report_id = get_testrail_reports(24, "Daily automation report For Neo Classes Web %date%")
+        run_testrail_reports(report_id)
 
 
 def pytest_addoption(parser):
@@ -174,6 +178,9 @@ def pytest_bdd_step_error(request ,feature, step):
                 sys.stderr.writelines(stdout_err)
                 update_testrail(data[1], data[0], False, step_name, _exception, '', testing_device, app_version)
                 add_attachment_to_result(data[0], data[1], screenshot_filename)
+            else:
+                logging.warning("custom_merged_case field is not updated for %s" %step.name)
+
 
 def pytest_bdd_after_step(request, feature, step):
     suite_name = os.getenv('suite')
@@ -195,7 +202,8 @@ def pytest_bdd_after_step(request, feature, step):
             else:
                 msg_body = "testcase passed successfully"
                 update_testrail(data[1], data[0], True, '', msg_body, '', testing_device, app_version)
-
+        else:
+            logging.warning("custom_merged_case field is not updated for %s" % step.name)
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
