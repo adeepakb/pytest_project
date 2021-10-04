@@ -412,7 +412,8 @@ def run_testrail_reports(report_id):
 # to fetch latest result id
 def get_latest_result_id(run_id,case_id):
     client = get_testrail_client()
-    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results_dict = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results = test_results_dict['results']
     for test_result in test_results:
         if test_result is not None:
             print(test_result['id'])

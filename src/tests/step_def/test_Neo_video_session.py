@@ -63,14 +63,15 @@ def step_impl(neo_in_class):
 @when("tutor play video in the session and turn off focus mode")
 def step_impl(neo_tute,neo_in_class):
     neo_tute.present_any_slide(1)
-    neo_tute.present_any_slide(8)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     neo_tute.select_focus_mode('off')
     neo_in_class.turn_on_off_student_mic('ON')
 
 
 @then("Verify that default layout of the screen when session video is playing (not Focused)")
 def step_impl(neo_in_class):
-    details = neo_in_class.video_alignment()
+    details = neo_in_class.presentation_alignment()
     check.equal(details.result, True, details.reason)
 
 
@@ -269,7 +270,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.set_wifi_connection_off()
     neo_in_class.set_wifi_connection_on()
-    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present(), True,"After reconnecting,focus mode is retained")
+    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present().result, True,"After reconnecting,focus mode is retained")
 
 
 @then("Verify that if reconnection happens due to network issue while focus mode is on, "
@@ -295,9 +296,8 @@ def step_impl(neo_in_class):
 @then('Verify that focus mode icon is displayed on the top left corner of the screen when '
       'same is turned on and controls are not active on screen')
 def step_impl(neo_in_class):
-    neo_in_class.is_focus_mode_icon_present()
     details = neo_in_class.focus_mode_bottom_container_not_active()
-    check.equal(details.result,True,details.reason)
+    check.equal(neo_in_class.is_focus_mode_icon_present().result and details.result,True,details.reason)
 
 
 @then(parsers.parse('Verify that on click/hover on the screen indication is present on the '
@@ -354,7 +354,7 @@ def step_impl(neo_in_class):
     neo_in_class.click_on_close_icon_in_rating()
     neo_in_class.home_click_on_join()
     neo_in_class.join_neo_session()
-    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present(), True,"User is in Focus mode")
+    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present().result, True,"User is in Focus mode")
 
 
 @then('Verify the transition of session is smooth when focus mode is turned off by the tutor')

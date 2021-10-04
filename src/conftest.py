@@ -158,7 +158,7 @@ def pytest_bdd_step_error(request ,feature, step):
                 _exception.insert(0, trc)
                 _exception.append(summaries[-1])
                 _exception = "".join(_exception)
-                screenshot_filename = capture_screenshot(request, step_name)
+                screenshot_filename = capture_screenshot(request, feature_name)
                 if not value:
                     step_name = py_test.__getattribute__('failed_step_name')
                 else:
@@ -173,9 +173,9 @@ def pytest_bdd_step_error(request ,feature, step):
                 )
                 sys.stderr.writelines(stdout_err)
                 update_testrail(data[1], data[0], False, step_name, _exception, '', testing_device, app_version)
+                add_attachment_to_result(data[0], data[1], screenshot_filename)
 
-
-def pytest_bdd_after_step(request, step):
+def pytest_bdd_after_step(request, feature, step):
     suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
@@ -184,14 +184,18 @@ def pytest_bdd_after_step(request, step):
             testing_device = request.getfixturevalue("driver").capabilities['browserName']
             app_version = request.getfixturevalue("driver").capabilities['browserVersion']
             step_name = step.name
+            feature_name = feature.name
             data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
             print("\nTestcase executed: %s" % step.name)
             if len(failures) != 0:
+                screenshot_filename = capture_screenshot(request, feature_name)
                 update_testrail(data[1], data[0], False, step_name, failures, '', testing_device, app_version)
                 clear_failures()
+                add_attachment_to_result(data[0], data[1], screenshot_filename)
             else:
                 msg_body = "testcase passed successfully"
                 update_testrail(data[1], data[0], True, '', msg_body, '', testing_device, app_version)
+
 
 
 def pytest_bdd_after_scenario(request, feature, scenario):
