@@ -157,7 +157,7 @@ def step_impl(student1_neo):
     student1_neo.set_network_flaky()
     student1_neo.select_any_celebration_symbol('like')
     details = student1_neo.is_floating_emojis_present()
-    check.equal(details.result, False, details.reason)
+    check.equal(details.result, True, details.reason)
 
 
 @then('Verify the interval time after sending 5 emojis')
@@ -195,7 +195,6 @@ def step_impl(student1_neo,student2,student2_neo):
     student2.login_and_navigate_to_home_screen('+91-', '2016170445', otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session_student('mic-on', 'cam-on')
-    student2_neo.turn_on_off_student_mic('ON')
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')
@@ -213,4 +212,4 @@ def step_impl(student1_neo,student2_neo):
     student1_neo.select_any_celebration_symbol('clap')
     student2_neo.select_any_celebration_symbol('clap')
     details = student2_neo.is_floating_emojis_present()
-    check.equal(details.result, True, details.reason)
+    check.equal(details.result, False, details.reason)

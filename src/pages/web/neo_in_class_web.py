@@ -80,7 +80,7 @@ class NeoInClass(CommonMethodsWeb):
         self.rating_popup_close_icon = '//*[contains(@class,"MuiSvgIcon-root Component-closeIcon")]'
         self.text_in_rating_popup = "//div[text()='How was your class?']"
         self.facing_issue_options = ('xpath', "//label[contains(@class,'MuiFormControlLabel-root')]")
-        self.rating_options = ('xpath', "//div[contains(@class,'rating__item')]")
+        self.rating_options = "//div[contains(@class,'rating__item')]"
         self.turn_on_cam_tooltip = "//span[text()='Turn on Camera']"
         self.turn_off_cam_tooltip = "//span[text()='Turn off Camera']"
         self.turn_on_mic_tooltip = "//span[text()='Turn on Microphone']"
@@ -182,6 +182,7 @@ class NeoInClass(CommonMethodsWeb):
         self.mic_disabled_by_tutor = '(//*[contains(@src,"/static/media/mic_off_icon_gray")])[1]'
         self.student_cam_on = '//img[contains(@src,"/static/media/cam-on")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_speaking = "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass']"
+        self.byjus_logo = '//*[@alt="titleLogo"]'
 
     def home_click_on_join(self):
         self.obj.wait(2)
@@ -736,7 +737,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def select_any_option_in_rating(self, rating_opt):
         try:
-            options = self.obj.get_elements(self.rating_options)
+            options = self.obj.get_elements(('xpath', self.rating_options))
             for option in options:
                 if option.text in rating_opt:
                     option.click()
@@ -1374,7 +1375,7 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.set_wifi_connection_off()
 
     def verify_student_count(self, element_type):
-        element = self.obj.get_element(("xpath", self.session_topic_inclass))
+        element = self.obj.get_element(("xpath", self.session_topic_inclass)).text
         if element_type.lower() == 'students count':
             student_count = self.obj.get_element(("xpath", self.chat_member_count)).text
             flag = (int(student_count) > 0)
@@ -1462,7 +1463,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'the text in popup doesnt match')
 
     def click_on_hand_raise(self):
-        time.sleep(5)
+        self.obj.wait(2)
         self.obj.wait_for_clickable_element_webdriver(self.handraise_icon)
         self.obj.element_click(('xpath', self.handraise_icon))
 
@@ -1503,4 +1504,8 @@ class NeoInClass(CommonMethodsWeb):
         return ReturnType(True, 'users are in chronological order')
 
 
-
+    def navigate_to_home_click_on_join(self):
+        self.obj.element_click(('xpath', self.byjus_logo))
+        self.obj.wait(2)
+        self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
+        self.obj.button_click('JOIN')

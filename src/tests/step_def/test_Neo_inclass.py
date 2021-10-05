@@ -241,14 +241,14 @@ def step_impl(student1_neo):
 
 
 @then("Verify the tutor's video section when video of the tutor is turned off")
-def step_impl(neo_tute,student1_neo):
+def step_impl(neo_tute, student1_neo):
     neo_tute.turn_tutor_video_on_off(status='off')
     details = student1_neo.is_tutor_video_on()
     check.equal(details.result, False,details.reason)
 
 
 @then("Verify that tutor's audio is muted when mic of the tutor is turned off")
-def step_impl(neo_tute,student1_neo):
+def step_impl(neo_tute, student1_neo):
     neo_tute.turn_tutor_audio_on_off(status='off')
     details = student1_neo.is_tutor_mute()
     check.equal(details.result, True,details.reason)
@@ -458,7 +458,7 @@ def step_impl(student1_neo):
     student1_neo.get_students_from_stream_card()
 
 @then('Verify the functionality of minimising window during session and reopening')
-def step_impl(student1_neo):
+def step_impl(neo_tute,student1_neo):
     neo_tute.present_any_slide(1)
     student1_neo.do_full_screen_presentation()
     student1_neo.minimize_full_screen_presentation()
@@ -469,7 +469,7 @@ def step_impl(student1_neo):
 @then('Verify the display of session video continues without fail')
 @then('Verify the display of video session in chrome')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.neo_tute.present_any_slide(13)
+    neo_tute.present_any_slide(13)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
@@ -524,7 +524,7 @@ def step_impl(student1_neo,student2_neo):
     student2_neo.turn_on_off_student_mic('OFF')
     student2_neo.turn_on_off_student_mic('OFF')
     details = student1_neo.is_student_speaking()
-    check.equal(details.result, True, details.reason)
+    check.equal(details.result, False, details.reason)
 
 @then('Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled')
 def step_impl(neo_tute, student1_neo):
@@ -544,11 +544,11 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify that if multiple students are speaking, the thumbnail should appear in the view port in order of speaking')
 @then('Verify the only <=3 students who are speaking should appear in view port in chronological manner')
-def step_impl(student3, student3_neo):
+def step_impl(student1_neo, student3, student3_neo):
     student3.login_and_navigate_to_home_screen('+91-', '2014947581', otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session()
-    details = student1_neo.verify_users_in_chronological_order()
+    details = student1_neo.verify_users_in_chronological_order('Test 6','Test 25', 'Test 23' )
     check.equal(details.result, True, details.reason)
 
 
