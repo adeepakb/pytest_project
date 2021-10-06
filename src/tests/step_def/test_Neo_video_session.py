@@ -63,14 +63,15 @@ def step_impl(neo_in_class):
 @when("tutor play video in the session and turn off focus mode")
 def step_impl(neo_tute,neo_in_class):
     neo_tute.present_any_slide(1)
-    neo_tute.present_any_slide(8)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     neo_tute.select_focus_mode('off')
     neo_in_class.turn_on_off_student_mic('ON')
 
 
 @then("Verify that default layout of the screen when session video is playing (not Focused)")
 def step_impl(neo_in_class):
-    details = neo_in_class.video_alignment()
+    details = neo_in_class.presentation_alignment()
     check.equal(details.result, True, details.reason)
 
 
@@ -124,7 +125,7 @@ def step_impl(neo_in_class):
       'initials of their name is displayed on the thumbnail')
 def step_impl(neo_in_class):
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False, True , "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
+    check.equal(students_video_status['You'], False , "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
 
 
 @then('Verify that when control is not on the video window, '
@@ -164,18 +165,11 @@ def step_impl(neo_in_class):
 @then('Verify that all above buttons function as intended even when video is playing in full screen mode')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_hand_raised(),True,"User able to hand raise")
-    neo_in_class.click_on_thumb_icon()
-    check.equal(neo_in_class.select_any_celebration_symbol('heart'),True,"User able to send celebration")
-    neo_in_class.tap_outside_dialog_layout()
     neo_in_class.turn_on_off_student_mic('ON')
     neo_in_class.turn_on_off_student_video('ON')
     students_audio_status = neo_in_class.get_student_audio_status()
     students_video_status = neo_in_class.get_student_video_status()
     check.equal(students_audio_status['You'] is True and students_video_status['You'] is True, True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
-    neo_in_class.click_on_kebab_menu()
-    check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),
-                True, "Kebab menu is clickable and options are present")
-    neo_in_class.tap_outside_dialog_layout()
 
 
 @then("Verify that Subject and Topic name is displayed at the top left corner of the video window, "
@@ -191,13 +185,16 @@ def step_impl(neo_in_class):
 
 @then("Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, should dismiss the pop-up")
 def step_impl(neo_in_class):
-    neo_in_class.tap_outside_dialog_layout()
+    neo_in_class.click_on_class_info_icon()
     check.equal(neo_in_class.is_class_info_popup_present(),False,"Class Info pop up not dismissed, on clicking outside pop-up")
+    # neo_in_class.do_full_screen_presentation()
 
 
 @then("Verify that there is a kebab menu at the bottom corner of the session window beside the thumbs up icon which is clickable")
 def step_impl(neo_in_class):
     neo_in_class.click_on_kebab_menu()
+    check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),
+                True, "Kebab menu is clickable and options are present")
 
 
 @then('Verify that clicking on kebab menu should show "Facing Issue" and "Exit Class" options')
@@ -269,7 +266,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.set_wifi_connection_off()
     neo_in_class.set_wifi_connection_on()
-    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present(), True,"After reconnecting,focus mode is retained")
+    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present().result, True,"After reconnecting,focus mode is retained")
 
 
 @then("Verify that if reconnection happens due to network issue while focus mode is on, "
@@ -295,9 +292,8 @@ def step_impl(neo_in_class):
 @then('Verify that focus mode icon is displayed on the top left corner of the screen when '
       'same is turned on and controls are not active on screen')
 def step_impl(neo_in_class):
-    neo_in_class.is_focus_mode_icon_present()
     details = neo_in_class.focus_mode_bottom_container_not_active()
-    check.equal(details.result,True,details.reason)
+    check.equal(neo_in_class.is_focus_mode_icon_present().result and details.result,True,details.reason)
 
 
 @then(parsers.parse('Verify that on click/hover on the screen indication is present on the '
@@ -321,7 +317,7 @@ def step_impl(neo_in_class):
     neo_in_class.tap_outside_dialog_layout()
     neo_in_class.turn_on_off_student_video('OFF')
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False, True,"User able to update camera status")
+    check.equal(students_video_status['You'], False,"User able to update camera status")
     neo_in_class.turn_on_off_student_video('ON')
     neo_in_class.click_on_kebab_menu()
     check.equal(neo_in_class.is_facing_issues_option_present() and neo_in_class.is_exit_class_btn_present(),True, "Kebab menu is clickable and options are present")
@@ -354,7 +350,7 @@ def step_impl(neo_in_class):
     neo_in_class.click_on_close_icon_in_rating()
     neo_in_class.home_click_on_join()
     neo_in_class.join_neo_session()
-    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present(), True,"User is in Focus mode")
+    check.equal(neo_in_class.is_full_screen_presentation_present() and neo_in_class.is_focus_mode_icon_present().result, True,"User is in Focus mode")
 
 
 @then('Verify the transition of session is smooth when focus mode is turned off by the tutor')

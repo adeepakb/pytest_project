@@ -383,6 +383,7 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
         if links.get("_next") is not None:
             continue
 
+
 def get_custom_field_scenario(test_run_name, scenario_name, project_id):
     client = get_testrail_client()
     run_id = None
@@ -404,6 +405,7 @@ def get_custom_field_scenario(test_run_name, scenario_name, project_id):
                 return True if case['custom_merged_case'] == 1 else False
         if links.get("_next") is not None:
             continue
+
 
 # returns a list of API available reports by project
 def get_testrail_reports(project_ID, report_name):
@@ -427,7 +429,8 @@ def run_testrail_reports(report_id):
 # to fetch latest result id
 def get_latest_result_id(run_id,case_id):
     client = get_testrail_client()
-    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results_dict = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results = test_results_dict['results']
     for test_result in test_results:
         if test_result is not None:
             print(test_result['id'])
