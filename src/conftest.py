@@ -145,8 +145,6 @@ def pytest_bdd_step_error(request ,feature, step):
             summaries = traceback.format_exception(e_type, value, tb)
             prj_path_only = os.path.abspath(os.getcwd() + "/../..")
             feature_name = feature.name
-            # testing_device = request.getfixturevalue("driver").capabilities['browserName']
-            # app_version = request.getfixturevalue("driver").capabilities['browserVersion']
             testing_device = request.getfixturevalue("driver").capabilities['browserName']
             app_version = request.getfixturevalue("driver").capabilities['browserVersion']
             step_name = step.name
