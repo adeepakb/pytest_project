@@ -1,21 +1,12 @@
 import time
-
-import re
-from io import BytesIO
-from PIL import Image
-from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
     MoveTargetOutOfBoundsException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-
 from utilities.common_methods_web import CommonMethodsWeb
 import pytest_check as check
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as ec
-
-from utilities.staging_tlms import Stagingtlms
 
 
 class ReturnType():
@@ -31,7 +22,7 @@ class NeoInClass(CommonMethodsWeb):
         self.action = ActionChains(self.driver)
         super().__init__(self.driver)
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
-        self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[@class='neo_cl_VideoContainer']"
+        self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[contains(@class,'neo_cl_VideoContainer')]"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
         self.stream_list = '//section[@class="streamList__itemList"]'
         self.profile_cards = "//div[contains(@class,'profileCard bottomContainer')]"
@@ -43,7 +34,7 @@ class NeoInClass(CommonMethodsWeb):
         self.toast_container_subtitle = "//div[contains(@class,'focusMessageSubTitle')]"
         self.blank_slide = "//div[contains(@class,'presentation__slide--blank')]"
         self.presentation_container = "//div[contains(@class,'presentation__container')]"
-        self.presentation_text_area = "//textarea[@class='readonly-textarea']"
+        self.presentation_text_area = "//textarea[@class='readonly-textarea' or 'editable-textarea']"
         self.student_card_names = "//div[contains(@class,'neo_cl_StreamCard__name')]"
         self.neo_presentation = "//div[@class='presentation']"
         self.full_screen_toggle ="//div[contains(@class,'presentation__fullScreenToggle')]"
@@ -52,6 +43,8 @@ class NeoInClass(CommonMethodsWeb):
         self.class_info_popup_topic_name = "//div[@class='classInfo__topicName']"
         self.class_info_popup_date_time = "//div[@class='classInfo__dateTime']"
         self.class_info_popup_desc = "//div[@class='classInfo__desc']"
+        self.global_icon_video = '//div[contains(@class,"topContainer--action_icon")]/img[@alt="cam"]'
+        self.global_icon_audio = '//div[contains(@class,"topContainer--action_icon")]/img[@alt="mic"]'
 
         self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
         self.hand_raised_icon = "//div[text()='Hand raised']"
@@ -118,6 +111,7 @@ class NeoInClass(CommonMethodsWeb):
         self.tutor_title = "//div[@class = 'tutorStreamCard__name--small']"
         self.tutor_thumbnail = "//div[@class = 'neo_cl_VideoContainer__overlay']"
         self.tutor_controls_container = "//div[@class='iconWrapper tutorStreamCard__icon']"
+        self.tutor_video = "//div[@class='tutorStreamCard']//div[contains(@id,'agora-video-player-track')]"
         self.chat_controls = ".//*[@class='iconWrapper__icon']"
         self.student_cards_items = "//div[@class='streamList__streamItem']"
         self.current_student_card = "//div[@class='streamList__streamItem streamList__streamItem--localStream']"
@@ -211,7 +205,6 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_video_status(self):
         student_video_status = {}
-        self.obj.wait(1)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -219,15 +212,15 @@ class NeoInClass(CommonMethodsWeb):
             stream_id = video_cards[i].get_attribute('id')
             try:
                 self.obj.get_element(
-                    ('xpath', "//div[@id='" + stream_id + "']/div[@class='neo_cl_VideoContainer__profilePic']"))
+                    ('xpath', "//div[@id='" + stream_id + "']/div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']"))
                 student_video_status.update({student_name: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
+        print(student_video_status)
         return student_video_status
 
     def get_student_audio_status(self):
         student_audio_status = {}
-        self.obj.wait(1)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -239,6 +232,7 @@ class NeoInClass(CommonMethodsWeb):
                 student_audio_status.update({student_name: True})
             except NoSuchElementException:
                 student_audio_status.update({student_name: False})
+        print(student_audio_status)
         return student_audio_status
 
     def get_request_message(self):
@@ -312,6 +306,12 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return False
 
+    def global_video_icon_present(self):
+        return self.obj.is_element_present(('xpath', self.global_icon_video))
+
+    def global_audio_icon_present(self):
+        return self.obj.is_element_present(('xpath', self.global_icon_audio))
+
     # whiteboard
     def is_blank_slide_present(self):
         self.obj.wait_for_locator_webdriver(self.blank_slide)
@@ -323,12 +323,20 @@ class NeoInClass(CommonMethodsWeb):
         # im = Image.open(BytesIO(png))
         # im.save('verify_tutor_canvas_text.png')
         # img_text = self.obj.get_text_from_image('verify_tutor_canvas_text')
+        time.sleep(2)
         self.obj.wait_for_locator_webdriver(self.presentation_container)
         elements = self.obj.get_elements(('xpath', self.presentation_text_area))
         actual_text_whiteboard = []
         for element in elements:
             actual_text_whiteboard.append(element.text)
         return True if (text in actual_text_whiteboard) else False
+
+    def change_browser_size(self,width='default', height='default'):
+        if width == height == 'default':
+            self.driver.maximize_window()
+        else:
+            self.driver.set_window_size(width, height)
+
 
     # parameter :expected_colors_list like ['rgba(255, 199, 0, 1)']
     def verify_colors_in_student_whiteboard(self, expected_colors_list):
@@ -345,10 +353,17 @@ class NeoInClass(CommonMethodsWeb):
 
     # parameter :expected_shapes_list like ['circle', 'square', 'rectangle', 'triangle']
     def verify_shapes_in_student_whiteboard(self, expected_shapes_list):
+        time.sleep(2)
         self.obj.wait_for_locator_webdriver(self.blank_slide)
         element = self.obj.get_element(('xpath', self.presentation_container))
         shapes_list = self.obj.detect_shapes(element)
-        return True if (set(shapes_list) == set(expected_shapes_list)) else False
+        a = set(expected_shapes_list)
+        b = set(shapes_list)
+        print("-----------------")
+        print(a)
+        print(b)
+        val = ((a & b) == a)
+        return val
 
     # bottom container
     def is_hand_raise_icon_present(self):
@@ -427,6 +442,14 @@ class NeoInClass(CommonMethodsWeb):
             option.click()
             self.obj.wait(1)
             return True
+        except:
+            return False
+
+    def celebration_highlighted(self,celeb_symbol):
+        self.obj.wait_for_clickable_element_webdriver(self.celebrations_icons)
+        try:
+            option = self.obj.get_element(('xpath', "//img[contains(@src,'/static/media/classes-emoji-" + celeb_symbol + "')]"))
+            return option.is_enabled()
         except:
             return False
 
@@ -619,13 +642,13 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_clickable_element_webdriver(self.student_audio)
         audio_icon = self.obj.get_element(("xpath", self.student_audio))
         audio_icon.click()
-        self.obj.wait(1)
+        time.sleep(2)
 
     def click_on_inclass_video_icon(self):
         self.obj.wait_for_clickable_element_webdriver(self.student_video)
         video_icon = self.obj.get_element(("xpath", self.student_video))
         video_icon.click()
-        self.obj.wait(1)
+        time.sleep(2)
 
     def turn_on_off_student_mic(self, action):
         audio_status = self.get_inclass_student_audio_status()
@@ -708,7 +731,7 @@ class NeoInClass(CommonMethodsWeb):
     def tap_outside_dialog_layout(self):
         try:
             self.action.move_by_offset(100, 100).double_click().perform()
-        except (ElementNotInteractableException,MoveTargetOutOfBoundsException):
+        except:
            pass
 
     def is_class_info_popup_present(self):
@@ -832,26 +855,29 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, "Video is not being presented")
 
     # video session
-    def video_alignment(self):
+    def presentation_alignment(self):
         try:
             self.obj.wait_for_locator_webdriver(self.neo_presentation)
-            alignment = self.obj.get_element(('xpath', self.neo_presentation)).value_of_css_property('justify-content')
+            alignment = self.obj.get_element(('xpath', "//div[@class='presentation__slideView']")).value_of_css_property('justify-content')
             if alignment == 'center':
-                return ReturnType(True, "Video is center aligned as expected")
+                return ReturnType(True, "Presented Image/Video is center aligned as expected")
             else:
-                return ReturnType(False, "Video is not center aligned as expected")
+                return ReturnType(False, "Presented Image/Video is not center aligned as expected")
         except NoSuchElementException:
             return ReturnType(False, "Alignment property is not found")
 
     def verify_presentation_dimension_ratio(self):
-        self.obj.wait_for_locator_webdriver(self.presentation_container)
-        presentation_container = self.driver.find_element_by_xpath(self.presentation_container)
-        size = presentation_container.size
-        canvas_width = int(size['width'])
-        canvas_height = int(size['height'])
-        ratio = format(canvas_width / canvas_height, ".2f")
-        return ReturnType(True, "slide displayed on the whiteboard is of size 16:9") if any([ratio == format(16 / 9, ".2f")]) else \
-            ReturnType(False, "slide displayed on the whiteboard is not of size 16:9")
+        try:
+            self.obj.wait_for_locator_webdriver(self.presentation_container)
+            presentation_container = self.driver.find_element_by_xpath(self.presentation_container)
+            size = presentation_container.size
+            canvas_width = int(size['width'])
+            canvas_height = int(size['height'])
+            ratio = format(canvas_width / canvas_height, ".2f")
+            return ReturnType(True, "slide displayed on the whiteboard is of size 16:9") if any([ratio == format(16 / 9, ".2f")]) else \
+                ReturnType(False, "slide displayed on the whiteboard is not of size 16:9")
+        except:
+            ReturnType(False, "Tutor not presenting anything in neo session")
 
     def hover_over_full_screen_toggle(self):
         element_to_hover_over = self.obj.get_element(("xpath", self.full_screen_toggle))
@@ -859,7 +885,7 @@ class NeoInClass(CommonMethodsWeb):
         hover.perform()
 
     def get_full_screen_toggle_visibility(self):
-        self.obj.wait_for_locator_webdriver(self.neo_presentation)
+        self.obj.wait_for_locator_webdriver(self.full_screen_toggle)
         full_screen_toggle_elt = self.obj.get_element(('xpath', self.full_screen_toggle))
         visibility = full_screen_toggle_elt.value_of_css_property('visibility')
         return visibility
@@ -1041,18 +1067,16 @@ class NeoInClass(CommonMethodsWeb):
             check.equal(True, False, "Tutor ui element not present")
 
     def is_tutor_video_on(self):
-        elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
         try:
-            for element in elements:
-                if "camera-off" in element.get_attribute("innerHTML"):
-                    return ReturnType(False, "Tutor camera is off")
-
-            return ReturnType(True, "Tutor camera is on")
+            self.obj.wait_for_locator_webdriver(self.tutor_video)
+            if self.obj.is_element_present(('xpath', self.tutor_video)):
+                return ReturnType(True, "Tutor camera is on")
+            else:
+                return ReturnType(False, "Tutor camera is off")
         except:
-            return ReturnType(True, "Tutor camera is on")
+            return ReturnType(False, "Tutor camera is off")
 
     def is_tutor_mute(self):
-
         elements = self.obj.get_elements(("xpath", "//div[@class='iconWrapper tutorStreamCard__icon']"))
         try:
             for element in elements:
