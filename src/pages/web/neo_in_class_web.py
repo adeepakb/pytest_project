@@ -1388,7 +1388,7 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.set_wifi_connection_off()
 
     def verify_student_count(self, element_type):
-        element = self.obj.get_element(("xpath", self.session_topic_inclass)).text
+        element = self.obj.get_element(("xpath", self.session_topic_inclass))
         if element_type.lower() == 'students count':
             student_count = self.obj.get_element(("xpath", self.chat_member_count)).text
             flag = (int(student_count) > 0)
@@ -1519,10 +1519,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def navigate_to_home_click_on_join(self):
         self.obj.element_click(('xpath', self.byjus_logo))
-        self.obj.wait(2)
-        self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
-        self.obj.button_click('JOIN')
-
+        self.home_click_on_join()
 
 
     def verify_ask_question_popup_is_displayed(self,

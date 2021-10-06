@@ -135,7 +135,7 @@ def step_impl(student1_neo):
 def step_impl(student1_neo):
     student1_neo.click_on_session_topic()
     details = student1_neo.is_reactions_icons_present()
-    check.equal(details.result, True, details.reason)
+    check.equal(details.result, False, details.reason)
 
 
 @then('Verify that the celebrations send by students should not reach Tutor side')
