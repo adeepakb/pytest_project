@@ -99,9 +99,10 @@ def step_impl(student1_neo):
 
 @then("Verify the class rating feedback screen should display with 'How was your class' (with 5 smiley options)")
 def step_impl(student1_neo):
-    # student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
-    # student1_neo.click_on_kebab_menu()
-    # student1_neo.click_on_exit_class_in_student()
+    student1_neo.navigate_to_home_click_on_join()
+    student1_neo.join_neo_session_student('mic-on', 'cam-on')
+    student1_neo.click_on_kebab_menu()
+    student1_neo.click_on_exit_class_in_student()
     details = student1_neo.verify_the_text_in_rating_popup()
     check.equal(details.result, True, details.reason)
     details1 = student1_neo.is_star_options_present_in_rating_popup()
@@ -244,6 +245,9 @@ def step_impl(student1_neo):
 
 @then('Verify that rating popup should display when user close the ratings and rejoins the session again')
 def step_impl(student1_neo):
+    student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
+    student1_neo.click_on_kebab_menu()
+    student1_neo.click_on_exit_class_in_student()
     student1_neo.select_any_option_in_rating("Good")
     student1_neo.select_any_feedback_option("Teaching Technique")
     student1_neo.click_on_close_icon_in_rating()

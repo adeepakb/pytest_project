@@ -229,5 +229,25 @@
       },
       "OTP": "1089"
     }
+  },
+  "neo_login_detail3": {
+    "student1": {
+      "code": "+91-",
+      "mobile_no": "2011313229",
+      "country_code": "India (+91)",
+      "premium_id": "2011313229"
+    },
+    "student2": {
+      "code": "+91-",
+      "mobile_no": "2016170445",
+      "country_code": "India (+91)",
+      "premium_id": "2016170445"
+    },
+    "student3": {
+      "code": "+91-",
+      "mobile_no": "2014947581",
+      "country_code": "India (+91)",
+      "premium_id": "2014947581"
+    }
   }
 }

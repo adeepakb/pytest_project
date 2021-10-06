@@ -383,17 +383,18 @@ def step_impl(student6,student6_neo):
 
 @given("Launch the application online")
 def login_as_neo_user(student1_login):
-    student1_login.login_and_navigate_to_home_screen('+91-', '2011313229', otp=None)
-    # login_in.login_and_navigate_to_home_screen('+91-', '2016795330', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+
 
 @given("Launch the application online in mobile")
 def login_as_neo_user(student1_login):
-    student1_login.login_for_neo_class_mweb('+91-', '2011313229', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
-@given("tutor start the session")
+@given('start the session as tutor')
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
-
+    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student1')
 
 @when('join neo session')
 @then('join neo session')
@@ -459,7 +460,7 @@ def step_impl(student1_neo):
 
 @then('Verify the functionality of minimising window during session and reopening')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(1)
+    neo_tute.present_any_slide(2)
     student1_neo.do_full_screen_presentation()
     student1_neo.minimize_full_screen_presentation()
     details = student1_neo.is_minimize_full_screen_present()
@@ -469,7 +470,7 @@ def step_impl(neo_tute,student1_neo):
 @then('Verify the display of session video continues without fail')
 @then('Verify the display of video session in chrome')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(13)
+    neo_tute.present_any_slide(3)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
@@ -491,16 +492,18 @@ def step_impl(neo_tute, student1_neo):
 
 @then("verify the tutor's video background when student rejoins the session")
 @then("Verify the tutor's video background when user refreshes the page")
-def step_impl(student1_neo):
+def step_impl(neo_tute,student1_neo):
     student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
+    neo_tute.present_any_slide(3)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
 @then("Verify the tutor's background video when network is flaky")
-def step_impl(student1_neo):
+def step_impl(neo_tute,student1_neo):
+    neo_tute.present_any_slide(3)
     student1_neo.set_network_flaky()
     details = student1_neo.is_video_being_presented()
-    check.equal(details.result, False, details.reason)
+    check.equal(details.result, True, details.reason)
 
 
 @then('Verify that the if a student speaks for less than 2 seconds his thumbnail should not be moved to view port')
@@ -528,8 +531,7 @@ def step_impl(student1_neo,student2_neo):
 
 @then('Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(8)
-    neo_tute.select_focus_mode('on')
+    neo_tute.present_any_slide(3)
     students_audio_status = student1_neo.get_student_audio_status()
     check.equal(all(audio_status is not None for audio_status in students_audio_status), True,
                 "Audio/Mic status is displayed for other students on their thumbnail")
@@ -539,7 +541,7 @@ def step_impl(neo_tute, student1_neo):
 def step_impl(neo_tute, student1_neo):
     neo_tute.present_any_slide(2)
     neo_tute.select_focus_mode('off')
-    neo_tute.click_on_menu_option(expected_student_name="Test 6", menu_item="Ask Question")
+    neo_tute.click_on_menu_option(expected_student_name="Prash Auto Test", menu_item="Ask Question")
     details = student1_neo.is_discuss_doubt_msg_present()
     check.equal(details.result, True, details.reason)
 
@@ -549,7 +551,7 @@ def step_impl(student1_neo, student3, student3_neo):
     student3.login_and_navigate_to_home_screen('+91-', '2014947581', otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session()
-    details = student1_neo.verify_users_in_chronological_order('Test 6','Test 25', 'Test 23' )
+    details = student1_neo.verify_users_in_chronological_order('Prash Auto Test','Test 25', 'Test 23' )
     check.equal(details.result, True, details.reason)
 
 
@@ -582,18 +584,17 @@ def step_impl(neo_in_class):
 
 
 @given("tutor start the session")
-def step_impl(test_tut):
-    test_tut.start_neo_session(login_data="neo_login_detail2", user='student1')
-
+def step_impl(neo_tute):
+    neo_tute.start_neo_session(login_data="neo_login_detail2", user='student1')
 
 @when("tutor turns off his video")
-def step_impl(test_tut):
-    test_tut.turn_tutor_video_on_off(status= 'off')
+def step_impl(neo_tute):
+    neo_tute.turn_tutor_video_on_off(status= 'off')
 
 
 @when("tutor turns off his audio")
-def step_impl(test_tut):
-    test_tut.turn_tutor_audio_on_off(status= 'off')
+def step_impl(neo_tute):
+    neo_tute.turn_tutor_audio_on_off(status= 'off')
 
 
 @given('click on "JOIN" button in home page')
@@ -603,34 +604,34 @@ def step_impl(neo_in_class):
 
 
 @then("Verify the tutor's video section when video of the tutor is turned off")
-def step_impl(neo_in_class,test_tut):
+def step_impl(neo_in_class,neo_tute):
     details = neo_in_class.is_tutor_video_on()
     check.equal(details.result , False, details.reason)
-    details = test_tut.get_video_status()
+    details = neo_tute.get_video_status()
     check.equal(details.result, False, details.reason)
 
 
 @then("Verify that tutor's video is not displayed when camera of the tutor is turned off")
-def step_impl(neo_in_class,test_tut):
+def step_impl(neo_in_class,neo_tute):
     details = neo_in_class.is_tutor_video_on()
     check.equal(details.result, False, details.reason)
-    details = test_tut.get_video_status()
+    details = neo_tute.get_video_status()
     check.equal(details.result, False, details.reason)
 
 
 @then("Verify that tutor's audio is muted when mic of the tutor is turned off")
-def step_impl(neo_in_class,test_tut):
+def step_impl(neo_in_class,neo_tute):
     details = neo_in_class.is_tutor_mute()
     check.equal(details.result, True, details.reason)
 
 
 @then("Verify that tutor's audio/video is not playing when both camera and mic of the tutor is turned off")
-def step_impl(neo_in_class,test_tut):
+def step_impl(neo_in_class,neo_tute):
     details = neo_in_class.is_tutor_mute()
     check.equal(details.result, True, details.reason)
     details = neo_in_class.is_tutor_video_on()
     check.equal(details.result, False, details.reason)
-    details = test_tut.get_video_status()
+    details = neo_tute.get_video_status()
     check.equal(details.result, False, details.reason)
 
 
@@ -776,10 +777,10 @@ def step_impl(neo_in_class):
 
 
 @then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text "Lower Hand" button should again change to "Raise Hand" and button goes to default state')
-def step_impl(neo_in_class,test_tut):
+def step_impl(neo_in_class,neo_tute):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     neo_in_class.raise_hand()
-    test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
     detail = neo_in_class.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
@@ -807,13 +808,13 @@ def step_impl(neo_in_class, student2_neo, student2):
     check.equal(detail.result, False, detail.reason)
 
 @then('Verify the status of "Lower Hand" button if a student has raised hand and then drops from session, the tutor lowers the hand for that student and then the student rejoins the class')
-def step_impl(neo_in_class, student2_neo, student2,test_tut):
+def step_impl(neo_in_class, student2_neo, student2,neo_tute):
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session()
     student2_neo.raise_hand()
-    test_tut.click_on_menu_option(expected_student_name=student2_details['name'], menu_item='Hands Down')
+    neo_tute.click_on_menu_option(expected_student_name=student2_details['name'], menu_item='Hands Down')
     detail= student2_neo.verify_hands_down_message()
     check.equal(detail.result, False, detail.reason)
 
