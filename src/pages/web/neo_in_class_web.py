@@ -79,7 +79,7 @@ class NeoInClass(CommonMethodsWeb):
         self.rating_popup_close_icon = '//*[contains(@class,"MuiSvgIcon-root Component-closeIcon")]'
         self.text_in_rating_popup = "//div[text()='How was your class?']"
         self.facing_issue_options = ('xpath', "//label[contains(@class,'MuiFormControlLabel-root')]")
-        self.rating_options = ('xpath', "//div[contains(@class,'rating__item')]")
+        self.rating_options = "//div[contains(@class,'rating__item')]"
         self.turn_on_cam_tooltip = "//span[text()='Turn on Camera']"
         self.turn_off_cam_tooltip = "//span[text()='Turn off Camera']"
         self.turn_on_mic_tooltip = "//span[text()='Turn on Microphone']"
@@ -134,7 +134,7 @@ class NeoInClass(CommonMethodsWeb):
         self.sticker_onchat = "//div[@class= 'message']"
         self.emoji_icon = "//*[@class='emoji']"
         self.raise_hand_button = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
-        #self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
+        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
         self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
 
@@ -182,6 +182,7 @@ class NeoInClass(CommonMethodsWeb):
         self.mic_disabled_by_tutor = '(//*[contains(@src,"/static/media/mic_off_icon_gray")])[1]'
         self.student_cam_on = '//img[contains(@src,"/static/media/cam-on")]/parent::div[contains(@class,"iconWrapper icon icon--marginRight icon")]'
         self.student_speaking = "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass']"
+        self.byjus_logo = '//*[@alt="titleLogo"]'
 
     def home_click_on_join(self):
         self.obj.wait(2)
@@ -765,7 +766,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def select_any_option_in_rating(self, rating_opt):
         try:
-            options = self.obj.get_elements(self.rating_options)
+            options = self.obj.get_elements(('xpath', self.rating_options))
             for option in options:
                 if option.text in rating_opt:
                     option.click()
@@ -1540,7 +1541,9 @@ class NeoInClass(CommonMethodsWeb):
         return ReturnType(True, 'users are in chronological order')
 
 
-
+    def navigate_to_home_click_on_join(self):
+        self.obj.element_click(('xpath', self.byjus_logo))
+        self.home_click_on_join()
 
 
     def verify_ask_question_popup_is_displayed(self,

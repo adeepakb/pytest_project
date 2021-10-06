@@ -63,25 +63,25 @@ Scenario: Verify default alignment for multi users, student and tutor audio/vide
     And Verify that clicking on "Thumbs Up" icon expands the expression tab and list of expressions are displayed
     And Verify that student is able to send expression during the session
     And Verify that animation of the expressions on the session screen
-
+#
 Scenario: Verify the inclass feature in web
   Given Launch the application online
-  And tutor start the session
+  And start the session as tutor
   When join neo session
   And click on start class
   Then Verify the display of student count icon
   Then Verify the functionality of minimising window during session and reopening
   Then Verify the display of controls in fullscreen mode
-  Then Verify the display of Focus mode icon
-  Then Verify the display of mic and camera during Focus mode
   Then Verify the display of session video continues without fail
   Then Verify the display of video session in chrome
   Then Verify the display of screen in desktop during video session
+  Then Verify the display of Focus mode icon
+  Then Verify the display of mic and camera during Focus mode
   Then Verify that user should not able to pause or play video during session
   Then verify the tutor's video background when student rejoins the session
   Then Verify the tutor's video background when user refreshes the page
-  Then Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled
   Then Verify that the if a student speaks for less than 2 seconds his thumbnail should not be moved to view port
+  Then Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled
   Then Verify that the if a student speaks for more than 2 seconds his thumbnail should be moved to view port
   Then Verify that if any student stays quite for 2 seconds should be removed from view port
   Then Verify the only <=3 students who are speaking should appear in view port in chronological manner
