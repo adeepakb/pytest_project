@@ -1,3 +1,4 @@
+import os
 import time
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
@@ -1702,8 +1703,14 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(True, "other student mic camera are not controllable")
 
+    def change_profile_photo(self):
+        self.element_click(("xpath", "//img[@alt='camera']"))
+        self.element_click(("xpath", "//img[@alt='uploadPhoto']"))
 
-
+        input_element = self.driver.find_element_by_xpath("//input[@type='file']")
+        current_location = os.path.dirname(os.path.abspath(__file__))
+        location = os.path.normpath(os.path.join(current_location, "../../files/ClassNotesPNG.png"))
+        input_element.send_keys(location)
 
 
 
