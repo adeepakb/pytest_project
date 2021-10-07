@@ -134,15 +134,20 @@ def pytest_bdd_step_error(request ,feature, step):
     """
     py_test.exception = True
     py_test.failed_step_name = step.name
-    suite_name = os.getenv('suite')
+    # suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
             e_type, value, tb = sys.exc_info()
             summaries = traceback.format_exception(e_type, value, tb)
             prj_path_only = os.path.abspath(os.getcwd() + "/../..")
             feature_name = feature.name
+            # testing_device = request.getfixturevalue("driver").capabilities['browserName']
+            # app_version = request.getfixturevalue("driver").capabilities['browserVersion']
             testing_device = request.getfixturevalue("driver").capabilities['browserName']
             app_version = request.getfixturevalue("driver").capabilities['browserVersion']
+            # testing_device = driver.capabilities['browser_name']
+            # app_version = driver.capabilities['version']
             step_name = step.name
             data = get_run_and_case_id_of_a_scenario(suite_name, step_name, "24", "199")
             print("\nTestcase executed: %s" % step.name)
@@ -176,7 +181,8 @@ def pytest_bdd_step_error(request ,feature, step):
 
 
 def pytest_bdd_after_step(request, step):
-    suite_name = os.getenv('suite')
+    # suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
             from pytest_check.check_methods import get_failures,clear_failures
@@ -208,7 +214,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     .. note:: If there occurs an exception during the testrail update,
         the results might not reflect on the testrail.
     """
-    suite_name = os.getenv('suite')
+    # suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
     if suite_name != "Neo Classes Web":
         e_type, value, tb = sys.exc_info()
         summaries = traceback.format_exception(e_type, value, tb)

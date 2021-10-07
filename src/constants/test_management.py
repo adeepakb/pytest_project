@@ -335,7 +335,6 @@ def get_project_id(project_name):
     print("project id is:" + project_id)
     return project_id
 
-
 def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, suite_id):
     """
     Get the ``run_id`` and ``case_id`` for the given name of the test run and scenario,
@@ -366,14 +365,22 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
             run_id = test_run['id']
             break
     data.append(str(run_id))
-    cases_dict = client.send_get('get_tests/' + str(run_id))
-    cases = cases_dict['tests']
-    # print(cases)
-    for case in cases:
-        if case['title'] == scenario_name:
-            case_suite = client.send_get('get_case/' + str(case['case_id']))
-            data.append(str(case_suite['id']))
-            return data
+
+    # Handled recent testrail change - API response pagination
+    offset = 0
+    size = 250
+    while True:
+        cases_dict = client.send_get('get_tests/' + str(run_id) + '&offset=' + str(offset))
+        cases = cases_dict['tests']
+        links = cases_dict['_links']
+        offset += size
+        for case in cases:
+            if case['title'] == scenario_name:
+                case_suite = client.send_get('get_case/' + str(case['case_id']))
+                data.append(str(case_suite['id']))
+                return data
+        if links.get("_next") is not None:
+            continue
 
 
 def get_custom_field_scenario(test_run_name, scenario_name, project_id):
@@ -384,11 +391,19 @@ def get_custom_field_scenario(test_run_name, scenario_name, project_id):
         if test_run['name'] == test_run_name:
             run_id = test_run['id']
             break
-    cases = client.send_get('get_tests/' + str(run_id))['tests']
-    for case in cases:
-        if case['title'] == scenario_name:
-            return True if case['custom_merged_case'] == 1 else False
-
+    # Handled recent testrail change - API response pagination
+    offset = 0
+    size = 250
+    while offset<1000:
+        cases_dict = client.send_get('get_tests/' + str(run_id) + '&offset=' + str(offset))
+        cases = cases_dict['tests']
+        links = cases_dict['_links']
+        offset += size
+        for case in cases:
+            if case['title'] == scenario_name:
+                return True if case['custom_merged_case'] == 1 else False
+        if links.get("_next") is not None:
+            continue
 
 # returns a list of API available reports by project
 def get_testrail_reports(project_ID, report_name):

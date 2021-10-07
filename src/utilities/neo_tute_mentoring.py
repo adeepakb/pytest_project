@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        #self.chrome_options.add_argument('--no-sandbox')
+        #self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -472,13 +472,16 @@ class NeoTute(CommonMethodsWeb):
         cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
-            if expected_student_name == actual_student_name:
+            if expected_student_name == actual_student_name or expected_student_name in actual_student_name:
                 menu_icon = self.get_child_element(card,"xpath",self.student_card_menu)
                 menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
                 #self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
                 self.wait_for_clickable_element_webdriver(".//div[text()='" + menu_item + "']")
-                self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
+                try:
+                    self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
+                except:
+                    pass
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):

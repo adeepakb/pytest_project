@@ -53,6 +53,7 @@ class NeoInClass(CommonMethodsWeb):
         self.class_info_popup_date_time = "//div[@class='classInfo__dateTime']"
         self.class_info_popup_desc = "//div[@class='classInfo__desc']"
 
+
         self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
         self.hand_raised_icon = "//div[text()='Hand raised']"
         self.thumb_icon = "//img[contains(@src,'/static/media/thumb')]"
@@ -114,8 +115,8 @@ class NeoInClass(CommonMethodsWeb):
         self.chat_header = "//div[@class='chatContainer__chatheader']"
         self.chat_container_title = ".//div[@class='chatContainer__title']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
-        self.tutor_name = "//div[@class = 'tutorStreamCard__name--big']"
-        self.tutor_title = "//div[@class = 'tutorStreamCard__name--small']"
+        self.tutor_name = "//span[@class = 'tutorStreamCard__name--big']"
+        self.tutor_title = "//span[@class = 'tutorStreamCard__name--small']"
         self.tutor_thumbnail = "//div[@class = 'neo_cl_VideoContainer__overlay']"
         self.tutor_controls_container = "//div[@class='iconWrapper tutorStreamCard__icon']"
         self.chat_controls = ".//*[@class='iconWrapper__icon']"
@@ -137,7 +138,7 @@ class NeoInClass(CommonMethodsWeb):
         self.home_byjus_classes_button = "//div[contains(text(),'Byju’s Classes')]"
         self.home_join_button = "//span[contains(text(),'JOIN')]"
         self.mic_video_buttons_on_join_screen = "//div[@class = 'stream--overlay_icon']"
-        self.sticker_onchat = "//div[@class= 'message']"
+        self.sticker_onchat = '//img[contains(@src,"chat_stickers")]' # "//div[@class= 'message']"
         self.emoji_icon = "//*[@class='emoji']"
         self.raise_hand_button = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         #self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
@@ -929,6 +930,7 @@ class NeoInClass(CommonMethodsWeb):
     def get_all_chats(self):
         chat_elements = []
         try:
+
             elements = self.obj.get_elements(("xpath", "//div[@class='cardWrapper']"))
             chat_elements = []
             for element in elements:
@@ -943,6 +945,7 @@ class NeoInClass(CommonMethodsWeb):
             return chat_elements
 
     def verify_tutor_messages_are_left_alligned(self, text="Hi I am tutor"):
+        self.wait_for_element_visible(("xpath", self.chat_by_tutor))
         try:
             tutor_chat_elements = self.get_elements(("xpath", self.chat_by_tutor))
 
@@ -954,6 +957,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, "Tutor chat elements are not left aligned")
 
     def verify_other_student_messages_are_left_alligned(self, text="Hi I am another student"):
+        time.sleep(4)
         chats = self.get_all_chats()
 
         for chat in chats:
@@ -962,8 +966,9 @@ class NeoInClass(CommonMethodsWeb):
         return ReturnType(False, "other student messages are left aligned")
 
     def verify_student_messages_are_right_alligned(self, text="Hi I am student"):
+        self.wait_for_element_visible(("xpath", self.chat_by_me))
         elements = self.get_elements(("xpath", self.chat_by_me))
-
+        time.sleep(5)
         for element in elements:
             child_element = self.get_child_element(element, "xpath", self.chat_message)
             if child_element.text == text:
@@ -971,6 +976,16 @@ class NeoInClass(CommonMethodsWeb):
         return ReturnType(False, "Student chat elements are right aligned")
 
     def send_chat(self, text=""):
+        try:
+            flag_sticker_displayed = self.get_element(("xpath", self.sticker_item)).is_displayed()
+        except:
+            flag_sticker_displayed = False
+
+        if  flag_sticker_displayed:
+            element = self.get_element(("xpath","//div[@class='chatCard isMe']"))
+            self.action.move_to_element(element).click().perform()
+        self.obj.wait_for_clickable_element_webdriver("//*[@class='sendAction']")
+        self.obj.wait_for_element_visible(('xpath', '//input[@placeholder="Type something"]'))
         self.obj.get_element(('xpath', '//input[@placeholder="Type something"]')).send_keys(text)
         element = self.driver.find_element("xpath", "//*[@class='sendAction']")
         element.click()
@@ -988,6 +1003,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def verify_chat_elements(self):
         try:
+            time.sleep(3)
             self.send_chat(text="Hi")
             element = self.obj.get_element(("xpath", "//div[@class='chatContainer__chatheader']"))
             class_forum = self.obj.get_child_element(element, "xpath", ".//div[@class='chatContainer__title']").text
@@ -1018,7 +1034,7 @@ class NeoInClass(CommonMethodsWeb):
                                                                                                         "thing is not "
                                                                                                         "displayed on "
                                                                                                         "place holder")
-        elif element_type.lower == "tutor name":
+        elif element_type.lower() == "tutor name":
             flag = self.get_element(("xpath", self.tutor_name)).is_displayed()
             return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
         elif element_type.lower() == 'tutor tag':
@@ -1158,16 +1174,22 @@ class NeoInClass(CommonMethodsWeb):
                 pass
 
     def verify_sticker_displayed(self):
+        try:
 
-        elements = self.get_elements(("xpath", self.sticker_onchat))
-
-        for element in elements:
-            if "src" in element.get_attribute('innerHTML'):
-                return ReturnType(True, " Sticker is being displayed")
-        return ReturnType(False, " Sticker is not being displayed")
+            self.wait_for_element_visible(("xpath", self.sticker_onchat))
+            flag = self.get_element(("xpath", self.sticker_onchat)).is_displayed()
+            return  ReturnType(True, " Sticker is being displayed") if flag else ReturnType(False, " Sticker is not being displayed")
+        except:
+            return ReturnType(False, " Sticker is not being displayed")
 
     def send_sticker(self):
-        self.get_element(("xpath", self.emoji_icon)).click()
+        try:
+            flag_sticker_displayed = self.get_element(("xpath", self.sticker_item)).is_displayed()
+        except:
+            flag_sticker_displayed = False
+
+        if not flag_sticker_displayed:
+            self.element_click(("xpath", self.emoji_icon))
         self.wait_for_element_visible(("xpath", self.sticker_item))
         self.get_element(("xpath", self.sticker_item)).click()
 
@@ -1188,10 +1210,14 @@ class NeoInClass(CommonMethodsWeb):
         self.wait_for_element_visible(("xpath", self.emoji_icon))
         self.get_element(("xpath", self.emoji_icon)).click()
 
+    def close_sticker_menu(self):
+        self.element_click(("xpath","//div[@class = 'self.chat_by_me']"))
+
     def raise_hand(self):
-        self.wait_for_element_visible(
-            (("xpath", self.raise_hand_button)))
-        self.get_element(("xpath", self.raise_hand_button)).click()
+        if not self.verify_hand_is_raised().result:
+            self.wait_for_clickable_element_webdriver(
+                (self.raise_hand_button))
+            self.get_element(("xpath", self.raise_hand_button)).click()
 
     def unraise_hand(self):
         if self.verify_hand_is_raised().result:
@@ -1226,10 +1252,11 @@ class NeoInClass(CommonMethodsWeb):
     def current_student_has_video_enlarged(self):
         try:
             self.wait_for_element_visible(("xpath",
-                                     "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']"))
-            text = self.get_element(("xpath",
-                                     "//div[@class= 'streamNameClass neo_cl_StreamCard__name neo_cl_StreamCard__name--nameMaxWidth neo_cl_StreamCard__name--rounded neo_cl_StreamCard__name--local']")).text
-            if text.lower() == 'you':
+                                     "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass"))
+            element = self.get_element(("xpath",
+                                     "//div[@class='neo_cl_StreamCard__borderLayer neo_cl_StreamCard__borderLayer--active streamBorderLayerClass']"))
+            text = element.find_element_by_xpath("..").text
+            if text.lower() == 'you' or 'you' in text.lower():
                 return ReturnType(True, "Current student has video enlarged")
             else:
                 return ReturnType(False, "Current student has not video enlarged")
