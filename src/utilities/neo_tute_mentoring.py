@@ -827,6 +827,7 @@ class NeoTute(CommonMethodsWeb):
 
     def get_video_status(self):
         try:
+            self.wait_for_element_visible(('xpath', self.cam_off))
             if self.is_element_present(('xpath', self.cam_off)):
                 return ReturnType(False, "cam is off")
             else:
@@ -867,10 +868,12 @@ class NeoTute(CommonMethodsWeb):
 
 
     def get_tutor_video_status(self):
-        self.wait_for_locator_webdriver(self.signal_icon)
         try:
+            self.wait_for_locator_webdriver(self.signal_icon)
             if self.is_element_present(('xpath', self.tutor_cam_on)):
                 return ReturnType(True, "cam is on")
+            else:
+                return ReturnType(False, "cam is off")
         except(NoSuchElementException):
             return ReturnType(False, "cam is off")
 
@@ -879,6 +882,8 @@ class NeoTute(CommonMethodsWeb):
         try:
             if self.is_element_present(('xpath', self.tutor_mic_on)):
                 return ReturnType(True, "mic is on")
+            else:
+                return ReturnType(False, "cam is off")
         except(NoSuchElementException):
             return ReturnType(False, "mic is off")
 

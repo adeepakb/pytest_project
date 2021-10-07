@@ -1085,7 +1085,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def is_tutor_video_on(self):
         try:
-            self.obj.wait_for_locator_webdriver(self.tutor_video)
+            self.obj.wait_for_element_visible(self.tutor_video)
             if self.obj.is_element_present(('xpath', self.tutor_video)):
                 return ReturnType(True, "Tutor camera is on")
             else:
@@ -1626,6 +1626,9 @@ class NeoInClass(CommonMethodsWeb):
                                     "//div[@class = 'streamList__scrollerBtns streamList__scrollerBtns--left']"))
         except:
             pass
+
+    def verify_students_after_scrolling_left(self):
+        print()
 
     def verify_students_after_scrolling_right(self):
         try:

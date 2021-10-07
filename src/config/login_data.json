@@ -76,6 +76,12 @@
       "mobile_no": "2013533913",
       "country_code": "India (+91)",
       "premium_id": "2013533913"
+    },
+    "student7": {
+      "code": "+91-",
+      "mobile_no": "2018799355",
+      "country_code": "India (+91)",
+      "premium_id": "2018799355"
     }
   },
   "neo_login_detail2": {
@@ -120,6 +126,13 @@
     "mobile_no": "2016234291",
     "country_code": "India (+91)",
     "premium_id": "2016234291"
+  },
+    "student7": {
+    "code": "+91-",
+    "name": "Test 6",
+    "mobile_no": "2011026340",
+    "country_code": "India (+91)",
+    "premium_id": "2011026340"
   }
 },
   "login_details_3": {
