@@ -3,6 +3,8 @@ from pytest import fixture
 from constants.platform import Platform
 from pages.factory.login import LoginFactory
 from pages.factory.neo_inclass_factory import NeoInClassFactory
+from constants.constants import Login_Credentials
+from constants.load_json import get_data
 import pytest_check as check
 from utilities.neo_tute_mentoring import NeoTute
 
@@ -60,7 +62,8 @@ def student2_neo(request, student2):
 
 @given("Launch the application online")
 def login_as_neo_user(student1_login):
-    student1_login.login_and_navigate_to_home_screen('+91-', '2011313229', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("Launch the application online in mobile")
@@ -69,8 +72,8 @@ def login_as_neo_user(student1_login):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
-    # neo_tute.present_any_slide(1)
+    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student1')
+
 
 @when('join neo session')
 @then('join neo session')
@@ -132,7 +135,7 @@ def step_impl(student1_neo):
 def step_impl(student1_neo):
     student1_neo.click_on_session_topic()
     details = student1_neo.is_reactions_icons_present()
-    check.equal(details.result, True, details.reason)
+    check.equal(details.result, False, details.reason)
 
 
 @then('Verify that the celebrations send by students should not reach Tutor side')
@@ -157,7 +160,7 @@ def step_impl(student1_neo):
     student1_neo.set_network_flaky()
     student1_neo.select_any_celebration_symbol('like')
     details = student1_neo.is_floating_emojis_present()
-    check.equal(details.result, False, details.reason)
+    check.equal(details.result, True, details.reason)
 
 
 @then('Verify the interval time after sending 5 emojis')
@@ -195,7 +198,6 @@ def step_impl(student1_neo,student2,student2_neo):
     student2.login_and_navigate_to_home_screen('+91-', '2016170445', otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session_student('mic-on', 'cam-on')
-    student2_neo.turn_on_off_student_mic('ON')
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')
@@ -213,4 +215,4 @@ def step_impl(student1_neo,student2_neo):
     student1_neo.select_any_celebration_symbol('clap')
     student2_neo.select_any_celebration_symbol('clap')
     details = student2_neo.is_floating_emojis_present()
-    check.equal(details.result, True, details.reason)
+    check.equal(details.result, False, details.reason)

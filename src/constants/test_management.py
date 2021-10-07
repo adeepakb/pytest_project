@@ -335,6 +335,7 @@ def get_project_id(project_name):
     print("project id is:" + project_id)
     return project_id
 
+
 def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, suite_id):
     """
     Get the ``run_id`` and ``case_id`` for the given name of the test run and scenario,
@@ -405,6 +406,7 @@ def get_custom_field_scenario(test_run_name, scenario_name, project_id):
         if links.get("_next") is not None:
             continue
 
+
 # returns a list of API available reports by project
 def get_testrail_reports(project_ID, report_name):
     client = get_testrail_client()
@@ -427,7 +429,8 @@ def run_testrail_reports(report_id):
 # to fetch latest result id
 def get_latest_result_id(run_id,case_id):
     client = get_testrail_client()
-    test_results = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results_dict = client.send_get('get_results_for_case/%s/%s' % (run_id, case_id))
+    test_results = test_results_dict['results']
     for test_result in test_results:
         if test_result is not None:
             print(test_result['id'])

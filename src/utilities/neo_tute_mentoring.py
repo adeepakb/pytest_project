@@ -68,8 +68,10 @@ class NeoTute(CommonMethodsWeb):
         self.palette_slider = "//input[@class='palette-stroke-slider']"
         self.video = '//div[@class = "videoPresentation false"]'
 
-        self.global_control_video_icon = '//div[@class="topContainer--action_icon red-bg"]/img[@alt="cam"]'
-        self.global_control_audio_icon = '//div[@class="topContainer--action_icon red-bg"]/img[@alt="mic"]'
+        self.global_control_video_icon_on = '//div[@class="topContainer--action_icon"]/img[@alt="cam"]'
+        self.global_control_video_icon_off = '//div[@class="topContainer--action_icon red-bg"]/img[@alt="cam"]'
+        self.global_control_audio_icon_on = '//div[@class="topContainer--action_icon"]/img[@alt="mic"]'
+        self.global_control_audio_icon_off = '//div[@class="topContainer--action_icon red-bg"]/img[@alt="mic"]'
         self.focus_mode = "//img[@alt='chat']"
         self.tutor_controls_video_icon = '//div[contains(@class,"tutorCard--red_icon")]/img[@alt="cam"]'
         self.tutor_controls_audio_icon = '//div[contains(@class,"tutorCard--red_icon")]/img[@alt="mic"]'
@@ -202,6 +204,14 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.laser_pointer_icon)
         self.obj.element_click(('xpath', self.laser_pointer_icon))
 
+    def laser_pointer_present(self):
+        self.obj.wait_for_locator_webdriver(self.laser_pointer_icon)
+        source = self.obj.get_element(('xpath', "//div[@class='netless-whiteboard cursor-laserPointer']")).value_of_css_property('cursor')
+        if "data:image/svg+xml" in source:
+            return True
+        else:
+            return False
+
     # shape : rectangle, ellipse, polygon, star, line
     def select_any_shape(self, shape):
         self.obj.wait_for_locator_webdriver(self.shapes_select)
@@ -262,16 +272,17 @@ class NeoTute(CommonMethodsWeb):
         self.select_any_shape('ellipse')
         self.action.drag_and_drop_by_offset(canvas, 302, 304).perform()
         self.select_any_shape('polygon')
-        self.action.drag_and_drop_by_offset(canvas, -160, -180).perform()
+        self.action.drag_and_drop_by_offset(canvas, -200, -180).perform()
         self.select_any_shape('rectangle')
-        self.action.drag_and_drop_by_offset(canvas, 35, 35).perform()
-        self.action.drag_and_drop_by_offset(canvas, -50, 70).perform()
+        self.action.drag_and_drop_by_offset(canvas, 35, 20).perform()
+        # self.action.drag_and_drop_by_offset(canvas, -50, 70).perform()
 
     def perform_text_action_on_neo_tutor_whiteboard(self, text):
         self.obj.wait_for_locator_webdriver(self.blank_slide_presented)
         self.click_on_text_icon()
-        canvas = self.obj.get_element(('xpath', self.presentation))
-        self.action.move_to_element(canvas).click().send_keys(text).perform()
+        canvas = self.obj.get_element(('xpath', '//*[@class = "whiteboardView"]'))
+        canvas.click()
+        self.action.move_to_element(canvas).click().pause(2).send_keys(text).perform()
 
     def select_color(self, index):
         self.obj.element_click(('xpath', self.color_icon))
@@ -759,8 +770,22 @@ class NeoTute(CommonMethodsWeb):
 
     def present_any_slide(self,select_slide_num):
         self.click_on_tab_item(tab_name="Session Slides")
+        self.obj.wait(1)
         slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
         slide_select_icon.click()
+
+    def find_video_slide(self):
+        slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))
+        for slide_card in slide_cards:
+            try:
+                card_src = slide_card.find_element_by_xpath(".//div/div/img").get_attribute("src")
+                if 'defaultVideoThumbnail' in card_src :
+                    slide_num = slide_card.get_attribute("innerText").split('\n')[0].lstrip("0")
+                    return slide_num
+                else:
+                    continue
+            except:
+                return None
 
     # Top container
 
@@ -809,30 +834,6 @@ class NeoTute(CommonMethodsWeb):
         except(NoSuchElementException):
             return ReturnType(True, "cam is on")
 
-
-    def turn_tutor_video_on_off(self, status= 'off'):
-        try:
-            if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-            else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-on" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
-        except:
-            pass
-
     def get_audio_status(self):
         try:
             if self.is_element_present(('xpath', self.mic_off)):
@@ -847,6 +848,23 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(False, "chat is off")
         except(NoSuchElementException):
             return ReturnType(True, "chat is on")
+
+    def get_global_video_status(self):
+        if self.is_element_present(('xpath', self.global_control_video_icon_on)):
+            return ReturnType(True, "Global video icon is on")
+        elif self.is_element_present(('xpath', self.global_control_video_icon_off)):
+            return ReturnType(False, "Global video icon is off")
+        else:
+            return ReturnType(False, "Global mic icon is not present")
+
+    def get_global_audio_status(self):
+        if self.is_element_present(('xpath', self.global_control_audio_icon_on)):
+            return ReturnType(True, "Global audio icon is on")
+        elif self.is_element_present(('xpath', self.global_control_audio_icon_off)):
+            return ReturnType(False, "Global audio icon is off")
+        else:
+            return ReturnType(None, "Global audio icon is not present")
+
 
     def get_tutor_video_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -1014,6 +1032,7 @@ class NeoTute(CommonMethodsWeb):
                         desired_element = element
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
             else:
                 elements = self.get_elements(
                     ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
@@ -1023,6 +1042,7 @@ class NeoTute(CommonMethodsWeb):
                         desired_element = element
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
         except:
             pass
 
