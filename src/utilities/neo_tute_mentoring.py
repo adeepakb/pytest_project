@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        #self.chrome_options.add_argument('--no-sandbox')
-        #self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -883,7 +883,7 @@ class NeoTute(CommonMethodsWeb):
             if self.is_element_present(('xpath', self.tutor_mic_on)):
                 return ReturnType(True, "mic is on")
             else:
-                return ReturnType(False, "cam is off")
+                return ReturnType(False, "mic is off")
         except(NoSuchElementException):
             return ReturnType(False, "mic is off")
 
