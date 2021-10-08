@@ -362,7 +362,7 @@ def step_impl(neo_in_class):
     neo_in_class.hover_over_info_button()
     details = neo_in_class.verify_info_pop_up(subject_name = 'Biology: Control and Coordination')
     check.equal(details.result, True, details.reason)
-
+    neo_in_class.close_info_pop_up()
 
 @then("Verify when user hover on the video button")
 def step_impl(neo_in_class):

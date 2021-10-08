@@ -402,6 +402,7 @@ def get_custom_field_scenario(test_run_name, scenario_name, project_id):
         offset += size
         for case in cases:
             if case['title'] == scenario_name:
+                print(case['custom_merged_case'])
                 return True if case['custom_merged_case'] == 1 else False
         if links.get("_next") is not None:
             continue

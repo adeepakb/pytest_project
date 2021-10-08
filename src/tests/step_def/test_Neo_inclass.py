@@ -439,6 +439,7 @@ def step_impl(student1_neo):
     details = student1_neo.is_focus_mode_icon_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the text Hand Raised in mobile browser')
 def step_impl(student1_neo):
     student1_neo.click_on_hand_raise()
@@ -451,16 +452,19 @@ def step_impl(student1_neo):
     details = student1_neo.is_session_topic_inclass_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the display of weak signal icon in mobile browser')
 def step_impl(student1_neo):
     student1_neo.set_network_flaky()
     details = student1_neo.is_weak_signal_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the display of controls in fullscreen mode')
 def step_impl(student1_neo):
     details = student1_neo.focus_mode_bottom_container_not_active()
     check.equal(details.result, True, details.reason)
+
 
 @then('Verify the class description in desktop/mobile browser')
 def step_impl(student1_neo):
@@ -688,6 +692,7 @@ def step_impl(student1_neo):
     student1_neo.hover_over_info_button()
     detail = student1_neo.verify_info_pop_up(subject_name='Biology: Control and Coordination')
     check.equal(detail.result, True, detail.reason)
+    student1_neo.close_info_pop_up()
 
 
 @when("user dismisses info popup")
@@ -703,10 +708,14 @@ def step_impl(student1_neo):
 @then("Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, "
       "should dismiss the pop-up")
 def step_impl(student1_neo):
+    student1_neo.hover_over_info_button()
+    student1_neo.close_info_pop_up()
+    time.sleep(1)
     detail = student1_neo.verify_info_pop_up()
     check.equal(detail.result, False, detail.reason)
 
 
+@then("Verify that students count who have  joined session is <=6, previous (<) and next (>) icon should not appear below the student video thumbnails")
 @then("Verify that students count who have joined session is <=6, previous (<) and next (>) icon should not appear below the student video thumbnails")
 def step_impl(student1_neo):
     detail = student1_neo.are_steam_student_arrow_button_displayed()
@@ -719,17 +728,16 @@ def step_impl(student1_neo,student7,student7_neo):
     student7.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student7_neo.home_click_on_join()
     student7_neo.join_neo_session()
-    time.sleep(2)
+    time.sleep(4)
     detail = student1_neo.are_steam_student_arrow_button_displayed()
     check.equal(detail.result, True, detail.reason)
 
 @then("Verify that when few students drop and total count drops below 7, previous (<) and next (>) icon disappears from below the students video thumbnails")
 def step_impl(student1_neo,student7,student7_neo):
     student7.driver.close()
-    student7_neo.driver.close()
     time.sleep(2)
     detail = student1_neo.are_steam_student_arrow_button_displayed()
-    check.equal(detail.result, True, detail.reason)
+    check.equal(detail.result, False, detail.reason)
 
 
 @then("Verify that clicking on next (>) icon should scroll the students thumbnails towards the right and screen should update left most column moving out of the screen and new column appearing on the right")
@@ -751,11 +759,6 @@ def step_impl(student1_neo):
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that previous (<) icon is clickable until the user reaches the first column of the thumbnails")
-def step_impl(student1_neo):
-    details = student1_neo.scroll_till_left_end_on_student_card()
-    check.equal(details.result, True, details.reason)
-
 @then("Verify that previous (<) and next (>) icons change (disabled state) when they reach first and last page respectively")
 def step_impl(student1_neo):
     details = student1_neo.scroll_till_end_on_student_card()
@@ -764,6 +767,14 @@ def step_impl(student1_neo):
     check.equal(details.result, True, details.reason)
 
 
+@then("Verify that previous (<) icon is clickable until the user reaches the first column of the thumbnails")
+def step_impl(student1_neo):
+    details = student1_neo.scroll_till_left_end_on_student_card()
+    check.equal(details.result, True, details.reason)
+
+
+
+@then('Verify that \"Raise Hand\" button is present at the bottom of the screen next to camera and mic controls')
 @then('Verify that "Raise Hand" button is present at the bottom of the screen next to camera and mic controls')
 def step_impl(student1_neo):
     check.equal(student1_neo.is_hand_raise_icon_present(),True, "Raise hand is not present")
@@ -773,6 +784,7 @@ def step_impl(student1_neo):
 @then('Verify that user should be able to use "Raise Hand" functionality anytime during the session')
 def step_impl(student1_neo):
     student1_neo.raise_hand()
+    time.sleep(2)
     details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
@@ -789,7 +801,7 @@ def step_impl(student1_neo):
 @then('Verify the state of "Lower Hand" button if user leaves and then rejoins the session')
 def step_impl(student1_neo,student1_login):
     student1_neo.raise_hand()
-    student1_login.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
+    student1_login.relaunch_staging()
     student1_neo.home_click_on_join()
     student1_neo.join_neo_session()
     details = student1_neo.verify_hand_is_raised()
@@ -800,6 +812,7 @@ def step_impl(student1_neo,student1_login):
 def step_impl(student1_neo):
     student1_neo.raise_hand()
     student1_neo.unraise_hand()
+    time.sleep(2)
     detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
@@ -808,6 +821,7 @@ def step_impl(student1_neo):
 def step_impl(student1_neo):
     student1_neo.raise_hand()
     student1_neo.unraise_hand()
+    time.sleep(1)
     detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
@@ -817,6 +831,7 @@ def step_impl(student1_neo,neo_tute):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     student1_neo.raise_hand()
     neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
+    time.sleep(3)
     detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
@@ -833,15 +848,25 @@ def step_impl(student1_neo, student2_neo, student2):
 @then("Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail")
 def step_impl(student1_neo, student2_neo, student2):
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
+    student2_neo.unraise_hand()
     detail = student1_neo.verify_hand_is_raised_for_student(student_name=student2_details['name'])
     check.equal(detail.result, False, detail.reason)
 
+
 @then('Verify the status of "Lower Hand" button if a student has raised hand and then drops from session, the tutor lowers the hand for that student and then the student rejoins the class')
-def step_impl(student1_neo, student2_neo, student2,neo_tute):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
-    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+def step_impl(student1_neo, student1_login,neo_tute):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     neo_tute.click_on_menu_option(expected_student_name=student2_details['name'], menu_item='Hands Down')
-    detail= student2_neo.verify_hands_down_message()
+    student1_login.relaunch_staging()
+    student1_neo.home_click_on_join()
+    student1_neo.join_neo_session()
+    detail= student1_neo.verify_hands_down_message()
+    check.equal(detail.result, False, detail.reason)
+
+
+@then('Verify that when the student joins the session, by default, "Raise Hand" button should not be active')
+def step_impl(student1_neo):
+    detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 @then('Verify that "Thumbs Up" button is present at the bottom of the screen')

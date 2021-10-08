@@ -135,7 +135,6 @@ class NeoInClass(CommonMethodsWeb):
         self.sticker_onchat = '//img[contains(@src,"chat_stickers")]' # "//div[@class= 'message']"
         self.emoji_icon = "//*[@class='emoji']"
         self.raise_hand_button = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
-        self.raise_hand = "//div[@class='iconWrapper icon icon--marginLeft icon--whitebg']"
         self.raise_hand_text = "//div[@class='bottomContainer__raiseHandText']"
         self.low_hand_text = "//div[@class='insideClass__lowerHandMessage']"
 
@@ -1289,14 +1288,16 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, "Current student has not video enlarged")
 
     def hover_over_info_button(self):
-        self.wait_for_element_visible(("xpath", self.class_info_icon))
-        self.element_click(("xpath", self.class_info_icon))
+        if not self.verify_info_pop_up().result:
+
+            self.wait_for_element_visible(("xpath", self.class_info_icon))
+            self.element_click(("xpath", self.class_info_icon))
 
     def close_info_pop_up(self):
-        element = self.get_element(("xpath", "//div[@class = 'classInfo__infoPopup']")).is_displayed()
+        element = self.get_element(("xpath", "//div[@class = 'classInfo__infoPopup']"))
         if element.is_displayed():
-            self.wait_for_element_visible(("xpath", self.session_topic_icon))
-            self.element_click(("xpath", self.session_topic_icon))
+            self.wait_for_element_visible(("xpath",self.class_info_icon))
+            self.element_click(("xpath", self.class_info_icon))
 
     def hover_over_reaction_button(self):
         element = self.get_element(("xpath", self.thumbs_sticker_icon))
@@ -1600,9 +1601,9 @@ class NeoInClass(CommonMethodsWeb):
                 if "mic_off" in element.get_attribute("innerHTML"):
                     element.click()
 
-            return ReturnType(True, "Tutor camera or mic is not clickable")
-        except:
             return ReturnType(False, "Tutor camera or mic is clickable")
+        except:
+            return ReturnType(True, "Tutor camera or mic is not clickable")
 
     def are_steam_student_arrow_button_displayed(self):
         try:
@@ -1628,7 +1629,23 @@ class NeoInClass(CommonMethodsWeb):
             pass
 
     def verify_students_after_scrolling_left(self):
-        print()
+        try:
+            elements = self.get_elements(
+                ("xpath", "//div[@class= 'streamList__streamItem streamList__streamItem--localStream']"))
+            elements += self.get_elements(("xpath", "//div[@class= 'streamList__streamItem']"))
+            initial_number = len(elements)
+            self.scroll_students_card(towards='left')
+            elements = []
+            elements = self.get_elements(
+                ("xpath", "//div[@class= 'streamList__streamItem streamList__streamItem--localStream']"))
+            elements += self.get_elements(("xpath", "//div[@class= 'streamList__streamItem']"))
+            final_number = len(elements)
+            flag = final_number >= initial_number
+
+            return ReturnType(True, "Students are scrolled to left if clicked on left arrow") if flag else ReturnType(
+                False, "Students are not scrolled to left if clicked on left arrow")
+        except:
+            return ReturnType(False, "Students are not scrolled to left if clicked on left arrow")
 
     def verify_students_after_scrolling_right(self):
         try:
