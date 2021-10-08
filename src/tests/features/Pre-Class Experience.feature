@@ -5,14 +5,15 @@ Scenario: Verify profile photo upload, approval and reject photo scenarios
 Given launch the application online as neo user and navigate to home screen
 And tutor start the session
 When click on "JOIN" button in home page
-Then Verify the profile photo edit functionality when user clicks on edit icon
+Then Verify hovering over student's name bubble when uploaded photo approval is pending.
+And Verify the profile photo edit functionality when user clicks on edit icon
 And Verify the "Change profile photo" pop up when user selects "Use Camera" option.
 And Verify that student able to close, change profile photo pop up by tapping on close icon
 And Verify adjusting image by drag image option in Adjust Photo pop up.
 And Verify that student able to close, Adjust photo pop up by tapping on close icon
 And Verify that student able to change photo by tapping on change icon
 And Verify that student able to save photo by tapping on Save icon
-And Verify hovering over student's name bubble when uploaded photo approval is pending.
+And Verify the student's name bubble when photo approval is pending.
 And Verify that till the time photo is in review state, student will see own photo with overlay text shown as per zeplin
 And Verify the approval pending flash message when user uploads a photo for user profile.
 And Verify that once tutor approves photo will be visible to student only if student refresh screen

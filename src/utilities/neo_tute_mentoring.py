@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        # self.chrome_options.add_argument('--no-sandbox')
-        # self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -167,7 +167,8 @@ class NeoTute(CommonMethodsWeb):
         self.obj.element_click(('xpath', self.sign_in_next))
 
     def start_neo_session(self,login_data="neo_login_detail1", user='student1',date ='today'):
-        url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
+        # url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
+        url = "https://tutor-plus-staging.tllms.com/live-classes/231874"
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -610,16 +611,17 @@ class NeoTute(CommonMethodsWeb):
 
     def approve_profile_pic(self, name=None):
         try:
-            self.wait_for_element_visible(self.chrome_driver, self.student_cards_details)
+            self.wait_for_element_visible(self.student_cards_details)
             elements = self.get_elements(self.student_cards_details)
             for element in elements:
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
                     self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);", self.get_child_element(element, *self.student_name))
+                    self.wait_for_element_visible(self.approve_button)
                     self.element_click(self.approve_button)
                     self.wait_for_locator_webdriver(self.student_detail_toast)
-                    if self.get_element(self.student_detail_toast).is_displayed():
-                        self.wait_for_locator_webdriver(self.close_toast)
-                        self.get_element(self.close_toast).click()
+                    if self.is_element_present(('xpath',self.student_detail_toast)):
+                        self.wait_for_element_visible(self.close_toast)
+                        self.element_click(self.close_toast)
                         return ReturnType(True, "Approved profile pic")
                     else:
                         return ReturnType(False, "Couldn't approve profile pic")
@@ -630,18 +632,17 @@ class NeoTute(CommonMethodsWeb):
 
     def reject_profile_pic(self, name=None):
         try:
-            self.wait_for_element_visible(self.chrome_driver, self.student_cards_details)
+            self.wait_for_element_visible(self.student_cards_details)
             elements = self.get_elements(self.student_cards_details)
-
             for element in elements:
                 self.get_child_element(element, *self.student_name)
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
                     self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",self.get_child_element(element, *self.student_name))
+                    self.wait_for_element_visible(self.reject_buttpn)
                     self.get_child_element(element,*self.reject_buttpn).click()
                     self.wait_for_locator_webdriver(self.student_detail_toast)
-                    if self.get_element(self.student_detail_toast).is_displayed():
-                        self.wait_for_locator_webdriver(self.close_toast)
-                        self.get_element(self.close_toast).click()
+                    if self.is_element_present(('xpath', self.student_detail_toast)):
+                        self.element_click(self.close_toast)
                         return ReturnType(True, "Rejected profile pic")
                     else:
                         return ReturnType(False, "Couldn't reject profile pic")

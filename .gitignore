@@ -1,4 +1,4 @@
 /venv/
 /.idea/
 pages/android/pycache
-
+.DS_Store

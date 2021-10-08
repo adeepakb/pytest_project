@@ -212,7 +212,8 @@ class NeoInClass(CommonMethodsWeb):
     def click_on_future_join_card(self, future_card_num):
         self.obj.wait(2)
         future_join_elements = self.obj.get_elements(("xpath","//img[@class='timerIcon']//parent::div/parent::div//div[@class='btnCard']//div/a/span[text()='JOIN']"))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);",future_join_elements[future_card_num - 1])
+        join_button_elt = self.obj.get_element(("xpath","//span[text()='JOIN']"))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);",join_button_elt)
         future_join_elements[future_card_num - 1].click()
 
     def join_neo_session(self):
@@ -1758,6 +1759,7 @@ class NeoInClass(CommonMethodsWeb):
         self.click_photo_edit_icon()
         current_location = os.path.dirname(os.path.abspath(__file__))
         location = os.path.normpath(os.path.join(current_location, file))
+        self.obj.wait_for_locator_webdriver(self.upload_photo_input)
         self.get_element(('xpath', self.upload_photo_input)).send_keys(location)
 
     def upload_profile_photo_api(self, image_file):
@@ -1777,20 +1779,23 @@ class NeoInClass(CommonMethodsWeb):
         headers = {'authorization': 'Bearer ' + access_token, 'x-tnl-user-id': str(user_id)}
 
         response = requests.put(url, payload, headers=headers)
-        print(response.text)
         if response.ok:
             print("Upload completed successfully!")
         else:
-            print("Failed due to %s and status code %d "%response.reason %response.status_code)
+            print("Failed due to %s " %response.reason)
+            # print(response.text)
         return response.ok
 
     def verify_adjust_photo_popup(self):
-
-        crop_box = self.obj.get_element(("xpath",self.pro_photo_crop_box))
-        before_adjust_transform_px = crop_box.value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
-        self.action.drag_and_drop_by_offset(crop_box, 30, 0).perform()
-        after_adjust_transform_px = crop_box.value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
-        return ReturnType(True,"Adjusted profile photo to right by 30 pixels") if int(before_adjust_transform_px[4]) + 30 == int(after_adjust_transform_px[4]) else ReturnType(False,"Photo did not get adjusted to right by 30 pixels")
+        try:
+            crop_box = self.obj.get_element(("xpath",self.pro_photo_crop_box))
+            before_adjust_transform_px = crop_box.value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
+            self.action.drag_and_drop_by_offset(crop_box, 30, 0).perform()
+            after_adjust_transform_px = crop_box.value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
+            return ReturnType(True,"Adjusted profile photo to right by 30 pixels") if int(float(before_adjust_transform_px[4])) + 30 == int(float(after_adjust_transform_px[4])) \
+                else ReturnType(False,"Photo did not get adjusted to right by 30 pixels")
+        except:
+            return ReturnType(False,"Photo did not get adjusted to right by 30 pixels")
 
     def click_on_change_button(self):
         self.obj.wait_for_locator_webdriver(self.change_photo)
@@ -1800,7 +1805,6 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.save_photo)
         self.obj.element_click(("xpath", self.save_photo))
 
-
     def verify_photo_approval_pending(self):
         self.obj.wait_for_locator_webdriver(self.current_student_bubble_pp)
         flag1 = self.obj.is_element_present(("xpath", self.photo_approval_pending))
@@ -1808,6 +1812,8 @@ class NeoInClass(CommonMethodsWeb):
         return flag1 and flag2
 
     def verify_toast_message(self, expected_message):
+        time.sleep(1)
+        self.obj.wait_for_locator_webdriver(self.toast_container)
         message = self.obj.get_element(("xpath", self.toast_container)).text
         return True if message == expected_message else False
 
@@ -1820,11 +1826,30 @@ class NeoInClass(CommonMethodsWeb):
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
 
-    def get_current_student_bubble(self, first_letter):
+    def close_toast_message(self):
+        self.obj.wait_for_locator_webdriver("//span[@class='MuiIconButton-label']")
+        self.obj.element_click(('xpath', "//span[@class='MuiIconButton-label']"))
+
+    def get_current_student_bubble(self, profile_name):
         self.obj.wait_for_locator_webdriver(self.current_student_bubble_pp)
         card = self.obj.get_element(('xpath', self.current_student_bubble_pp))
-        profile_pic_src = card.find_element_by_xpath(".//img").get_attribute("src")
-        if "https://static.tllms.com/assets/k12/premium_online/byjus_classes/common/initial_avatars/" + first_letter + ".png" == profile_pic_src:
+        profile_pic_src = card.get_attribute("src")
+        name_first_letter = profile_name[0]
+        if "https://static.tllms.com/assets/k12/premium_online/byjus_classes/common/initial_avatars/" + name_first_letter + ".png" == profile_pic_src:
             return ReturnType(True, "Initial avatar/name first letter is shown on bubble")
         else:
             return ReturnType(False, "Initial avatar/name first letter is not displayed on bubble")
+
+    def hover_over_student_bubble_approval_pending(self):
+        try:
+            self.wait_for_locator_webdriver(self.current_student_bubble)
+            before_hover_over_bubble = self.obj.get_element(("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
+            # self.obj.element_click(("xpath", self.current_student_bubble))
+            hov = self.action.move_to_element(self.obj.get_element(("xpath", self.current_student_bubble)))
+            hov.click().perform()
+            after_hover_over_bubble = self.obj.get_element(("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
+            a = float(before_hover_over_bubble[0])
+            b = float(after_hover_over_bubble[0])
+            return ReturnType(True, "Student bubble hovered over") if a < b else ReturnType(False, "Student bubble did not get hovered over")
+        except Exception as e:
+            return ReturnType(False, "Unable to hover over student bubble due to exception %s" % str(e))

@@ -47,6 +47,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
+    # TODO Needs to be updated to fetch from DB. For time being, below workaround
     neo_tute.start_neo_session(date="tomorrow")
 
 
@@ -96,20 +97,27 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.upload_photo("../../../files/SamplePNG.png")
     neo_in_class.save_selected_photo()
-    check.equal(neo_in_class.verify_photo_approval_pending(), True,"student able to save photo by tapping on Save icon and image pending to be approveed")
 
 
-@then("Verify hovering over student's name bubble when uploaded photo approval is pending.")
+@then("Verify the student's name bubble when photo approval is pending.")
 @then('Verify the approval pending flash message when user uploads a photo for user profile.')
 @then("Verify that till the time photo is in review state, student will see own photo with overlay text shown as per zeplin")
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_photo_approval_pending(),True,"Verified student's name bubble when uploaded photo approval is pending")
 
 
+@then("Verify hovering over student's name bubble when uploaded photo approval is pending.")
+def step_impl(neo_in_class):
+    neo_in_class.upload_profile_photo_api("../../../files/SamplePNG.png")
+    details = neo_in_class.hover_over_student_bubble_approval_pending()
+    check.equal(details.result, True, details.reason)
+
+
 @then('Verify that once tutor approves photo will be visible to student only if student refresh screen')
 def step_impl(neo_tute,neo_in_class):
     neo_tute.click_on_tab_item(tab_name="Student Details")
-    neo_tute.approve_profile_pic('Swastika N')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    neo_tute.approve_profile_pic(student1_details['profile_name'])
     check.equal(neo_in_class.approved_profile_pic_visible(), False,"Approved photo not visible to student before student refresh screen")
     neo_in_class.page_refresh()
     check.equal(neo_in_class.approved_profile_pic_visible(),True,"Approved photo visible to student after student refresh screen")
@@ -118,6 +126,7 @@ def step_impl(neo_tute,neo_in_class):
 @then('Verify the congratulations flash message when uploaded photo gets approved.')
 def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_toast_message('Congratulations! Your profile photo is approved.'), True, "Congratulations flash message when uploaded photo gets approved.")
+    neo_in_class.close_toast_message()
 
 
 @then('Verify the edit button in bubble before & after photo gets approved')
@@ -130,15 +139,18 @@ def step_impl(neo_tute,neo_in_class):
     neo_in_class.upload_profile_photo_api("../../../files/SamplePNG.png")
     neo_tute.click_on_tab_item(tab_name="Class Forum")
     neo_tute.click_on_tab_item(tab_name="Student Details")
-    neo_tute.reject_profile_pic('Swastika N')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    neo_tute.reject_profile_pic(student1_details['profile_name'])
     neo_in_class.page_refresh()
     check.equal(neo_in_class.verify_toast_message('Your profile picture wasn`t approved. Please try uploading another picture'),
                 True, "Rejected flash message displayed when user uploads photo and tutor rejects")
+    neo_in_class.close_toast_message()
 
 
 @then('Verify the bubble when uploaded photo gets rejected for the logged in user.')
 def step_impl(neo_in_class):
-    details = neo_in_class.get_current_student_bubble('S')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    details = neo_in_class.get_current_student_bubble(student1_details['profile_name'])
     check.equal(details.result, True, details.reason)
 
 
@@ -148,6 +160,7 @@ def step_impl(neo_in_class):
     neo_in_class.click_photo_edit_icon()
     check.equal(neo_in_class.verify_toast_message('Network error, please check your connection and retry'), True, "Error message displayed when internet connection is lost")
     neo_in_class.close_profile_photo_popup()
+    neo_in_class.close_toast_message()
 
 
 @then('Verify that student can upload photo only in JPEG,JPG,PNG format')
@@ -167,5 +180,7 @@ def step_impl(neo_in_class):
 @then('Verify uploading photos with different resolutions and sizes in the change profile photo pop up.')
 def step_impl(neo_in_class):
     flag1 = neo_in_class.upload_profile_photo_api("../../../files/SampleJPG1mb.jpg")
+    print(flag1)
     flag2 = neo_in_class.upload_profile_photo_api("../../../files/SamplePNG.png")
+    print(flag2)
     check.equal(flag1 and flag2, True, "Photo upload successful for different resolutions and sizes")
