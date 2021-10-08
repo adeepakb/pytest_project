@@ -1,3 +1,5 @@
+import time
+
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.constants import Login_Credentials
@@ -148,18 +150,42 @@ def student6_neo(request, student6):
         yield student6_neo
 
 
+
+@fixture()
+def student7(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student7 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student7
+    elif Platform.WEB.name in platform_list:
+        student7 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student7
+
+
+@fixture()
+def student7_neo(request, student7):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student7_neo = NeoInClassFactory().get_page(student7.driver, Platform.ANDROID.value)
+        yield student7_neo
+    elif Platform.WEB.name in platform_list:
+        student7_neo = NeoInClassFactory().get_page(student7.driver, Platform.WEB.value)
+        yield student7_neo
+
+
 @given("launch the application online as neo user and navigate to home screen")
 def step_impl(student1_login):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
+    neo_tute.start_neo_session(login_data= 'neo_login_detail2',user= 'student1')
     neo_tute.select_focus_mode('off')
 
 
+@given('click on "JOIN" button in home page')
 @when('click on "JOIN" button in home page')
 def step_impl(student1_neo):
     student1_neo.home_click_on_join()
@@ -263,7 +289,7 @@ def step_impl(student1_neo):
 
 @then("Verify the default alignment of student's thumbnails when two students join and enter the class")
 def step_impl(student2,student2_neo):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session()
@@ -347,7 +373,7 @@ def step_impl(student2_neo):
 
 @then("Verify the default alignment of student's thumbnails when three students join and enter the class")
 def step_impl(student3,student3_neo):
-    student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student3_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session()
@@ -356,7 +382,7 @@ def step_impl(student3,student3_neo):
 
 @then("Verify the default alignment of student's thumbnails when four students join and enter the class")
 def step_impl(student4,student4_neo):
-    student4_details = get_data(Login_Credentials, 'neo_login_detail1', 'student4')
+    student4_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student4.login_and_navigate_to_home_screen(student4_details['code'], student4_details['mobile_no'], otp=None)
     student4_neo.home_click_on_join()
     student4_neo.join_neo_session()
@@ -365,7 +391,7 @@ def step_impl(student4,student4_neo):
 
 @then("Verify the default alignment of student's thumbnails when five students join and enter the class")
 def step_impl(student5,student5_neo):
-    student5_details = get_data(Login_Credentials, 'neo_login_detail1', 'student5')
+    student5_details = get_data(Login_Credentials, 'neo_login_detail2', 'student5')
     student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
     student5_neo.home_click_on_join()
     student5_neo.join_neo_session()
@@ -374,7 +400,7 @@ def step_impl(student5,student5_neo):
 
 @then("Verify the default alignment of student's thumbnails(six students) when they join and enter the class")
 def step_impl(student6,student6_neo):
-    student6_details = get_data(Login_Credentials, 'neo_login_detail1', 'student6')
+    student6_details = get_data(Login_Credentials, 'neo_login_detail2', 'student6')
     student6.login_and_navigate_to_home_screen(student6_details['code'], student6_details['mobile_no'], otp=None)
     student6_neo.home_click_on_join()
     student6_neo.join_neo_session()
@@ -413,6 +439,7 @@ def step_impl(student1_neo):
     details = student1_neo.is_focus_mode_icon_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the text Hand Raised in mobile browser')
 def step_impl(student1_neo):
     student1_neo.click_on_hand_raise()
@@ -425,16 +452,19 @@ def step_impl(student1_neo):
     details = student1_neo.is_session_topic_inclass_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the display of weak signal icon in mobile browser')
 def step_impl(student1_neo):
     student1_neo.set_network_flaky()
     details = student1_neo.is_weak_signal_present()
     check.equal(details.result, True, details.reason)
 
+
 @then('Verify the display of controls in fullscreen mode')
 def step_impl(student1_neo):
     details = student1_neo.focus_mode_bottom_container_not_active()
     check.equal(details.result, True, details.reason)
+
 
 @then('Verify the class description in desktop/mobile browser')
 def step_impl(student1_neo):
@@ -536,7 +566,7 @@ def step_impl(neo_tute, student1_neo):
     check.equal(all(audio_status is not None for audio_status in students_audio_status), True,
                 "Audio/Mic status is displayed for other students on their thumbnail")
 
-@then("Verify that clicking on previous (<) icon should scroll the students thumbnails towards the left and screen should update, right most column moving out of the screen and new column appearing on the left ")
+
 @then('Verify the functionality when student rejoins after"Tutor want to discuss doubt with you" is triggered')
 def step_impl(neo_tute, student1_neo):
     neo_tute.present_any_slide(2)
@@ -567,25 +597,15 @@ def step_impl(neo_tute, student1_neo):
 
 
 @given("Student launches in-class and navigate to home page")
-def step_impl(login_in):
+def step_impl(student1_login):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
-    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+    student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("student navigates to byjus classes screen")
-def step_impl(neo_in_class):
-    neo_in_class.navigate_to_byjus_classes_screen()
+def step_impl(student1_neo):
+    student1_neo.navigate_to_byjus_classes_screen()
 
-
-@when("student join neo session")
-@then("student join neo session")
-def step_impl(neo_in_class):
-    neo_in_class.join_neo_session()
-
-
-@given("tutor start the session")
-def step_impl(neo_tute):
-    neo_tute.start_neo_session(login_data="neo_login_detail2", user='student1')
 
 @when("tutor turns off his video")
 def step_impl(neo_tute):
@@ -597,243 +617,274 @@ def step_impl(neo_tute):
     neo_tute.turn_tutor_audio_on_off(status= 'off')
 
 
-@given('click on "JOIN" button in home page')
-@when('click on "JOIN" button in home page')
-def step_impl(neo_in_class):
-    neo_in_class.home_click_on_join()
-
-
 @then("Verify the tutor's video section when video of the tutor is turned off")
-def step_impl(neo_in_class,neo_tute):
-    details = neo_in_class.is_tutor_video_on()
+def step_impl(student1_neo,neo_tute):
+    neo_tute.turn_tutor_video_on_off(status='off')
+    time.sleep(2)
+    details = student1_neo.is_tutor_video_on()
     check.equal(details.result , False, details.reason)
-    details = neo_tute.get_video_status()
+    details = neo_tute.get_tutor_video_status()
     check.equal(details.result, False, details.reason)
 
 
 @then("Verify that tutor's video is not displayed when camera of the tutor is turned off")
-def step_impl(neo_in_class,neo_tute):
-    details = neo_in_class.is_tutor_video_on()
+def step_impl(student1_neo,neo_tute):
+    neo_tute.turn_tutor_video_on_off(status='off')
+    time.sleep(2)
+    details = student1_neo.is_tutor_video_on()
     check.equal(details.result, False, details.reason)
-    details = neo_tute.get_video_status()
+    details = neo_tute.get_tutor_video_status()
     check.equal(details.result, False, details.reason)
 
 
 @then("Verify that tutor's audio is muted when mic of the tutor is turned off")
-def step_impl(neo_in_class,neo_tute):
-    details = neo_in_class.is_tutor_mute()
-    check.equal(details.result, True, details.reason)
+def step_impl(student1_neo,neo_tute):
+    details = student1_neo.get_tutor_audio_status()
+    check.equal(details.result, False, details.reason)
 
 
 @then("Verify that tutor's audio/video is not playing when both camera and mic of the tutor is turned off")
-def step_impl(neo_in_class,neo_tute):
-    details = neo_in_class.is_tutor_mute()
+def step_impl(student1_neo,neo_tute):
+    details = student1_neo.is_tutor_mute()
     check.equal(details.result, True, details.reason)
-    details = neo_in_class.is_tutor_video_on()
+    details = student1_neo.is_tutor_video_on()
     check.equal(details.result, False, details.reason)
     details = neo_tute.get_video_status()
     check.equal(details.result, False, details.reason)
 
 
 @then("Verify that Tutor's first name is displayed on the tutor's video thumbnail")
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_chat_elements_element_wise(element_type=  "Tutor name")
+def step_impl(student1_neo):
+    detail = student1_neo.verify_chat_elements_element_wise(element_type=  "Tutor name")
     check.equal(detail.result, True, detail.reason)
 
 
 @then("Verify that 'Tutor' text is displayed on the tutor's video thumbnail below tutor's name")
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_chat_elements_element_wise(element_type="Tutor tag")
+def step_impl(student1_neo):
+    detail = student1_neo.verify_chat_elements_element_wise(element_type="Tutor tag")
     check.equal(detail.result, True, detail.reason)
 
 
 @then("Verify that students cannot control tutor's camera/mic")
-def step_impl(neo_in_class):
-    detail = neo_in_class.click_on_camera_mic_disabled()
+def step_impl(student1_neo):
+    detail = student1_neo.click_on_camera_mic_disabled()
     check.equal(detail.result, True, detail.reason)
 
 
 @then("Verify that correct Subject name and Topic name followed by info icon is displayed on the top left corner of "
       "session window")
-def step_impl(neo_in_class):
-    detail = neo_in_class.is_session_topic_inclass_present()
-    check.equal(detail,True,"Subject topic name is not displayed")
-    neo_in_class.verify_session_topic_name_inclass(topictext="Control and Coordination")
+def step_impl(student1_neo):
+    detail = student1_neo.is_session_topic_inclass_present()
+    check.equal(detail.result,True,"Subject topic name is not displayed")
+    text = student1_neo.get_session_topic_name_inclass()
+    flag  = "Control and Coordination" in text
+    check.equal(flag, True, "Topic name is incorrect")
 
 
 @when("student hover over the info button")
-def step_impl(neo_in_class):
-    neo_in_class.hover_over_info_button()
+def step_impl(student1_neo):
+    student1_neo.hover_over_info_button()
 
 
 @then("Verify that clicking on info icon should open Class info popup with correct information/details on the active "
       "session")
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_info_pop_up(subject_name='Biology: Control and Coordination')
+def step_impl(student1_neo):
+    student1_neo.hover_over_info_button()
+    detail = student1_neo.verify_info_pop_up(subject_name='Biology: Control and Coordination')
     check.equal(detail.result, True, detail.reason)
+    student1_neo.close_info_pop_up()
 
 
 @when("user dismisses info popup")
-def step_impl(neo_in_class):
-    neo_in_class.close_info_pop_up()
+def step_impl(student1_neo):
+    student1_neo.close_info_pop_up()
 
 
 @when("student scrolls right on students cards")
-def step_impl(neo_in_class):
-    neo_in_class.scroll_students_card(towards = 'right')
+def step_impl(student1_neo):
+    student1_neo.scroll_students_card(towards = 'right')
 
 
 @then("Verify that clicking on info icon or anywhere else on the screen, while Class Info pop up is open, "
       "should dismiss the pop-up")
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_info_pop_up()
+def step_impl(student1_neo):
+    student1_neo.hover_over_info_button()
+    student1_neo.close_info_pop_up()
+    time.sleep(1)
+    detail = student1_neo.verify_info_pop_up()
     check.equal(detail.result, False, detail.reason)
 
 
-@then("Verify that when few students drop and total count drops below 7, previous (<) and next (>) icon disappears from below the students video thumbnails")
+@then("Verify that students count who have  joined session is <=6, previous (<) and next (>) icon should not appear below the student video thumbnails")
 @then("Verify that students count who have joined session is <=6, previous (<) and next (>) icon should not appear below the student video thumbnails")
-def step_impl(neo_in_class):
-    detail = neo_in_class.are_steam_student_arrow_button_displayed()
+def step_impl(student1_neo):
+    detail = student1_neo.are_steam_student_arrow_button_displayed()
     check.equal(detail.result, False, detail.reason)
 
 
 @then("Verify that when more than 6 students have joined previous (<) and next (>) icon appear below the students video thumbnails")
-def step_impl(neo_in_class):
-    detail = neo_in_class.are_steam_student_arrow_button_displayed()
+def step_impl(student1_neo,student7,student7_neo):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student7')
+    student7.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+    student7_neo.home_click_on_join()
+    student7_neo.join_neo_session()
+    time.sleep(4)
+    detail = student1_neo.are_steam_student_arrow_button_displayed()
+    check.equal(detail.result, True, detail.reason)
+
+@then("Verify that when few students drop and total count drops below 7, previous (<) and next (>) icon disappears from below the students video thumbnails")
+def step_impl(student1_neo,student7,student7_neo):
+    student7.driver.close()
+    time.sleep(2)
+    detail = student1_neo.are_steam_student_arrow_button_displayed()
     check.equal(detail.result, False, detail.reason)
 
 
 @then("Verify that clicking on next (>) icon should scroll the students thumbnails towards the right and screen should update left most column moving out of the screen and new column appearing on the right")
-def step_impl(neo_in_class):
+def step_impl(student1_neo):
     #use this method without scrolling
-    details = neo_in_class.verify_students_after_scrolling_right()
+    details = student1_neo.verify_students_after_scrolling_right()
     check.equal(details.result, True, details.reason)
 
+
+@then("Verify that clicking on previous (<) icon should scroll the students thumbnails towards the left and screen should update, right most column moving out of the screen and new column appearing on the left")
+def step_impl(student1_neo):
+    #use this method without scrolling
+    details = student1_neo.verify_students_after_scrolling_left()
+    check.equal(details.result, True, details.reason)
 
 @then("Verify that next (>) icon is clickable until all thumbnails of students have been displayed")
-def step_impl(neo_in_class):
-    details = neo_in_class.scroll_till_end_on_student_card()
+def step_impl(student1_neo):
+    details = student1_neo.scroll_till_end_on_student_card()
     check.equal(details.result, True, details.reason)
 
-@then("Verify that previous (<) icon is clickable until the user reaches the first column of the thumbnails")
-def step_impl(neo_in_class):
-    details = neo_in_class.scroll_till_left_end_on_student_card()
-    check.equal(details.result, True, details.reason)
 
 @then("Verify that previous (<) and next (>) icons change (disabled state) when they reach first and last page respectively")
-def step_impl(neo_in_class):
-    details = neo_in_class.scroll_till_end_on_student_card()
+def step_impl(student1_neo):
+    details = student1_neo.scroll_till_end_on_student_card()
     check.equal(details.result, True, details.reason)
-    details = neo_in_class.scroll_till_left_end_on_student_card()
+    details = student1_neo.scroll_till_left_end_on_student_card()
     check.equal(details.result, True, details.reason)
 
 
+@then("Verify that previous (<) icon is clickable until the user reaches the first column of the thumbnails")
+def step_impl(student1_neo):
+    details = student1_neo.scroll_till_left_end_on_student_card()
+    check.equal(details.result, True, details.reason)
+
+
+
+@then('Verify that \"Raise Hand\" button is present at the bottom of the screen next to camera and mic controls')
 @then('Verify that "Raise Hand" button is present at the bottom of the screen next to camera and mic controls')
-def step_impl(neo_in_class):
-    check.equal(neo_in_class.is_hand_raise_icon_present(),True, "Raise hand is not present")
+def step_impl(student1_neo):
+    check.equal(student1_neo.is_hand_raise_icon_present(),True, "Raise hand is not present")
 
 
-@then('Verify that when student clicks on "Raise Hand" button, button should change to "Lower Hand" button. Also on the chat forum same should be notified as "You raised hand" ')
+@then('Verify that when student clicks on "Raise Hand" button, button should change to "Lower Hand" button. Also on the chat forum same should be notified as "You raised hand"')
 @then('Verify that user should be able to use "Raise Hand" functionality anytime during the session')
-def step_impl(neo_in_class):
-    neo_in_class.raise_hand()
-    details = neo_in_class.verify_hand_is_raised()
+def step_impl(student1_neo):
+    student1_neo.raise_hand()
+    time.sleep(2)
+    details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
 
 @then("Verify the Lower Hand button doesn't change if reconnection happens due to flaky network")
-def step_impl(neo_in_class):
-    neo_in_class.raise_hand()
-    neo_in_class.set_wifi_connection_off()
-    neo_in_class.set_wifi_connection_on()
-    details = neo_in_class.verify_hand_is_raised()
+def step_impl(student1_neo):
+    student1_neo.raise_hand()
+    student1_neo.set_wifi_connection_off()
+    student1_neo.set_wifi_connection_on()
+    details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
 
 @then('Verify the state of "Lower Hand" button if user leaves and then rejoins the session')
-def step_impl(neo_in_class,login_in):
-    neo_in_class.raise_hand()
-    login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
-    neo_in_class.home_click_on_join()
-    neo_in_class.join_neo_session()
-    details = neo_in_class.verify_hand_is_raised()
+def step_impl(student1_neo,student1_login):
+    student1_neo.raise_hand()
+    student1_login.relaunch_staging()
+    student1_neo.home_click_on_join()
+    student1_neo.join_neo_session()
+    details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
 
 @then('Verify that user should be able to use "Lower Hand" functionality anytime during the session')
-def step_impl(neo_in_class):
-    neo_in_class.raise_hand()
-    neo_in_class.unraise_hand()
-    detail = neo_in_class.verify_hand_is_raised()
+def step_impl(student1_neo):
+    student1_neo.raise_hand()
+    student1_neo.unraise_hand()
+    time.sleep(2)
+    detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 
 @then('Verify that when student clicks on "Lower Hand" button, button should change to "Raise Hand" button. Also on the chat forum same should be notified as "You lowered hand"')
-def step_impl(neo_in_class):
-    neo_in_class.raise_hand()
-    neo_in_class.unraise_hand()
-    detail = neo_in_class.verify_hand_is_raised()
+def step_impl(student1_neo):
+    student1_neo.raise_hand()
+    student1_neo.unraise_hand()
+    time.sleep(1)
+    detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 
 @then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text "Lower Hand" button should again change to "Raise Hand" and button goes to default state')
-def step_impl(neo_in_class,neo_tute):
+def step_impl(student1_neo,neo_tute):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
-    neo_in_class.raise_hand()
+    student1_neo.raise_hand()
     neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
-    detail = neo_in_class.verify_hand_is_raised()
+    time.sleep(3)
+    detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 
 
 @then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail")
-def step_impl(neo_in_class, student2_neo, student2):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
-    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
-    student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
+def step_impl(student1_neo, student2_neo, student2):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2_neo.raise_hand()
-    detail = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
+    detail = student1_neo.verify_hand_is_raised_for_student(student_name=student2_details['name'])
     check.equal(detail.result, True, detail.reason)
 
 
 @then("Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail")
-def step_impl(neo_in_class, student2_neo, student2):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
-    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
-    student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
+def step_impl(student1_neo, student2_neo, student2):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2_neo.unraise_hand()
-    detail = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
+    detail = student1_neo.verify_hand_is_raised_for_student(student_name=student2_details['name'])
     check.equal(detail.result, False, detail.reason)
 
+
 @then('Verify the status of "Lower Hand" button if a student has raised hand and then drops from session, the tutor lowers the hand for that student and then the student rejoins the class')
-def step_impl(neo_in_class, student2_neo, student2,neo_tute):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
-    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
-    student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
-    student2_neo.raise_hand()
+def step_impl(student1_neo, student1_login,neo_tute):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     neo_tute.click_on_menu_option(expected_student_name=student2_details['name'], menu_item='Hands Down')
-    detail= student2_neo.verify_hands_down_message()
+    student1_login.relaunch_staging()
+    student1_neo.home_click_on_join()
+    student1_neo.join_neo_session()
+    detail= student1_neo.verify_hands_down_message()
+    check.equal(detail.result, False, detail.reason)
+
+
+@then('Verify that when the student joins the session, by default, "Raise Hand" button should not be active')
+def step_impl(student1_neo):
+    detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
 
 @then('Verify that "Thumbs Up" button is present at the bottom of the screen')
-def step_impl(neo_in_class):
-    detail = neo_in_class.verify_thumbs_reaction_icon_displayed()
+def step_impl(student1_neo):
+    detail = student1_neo.verify_thumbs_reaction_icon_displayed()
     check.equal(detail.result,True, detail.reason)
 
 
 @then('Verify that clicking on "Thumbs Up" icon expands the expression tab and list of expressions are displayed')
-def step_impl(neo_in_class):
-    neo_in_class. click_on_reaction_thumb_icon()
-    detail = neo_in_class.is_reactions_icons_present()
+def step_impl(student1_neo):
+    student1_neo. click_on_reaction_thumb_icon()
+    detail = student1_neo.is_reactions_icons_present()
     check.equal(detail.result, True, detail.reason)
 
 
-@then("Verify that animation of the expressions on the session screen ")
+@then("Verify that animation of the expressions on the session screen")
 @then('Verify that student is able to send expression during the session')
-def step_impl(neo_in_class):
-    neo_in_class.select_any_celebration_symbol(celeb_symbol='clap')
-    detail = neo_in_class.are_emojis_displayed()
+def step_impl(student1_neo):
+    student1_neo.select_any_celebration_symbol(celeb_symbol='clap')
+    detail = student1_neo.are_emojis_displayed()
     check.equal(detail.result, True, detail.reason)

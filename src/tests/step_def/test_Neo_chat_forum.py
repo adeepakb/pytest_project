@@ -1,3 +1,5 @@
+import time
+
 from pytest_bdd import scenarios, given, when, then, parsers
 from pytest import fixture
 
@@ -103,9 +105,11 @@ def step_impl(neo_in_class, text):
     neo_in_class.verify_chat_elements_element_wise(element_type=text)
 
 
-@then("Verify messages when users typed any combination of alphanumeric & special characters in the chat box.")
+@then("Verify messages when users typed  any combination of alphanumeric & special characters in the chat box.")
 def step_impl(neo_in_class):
+    time.sleep(3)
     neo_in_class.send_chat(text='a1!2% N n')
+    time.sleep(2)
     detail = neo_in_class.verify_a_text_in_chat(text='a1!2% N n')
     check.equal(detail.result, True, detail.reason)
 
@@ -114,6 +118,7 @@ def step_impl(neo_in_class):
     "Verify that text wrapping should happen without truncation or spill over the window when texts include multiple lines.")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='HI I am \n Tester')
+    time.sleep(3)
     detail = neo_in_class.verify_a_text_in_chat(text='HI I am')
     check.equal(detail.result, True, detail.reason)
     detail = neo_in_class.verify_a_text_in_chat(text='Tester')
@@ -200,13 +205,15 @@ def step_impl(neo_in_class):
     check.equal(detail.result, True, detail.reason)
 
 
-@then("two rows of stickers are shown in the chat")
+@then("Verify that stickers option when user clicked on expand (upward arrow) beside emojis in chat forum & then selects sticker option.")
+@then("Verify that by default 2 rows of stickers are showing in sticker menu with a scroll option.")
 def step_impl(neo_in_class):
+    neo_in_class.click_on_sticker_icon()
     detail = neo_in_class.verify_no_of_default_stickers()
     check.equal(detail.result, True, detail.reason)
+    neo_in_class.close_sticker_menu()
 
 
-@then("Verify that by default 2 rows of stickers are showing in sticker menu with a scroll option.")
 @when("tutor types the chat")
 def step_impl(test_tut):
     test_tut.send_message_in_chat(text="Hi I am tutor")
@@ -246,6 +253,7 @@ def step_impl(neo_in_class):
 @then("verify student chat is right alligned")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='Hi I am student')
+    time.sleep(2)
     detail = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
     check.equal(detail.result, True, detail.reason)
 
@@ -261,13 +269,15 @@ def step_impl(neo_in_class):
 
 
 @then("Verify when more than one students sent messages in chat box at the same time.")
-def step_impl(neo_in_class,student2_neo):
+def step_impl(neo_in_class,student2_neo,student2):
     neo_in_class.send_chat(text='Hi I am student')
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session()
+    time.sleep(2)
     student2_neo.send_chat("Hi I am another student")
+    time.sleep(2)
     detail = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
     check.equal(detail.result, True, detail.reason)
     detail = neo_in_class.verify_other_student_messages_are_left_alligned(text="Hi I am another student")
@@ -283,19 +293,16 @@ def step_impl(neo_in_class):
 
 
 @then("Verify that chat forum when multiple users sent stickers at the same time.")
-def step_impl(neo_in_class,student2_neo):
+def step_impl(neo_in_class,student2_neo,student2):
     neo_in_class.send_sticker()
     detail = neo_in_class.verify_sticker_displayed()
     check.equal(detail.result, True, detail.reason)
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
-    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
-    student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
+    student2_neo.send_sticker()
     detail = student2_neo.verify_sticker_displayed()
     check.equal(detail.result, True, detail.reason)
 
 
-@then("Verify that raised hands option in chat forum when logged in user raised hand.")
+@then("Verify that raised hands option  in chat forum when logged in user raised hand.")
 def step_impl(neo_in_class):
     neo_in_class.raise_hand()
     details = neo_in_class.verify_hand_is_raised()
@@ -322,18 +329,20 @@ def step_impl(neo_in_class,login_in):
     check.equal(details.result, False, details.reason)
 
 
-@then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text "Lower Hand" button proper message is shown')
-def step_impl(neo_in_class):
+@then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text Lower Hand button should again change to Raise Hand and button goes to default state')
+def step_impl(neo_in_class,test_tut):
     neo_in_class.raise_hand()
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
+    time.sleep(1)
     details = neo_in_class.verify_hands_down_message()
     check.equal(details.result, True, details.reason)
 
 
-@then('Verify that when student clicks on "Lower Hand" button, button should change to "Raise Hand" button. Also on the chat forum same should be notified as "You lowered hand"')
+@then('Verify that when student clicks on Lower Hand button, button should change to Raise Hand button. Also on the chat forum same should be notified as You lowered hand')
 def step_impl(neo_in_class):
     neo_in_class.unraise_hand()
+    time.sleep(3)
     details = neo_in_class.verify_hand_is_raised()
     check.equal(details.result, False, details.reason)
 
@@ -341,17 +350,20 @@ def step_impl(neo_in_class):
 @then("Verify typing messages when the network is flaky.")
 @then('Verify that messages should not get posted while user is typing and network goes off.')
 def step_impl(neo_in_class):
+    time.sleep(2)
     neo_in_class.set_wifi_connection_off()
     neo_in_class.send_chat(text='Hi I am student network test')
-    neo_in_class.set_wifi_connection_on()
+    time.sleep(1)
     detail = neo_in_class.verify_a_text_in_chat(text='Hi I am student network test')
     check.equal(detail.result, False, detail.reason)
+    neo_in_class.set_wifi_connection_on()
 
 
 @then('Verify that messages is showing in the chat when user sent & then network goes off.')
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='Hi I am student network test1')
     neo_in_class.set_wifi_connection_off()
+    time.sleep(1)
     detail = neo_in_class.verify_a_text_in_chat(text='Hi I am student network test1')
     check.equal(detail.result, True, detail.reason)
     neo_in_class.set_wifi_connection_on()
@@ -374,13 +386,14 @@ def step_impl(neo_in_class,student2_neo):
 def step_impl(neo_in_class,test_tut):
     initial_no =len(neo_in_class.get_all_chats())
     test_tut.send_message_in_chat(text="Hi I am tutor")
-    final_no =len(neo_in_class.get_all_chats())
+    time.sleep(5)
+    final_no = len(neo_in_class.get_all_chats())
     flag = (final_no==initial_no+1)
     check.equal(flag, True, "Message count is not increased when tutor types a message")
 
 
-@then("Verify that logged in user message shows first then tutor's reply when tutor responds to any doubts. ")
-@then("Verify the message count in tutor's reply when tutor replies to students message.")
+@then("Verify that logged in user message shows first then tutor's reply when tutor responds to any doubts.")
+@then("Verify the message count in tutor's reply  when tutor replies to students message.")
 def step_impl(neo_in_class,test_tut):
     neo_in_class.send_chat("This is for reply")
     initial_no = len(neo_in_class.get_all_chats())
@@ -402,13 +415,17 @@ def step_impl(neo_in_class,test_tut):
 @then("Verify that students cant type when message is disabled from the tutor's end.")
 def step_impl(neo_in_class,test_tut):
     test_tut.enable_disable_chat(flag = "disable")
-    neo_in_class.send_chat("This message wont be sent")
+    try:
+        neo_in_class.send_chat("This message wont be sent")
+        flag = True
+    except:
+        flag = False
     detail = neo_in_class.verify_a_text_in_chat(text='This message wont be sent')
-    check.equal(detail.result, False, detail.reason)
+    check.equal(detail.result or flag, False, detail.reason)
     test_tut.enable_disable_chat(flag="enable")
 
 
-@then("Verify the Class Forum when student throttles network to Offline ")
+@then("Verify the Class Forum when student throttles network to Offline")
 @then("Verify that students chat is disabled and network goes off when he/she rejoin chat must be in disabled state.")
 def step_impl(neo_in_class,test_tut,login_in):
     test_tut.enable_disable_chat(flag="disable")
