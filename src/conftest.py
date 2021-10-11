@@ -229,8 +229,10 @@ def pytest_bdd_after_scenario(request, feature, scenario):
         scenario_name = scenario.name
         elapsed = int(time.time() - py_test.__getattribute__('start'))
         elapsed_time = str(elapsed) + 's'
-        testing_device = request.getfixturevalue("driver").session['deviceModel']
-        app_version = baseClass.get_current_app_version()
+        # testing_device = request.getfixturevalue("driver").session['deviceModel']
+        # app_version = baseClass.get_current_app_version()
+        testing_device = request.getfixturevalue("driver").capabilities['browserName']
+        app_version = request.getfixturevalue("driver").capabilities['browserVersion']
         data = get_run_and_case_id_of_a_scenario(suite_name, scenario.name, "24", "199")
         print("\nTestcase executed: %s" %scenario_name)
         if py_test.__getattribute__("exception") or value:

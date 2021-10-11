@@ -483,7 +483,7 @@ class NeoTute(CommonMethodsWeb):
         cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
-            if expected_student_name == actual_student_name:
+            if expected_student_name in actual_student_name:
                 menu_icon = self.get_child_element(card,"xpath",self.student_card_menu)
                 menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
