@@ -138,6 +138,7 @@ def pytest_bdd_step_error(request ,feature, step):
     """
     py_test.exception = True
     py_test.failed_step_name = step.name
+    #suite_name ="Neo Classes Web"
     suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
@@ -183,6 +184,7 @@ def pytest_bdd_step_error(request ,feature, step):
 
 
 def pytest_bdd_after_step(request, feature, step):
+    #suite_name = "Neo Classes Web"
     suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
@@ -220,6 +222,7 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     .. note:: If there occurs an exception during the testrail update,
         the results might not reflect on the testrail.
     """
+    #suite_name = "Neo Classes Web"
     suite_name = os.getenv('suite')
     if suite_name != "Neo Classes Web":
         e_type, value, tb = sys.exc_info()
