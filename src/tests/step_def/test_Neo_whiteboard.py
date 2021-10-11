@@ -1,3 +1,5 @@
+import time
+
 from pytest_bdd import scenarios, given, then, when
 from pytest import fixture
 from constants.constants import Login_Credentials
@@ -39,6 +41,29 @@ def neo_tute(driver):
     yield neo_tute
 
 
+@fixture()
+def student2(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student2
+    elif Platform.WEB.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student2
+
+
+@fixture()
+def student2_neo(request, student2):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.ANDROID.value)
+        yield student2_neo
+    elif Platform.WEB.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.WEB.value)
+        yield student2_neo
+
+
+
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
@@ -47,7 +72,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
+    neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1')
 
 
 @when('click on "JOIN" button in home page')
@@ -174,3 +199,86 @@ def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
+@then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail.")
+def step_impl(neo_in_class,student2,student2_neo):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
+    student2_neo.home_click_on_join()
+    student2_neo.join_neo_session()
+    student2_neo.raise_hand()
+    details = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
+    check.equal(details.result,True, details.reason)
+
+
+
+@then(
+    "Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail.")
+def step_impl(neo_in_class, student2_neo):
+    student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student2_neo.unraise_hand()
+    time.sleep(1)
+    details = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
+    check.equal(details.result, False, details.reason)
+
+
+@then('Verify that user should be able to use "Raise Hand" functionality anytime during the session')
+def step_impl(neo_in_class):
+    neo_in_class.raise_hand()
+    details = neo_in_class.verify_hand_is_raised()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Verify that user should be able to use "Lower Hand" functionality anytime during the session.')
+def step_impl(neo_in_class):
+    neo_in_class.unraise_hand()
+    details = neo_in_class.verify_hand_is_raised()
+    check.equal(details.result, False, details.reason)
+
+
+@then('Verify that students thumbnail is not displayed when the focused mode is turned on for full screen.')
+def step_impl(neo_in_class,neo_tute):
+    neo_tute.select_focus_mode(status='on')
+    neo_tute.present_any_slide(select_slide_num= 2)
+    time.sleep(5)
+    numb = neo_in_class.get_no_of_student_cards_displayed()
+    flag = (numb == 1)
+    check.equal(flag, True, "Student thumbnails are displayed in foucs mode")
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.do_full_screen_presentation()
+    time.sleep(3)
+    numb = neo_in_class.get_no_of_student_cards_displayed()
+    flag = (numb == 1)
+    check.equal(flag, True, "Student thumbnails are displayed in full screen")
+    neo_tute.present_any_slide(select_slide_num=2)
+    neo_in_class.minimize_full_screen_presentation()
+
+
+
+@then("Verify that mic/camera icon is displayed when the focused mode is turned on for full screen.")
+def step_impl(neo_in_class,neo_tute):
+    neo_tute.select_focus_mode(status='on')
+    neo_tute.present_any_slide(select_slide_num=2)
+    time.sleep(5)
+    details = neo_in_class.mic_cam_status_in_focus_mode()
+    check.equal(details.result, True, details.reason+"in focus mode")
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.do_full_screen_presentation()
+    details = neo_in_class.mic_cam_status_in_focus_mode()
+    check.equal(details.result, True, details.reason+"in full screen")
+    neo_in_class.minimize_full_screen_presentation()
+
+
+@then("Verify that raise hand option is available when whiteboard is in focused mode for full screen.")
+def step_impl(neo_in_class,neo_tute):
+    neo_tute.select_focus_mode(status='on')
+    details = neo_in_class.is_hand_raise_icon_present()
+    details1 = neo_in_class.verify_hand_raised()
+    flag = any((details.result, details1.result))
+    check.equal(flag, True, "Raise hand option is not displayed in fous mode")
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.do_full_screen_presentation()
+    details = neo_in_class.is_hand_raise_icon_present()
+    details1 = neo_in_class.verify_hand_raised()
+    flag = any((details.result, details1.result))
+    check.equal(flag, True, "Raise hand option is not displayed in full screen")
+    neo_in_class.minimize_full_screen_presentation()

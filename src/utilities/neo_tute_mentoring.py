@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        #self.chrome_options.add_argument('--no-sandbox')
+        #self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -447,6 +447,8 @@ class NeoTute(CommonMethodsWeb):
         print(student_names)
         return student_names
 
+
+
     def get_student_video_status(self):
         student_video_status = {}
         cards = self.obj.get_elements(('xpath', self.student_cards))
@@ -773,6 +775,15 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait(1)
         slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
         slide_select_icon.click()
+
+    def stop_presentation(self,select_slide_num):
+        self.click_on_tab_item(tab_name="Session Slides")
+        self.obj.wait(1)
+        slide_select_icon = self.obj.get_element(('css',
+                                                  "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
+        slide_select_icon.click()
+
+
 
     def find_video_slide(self):
         slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))

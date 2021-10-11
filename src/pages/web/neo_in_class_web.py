@@ -171,6 +171,7 @@ class NeoInClass(CommonMethodsWeb):
         self.heart_btn = "//img[contains(@src,'/static/media/classes-emoji-heart')]"
         self.curious_btn = "//img[contains(@src,'/static/media/classes-emoji-curious')]"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
+        self.stop_full_screen =  "//img[@class='iconWrapper__icon']"
 
 #inclass
         self.weak_signal_indicator = '//*[@class="neo_cl_SignalStrength--text weak"]'
@@ -203,6 +204,15 @@ class NeoInClass(CommonMethodsWeb):
             student_name = card.get_attribute('innerHTML')
             student_names.append(student_name)
         return student_names
+
+    def get_no_of_student_cards_displayed(self):
+        numb = 0
+        cards = self.obj.get_elements(('xpath', self.student_card_names))
+        for card in cards:
+            if card.is_displayed():
+                numb  += 1
+
+        return numb
 
     def get_student_video_status(self):
         student_video_status = {}
@@ -885,6 +895,7 @@ class NeoInClass(CommonMethodsWeb):
         hover = self.action.move_to_element(element_to_hover_over)
         hover.perform()
 
+
     def get_full_screen_toggle_visibility(self):
         self.obj.wait_for_locator_webdriver(self.full_screen_toggle)
         full_screen_toggle_elt = self.obj.get_element(('xpath', self.full_screen_toggle))
@@ -928,11 +939,12 @@ class NeoInClass(CommonMethodsWeb):
     def is_presentation_displayed(self):
         flag1 = self.is_image_presented().result
         flag2 = self.is_blank_screen_presented().result
-        flag3 = self.is_video_being_presented()
+        flag3 = self.is_video_being_presented().result
         return ReturnType(True, "Presentation is being displyed") if any((flag1, flag2, flag3)) else ReturnType(False,
                                                                                                                 "Presentation is not being displayed")
 
     def do_full_screen_presentation(self):
+        self.wait_for_element_visible(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         maximize_icon = self.obj.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         self.action.move_to_element(maximize_icon).click().perform()
 
