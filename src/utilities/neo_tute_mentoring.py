@@ -448,6 +448,8 @@ class NeoTute(CommonMethodsWeb):
         print(student_names)
         return student_names
 
+
+
     def get_student_video_status(self):
         student_video_status = {}
         cards = self.obj.get_elements(('xpath', self.student_cards))
@@ -768,10 +770,32 @@ class NeoTute(CommonMethodsWeb):
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
     def present_any_slide(self,select_slide_num):
-        self.click_on_tab_item(tab_name="Session Slides")
-        self.obj.wait(1)
-        slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
-        slide_select_icon.click()
+        try:
+            displayed = self.get_element(("xpath", "//div[@class = 'presentationContainer']")).is_displayed()
+        except:
+            displayed = False
+        if not displayed:
+            self.click_on_tab_item(tab_name="Session Slides")
+            self.obj.wait(1)
+            slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
+            slide_select_icon.click()
+
+    def stop_presentation(self,select_slide_num):
+        try:
+            displayed = self.get_element(("xpath", "//div[@class = 'presentationContainer']")).is_displayed()
+        except:
+            displayed = False
+        if displayed:
+            self.click_on_tab_item(tab_name="Session Slides")
+            self.obj.wait(1)
+            slide_select_icon = self.obj.get_element(('css',
+                                                      "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
+            slide_select_icon.click()
+
+
+
+
+
 
     def find_video_slide(self):
         slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))

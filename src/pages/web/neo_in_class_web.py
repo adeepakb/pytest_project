@@ -50,8 +50,6 @@ class NeoInClass(CommonMethodsWeb):
         self.class_info_popup_desc = "//div[@class='classInfo__desc']"
         self.global_icon_video = '//div[contains(@class,"topContainer--action_icon")]/img[@alt="cam"]'
         self.global_icon_audio = '//div[contains(@class,"topContainer--action_icon")]/img[@alt="mic"]'
-
-
         self.handraise_icon = "//img[contains(@src,'/static/media/raisehand')]"
         self.hand_raised_icon = "//div[text()='Hand raised']"
         self.thumb_icon = "//img[contains(@src,'/static/media/thumb')]"
@@ -176,6 +174,7 @@ class NeoInClass(CommonMethodsWeb):
         self.heart_btn = "//img[contains(@src,'/static/media/classes-emoji-heart')]"
         self.curious_btn = "//img[contains(@src,'/static/media/classes-emoji-curious')]"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
+        self.stop_full_screen =  "//img[@class='iconWrapper__icon']"
 
         # inclass
         self.weak_signal_indicator = '//*[@class="neo_cl_SignalStrength--text weak"]'
@@ -222,6 +221,23 @@ class NeoInClass(CommonMethodsWeb):
         time.sleep(3)
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
+
+
+    def join_not_started_session(self):
+        try:
+            elements = self.get_elements(("xpath","//div[@class = 'type-video masterOrRegularCardContainer']"))
+            for element in elements:
+                try:
+                    timer_element_displayed = self.get_child_element(element,"xpath",".//div[@class = 'future-join-text']").is_displayed()
+                except:
+                    timer_element_displayed = False
+
+                if timer_element_displayed:
+                    self.get_child_element(element,"xpath",".//span[@class = 'MuiButton-label']").click()
+                    break
+        except:
+            pass
+
     # streamCardContainer
     def get_all_student_names(self):
         student_names = []
@@ -230,6 +246,18 @@ class NeoInClass(CommonMethodsWeb):
             student_name = card.get_attribute('innerHTML')
             student_names.append(student_name)
         return student_names
+
+    def get_no_of_student_cards_displayed(self):
+        try:
+            numb = 0
+            cards = self.obj.get_elements(('xpath', self.student_card_names))
+            for card in cards:
+                if card.is_displayed():
+                    numb += 1
+
+            return numb
+        except:
+            return  0
 
     def get_student_video_status(self):
         student_video_status = {}
@@ -918,6 +946,7 @@ class NeoInClass(CommonMethodsWeb):
         hover = self.action.move_to_element(element_to_hover_over)
         hover.perform()
 
+
     def get_full_screen_toggle_visibility(self):
         self.obj.wait_for_locator_webdriver(self.full_screen_toggle)
         full_screen_toggle_elt = self.obj.get_element(('xpath', self.full_screen_toggle))
@@ -937,7 +966,10 @@ class NeoInClass(CommonMethodsWeb):
     def hover_over_and_verify_bottom_container_focus_mode(self):
         element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
         hover = self.action.move_to_element(element_to_hover_over)
-        hover.perform()
+        try:
+            hover.perform()
+        except ElementNotInteractableException:
+            pass
         flag1 = self.is_hand_raise_icon_present()
         flag2 = self.is_thumb_icon_present()
         flag3 = self.is_kebab_menu_present()
@@ -963,18 +995,25 @@ class NeoInClass(CommonMethodsWeb):
     def is_presentation_displayed(self):
         flag1 = self.is_image_presented().result
         flag2 = self.is_blank_screen_presented().result
-        flag3 = self.is_video_being_presented()
+        flag3 = self.is_video_being_presented().result
         return ReturnType(True, "Presentation is being displyed") if any((flag1, flag2, flag3)) else ReturnType(False,
                                                                                                                 "Presentation is not being displayed")
 
     def do_full_screen_presentation(self):
+        self.wait_for_element_visible(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         maximize_icon = self.obj.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
-        self.action.move_to_element(maximize_icon).click().perform()
+        try:
+            self.action.move_to_element(maximize_icon).click().perform()
+        except:
+            pass
 
     def minimize_full_screen_presentation(self):
-        self.obj.get_element(('xpath', self.presentation_container)).click()
-        minimize_icon = self.obj.get_element(("xpath", "//img[contains(@src,'/static/media/fullscreenOn')]"))
-        minimize_icon.click()
+        try:
+            self.obj.get_element(('xpath', self.presentation_container)).click()
+            minimize_icon = self.obj.get_element(("xpath", "//img[contains(@src,'/static/media/fullscreenOn')]"))
+            minimize_icon.click()
+        except:
+            pass
 
     def are_emojis_displayed(self):
         try:
@@ -1552,11 +1591,15 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'weak signal indicator is not present')
 
     def is_discuss_doubt_msg_present(self):
-        self.obj.wait_for_locator_webdriver(self.discuss_doubt_msg)
-        ele = self.obj.get_element(('xpath', self.discuss_doubt_msg))
-        if "Tutor want to discuss doubt with you. Please turn on your mic and camera" in ele.text:
-            return ReturnType(True, 'the text in popup doesnt match')
-        else:
+        try:
+            self.obj.wait_for_locator_webdriver\
+                (self.discuss_doubt_msg)
+            ele = self.obj.get_element(('xpath', self.discuss_doubt_msg))
+            if 'Tutor want to discuss doubt with you. Please turn on your camera' in ele.text:
+                return ReturnType(True, 'the text in popup doesnt match')
+            else:
+                return ReturnType(False, 'the text in popup doesnt match')
+        except:
             return ReturnType(False, 'the text in popup doesnt match')
 
     def click_on_hand_raise(self):
@@ -1720,7 +1763,7 @@ class NeoInClass(CommonMethodsWeb):
             return self.verify_hand_is_raised()
         else:
             try:
-                elements = self.get_elements(("xpath", self.student_cards_items))
+                elements = self.get_elements(("xpath", "//div[@class = 'neo_cl_StreamCard neo_cl_StreamCard__basic streamContainer']"))
                 required_student = None
                 for element in elements:
                     self.action.move_to_element(element).perform()
