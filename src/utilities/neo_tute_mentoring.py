@@ -167,8 +167,8 @@ class NeoTute(CommonMethodsWeb):
         self.obj.element_click(('xpath', self.sign_in_next))
 
     def start_neo_session(self,login_data="neo_login_detail1", user='student1',date ='today'):
-        # url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
-        url = "https://tutor-plus-staging.tllms.com/live-classes/231874"
+        url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
+        # url = "https://tutor-plus-staging.tllms.com/live-classes/231874"
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -484,13 +484,16 @@ class NeoTute(CommonMethodsWeb):
         cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
-            if expected_student_name == actual_student_name:
+            if expected_student_name == actual_student_name or expected_student_name in actual_student_name:
                 menu_icon = self.get_child_element(card,"xpath",self.student_card_menu)
                 menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
                 #self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
                 self.wait_for_clickable_element_webdriver(".//div[text()='" + menu_item + "']")
-                self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
+                try:
+                    self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
+                except:
+                    pass
                 break
 
     def is_pin_student_icon_displayed(self, expected_student_name):
@@ -823,6 +826,7 @@ class NeoTute(CommonMethodsWeb):
 
     def get_video_status(self):
         try:
+            self.wait_for_element_visible(('xpath', self.cam_off))
             if self.is_element_present(('xpath', self.cam_off)):
                 return ReturnType(False, "cam is off")
             else:
@@ -863,10 +867,12 @@ class NeoTute(CommonMethodsWeb):
 
 
     def get_tutor_video_status(self):
-        self.wait_for_locator_webdriver(self.signal_icon)
         try:
+            self.wait_for_locator_webdriver(self.signal_icon)
             if self.is_element_present(('xpath', self.tutor_cam_on)):
                 return ReturnType(True, "cam is on")
+            else:
+                return ReturnType(False, "cam is off")
         except(NoSuchElementException):
             return ReturnType(False, "cam is off")
 
@@ -875,6 +881,8 @@ class NeoTute(CommonMethodsWeb):
         try:
             if self.is_element_present(('xpath', self.tutor_mic_on)):
                 return ReturnType(True, "mic is on")
+            else:
+                return ReturnType(False, "mic is off")
         except(NoSuchElementException):
             return ReturnType(False, "mic is off")
 
