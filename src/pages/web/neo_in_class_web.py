@@ -194,6 +194,23 @@ class NeoInClass(CommonMethodsWeb):
         time.sleep(3)
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
+
+
+    def join_not_started_session(self):
+        try:
+            elements = self.get_elements(("xpath","//div[@class = 'type-video masterOrRegularCardContainer']"))
+            for element in elements:
+                try:
+                    timer_element_displayed = self.get_child_element(element,"xpath",".//div[@class = 'future-join-text']").is_displayed()
+                except:
+                    timer_element_displayed = False
+
+                if timer_element_displayed:
+                    self.get_child_element(element,"xpath",".//div[@class = 'MuiButton-label']").click()
+                    break
+        except:
+            pass
+
     # streamCardContainer
     def get_all_student_names(self):
         student_names = []
@@ -204,13 +221,16 @@ class NeoInClass(CommonMethodsWeb):
         return student_names
 
     def get_no_of_student_cards_displayed(self):
-        numb = 0
-        cards = self.obj.get_elements(('xpath', self.student_card_names))
-        for card in cards:
-            if card.is_displayed():
-                numb  += 1
+        try:
+            numb = 0
+            cards = self.obj.get_elements(('xpath', self.student_card_names))
+            for card in cards:
+                if card.is_displayed():
+                    numb += 1
 
-        return numb
+            return numb
+        except:
+            return  0
 
     def get_student_video_status(self):
         student_video_status = {}
@@ -914,7 +934,7 @@ class NeoInClass(CommonMethodsWeb):
         hover = self.action.move_to_element(element_to_hover_over)
         try:
             hover.perform()
-        except:
+        except ElementNotInteractableException:
             pass
         flag1 = self.is_hand_raise_icon_present()
         flag2 = self.is_thumb_icon_present()
@@ -1773,15 +1793,9 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, "other student mic camera are not controllable")
 
 
-    def verify_screen_size_for_minimized_presentation(self):
-        try:
-            element = self.get_element(("xpath", "//div[@class = 'playerWrapper__blankLayer']"))
-            size = element.size
-            w, h = size['width'], size['height']
-            flag = (h == 671) and (w == 1193)
-            return ReturnType(True, "Minimized screen size is correct") if flag else ReturnType(False, "Minimized screen size is not correct")
-        except:
-            return ReturnType(False, "Presentation screen not found")
+
+
+
 
 
 
