@@ -1794,7 +1794,16 @@ class NeoInClass(CommonMethodsWeb):
 
 
 
+    def preclass_verify_greeting_message(self, name):
+        try:
+            name_text = self.get_element(("xpath", "//p[@class= 'preClasView__studentName'] ")).text
+            greet_message = self.get_element(("xpath", "//p[@class = 'preClasView__intro']")).text
 
+            flag1= name in name_text
+            flag2= 'Glad to see you early! Good job!' == greet_message
+            return ReturnType(True,"Name and greeting messages are correct") if any((flag1,flag2)) else ReturnType(False,"Name and greeting messages are not correct")
+        except:
+            ReturnType(False, "Name and greeting messages are not displayed")
 
 
 
