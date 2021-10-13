@@ -19,7 +19,7 @@ Feature:  Whiteboard
     And Verify that if student joins the session during Whiteboard presentation, already entered texts, shapes, markers are also visible to the students
     And Verify that alignment of texts, handwritten shapes, markers on Whiteboard presentation in different browser window sizes
     And Verify that contents presented on Whiteboard is available if user refreshes/rejoins the session
-    And Verify that contents presented on Whiteboard is available if reconnection happens\
+    And Verify that contents presented on Whiteboard is available if reconnection happens
 
     #deepak
     And Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail.

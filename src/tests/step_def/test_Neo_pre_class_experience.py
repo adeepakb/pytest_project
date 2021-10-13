@@ -117,7 +117,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_tute,neo_in_class):
     neo_tute.click_on_tab_item(tab_name="Student Details")
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
-    neo_tute.approve_profile_pic(student1_details['profile_name'])
+    neo_tute.approve_profile_pic(student1_details['name'])
     check.equal(neo_in_class.approved_profile_pic_visible(), False,"Approved photo not visible to student before student refresh screen")
     neo_in_class.page_refresh()
     check.equal(neo_in_class.approved_profile_pic_visible(),True,"Approved photo visible to student after student refresh screen")
@@ -140,7 +140,7 @@ def step_impl(neo_tute,neo_in_class):
     neo_tute.click_on_tab_item(tab_name="Class Forum")
     neo_tute.click_on_tab_item(tab_name="Student Details")
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
-    neo_tute.reject_profile_pic(student1_details['profile_name'])
+    neo_tute.reject_profile_pic(student1_details['name'])
     neo_in_class.page_refresh()
     check.equal(neo_in_class.verify_toast_message('Your profile picture wasn`t approved. Please try uploading another picture'),
                 True, "Rejected flash message displayed when user uploads photo and tutor rejects")
@@ -150,7 +150,7 @@ def step_impl(neo_tute,neo_in_class):
 @then('Verify the bubble when uploaded photo gets rejected for the logged in user.')
 def step_impl(neo_in_class):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
-    details = neo_in_class.get_current_student_bubble(student1_details['profile_name'])
+    details = neo_in_class.get_current_student_bubble(student1_details['name'])
     check.equal(details.result, True, details.reason)
 
 
