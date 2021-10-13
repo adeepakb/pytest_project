@@ -206,7 +206,7 @@ class NeoInClass(CommonMethodsWeb):
                     timer_element_displayed = False
 
                 if timer_element_displayed:
-                    self.get_child_element(element,"xpath",".//div[@class = 'MuiButton-label']").click()
+                    self.get_child_element(element,"xpath",".//span[@class = 'MuiButton-label']").click()
                     break
         except:
             pass
@@ -1792,18 +1792,6 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(True, "other student mic camera are not controllable")
 
-
-
-    def preclass_verify_greeting_message(self, name):
-        try:
-            name_text = self.get_element(("xpath", "//p[@class= 'preClasView__studentName'] ")).text
-            greet_message = self.get_element(("xpath", "//p[@class = 'preClasView__intro']")).text
-
-            flag1= name in name_text
-            flag2= 'Glad to see you early! Good job!' == greet_message
-            return ReturnType(True,"Name and greeting messages are correct") if any((flag1,flag2)) else ReturnType(False,"Name and greeting messages are not correct")
-        except:
-            ReturnType(False, "Name and greeting messages are not displayed")
 
 
 
