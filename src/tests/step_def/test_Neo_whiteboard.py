@@ -200,11 +200,13 @@ def step_impl(neo_in_class):
 
 
 @then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail.")
-def step_impl(neo_in_class,student2,student2_neo):
+def step_impl(neo_in_class,student2,student2_neo,neo_tute):
+    neo_tute.select_focus_mode(status='off')
     student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
+    student2_neo.join_neo_session_student('mic-on', 'cam-on')
+    time.sleep(3)
     student2_neo.raise_hand()
     details = neo_in_class.verify_hand_is_raised_for_student(student_name=student2_details['name'])
     check.equal(details.result,True, details.reason)
@@ -221,7 +223,7 @@ def step_impl(neo_in_class, student2_neo):
     check.equal(details.result, False, details.reason)
 
 
-@then('Verify that user should be able to use "Raise Hand" functionality anytime during the session')
+@then('Verify that user should be able to use "Raise Hand" functionality anytime during the session.')
 def step_impl(neo_in_class):
     neo_in_class.raise_hand()
     details = neo_in_class.verify_hand_is_raised()
@@ -231,6 +233,7 @@ def step_impl(neo_in_class):
 @then('Verify that user should be able to use "Lower Hand" functionality anytime during the session.')
 def step_impl(neo_in_class):
     neo_in_class.unraise_hand()
+    time.sleep(2)
     details = neo_in_class.verify_hand_is_raised()
     check.equal(details.result, False, details.reason)
 
@@ -238,47 +241,131 @@ def step_impl(neo_in_class):
 @then('Verify that students thumbnail is not displayed when the focused mode is turned on for full screen.')
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
-    neo_tute.present_any_slide(select_slide_num= 2)
+    neo_tute.present_any_slide(select_slide_num= 1)
+    neo_tute.present_any_slide(select_slide_num=1)
     time.sleep(5)
     numb = neo_in_class.get_no_of_student_cards_displayed()
     flag = (numb == 1)
     check.equal(flag, True, "Student thumbnails are displayed in foucs mode")
     neo_tute.select_focus_mode(status='off')
+    time.sleep(5)
     neo_in_class.do_full_screen_presentation()
     time.sleep(3)
     numb = neo_in_class.get_no_of_student_cards_displayed()
     flag = (numb == 1)
     check.equal(flag, True, "Student thumbnails are displayed in full screen")
-    neo_tute.present_any_slide(select_slide_num=2)
     neo_in_class.minimize_full_screen_presentation()
+
 
 
 
 @then("Verify that mic/camera icon is displayed when the focused mode is turned on for full screen.")
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
-    neo_tute.present_any_slide(select_slide_num=2)
     time.sleep(5)
     details = neo_in_class.mic_cam_status_in_focus_mode()
     check.equal(details.result, True, details.reason+"in focus mode")
     neo_tute.select_focus_mode(status='off')
+    time.sleep(5)
     neo_in_class.do_full_screen_presentation()
     details = neo_in_class.mic_cam_status_in_focus_mode()
     check.equal(details.result, True, details.reason+"in full screen")
     neo_in_class.minimize_full_screen_presentation()
 
 
+
 @then("Verify that raise hand option is available when whiteboard is in focused mode for full screen.")
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
+    time.sleep(6)
     details = neo_in_class.is_hand_raise_icon_present()
     details1 = neo_in_class.verify_hand_raised()
-    flag = any((details.result, details1.result))
+    flag = any((details, details1))
     check.equal(flag, True, "Raise hand option is not displayed in fous mode")
     neo_tute.select_focus_mode(status='off')
+    time.sleep(2)
     neo_in_class.do_full_screen_presentation()
     details = neo_in_class.is_hand_raise_icon_present()
     details1 = neo_in_class.verify_hand_raised()
-    flag = any((details.result, details1.result))
+    flag = any((details, details1))
     check.equal(flag, True, "Raise hand option is not displayed in full screen")
     neo_in_class.minimize_full_screen_presentation()
+
+@then('Verify that like emoji & minimize screen option is displayed at the bottom of whiteboard when its in full screen mode.')
+def step_impl(neo_in_class,neo_tute):
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.do_full_screen_presentation()
+    time.sleep(3)
+    details = neo_in_class.hover_over_and_verify_bottom_container_focus_mode()
+    check.equal(details.result, True, details.reason)
+    neo_in_class.minimize_full_screen_presentation()
+
+@then('Verify the flash message text “Tutor wants to discuss your doubt with you.Please turn on your mic and camera" when tutor sends request to turn on mic/camera.')
+@then("Verify the message when tutor send request to student to turn on video / discuss doubt.")
+def step_impl(neo_in_class, neo_tute):
+    neo_tute.select_focus_mode(status='off')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    time.sleep(5)
+    neo_in_class.turn_on_off_student_video(action="OFF")
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Request To Turn On Video')
+    time.sleep(2)
+    details = neo_in_class.is_discuss_doubt_msg_present()
+    check.equal(details.result, True, details.reason)
+
+@then("Verify the video screen when user turns on camera while discussing doubts .")
+@then("Verify the students video when students accepts tutor's request to turn on the camera.")
+def step_impl(neo_in_class, neo_tute):
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.turn_on_off_student_video(action = "ON")
+    status_dict = neo_in_class.get_student_video_status()
+    my_status = status_dict['You']
+    check.equal(my_status,True , "Student is not able to accept tutor's request to turn on the camera. ")
+    neo_in_class.turn_on_off_student_video(action="OFF")
+
+
+@then("Verify student is audible when students accepts tutor's request to turn on the mic.")
+def step_impl(neo_in_class, neo_tute):
+    neo_in_class.turn_on_off_student_mic( action = "ON")
+    status_dict = neo_in_class.get_student_audio_status()
+    my_status = status_dict['You']
+    check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
+    neo_in_class.turn_on_off_student_mic(action="OFF")
+
+
+@then("Verify that logged in student can turn off their mic/camera when they are discussing doubts with tutor.")
+def step_impl(neo_in_class, neo_tute):
+    neo_tute.select_focus_mode(status='off')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    neo_in_class.turn_on_off_student_video(action="OFF")
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
+    neo_in_class.turn_on_off_student_video(action="ON")
+    status_dict = neo_in_class.get_student_video_status()
+    my_status = status_dict['You']
+    check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
+    neo_in_class.turn_on_off_student_video(action="OFF")
+    neo_in_class.turn_on_off_student_mic(action="ON")
+    status_dict = neo_in_class.get_student_audio_status()
+    my_status = status_dict['You']
+    check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
+    neo_in_class.turn_on_off_student_mic(action="OFF")
+
+@then("Verify the other student's video when they also start discussing doubts.")
+def step_impl(neo_tute, student2_neo):
+    neo_tute.select_focus_mode(status='off')
+    student2_neo.turn_on_off_student_video(action="ON")
+    status_dict = student2_neo.get_student_video_status()
+    my_status = status_dict['You']
+    check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
+    student2_neo.turn_on_off_student_video(action="OFF")
+
+@then("Verify the whiteboard screen size when users clicks on minimise screen icon.")
+def step_impl(neo_in_class, neo_tute):
+    neo_tute.select_focus_mode(status='off')
+    neo_in_class.minimize_full_screen_presentation()
+    details = neo_in_class.verify_presentation_dimension_ratio()
+    check.equal(details.result, True, details.reason)
+
+
+

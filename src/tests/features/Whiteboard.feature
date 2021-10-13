@@ -23,12 +23,22 @@ Feature:  Whiteboard
 
     #deepak
     Then Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail.
-#    And Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail.
-#    And Verify that user should be able to use "Raise Hand" functionality anytime during the session
-#    And Verify that user should be able to use "Lower Hand" functionality anytime during the session.
+    And Verify that if other students in the class lower hand, the hand icon should be removed from the student's thumbnail.
+    Then Verify that user should be able to use "Raise Hand" functionality anytime during the session.
+    And Verify that user should be able to use "Lower Hand" functionality anytime during the session.
     Then Verify that students thumbnail is not displayed when the focused mode is turned on for full screen.
     And Verify that mic/camera icon is displayed when the focused mode is turned on for full screen.
     And Verify that raise hand option is available when whiteboard is in focused mode for full screen.
+    Then Verify the message when tutor send request to student to turn on video / discuss doubt.
+    And Verify the flash message text “Tutor wants to discuss your doubt with you.Please turn on your mic and camera" when tutor sends request to turn on mic/camera.
+    And Verify the students video when students accepts tutor's request to turn on the camera.
+    And Verify that like emoji & minimize screen option is displayed at the bottom of whiteboard when its in full screen mode.
+    Then Verify the video screen when user turns on camera while discussing doubts .
+    And Verify student is audible when students accepts tutor's request to turn on the mic.
+    And Verify that logged in student can turn off their mic/camera when they are discussing doubts with tutor.
+    And Verify the other student's video when they also start discussing doubts.
+    Then Verify the whiteboard screen size when users clicks on minimise screen icon.
+
 
 
 

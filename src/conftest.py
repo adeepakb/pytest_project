@@ -31,7 +31,7 @@ def setup_teardown():
     job_total_execution_time = str(datetime.timedelta(seconds=int(time.time() - job_start_time)))
     print(job_total_execution_time)
     # Update execution time to testrail for android test run. Create report on demand via  API at the end of the session
-    suitename = os.getenv('suite')
+    suitename = "Neo Classes Web"
     if suitename == "Byju's Classes":
         update_run_for_execution_time('503', job_total_execution_time)
         report_id = get_testrail_reports(24, "Daily Regression automation report For Neo Classes Web %date%")
@@ -138,8 +138,8 @@ def pytest_bdd_step_error(request ,feature, step):
     """
     py_test.exception = True
     py_test.failed_step_name = step.name
-    #suite_name ="Neo Classes Web"
-    suite_name = os.getenv('suite')
+    suite_name ="Neo Classes Web"
+    #suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
             e_type, value, tb = sys.exc_info()
@@ -184,8 +184,8 @@ def pytest_bdd_step_error(request ,feature, step):
 
 
 def pytest_bdd_after_step(request, feature, step):
-    #suite_name = "Neo Classes Web"
-    suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
+    #suite_name = os.getenv('suite')
     if suite_name == "Neo Classes Web":
         if get_custom_field_scenario(suite_name, step.name, "24"):
             from pytest_check.check_methods import get_failures,clear_failures
@@ -222,8 +222,8 @@ def pytest_bdd_after_scenario(request, feature, scenario):
     .. note:: If there occurs an exception during the testrail update,
         the results might not reflect on the testrail.
     """
-    #suite_name = "Neo Classes Web"
-    suite_name = os.getenv('suite')
+    suite_name = "Neo Classes Web"
+    #suite_name = os.getenv('suite')
     if suite_name != "Neo Classes Web":
         e_type, value, tb = sys.exc_info()
         summaries = traceback.format_exception(e_type, value, tb)
