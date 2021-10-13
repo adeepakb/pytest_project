@@ -1,15 +1,11 @@
 """
 **Test Management**:
-
 All the common methods related to the testrail has been implemented here.
-
 Using TestRail API, updating the test run results with comments and status,
 fetching the feature file(s) from the testrail, deleting the feature files from the local
 and many more functionalities has been implemented.
-
 TestRail base URL and user credentials such as username and password
 or API token are all fetched from the JSON (config.json) file.
-
 """
 import datetime
 from enum import Enum
@@ -45,9 +41,7 @@ class TestingType(Enum):
 def get_testrail_client():
     """
     Create a APIClient instance.
-
     The ``client.user`` and ``client.password`` can be set from JSON or provide directly here.
-
     :returns: A APIClient object
     :rtype: APIClient
     """
@@ -60,7 +54,6 @@ def get_testrail_client():
 def get_section(section_id):
     """
     Get the details about the section by providing section_id
-
     :param section_id: ID of the section
     :type section_id: str
     :return: A dict containing the result of the request.
@@ -74,7 +67,6 @@ def get_section(section_id):
 def delete_feature_files():
     """
     Delete all the feature files.
-
     :return: None
     """
     f_files = glob.glob(PATH('../tests/features/*.feature'))
@@ -85,13 +77,11 @@ def delete_feature_files():
 def create_feature_file(suite_id, project_id):
     """
     Create the feature file(s) for the given *project_ID*, *suite_id*
-
     :param project_id: ID of the project.
     :param suite_id: ID of the suite that belongs to same *project_id*. Example: `S123`
     :type suite_id: str
     :type project_id: str
     :return: None
-
     """
     delete_feature_files()
     client = APIClient('https://tnl.testrail.io/')
@@ -318,7 +308,6 @@ def update_testrail(case_id, run_id, result_flag, step, exc_msg, elapsed_time, t
 def get_project_id(project_name):
     """
     Get the ID of the project for the specified project name
-
     :param project_name: Name of the project as string. Example: `tutor_plus_automation`
     :type project_name: str
     :return: The ID of the specified project name
@@ -340,7 +329,6 @@ def get_run_and_case_id_of_a_scenario(test_run_name, scenario_name, project_id, 
     """
     Get the ``run_id`` and ``case_id`` for the given name of the test run and scenario,
     ID of the project and suite
-
     :param project_id: ID of the valid and existing project.
     :param suite_id: ID of the suite that can found under **Test Suite and Cases**. Example: `S123`
     :param test_run_name: name of the run module that is created under
@@ -454,7 +442,6 @@ def update_run_for_execution_time(run_id, duration):
 def get_run_id(test_run_name, project_name):
     """
     Get the `run_id` for the given name of the test run and name of the project.
-
     :param project_name: name of the valid and existing project. Example: `tutor_plus_automation`
     :param test_run_name: name of the run module that is created under **Test Run and Results**.
         belongs to same project. Example: `student_session`, `white_board_module`
