@@ -106,7 +106,7 @@ class NeoTute(CommonMethodsWeb):
         self.tab_item = "xpath", '//div[@class = "tabViewContainer__tabViewText"]'
         self.student_cards_details = "xpath", "//div[@class='studentsDetails__outer']"
         self.approve_button = "xpath", ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
-        self.student_detail_toast = "xpath", "//div[@class='studentsDetails__toastIcon']"
+        self.student_detail_toast = "//div[@class='studentsDetails__toastIcon']"
         self.close_toast = "xpath", "//div[@class='neo_cl_ToastIcon']"
         self.student_name = "xpath", ".//div[@class='student-name']"
         self.reject_buttpn = "xpath", ".//div[@class='reject']"
@@ -166,8 +166,9 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.sign_in_next)
         self.obj.element_click(('xpath', self.sign_in_next))
 
-    def start_neo_session(self,login_data="neo_login_detail1", user='student1'):
-        url = self.tlms.get_tutor_url('neo',login_data= login_data, user=user)
+    def start_neo_session(self,login_data="neo_login_detail1", user='student1',date ='today'):
+        url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
+        # url = "https://tutor-plus-staging.tllms.com/live-classes/231874"
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -613,17 +614,17 @@ class NeoTute(CommonMethodsWeb):
 
     def approve_profile_pic(self, name=None):
         try:
-            self.wait_for_element_visible(self.chrome_driver, self.student_cards_details)
+            self.wait_for_element_visible(self.student_cards_details)
             elements = self.get_elements(self.student_cards_details)
-
             for element in elements:
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
+                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);", self.get_child_element(element, *self.student_name))
+                    self.wait_for_element_visible(self.approve_button)
                     self.element_click(self.approve_button)
-                    self.wait_for_element_visible(self.chrome_driver, self.student_detail_toast)
-                    if self.get_element(
-                            self.student_detail_toast).is_displayed():
-
-                        self.get_element(self.close_toast).click()
+                    self.wait_for_locator_webdriver(self.student_detail_toast)
+                    if self.is_element_present(('xpath',self.student_detail_toast)):
+                        self.wait_for_element_visible(self.close_toast)
+                        self.element_click(self.close_toast)
                         return ReturnType(True, "Approved profile pic")
                     else:
                         return ReturnType(False, "Couldn't approve profile pic")
@@ -634,22 +635,20 @@ class NeoTute(CommonMethodsWeb):
 
     def reject_profile_pic(self, name=None):
         try:
-            self.wait_for_element_visible(self.chrome_driver, self.student_cards_details)
+            self.wait_for_element_visible(self.student_cards_details)
             elements = self.get_elements(self.student_cards_details)
-
             for element in elements:
                 self.get_child_element(element, *self.student_name)
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
-                    self.get_child_element(element,
-                                           *self.reject_buttpn).click()
-                    self.wait_for_element_visible(self.chrome_driver, self.student_detail_toast)
-                    if self.get_element(
-                            self.student_detail_toast).is_displayed():
-
-                        self.get_element(self.close_toast).click()
-                        return ReturnType(True, "Approved profile pic")
+                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",self.get_child_element(element, *self.student_name))
+                    self.wait_for_element_visible(self.reject_buttpn)
+                    self.get_child_element(element,*self.reject_buttpn).click()
+                    self.wait_for_locator_webdriver(self.student_detail_toast)
+                    if self.is_element_present(('xpath', self.student_detail_toast)):
+                        self.element_click(self.close_toast)
+                        return ReturnType(True, "Rejected profile pic")
                     else:
-                        return ReturnType(False, "Couldn't approve profile pic")
+                        return ReturnType(False, "Couldn't reject profile pic")
             else:
                 return ReturnType(False, "No student found for rejecting profile pic")
 

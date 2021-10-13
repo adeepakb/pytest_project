@@ -34,7 +34,7 @@ def setup_teardown():
     suitename = os.getenv('suite')
     if suitename == "Byju's Classes":
         update_run_for_execution_time('503', job_total_execution_time)
-        report_id = get_testrail_reports(24, "Daily Regression automation report For Neo Classes Web %date%")
+        report_id = get_testrail_reports(24, "Daily Regression automation report For Byju's Classes Android %date%")
         run_testrail_reports(report_id)
     elif suitename == "Neo Classes Web":
         update_run_for_execution_time('1434', job_total_execution_time)
