@@ -203,6 +203,13 @@ class NeoInClass(CommonMethodsWeb):
         self.save_photo = "//span[text()='Save']"
         self.pro_photo_crop_box = "//div[@class='cropper-crop-box']"
 
+        self.msg_frm_tutor = "//div[@class='messageClass__messageFromTutorHeader']"
+        self.pens_down_text = "//div[@class='messageClass__tutorMessageContent']"
+        self.close_icon_toast_msg = '//button[@class="MuiButtonBase-root MuiIconButton-root closebtn"]'
+        self.network_error_msg = '//div[@class="ToastContainer"]'
+        self.focus_mode_toast_msg = "//div[text()='Focus mode by tutor will start in 5 seconds']"
+
+
     def home_click_on_join(self):
         self.obj.wait(2)
         self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
@@ -722,11 +729,13 @@ class NeoInClass(CommonMethodsWeb):
 
     def hover_on_inclass_audio_icon(self):
         audio_icon = self.obj.get_element(("xpath", self.student_audio))
-        self.action.move_to_element(audio_icon).perform()
+        hover = self.action.move_to_element(audio_icon)
+        hover.perform()
 
     def hover_on_inclass_video_icon(self):
         video_icon = self.obj.get_element(("xpath", self.student_video))
-        self.action.move_to_element(video_icon).perform()
+        hover = self.action.move_to_element(video_icon)
+        hover.perform()
 
     def is_turn_on_camera_tooltip_present(self):
         self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
@@ -745,12 +754,18 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.turn_off_mic_tooltip))
 
     def is_cam_disabled_tooltip_present(self):
-        self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_present(('xpath', self.cam_disabled_tooltip))
+        self.obj.wait_for_locator_webdriver(self.cam_disabled_tooltip)
+        if self.obj.is_element_present(('xpath', self.cam_disabled_tooltip)):
+            return ReturnType(True, 'cam disabled by tutor tooltip is displayed')
+        else:
+            return ReturnType(False, 'cam disabled by tutor tooltip is not present')
 
     def is_mic_disabled_tooltip_present(self):
-        self.obj.wait_for_locator_webdriver(self.helpline_no_in_facing_issue)
-        return self.obj.is_element_present(('xpath', self.mic_disabled_tooltip))
+        self.obj.wait_for_locator_webdriver(self.mic_disabled_tooltip)
+        if self.obj.is_element_present(('xpath', self.mic_disabled_tooltip)):
+            return ReturnType(True, 'mic disabled by tutor tooltip is displayed')
+        else:
+            return ReturnType(False, 'mic disabled by tutor tooltip is not present')
 
     # session details
     def is_session_topic_inclass_present(self):
@@ -1807,6 +1822,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def is_chat_disabled_message_dislayed(self, message = 'Live Chat is disabled'):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class = 'chatFooter']"))
             text = self.get_element(("xpath", "//div[@class = 'chatFooter']")).text
             return ReturnType(True, "Chat disabled message is displayed") if text == message else  ReturnType(False, "Chat disabled message is now displayed")
         except:
@@ -1821,6 +1837,39 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(True, "other student mic camera are not controllable")
 
+    def verify_message_from_tutor_text(self, exp_msg):
+        self.obj.wait_for_locator_webdriver(self.msg_frm_tutor)
+        ele = self.obj.get_element(('xpath', self.msg_frm_tutor))
+        if exp_msg in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def verify_pens_down_tooltip(self):
+        self.obj.wait_for_locator_webdriver(self.pens_down_text)
+        ele = self.obj.get_element(('xpath', self.pens_down_text))
+        if "Pen down your doubt/concern, we will discuss during doubt session." in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def verify_text_in_network_failed_toast_msg(self):
+        self.obj.wait_for_locator_webdriver(self.network_error_msg)
+        ele = self.obj.get_element(('xpath', self.network_error_msg))
+        if "Network error, please check your connection and retry" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def verify_close_icon_in_toast_message(self):
+        self.obj.wait_for_locator_webdriver(self.close_icon_toast_msg)
+        if self.obj.is_element_present(('xpath', self.close_icon_toast_msg)):
+            return ReturnType(True, 'mic and cam status are displayed as expected')
+        else:
+            return ReturnType(False, 'mic and cam status are not displayed as expected')
+
+    def click_on_close_icon_in_toast_msg(self):
+        self.obj.element_click(('xpath', self.close_icon_toast_msg))
     # pre-class experience
     def is_photo_edit_icon_present(self):
         self.wait_for_locator_webdriver(self.photo_edit_icon)
@@ -1889,6 +1938,12 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.change_photo)
         self.obj.element_click(("xpath", self.change_photo))
 
+    def is_network_failed_toast_msg_present(self):
+        self.obj.wait_for_locator_webdriver(self.network_error_msg)
+        if self.obj.is_element_present(('xpath', self.network_error_msg)):
+            return ReturnType(True, 'mic and cam status are displayed as expected')
+        else:
+            return ReturnType(False, 'mic and cam status are not displayed as expected')
     def save_selected_photo(self):
         self.obj.wait_for_locator_webdriver(self.save_photo)
         self.obj.element_click(("xpath", self.save_photo))
@@ -1899,6 +1954,12 @@ class NeoInClass(CommonMethodsWeb):
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
 
+    def is_focus_mode_toast_msg_present(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
+        if self.obj.is_element_present(('xpath', self.focus_mode_toast_msg)):
+            return ReturnType(True, 'mic and cam status are displayed as expected')
+        else:
+            return ReturnType(False, 'mic and cam status are not displayed as expected')
     def verify_toast_message(self, expected_message):
         time.sleep(1)
         self.obj.wait_for_locator_webdriver(self.toast_container)
@@ -1913,6 +1974,13 @@ class NeoInClass(CommonMethodsWeb):
         flag1 = self.obj.is_element_present(("xpath", self.current_approved_name_image))
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
+    def verify_text_in_focus_mode_toast_msg(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
+        ele = self.obj.get_element(('xpath', self.focus_mode_toast_msg))
+        if "Focus mode by tutor will start in 5 seconds" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
 
     def close_toast_message(self):
         self.obj.wait_for_locator_webdriver("//span[@class='MuiIconButton-label']")
@@ -1941,3 +2009,16 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, "Student bubble hovered over") if a < b else ReturnType(False, "Student bubble did not get hovered over")
         except Exception as e:
             return ReturnType(False, "Unable to hover over student bubble due to exception %s" % str(e))
+    def hard_wait(self):
+        time.sleep(5)
+
+    def set_network_on(self):
+        self.obj.set_wifi_connection_on()
+
+    def verify_text_in_lower_hand_tooltip(self):
+        self.obj.wait_for_locator_webdriver(self.thumb_icon)
+        ele = self.obj.get_element(('xpath', self.lower_your_hand_tootip))
+        if "You lowered your hand. Incase if you have any doubt, you can" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
