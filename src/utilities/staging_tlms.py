@@ -53,9 +53,10 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
         self.chrome_driver.save_screenshot('image3.png')
+        # time.sleep(10)
+        # self.chrome_driver.find_element_by_xpath("//button[@type='submit']").send_keys(Keys.ENTER)
 
-    def navigate_to_student_sessions(self, premium_id, date='today'):
-        # today = datetime.today().strftime('%Y-%m-%d')
+    def navigate_to_student_sessions(self, premium_id, date = 'today'):
         self.login_to_staging()
         self.wait_for_clickable_element_webdriver("//*[text()='Mentoring']")
         self.chrome_driver.find_element_by_xpath("//*[text()='Mentoring']").click()
@@ -77,8 +78,7 @@ class Stagingtlms:
         self.wait_for_locator_webdriver("//input[@value ='Start Scheduling']")
         self.chrome_driver.find_elements_by_xpath("//input[@value ='Start Scheduling']")[1].click()
 
-
-    def get_tutor_url(self, course='primary', login_data="neo_login_detail1", user='student1', date='today'):
+    def get_tutor_url(self, course='primary', login_data="neo_login_detail1", user='student1',date ='today'):
         email = self.decrypted_data['staging_access']['email']
         session_course_id = premium_id = None
         if course == 'primary':
@@ -93,7 +93,7 @@ class Stagingtlms:
         elif course == 'neo':
             neo_details = get_data('../config/login_data.json', login_data, user)
             premium_id = neo_details['premium_id']
-        self.navigate_to_student_sessions(premium_id, date)
+        self.navigate_to_student_sessions(premium_id,date)
         tutor_url = None
         rows = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/tbody/tr"))
         cols = len(self.chrome_driver.find_elements_by_xpath("//table[contains(@class,'index_table')]/thead/tr/th"))
