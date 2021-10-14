@@ -97,7 +97,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify that the in-class notifications do not cover the video/content when full screen is not active')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.find_video_slide()
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     # student1_neo.hover_on_inclass_audio_icon()
     # details = student1_neo.is_mic_disabled_tooltip_present()
     # check.equal(details.result, True, details.reason)
@@ -113,7 +114,8 @@ def step_impl(student1_neo):
 
 @then('Verify that when focus mode is about to start the student is notified for same as in-class notification toast message, also verify the content of the message')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.find_video_slide()
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     details = student1_neo.is_focus_mode_toast_msg_present()
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_text_in_focus_mode_toast_msg()
@@ -143,7 +145,8 @@ def step_impl(student1_neo):
 
 @then('Verify that there is no distortion on the in-class notifications toast message or the session content when they appear or disappear from the screen')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.find_video_slide()
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     student1_neo.click_on_hand_raise()
     student1_neo.click_on_hand_raise()
     details = student1_neo.verify_text_in_lower_hand_tooltip()
@@ -153,7 +156,7 @@ def step_impl(neo_tute,student1_neo):
 def step_impl(neo_tute, student1_neo):
     student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
     student1_neo.click_on_hand_raise()
-    neo_tute.click_on_menu_option(expected_student_name=student1_details['stud_name'], menu_item='Hands Down')
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
     details = student1_neo.verify_message_from_tutor_text("Message from Tutor")
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_pens_down_tooltip()

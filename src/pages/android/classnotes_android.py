@@ -234,7 +234,7 @@ class ClassNotesAndroid(ClassNotesBase):
         self.tlms.login_to_cms_staging()
 
     def upload_class_note_morethan_15mb(self):
-        self.tlms.upload_class_note('ClassNotesPDF.pdf')
+        self.tlms.upload_class_note('SamplePDF.pdf')
 
     def verify_classnote_upload_error(self):
         if self.tlms.verify_classnote_upload_error() is True:
@@ -243,7 +243,7 @@ class ClassNotesAndroid(ClassNotesBase):
             return ReturnType(False, 'Error message is not displayed when classnotes pdf is more than 15 MB')
 
     def upload_incorrect_format_class_note(self):
-        self.tlms.upload_class_note('ClassNotesPNG.png')
+        self.tlms.upload_class_note('SamplePNG.png')
 
     def incorrect_note_format_error(self):
         if self.tlms.incorrect_note_format_error() is True:
