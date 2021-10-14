@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -166,8 +166,8 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.sign_in_next)
         self.obj.element_click(('xpath', self.sign_in_next))
 
-    def start_neo_session(self,login_data="neo_login_detail1", user='student1'):
-        url = self.tlms.get_tutor_url('neo',login_data= login_data, user=user)
+    def start_neo_session(self, login_data="neo_login_detail1", user='student1', date='today'):
+        url = self.tlms.get_tutor_url('neo', login_data=login_data, user=user, date=date)
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)

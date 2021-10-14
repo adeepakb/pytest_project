@@ -189,6 +189,10 @@ class NeoInClass(CommonMethodsWeb):
         self.close_icon_toast_msg = '//button[@class="MuiButtonBase-root MuiIconButton-root closebtn"]'
         self.network_error_msg = '//div[@class="ToastContainer"]'
         self.focus_mode_toast_msg = "//div[text()='Focus mode by tutor will start in 5 seconds']"
+        self.bubbles_UI = '//div[@class="myBubbleUI"]'
+        self.change_photo = "//span[text()='Change']"
+        self.save_photo = "//span[text()='Save']"
+        self.students_name_pre_class = '//*[@class="preClasView__studentName"]'
 
 
     def home_click_on_join(self):
@@ -1816,9 +1820,9 @@ class NeoInClass(CommonMethodsWeb):
     def is_focus_mode_toast_msg_present(self):
         self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
         if self.obj.is_element_present(('xpath', self.focus_mode_toast_msg)):
-            return ReturnType(True, 'mic and cam status are displayed as expected')
+            return ReturnType(True, 'focus mode message is displayed')
         else:
-            return ReturnType(False, 'mic and cam status are not displayed as expected')
+            return ReturnType(False, 'focus mode message is not displayed')
 
 
     def verify_text_in_focus_mode_toast_msg(self):
@@ -1834,3 +1838,49 @@ class NeoInClass(CommonMethodsWeb):
 
     def set_network_on(self):
         self.obj.set_wifi_connection_on()
+
+    def click_on_future_join_card(self, future_card_num):
+        self.obj.wait(2)
+        future_join_elements = self.obj.get_elements(("xpath",
+                                                      "//img[@class='timerIcon']//parent::div/parent::div//div[@class='btnCard']//div/a/span[text()='JOIN']"))
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", future_join_elements[future_card_num - 1])
+        future_join_elements[future_card_num - 1].click()
+
+
+    def is_students_bubbles_present(self):
+        self.obj.wait_for_locator_webdriver(self.bubbles_UI)
+        if self.obj.is_element_present(('xpath', self.bubbles_UI)):
+            return ReturnType(True, 'students bubbles are displayed')
+        else:
+            return ReturnType(False, 'students bubbles are not displayed')
+
+    def verify_profile_photo_popup(self):
+        self.obj.wait_for_locator_webdriver(self.change_photo)
+        if self.obj.is_element_present(('xpath', self.change_photo)) and self.obj.is_element_present(('xpath', self.save_photo)):
+            return ReturnType(True, 'save and change buttons are displayed')
+        else:
+            return ReturnType(False, 'save and change buttons are not displayed')
+
+    def verify_students_name_in_pre_class_screen(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
+        ele = self.obj.get_element(('xpath', self.students_name_pre_class))
+        if "Focus mode by tutor will start in 5 seconds" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def join_not_started_session(self):
+        try:
+            elements = self.get_elements(("xpath", "//div[@class = 'type-video masterOrRegularCardContainer']"))
+            for element in elements:
+                try:
+                    timer_element_displayed = self.get_child_element(element, "xpath",
+                                                                     ".//div[@class = 'future-join-text']").is_displayed()
+                except:
+                    timer_element_displayed = False
+
+                if timer_element_displayed:
+                    self.get_child_element(element, "xpath", ".//span[@class = 'MuiButton-label']").click()
+                    break
+        except:
+            pass

@@ -100,9 +100,11 @@ class LoginWeb(LoginBase):
         pass
 
     def click_on_hamburger(self):
+        self.obj.wait_for_element_visible(self.hamburger, 50)
         self.obj.element_click(self.hamburger)
 
     def click_on_byjus_classes(self):
+        self.obj.wait_for_element_visible(self.byjus_classes, 50)
         self.obj.element_click(self.byjus_classes)
 
     def enter_phone_expired_user(self):
