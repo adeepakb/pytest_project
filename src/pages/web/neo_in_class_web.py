@@ -388,23 +388,18 @@ class NeoInClass(CommonMethodsWeb):
             return self.obj.is_element_present(('xpath', self.hand_raised_icon))
 
     def verify_lower_hand_tooltip(self):
-        # self.obj.wait_for_locator_webdriver(self.thumb_icon)
-        # if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
-        #     self.obj.element_click(('xpath', self.hand_raised_icon))
-        #     self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
-        #     return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
-        # else:
-        #     self.obj.is_element_present(('xpath', self.handraise_icon))
-        #     self.obj.element_click(('xpath', self.handraise_icon))
-        #     self.obj.element_click(('xpath', self.hand_raised_icon))
-        #     self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
-        #     return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
-        ele = self.obj.get_element(('xpath', self.lower_your_hand_tootip))
-        if "You lowered your hand. Incase if you have any doubt, you can" in ele.text:
-            return ReturnType(True, 'the text in tooltip doesnt match')
+        if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
+            self.obj.element_click(('xpath', self.hand_raised_icon))
+            self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
+            return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
         else:
-            return ReturnType(False, 'the text in tooltip doesnt match')
+            self.obj.is_element_present(('xpath', self.handraise_icon))
+            self.obj.element_click(('xpath', self.handraise_icon))
+            self.obj.element_click(('xpath', self.hand_raised_icon))
+            self.obj.wait_for_element_visible(('xpath', self.lower_your_hand_tootip))
+            return self.obj.is_element_present(('xpath', self.lower_your_hand_tootip))
+
 
     def is_thumb_icon_present(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
@@ -1771,10 +1766,10 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(True, "other student mic camera are not controllable")
 
-    def verify_message_from_tutor_text(self):
+    def verify_message_from_tutor_text(self, exp_msg):
         self.obj.wait_for_locator_webdriver(self.msg_frm_tutor)
         ele = self.obj.get_element(('xpath', self.msg_frm_tutor))
-        if "Message from Tutor" in ele.text:
+        if exp_msg in ele.text:
             return ReturnType(True, 'the text in tooltip doesnt match')
         else:
             return ReturnType(False, 'the text in tooltip doesnt match')
@@ -1834,3 +1829,11 @@ class NeoInClass(CommonMethodsWeb):
 
     def set_network_on(self):
         self.obj.set_wifi_connection_on()
+
+    def verify_text_in_lower_hand_tooltip(self):
+        self.obj.wait_for_locator_webdriver(self.thumb_icon)
+        ele = self.obj.get_element(('xpath', self.lower_your_hand_tootip))
+        if "You lowered your hand. Incase if you have any doubt, you can" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
