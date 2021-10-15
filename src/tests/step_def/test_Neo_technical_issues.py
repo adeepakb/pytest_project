@@ -33,6 +33,12 @@ def neo_in_class(request, driver):
         yield neo_in_class
 
 
+@fixture()
+def neo_tute(driver):
+    neo_tute = NeoTute(driver)
+    yield neo_tute
+
+
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
@@ -40,8 +46,9 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 
 
 @given("tutor start the session")
-def step_impl(driver):
-    NeoTute(driver).start_neo_session()
+def step_impl(neo_tute):
+    neo_tute.start_neo_session()
+    neo_tute.select_focus_mode('off')
 
 
 @when('click on "JOIN" button in home page')
