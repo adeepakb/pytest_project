@@ -72,7 +72,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1')
+    neo_tute.start_neo_session()
 
 
 @when('click on "JOIN" button in home page')
@@ -82,17 +82,21 @@ def step_impl(neo_in_class):
 
 @when("student join neo session")
 def step_impl(neo_in_class):
-    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
+    neo_in_class.join_neo_session()
 
 
 @then("Verify the elements in default whiteboard screen when user lands on.")
 def step_impl(neo_tute,neo_in_class):
     n = 1
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
     neo_tute.present_any_slide(n)
     neo_tute.click_on_add_slide()
     neo_tute.present_any_slide(n + 1)
+    neo_tute.select_focus_mode(status='off')
+    check.equal(neo_tute.is_blank_slide_selected(),True,"New slide is added and presented successfully")
     details = neo_in_class.presentation_alignment()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 
 @then('Verify the full screen mode option in whiteboard.')

@@ -156,13 +156,13 @@ class CommonMethodsWeb():
         try:
             WebDriverWait(self.driver, timeout).until(ec.presence_of_element_located((By.XPATH, locator_value)))
         except TimeoutException:
-            print("Timed out while waiting for page to load")
+            return False
 
     def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
         try:
             WebDriverWait(self.driver, timeout).until(ec.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
-            print("Timed out while waiting for page to load")
+            return False
 
     def page_refresh(self):
         self.driver.refresh()

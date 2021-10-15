@@ -53,8 +53,8 @@ class Stagingtlms:
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(password)
         self.chrome_driver.find_element_by_xpath("//input[@type='password']").send_keys(Keys.ENTER)
         self.chrome_driver.save_screenshot('image3.png')
-        time.sleep(10)
-        self.chrome_driver.find_element_by_xpath("//button[@type='submit']").send_keys(Keys.ENTER)
+        # time.sleep(10)
+        # self.chrome_driver.find_element_by_xpath("//button[@type='submit']").send_keys(Keys.ENTER)
 
     def navigate_to_student_sessions(self, premium_id, date = 'today'):
         self.login_to_staging()
@@ -205,7 +205,7 @@ class Stagingtlms:
     def get_otp(self, cc, mobile_num):
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
-        self.chrome_driver.save_screenshot('image5.png')
+        self.chrome_driver.save_screenshot('image4.png')
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
         self.wait_for_clickable_element_webdriver("//li[@id='mobile_otps']")
         self.chrome_driver.find_element_by_xpath("//li[@id='mobile_otps']").click()
