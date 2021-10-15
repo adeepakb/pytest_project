@@ -248,6 +248,7 @@ class NeoInClass(CommonMethodsWeb):
     # streamCardContainer
     def get_all_student_names(self):
         student_names = []
+        self.obj.wait_for_element_visible(('xpath',self.student_card_names))
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         for card in cards:
             student_name = card.get_attribute('innerHTML')
@@ -268,6 +269,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_video_status(self):
         student_video_status = {}
+        self.obj.wait_for_locator_webdriver(self.student_card_names)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -285,6 +287,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_student_audio_status(self):
         student_audio_status = {}
+        self.obj.wait_for_locator_webdriver(self.student_card_names)
         cards = self.obj.get_elements(('xpath', self.student_card_names))
         video_cards = self.obj.get_elements(('xpath', self.student_video_container))
         for i in range(len(cards)):
@@ -300,6 +303,7 @@ class NeoInClass(CommonMethodsWeb):
         return student_audio_status
 
     def get_request_message(self):
+        self.obj.wait_for_locator_webdriver(self.request_message)
         return self.obj.get_element(('xpath', self.request_message)).text
 
     def verify_alignment_stream_list(self):
@@ -313,12 +317,21 @@ class NeoInClass(CommonMethodsWeb):
 
     # returns bottom container profile card details, profile card name or profile picture src if attached
     def get_profile_cards(self):
-        profile_card_details = []
-        cards = self.obj.get_elements(('xpath', "//div[@class ='neo_cl_VideoContainer__profilePic']"))
-        for card in cards:
-            # student_name = card.get_attribute('innerHTML')
-            profile_pic_src = card.find_element_by_xpath(".//img").get_attribute("src")
-            profile_card_details.append(profile_pic_src)
+        profile_card_details = {}
+        cards = self.obj.get_elements(('xpath', self.student_card_names))
+        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
+        for i in range(len(cards)):
+            student_name = cards[i].get_attribute('innerHTML')
+            stream_id = video_cards[i].get_attribute('id')
+            try:
+                name_card = self.obj.get_element(('xpath',"//div[@id='"+stream_id+"']//div/div[@class='neo_cl_NameCard__text']")).text
+                profile_card_details.update({student_name: name_card})
+            except NoSuchElementException:
+                if self.obj.is_element_present(("xpath","//video[contains(@id,'video_track-cam')]")):
+                    profile_card_details.update({student_name: "video_track-cam"})
+                else:
+                    profile_card_details.update({student_name: False})
+        print(profile_card_details)
         return profile_card_details
 
     def close_info_tip(self):
@@ -608,9 +621,12 @@ class NeoInClass(CommonMethodsWeb):
 
     def get_all_issues_list(self):
         issues_list = []
+        self.obj.wait_for_locator_webdriver(self.facing_issue_header)
+        self.obj.wait_for_locator_webdriver(self.facing_issues_label)
         issue_elements = self.obj.get_elements(('xpath', self.facing_issues_label))
         for issue_element in issue_elements:
             issues_list.append(issue_element.text)
+        print(issues_list)
         return issues_list
 
     def get_selected_issue_radio_btn_color(self, expected_color):

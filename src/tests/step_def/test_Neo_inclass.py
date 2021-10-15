@@ -181,7 +181,12 @@ def step_impl(student1_login):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session(login_data= 'neo_login_detail2',user= 'student1')
+    neo_tute.start_neo_session(login_data='neo_login_detail2',user= 'student1')
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     neo_tute.select_focus_mode('off')
 
 
@@ -242,14 +247,14 @@ def step_impl(student1_neo):
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_video('OFF')
     student_video_status = student1_neo.get_student_video_status()
-    check.equal(student_video_status['You'] is False,True,"Student is not displayed when camera is turned off by the student")
+    check.equal(student_video_status['You'],False,"Student is not displayed when camera is turned off by the student")
 
 
 @then("Verify that student is muted when mic is turned off by the student")
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_mic('OFF')
     student_audio_status = student1_neo.get_student_audio_status()
-    check.equal(student_audio_status['You'] is False,True,"Student is muted when mic is turned off by the student")
+    check.equal(student_audio_status['You'],False,"Student is muted when mic is turned off by the student")
 
 
 @then("Verify that camera and mic icons change when same are toggled On/Off")
@@ -284,8 +289,11 @@ def step_impl(neo_tute,student1_neo):
 def step_impl(student1_neo):
     student1_neo.turn_on_off_student_video('OFF')
     profile_card_details = student1_neo.get_profile_cards()
-    check.equal('https://static.tllms.com/assets/k12/premium_online/byjus_classes/common/initial_avatars/' in profile_card_details[0], True, "Profile picture is not displayed on the thumbnail")
+    student_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
+    student_name=student_details['name']
+    check.equal(student_name[0] == profile_card_details['You'],True, "Profile picture is displayed on the thumbnail")
     student1_neo.turn_on_off_student_video('ON')
+
 
 @then("Verify the default alignment of student's thumbnails when two students join and enter the class")
 def step_impl(student2,student2_neo):
@@ -639,8 +647,9 @@ def step_impl(student1_neo,neo_tute):
 
 @then("Verify that tutor's audio is muted when mic of the tutor is turned off")
 def step_impl(student1_neo,neo_tute):
-    details = student1_neo.get_tutor_audio_status()
-    check.equal(details.result, False, details.reason)
+    neo_tute.turn_tutor_audio_on_off()
+    details = student1_neo.is_tutor_mute()
+    check.equal(details.result, True, details.reason)
 
 
 @then("Verify that tutor's audio/video is not playing when both camera and mic of the tutor is turned off")

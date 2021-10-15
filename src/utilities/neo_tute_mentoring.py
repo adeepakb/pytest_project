@@ -770,15 +770,11 @@ class NeoTute(CommonMethodsWeb):
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
     def present_any_slide(self,select_slide_num):
-        try:
-            displayed = self.get_element(("xpath", "//div[@class = 'presentationContainer']")).is_displayed()
-        except:
-            displayed = False
-        if not displayed:
-            self.click_on_tab_item(tab_name="Session Slides")
-            self.obj.wait(1)
-            slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
-            slide_select_icon.click()
+        self.click_on_tab_item(tab_name="Session Slides")
+        self.obj.wait_for_locator_webdriver(self.add_slide)
+        slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
+        slide_select_icon.click()
+        self.obj.wait_for_locator_webdriver("//div[@class = 'presentationContainer']")
 
     def stop_presentation(self,select_slide_num):
         try:
@@ -792,12 +788,8 @@ class NeoTute(CommonMethodsWeb):
                                                       "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
             slide_select_icon.click()
 
-
-
-
-
-
     def find_video_slide(self):
+        self.wait_for_locator_webdriver(self.add_slide)
         slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))
         for slide_card in slide_cards:
             try:
@@ -809,6 +801,15 @@ class NeoTute(CommonMethodsWeb):
                     continue
             except:
                 return None
+
+    def active_presentation_slide_number(self):
+        try:
+            self.wait_for_locator_webdriver(self.add_slide)
+            active_content= self.obj.get_element(("css",".slide--active div.slide__content_box div.slide__slide_number"))
+            active_slide_num = active_content.text
+            return active_slide_num.lstrip("0")
+        except:
+            return None
 
     # Top container
 
@@ -912,6 +913,7 @@ class NeoTute(CommonMethodsWeb):
 
     # status : on/off
     def select_focus_mode(self,status):
+        time.sleep(2)
         self.wait_for_locator_webdriver("//label[@class='switch']")
         if status == 'on':
             self.element_click(("xpath","//span[@class='off']"))
@@ -949,7 +951,7 @@ class NeoTute(CommonMethodsWeb):
 
     def click_on_tab_item(self, tab_name='Session Plan'):
         try:
-
+            self.obj.wait_for_element_visible(self.tab_item)
             items = self.get_elements(self.tab_item)
             for item in items:
                 if item.text.replace("\n", " ") == tab_name:
