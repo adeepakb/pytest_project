@@ -73,6 +73,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 @given("tutor start the session")
 def step_impl(neo_tute):
     neo_tute.start_neo_session()
+    neo_tute.select_focus_mode('off')
 
 
 @when('click on "JOIN" button in home page')
@@ -174,17 +175,17 @@ def verify_whiteboard_contents(neo_tute,neo_in_class):
     neo_tute.draw_shapes_on_neo_tutor_whiteboard()
     neo_tute.perform_text_action_on_neo_tutor_whiteboard('Welcome')
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
 @then('Verify that alignment of texts, handwritten shapes, markers on Whiteboard presentation in different browser window sizes')
 def step_impl(neo_in_class):
     neo_in_class.change_browser_size(1024, 768)
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
     neo_in_class.change_browser_size(1080,800)
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True,"Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
     neo_in_class.change_browser_size('default','default')
 
 
@@ -192,7 +193,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class):
     neo_in_class.refresh_and_join_the_session('mic-on', 'cam-on')
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True, "Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
 @then('Verify that contents presented on Whiteboard is available if reconnection happens')
@@ -200,7 +201,7 @@ def step_impl(neo_in_class):
     neo_in_class.set_wifi_connection_off()
     neo_in_class.set_wifi_connection_on()
     check.equal(neo_in_class.get_text_from_image_and_verify('Welcome'), True, "Whiteboard presentation text visible to the students")
-    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'rectangle', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
+    check.equal(neo_in_class.verify_shapes_in_student_whiteboard(['circle', 'square', 'triangle']), True,"Whiteboard presentation shapes are also visible to the students")
 
 
 @then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail.")

@@ -183,10 +183,10 @@ def step_impl(student1_login):
 def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data='neo_login_detail2',user= 'student1')
     neo_tute.click_on_tab_item(tab_name="Session Slides")
-    expected_video_slide_num = neo_tute.find_video_slide()
+    expected_slide_num = 1
     active_slide_number = neo_tute.active_presentation_slide_number()
-    if expected_video_slide_num != active_slide_number:
-        neo_tute.present_any_slide(expected_video_slide_num)
+    if expected_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_slide_num)
     neo_tute.select_focus_mode('off')
 
 
