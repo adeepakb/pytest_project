@@ -296,12 +296,12 @@ def step_impl(student1_neo):
 
 
 @then("Verify the default alignment of student's thumbnails when two students join and enter the class")
-def step_impl(student2,student2_neo):
+def step_impl(student2,student2_neo,student1_neo):
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session()
-    check.equal(student2_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 2 students join")
+    check.equal(student1_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 2 students join")
 
 
 @then("Verify that the student's thumbnails update dynamically when any new student joins while session is in progress")
@@ -380,39 +380,39 @@ def step_impl(student2_neo):
 
 
 @then("Verify the default alignment of student's thumbnails when three students join and enter the class")
-def step_impl(student3,student3_neo):
+def step_impl(student3,student3_neo,student1_neo):
     student3_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session()
-    check.equal(student3_neo.verify_alignment_stream_list(), True,"Verified alignment of student's thumbnail when 3 students join")
+    check.equal(student1_neo.verify_alignment_stream_list(), True,"Verified alignment of student's thumbnail when 3 students join")
 
 
 @then("Verify the default alignment of student's thumbnails when four students join and enter the class")
-def step_impl(student4,student4_neo):
+def step_impl(student4,student4_neo,student1_neo):
     student4_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student4.login_and_navigate_to_home_screen(student4_details['code'], student4_details['mobile_no'], otp=None)
     student4_neo.home_click_on_join()
     student4_neo.join_neo_session()
-    check.equal(student4_neo.verify_alignment_stream_list(), True, "Verified alignment of student's thumbnail when 3 students join")
+    check.equal(student1_neo.verify_alignment_stream_list(), True, "Verified alignment of student's thumbnail when 3 students join")
 
 
 @then("Verify the default alignment of student's thumbnails when five students join and enter the class")
-def step_impl(student5,student5_neo):
+def step_impl(student5,student5_neo,student1_neo):
     student5_details = get_data(Login_Credentials, 'neo_login_detail2', 'student5')
     student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
     student5_neo.home_click_on_join()
     student5_neo.join_neo_session()
-    check.equal(student5_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 5 students join")
+    check.equal(student1_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 5 students join")
 
 
 @then("Verify the default alignment of student's thumbnails(six students) when they join and enter the class")
-def step_impl(student6,student6_neo):
+def step_impl(student6,student6_neo,student1_neo):
     student6_details = get_data(Login_Credentials, 'neo_login_detail2', 'student6')
     student6.login_and_navigate_to_home_screen(student6_details['code'], student6_details['mobile_no'], otp=None)
     student6_neo.home_click_on_join()
     student6_neo.join_neo_session()
-    check.equal(student6_neo.verify_alignment_stream_list(), True,"Verified alignment of student's thumbnail when 6 students join")
+    check.equal(student1_neo.verify_alignment_stream_list(), True,"Verified alignment of student's thumbnail when 6 students join")
 
 
 @given("Launch the application online")

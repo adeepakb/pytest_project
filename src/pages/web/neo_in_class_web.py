@@ -6,7 +6,7 @@ import subprocess
 import requests
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
-    MoveTargetOutOfBoundsException
+    MoveTargetOutOfBoundsException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from utilities.common_methods_web import CommonMethodsWeb
@@ -29,7 +29,7 @@ class NeoInClass(CommonMethodsWeb):
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[contains(@class,'neo_cl_VideoContainer')]"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
-        self.stream_list = '//section[@class="streamList__itemList"]'
+        self.stream_list = '//section[contains(@class,"streamList__itemList")]'
         self.profile_cards = "//div[contains(@class,'profileCard bottomContainer')]"
         self.info_tip_close = "//div[@class='infoTip__closeBtn']"
         self.focus_mode_icon = "//div[contains(@class,'presentation__focusIcon')]"
@@ -311,13 +311,27 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.get_element(('xpath', self.request_message)).text
 
     def verify_alignment_stream_list(self):
-        self.obj.wait_for_locator_webdriver(self.stream_list)
-        display_block = self.obj.get_element(('xpath', self.stream_list)).value_of_css_property('display')
-        content_alignment = self.obj.get_element(('xpath', self.stream_list)).value_of_css_property('justify-content')
-        if display_block == 'grid' and content_alignment == 'center':
-            return True
-        else:
-            return False
+        self.change_browser_size(1680,820)
+        time.sleep(5)
+        retry = 2
+        while retry:
+            try:
+                self.obj.wait_for_element_visible(('css','.streamList__itemList'))
+                ele = self.obj.get_element(('css','.streamList__itemList'))
+                print(ele)
+                display_block = ele.value_of_css_property('display')
+                content_alignment = ele.value_of_css_property('justify-content')
+                print(display_block)
+                print(content_alignment)
+                if display_block == 'grid' and (content_alignment == 'center' or content_alignment == 'start'):
+                    return True
+                else:
+                    return False
+            except (NoSuchElementException, StaleElementReferenceException):
+                retry -= 1
+                time.sleep(2)
+                continue
+        return False
 
     # returns bottom container profile card details, profile card name or profile picture src if attached
     def get_profile_cards(self):
@@ -1442,6 +1456,7 @@ class NeoInClass(CommonMethodsWeb):
     # by default the cam and mic is 'on' so passing the parameters as cam and mic on
 
     def join_neo_session_student(self, mic_status, cam_status):
+        self.driver.maximize_window()
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
         time.sleep(2)
