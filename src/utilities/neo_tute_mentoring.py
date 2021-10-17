@@ -31,6 +31,7 @@ class NeoTute(CommonMethodsWeb):
         self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
+        self.chrome_options.add_argument("--use-fake-device-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
         f = Fernet(key)
@@ -147,7 +148,6 @@ class NeoTute(CommonMethodsWeb):
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
         self.floating_emojis = "//span[contains(@class,'floaters')]"
 
-
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
         password = self.decrypted_data['staging_access']['password']
@@ -159,16 +159,13 @@ class NeoTute(CommonMethodsWeb):
         self.obj.element_click(('xpath', self.login_submit))
         self.obj.wait_for_locator_webdriver(self.sign_in_with_google_email)
         self.obj.enter_text(email, ('xpath', self.sign_in_with_google_email))
-        self.obj.wait_for_locator_webdriver(self.sign_in_next)
-        self.obj.element_click(('xpath', self.sign_in_next))
+        self.obj.get_element(('xpath',self.sign_in_with_google_email)).send_keys(Keys.ENTER)
         self.obj.wait_for_clickable_element_webdriver(self.sign_in_password)
         self.obj.enter_text(password, ('xpath', self.sign_in_password))
-        self.obj.wait_for_locator_webdriver(self.sign_in_next)
-        self.obj.element_click(('xpath', self.sign_in_next))
+        self.obj.get_element(('xpath', self.sign_in_password)).send_keys(Keys.ENTER)
 
     def start_neo_session(self,login_data="neo_login_detail1", user='student1',date ='today'):
         url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
-        # url = "https://tutor-plus-staging.tllms.com/live-classes/231874"
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -271,9 +268,9 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_locator_webdriver(self.blank_slide_presented)
         canvas = self.obj.get_element(('xpath', self.presentation))
         self.select_any_shape('ellipse')
-        self.action.drag_and_drop_by_offset(canvas, 302, 304).perform()
+        self.action.drag_and_drop_by_offset(canvas, 52, 54).perform()
         self.select_any_shape('polygon')
-        self.action.drag_and_drop_by_offset(canvas, -200, -180).perform()
+        self.action.drag_and_drop_by_offset(canvas, -20, -18).perform()
         self.select_any_shape('rectangle')
         self.action.drag_and_drop_by_offset(canvas, 35, 20).perform()
         # self.action.drag_and_drop_by_offset(canvas, -50, 70).perform()
@@ -919,6 +916,7 @@ class NeoTute(CommonMethodsWeb):
             self.element_click(("xpath","//span[@class='off']"))
         else:
             self.element_click(("xpath", "//span[@class='on']"))
+        time.sleep(1)
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -1034,13 +1032,13 @@ class NeoTute(CommonMethodsWeb):
         try:
             WebDriverWait(self.chrome_driver, timeout).until(EC.presence_of_element_located((By.XPATH, locator_value)))
         except TimeoutException:
-            print("Timed out while waiting for page to load")
+            return False
 
     def wait_for_clickable_element_webdriver(self, locator_value, timeout=15):
         try:
             WebDriverWait(self.chrome_driver, timeout).until(EC.element_to_be_clickable((By.XPATH, locator_value)))
         except TimeoutException:
-            print("Timed out while waiting for page to load")
+            return False
 
 
     def get_url_of_presented_slide(self, select_slide_num):
@@ -1054,12 +1052,12 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_video_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
                     if "cam-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
+                        desired_element = element.find_element_by_xpath("//img")
                         break
                 self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
@@ -1079,12 +1077,11 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_audio_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
                     if "mic-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
+                        desired_element = element.find_element_by_xpath("//img")
                         break
                 self.action.move_to_element(desired_element).click().perform()
             else:

@@ -154,7 +154,6 @@ class NeoInClass(CommonMethodsWeb):
         self.what_did_you_like_text = "//div[text()='What did you like the most?']"
         self.what_could_be_improved_text = "//div[text()='What could be improved?']"
 
-        self.join_btn = "//span[text()='JOIN']"
         self.comments_textbox = '//*[@placeholder="Add your comments here"]'
         self.star_option = '//img[@alt="Terrible"]'
         self.tutor_name_in_feedback = '//div[@class="name"]/parent::div[@class="tutor__details"]'
@@ -189,6 +188,7 @@ class NeoInClass(CommonMethodsWeb):
         self.byjus_logo = '//*[@alt="titleLogo"]'
 
         # pre-class experience
+        self.future_card = "//img[@class='timerIcon']//parent::div/parent::div//div[@class='btnCard']//div/a/span[text()='JOIN']"
         self.photo_edit_icon = "//div[@class='image']/img[@alt='camera']"
         self.current_student_bubble = "//div[contains(@class,'animation active')]"
         self.change_pp_header = "//span[text()='Change profile photo']"
@@ -212,13 +212,16 @@ class NeoInClass(CommonMethodsWeb):
 
     def home_click_on_join(self):
         self.obj.wait(2)
-        self.obj.wait_for_clickable_element_webdriver("//span[text()='JOIN']")
+        self.obj.wait_for_locator_webdriver(self.join_btn)
+        self.obj.wait_for_clickable_element_webdriver(self.join_btn)
         self.obj.button_click('JOIN')
 
     def click_on_future_join_card(self, future_card_num):
         self.obj.wait(2)
-        future_join_elements = self.obj.get_elements(("xpath","//img[@class='timerIcon']//parent::div/parent::div//div[@class='btnCard']//div/a/span[text()='JOIN']"))
-        join_button_elt = self.obj.get_element(("xpath","//span[text()='JOIN']"))
+        self.obj.wait_for_locator_webdriver(self.future_card)
+        future_join_elements = self.obj.get_elements(("xpath",self.future_card))
+        print(len(future_join_elements))
+        join_button_elt = self.obj.get_element(("xpath",self.join_btn))
         self.driver.execute_script("arguments[0].scrollIntoView(true);",join_button_elt)
         future_join_elements[future_card_num - 1].click()
 
@@ -454,6 +457,7 @@ class NeoInClass(CommonMethodsWeb):
         if self.obj.is_element_present(('xpath', self.hand_raised_icon)):
             return True
         else:
+            self.obj.wait_for_locator_webdriver(self.handraise_icon)
             self.obj.element_click(('xpath', self.handraise_icon))
             self.obj.wait_for_locator_webdriver(self.hand_raised_icon)
             return self.obj.is_element_present(('xpath', self.hand_raised_icon))
@@ -541,8 +545,9 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.element_click(('xpath', self.student_exit_class))
 
     def verify_header_in_exit_class_popup(self):
-        self.obj.wait_for_locator_webdriver(self.header_text_in_exit_popup)
-        ele = self.obj.get_element(('xpath', self.header_text_in_exit_popup)).text
+        self.obj.wait_for_element_visible(('xpath', "//div[@class='exitClass_wrap']"))
+        ele = self.obj.get_element(('xpath', "//div[@class='exitClass_wrap']")).text
+        print("Header text displayed on exit popup - %s" %ele)
         return True if "Are you sure you want to end the class?" in ele else False
 
     def is_exit_image_in_exit_popup_present(self):
@@ -815,8 +820,8 @@ class NeoInClass(CommonMethodsWeb):
         class_info_details_dict.update({"Subject": elements[0], "Topic": elements[1]})
         session_date_time = self.obj.get_element(('xpath', self.class_info_popup_date_time)).text
         class_info_details_dict.update({"Session Time": session_date_time})
-        session_desc = self.obj.get_element(('xpath', self.class_info_popup_desc)).text
-        class_info_details_dict.update({"Session Description": session_desc})
+        # session_desc = self.obj.get_element(('xpath', self.class_info_popup_desc)).text
+        # class_info_details_dict.update({"Session Description": session_desc})
         return class_info_details_dict
 
     def tap_outside_dialog_layout(self):
@@ -831,8 +836,9 @@ class NeoInClass(CommonMethodsWeb):
 
     # rating popup
     def verify_header_in_rating_popup(self):
-        self.obj.wait_for_locator_webdriver(self.rating_popup_header)
+        self.obj.wait_for_element_visible(('xpath', self.rating_popup_header))
         ele = self.obj.get_element(('xpath', self.rating_popup_header))
+        print("Header text displayed on rating popup - %s" % ele.text)
         if "Rate your experience" in ele.text:
             return ReturnType(True, 'the text in popup doesnt match')
         else:
@@ -1986,7 +1992,7 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.page_refresh()
 
     def approved_profile_pic_visible(self):
-        self.obj.wait_for_locator_webdriver(self.current_student_bubble_pp)
+        self.obj.wait_for_locator_webdriver(self.current_approved_name_image)
         flag1 = self.obj.is_element_present(("xpath", self.current_approved_name_image))
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
