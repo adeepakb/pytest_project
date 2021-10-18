@@ -3,8 +3,8 @@ Feature: Ask Question
 
   Scenario: Verify the chat section "Class Forum" below the tutor's screen.
     Given launch the application online as neo user and navigate to home screen
-    And click on "JOIN" button in home page
     And tutor start the session
+    And click on "JOIN" button in home page
     When student join neo session
     Then Verify the raise hand option should present in the screen
     And Verify that student should able to ask doubt clicking on the 'Raise hand' option

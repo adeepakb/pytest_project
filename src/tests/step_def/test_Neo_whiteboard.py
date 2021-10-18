@@ -273,7 +273,7 @@ def step_impl(neo_in_class,neo_tute):
     neo_in_class.minimize_full_screen_presentation()
 
 
-
+@then("Verify that raise hand  option is available when whiteboard is in focused mode  for full screen.")
 @then("Verify that raise hand option is available when whiteboard is in focused mode for full screen.")
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
@@ -291,7 +291,7 @@ def step_impl(neo_in_class,neo_tute):
     check.equal(flag, True, "Raise hand option is not displayed in full screen")
     neo_in_class.minimize_full_screen_presentation()
 
-@then('Verify that like emoji & minimize screen option is displayed at the bottom of whiteboard when its in full screen mode.')
+@then('Verify that like emoji & minimize screen option is displayed at the bottom of whiteboard  when its in full screen mode.')
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='off')
     neo_in_class.do_full_screen_presentation()
@@ -300,8 +300,9 @@ def step_impl(neo_in_class,neo_tute):
     check.equal(details.result, True, details.reason)
     neo_in_class.minimize_full_screen_presentation()
 
-@then('Verify the flash message text “Tutor wants to discuss your doubt with you.Please turn on your mic and camera" when tutor sends request to turn on mic/camera.')
-@then("Verify the message when tutor send request to student to turn on video / discuss doubt.")
+
+@then('Verify the flash  message text “Tutor wants to discuss your doubt with you.Please turn on your mic and camera“ when tutor sends request to turn on mic/camera.')
+@then("Verify the message when  tutor send request to student to turn on video / discuss doubt.")
 def step_impl(neo_in_class, neo_tute):
     neo_tute.select_focus_mode(status='off')
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
@@ -333,7 +334,7 @@ def step_impl(neo_in_class, neo_tute):
     neo_in_class.turn_on_off_student_mic(action="OFF")
 
 
-@then("Verify that logged in student can turn off their mic/camera when they are discussing doubts with tutor.")
+@then("Verify that logged in student  can turn off their mic/camera when they are discussing doubts with tutor.")
 def step_impl(neo_in_class, neo_tute):
     neo_tute.select_focus_mode(status='off')
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
@@ -351,6 +352,7 @@ def step_impl(neo_in_class, neo_tute):
     check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
     neo_in_class.turn_on_off_student_mic(action="OFF")
 
+
 @then("Verify the other student's video when they also start discussing doubts.")
 def step_impl(neo_tute, student2_neo):
     neo_tute.select_focus_mode(status='off')
@@ -359,6 +361,7 @@ def step_impl(neo_tute, student2_neo):
     my_status = status_dict['You']
     check.equal(my_status, True, "Student is not able to accept tutor's request to turn on the camera. ")
     student2_neo.turn_on_off_student_video(action="OFF")
+
 
 @then("Verify the whiteboard screen size when users clicks on minimise screen icon.")
 def step_impl(neo_in_class, neo_tute):

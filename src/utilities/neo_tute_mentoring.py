@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        #self.chrome_options.add_argument('--no-sandbox')
+        #self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
         key = os.getenv('SECRET')
@@ -1052,25 +1052,29 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_video_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon "
-                                                       "tutorCard--red_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-off" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
+                element = self.get_element(("xpath", "//img[contains(@src,'cam-off')]"))
+                self.action.move_to_element(element).click().perform()
+                time.sleep(10)
+                try:
+                    flag = self.get_element(("xpath", "//img[contains(@src,'cam-off')]")).is_displayed()
+                except:
+                    flag= False
+                if flag:
+                    self.turn_tutor_video_on_off(status= 'on')
             else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
-                desired_element = None
-                for element in elements:
-                    if "cam-on" in element.get_attribute('innerHTML'):
-                        desired_element = element
-                        break
-                self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
+                element = self.get_element(("xpath", "//img[contains(@src,'cam-on')]"))
+                self.action.move_to_element(element).click().perform()
+                time.sleep(10)
+                try:
+                    flag = self.get_element(("xpath", "//img[contains(@src,'cam-on')]")).is_displayed()
+                except:
+                    flag= False
+                if flag:
+                    self.turn_tutor_video_on_off(status= 'off')
+                time.sleep(2)
+
         except:
             pass
 

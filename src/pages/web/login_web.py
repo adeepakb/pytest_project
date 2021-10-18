@@ -18,8 +18,8 @@ class LoginWeb(LoginBase):
     def __init__(self, driver):
         if driver is None:
             chrome_options = Options()
-            chrome_options.add_argument('--no-sandbox')
-            chrome_options.add_argument('--headless')
+            #chrome_options.add_argument('--no-sandbox')
+            #chrome_options.add_argument('--headless')
             chrome_options.add_argument("--use-fake-ui-for-media-stream")
             self.driver = webdriver.Chrome(options=chrome_options)
         else :
@@ -232,4 +232,11 @@ class LoginWeb(LoginBase):
         self.enter_phone(phone_num)
         self.click_on_next()
         self.enter_otp(cc, phone_num, otp)
+
+    def change_to_mobile_web(self):
+        self.driver.set_window_size(1280, 800)
+
+
+    def maximize_to_web(self):
+        self.driver.maximize_window()
 

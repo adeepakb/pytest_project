@@ -1,3 +1,5 @@
+import time
+
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.constants import Login_Credentials
@@ -39,6 +41,52 @@ def neo_tute(driver):
     yield neo_tute
 
 
+
+@fixture()
+def student2(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield student2
+    elif Platform.WEB.name in platform_list:
+        student2 = LoginFactory().get_page(None, Platform.WEB.value)
+        yield student2
+
+
+@fixture()
+def student2_neo(request, student2):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.ANDROID.value)
+        yield student2_neo
+    elif Platform.WEB.name in platform_list:
+        student2_neo = NeoInClassFactory().get_page(student2.driver, Platform.WEB.value)
+        yield student2_neo
+
+
+@fixture()
+def mweb_login(request):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        mweb_login = LoginFactory().get_page(None, Platform.ANDROID.value)
+        yield mweb_login
+    elif Platform.WEB.name in platform_list:
+        mweb_login = LoginFactory().get_page(None, Platform.WEB.value)
+        yield mweb_login
+
+
+@fixture()
+def mweb_student(request, mweb_login):
+    platform_list = request.config.getoption("--platform")
+    if Platform.ANDROID.name in platform_list:
+        mweb_student = NeoInClassFactory().get_page(mweb_login.driver, Platform.ANDROID.value)
+        yield mweb_student
+    elif Platform.WEB.name in platform_list:
+        mweb_student = NeoInClassFactory().get_page(mweb_login.driver, Platform.WEB.value)
+        yield mweb_student
+
+
+
 @given("launch the application online as neo user and navigate to home screen")
 def navigate_to_one_to_many_and_mega_user(login_in):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
@@ -49,6 +97,13 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 def step_impl(neo_tute):
     # TODO Needs to be updated to fetch from DB. For time being, below workaround
     neo_tute.start_neo_session(date="tomorrow")
+
+
+@when("student join neo session for next day")
+@given("student join neo session for next day")
+def step_impl(neo_in_class):
+    neo_in_class.navigate_to_byjus_classes_screen()
+    neo_in_class.join_not_started_session()
 
 
 @when('click on "JOIN" button in home page')
@@ -184,3 +239,116 @@ def step_impl(neo_in_class):
     flag2 = neo_in_class.upload_profile_photo_api("../../../files/SamplePNG.png")
     print(flag2)
     check.equal(flag1 and flag2, True, "Photo upload successful for different resolutions and sizes")
+
+
+@then("Verify the student name on greeting message and student bubble")
+@then("Verify the Student's greeting message on the landing screen.")
+def step_impl(neo_in_class):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    student_name = student1_details['name']
+    details = neo_in_class.preclass_verify_greeting_message(name = student_name)
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the list of students bubble on the screen before the class starts.")
+def step_impl(neo_in_class):
+    time.sleep(3)
+    details = neo_in_class.preclass_verify_bubbles()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify that edit icon should be displayed for the logged in user's name bubble")
+def step_impl(neo_in_class):
+    details =neo_in_class.preclass_verify_current_student_edit_button()
+    check.equal(details.result,True,details.reason)
+
+
+@then("Verify the student's name bubbles when any student joins the session.")
+def step_impl(student2, student2_neo,neo_in_class):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student2.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+    student2_neo.navigate_to_byjus_classes_screen()
+    student2_neo.join_not_started_session()
+    details = neo_in_class.preclass_verify_bubble_displayed(profile_name = student1_details['name'])
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the student's name bubbles when any student exists the session.")
+def step_impl(student2,neo_in_class):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student2.driver.close()
+    details = neo_in_class.preclass_verify_bubble_displayed(profile_name = student1_details['name'])
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the slider present in PreClass screen")
+@then("Verify scroll functionality below the students bubble list.")
+def step_impl(neo_in_class):
+    details = neo_in_class.is_scroll_bar_working()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify that display timer countdown on screen.")
+def step_impl(neo_in_class):
+    details = neo_in_class.preclass_is_timer_displayed()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the tutor name & image on screen.")
+def step_impl(neo_in_class):
+    details = neo_in_class.preclass_verify_tutor_name(name = "Test Automation")
+    check.equal(details.result, True, details.reason)
+    details =neo_in_class.preclass_verify_tutor_thumbnail()
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the texts when user clicks on Read More option.")
+@then("Verify that subject & topic name should be displayed correctly.")
+def step_impl(neo_in_class):
+    details = neo_in_class.preclass_verify_subject_topic_name(name = 'Control and Coordination')
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the bubble when user hover other student's name.")
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_hover_over_bubble(name="You")
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify clicking on Byjus logo at the top left corner.")
+def step_impl(neo_in_class):
+    details = neo_in_class.preclass_click_on_logo()
+    check.equal(details.result, True, details.reason)
+
+
+@given("Launch the application online in mobile")
+def login_as_neo_user(mweb_login):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    mweb_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+
+
+@when("student join neo session for next day for mobile web")
+def step_impl(mweb_student):
+    mweb_student.navigate_to_byjus_classes_screen()
+    mweb_student.join_not_started_session()
+
+
+@then("Verify the student name on greeting message and student bubble")
+def step_impl(mweb_student):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student_name = student1_details['name']
+    details = mweb_student.preclass_verify_greeting_message(name = student_name)
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the Student name on the bubble present in PreClass screen")
+def step_impl(mweb_student):
+    details = mweb_student.verify_hover_over_bubble(name="You")
+    check.equal(details.result, True, details.reason)
+
+
+@then("Verify the slider present in PreClass screen")
+def step_impl(mweb_student):
+    details = mweb_student.is_scroll_bar_working()
+    check.equal(details.result, True, details.reason)
+
