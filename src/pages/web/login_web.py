@@ -12,6 +12,7 @@ from constants.constants import Login_Credentials
 from utilities.common_methods_web import CommonMethodsWeb
 from utilities.staging_tllms import Stagingtllms
 from utilities.staging_tlms import Stagingtlms
+from selenium.webdriver import ActionChains
 
 
 class LoginWeb(LoginBase):
@@ -25,6 +26,7 @@ class LoginWeb(LoginBase):
         else :
             self.driver = driver
         self.obj = CommonMethodsWeb(self.driver)
+        self.action = ActionChains(self.driver)
         self.LOGIN_DETAILS = '../../config/login_data.json'
         self.login_butn = (By.XPATH, "//span[text() = 'LOGIN']")
         self.phone_number = (By.XPATH, "//input[@id='enterNumber']")
@@ -41,6 +43,7 @@ class LoginWeb(LoginBase):
         self.profile_form = (By.XPATH, '//*[@id="form"]')
         self.PREMIUM_ID = 'premium_id'
         self.profiles = (By.XPATH,"//input[@class='profile-radio-button']")
+        self.mob_hamburger = "//span[@class='MuiIconButton-label']/parent::*[contains(@class,'MuiButtonBase-root MuiIconButton-root WithWidth(Connect(t))-navIconClassName')]"
 
     # This step is not applicable in web. Hence skipping this for web
     def click_on_premium_school(self):
@@ -235,3 +238,8 @@ class LoginWeb(LoginBase):
         self.click_on_next()
         self.enter_otp(cc, phone_num, otp)
 
+    def click_on_mweb_hamburger(self):
+        self.obj.wait_for_locator_webdriver(self.mob_hamburger)
+        element_to_hover_over = self.obj.get_element(("xpath", self.mob_hamburger))
+        hover = self.action.move_to_element(element_to_hover_over)
+        hover.click().perform()

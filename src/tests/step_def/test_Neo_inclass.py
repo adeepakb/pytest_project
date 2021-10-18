@@ -409,7 +409,7 @@ def step_impl(student6,student6_neo):
 
 @given("Launch the application online")
 def login_as_neo_user(student1_login):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
@@ -500,7 +500,8 @@ def step_impl(neo_tute,student1_neo):
 @then('Verify the display of session video continues without fail')
 @then('Verify the display of video session in chrome')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
@@ -524,13 +525,15 @@ def step_impl(neo_tute, student1_neo):
 @then("Verify the tutor's video background when user refreshes the page")
 def step_impl(neo_tute,student1_neo):
     student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
 @then("Verify the tutor's background video when network is flaky")
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     student1_neo.set_network_flaky()
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
@@ -561,7 +564,8 @@ def step_impl(student1_neo,student2_neo):
 
 @then('Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     students_audio_status = student1_neo.get_student_audio_status()
     check.equal(all(audio_status is not None for audio_status in students_audio_status), True,
                 "Audio/Mic status is displayed for other students on their thumbnail")

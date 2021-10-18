@@ -1,3 +1,4 @@
+import time
 from pytest_bdd import scenarios, given, then, when, parsers
 from pytest import fixture
 from constants.platform import Platform
@@ -68,7 +69,9 @@ def login_as_neo_user(student1_login):
 
 @given("Launch the application online in mobile")
 def login_as_neo_user(student1_login):
-    student1_login.login_for_neo_class_mweb('+91-', '2011313229', otp=None)
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_login.login_for_neo_class_mweb(student1_details['code'], student1_details['mobile_no'], otp=None)
+
 
 @given("tutor start the session")
 def step_impl(neo_tute):
@@ -133,8 +136,8 @@ def step_impl(student1_neo):
 
 @then('Verify that set of 4 celebrations should close when student tap outside in mobile browser')
 def step_impl(student1_neo):
-    student1_neo.click_on_session_topic()
-    details = student1_neo.is_reactions_icons_present()
+    student1_neo.tap_outside_dialog_layout()
+    details = student1_neo.is_reaction_tray_present()
     check.equal(details.result, False, details.reason)
 
 
@@ -184,7 +187,7 @@ def step_impl(student1_neo):
     details = student1_neo.is_floating_emojis_present()
     check.equal(details.result, True, details.reason)
 
-@then('Verify that user should  be able to send multiple celebrations when refresh')
+@then('Verify that user should be able to send multiple celebrations when refresh')
 def step_impl(student1_neo):
     student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
     student1_neo.click_on_thumb_icon()

@@ -187,24 +187,93 @@ def step_impl(neo_in_class):
 
 @given("Launch the application online")
 def navigate_to_one_to_many_and_mega_user(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
     login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
+@given("Launch the application online in mobile")
+def login_as_neo_user(login_in):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
+    login_in.login_for_neo_class_mweb(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
-    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student3', date="tomorrow")
+    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student2', date="tomorrow")
 
 @when('click on "JOIN" button in home page')
 def step_impl(login_in,neo_in_class):
     login_in.click_on_hamburger()
     login_in.click_on_byjus_classes()
     neo_in_class.join_not_started_session()
-    # neo_in_class.click_on_future_join_card(0)
+
+@when('click on "JOIN" button in mobile home page')
+def step_impl(login_in, neo_in_class):
+    login_in.click_on_mweb_hamburger()
+    login_in.click_on_byjus_classes()
+    neo_in_class.join_not_started_session()
 
 @then('Verify the display of bubble screen')
 def step_impl(neo_in_class):
-    neo_in_class.is_students_bubbles_present()
     details = neo_in_class.is_students_bubbles_present()
     check.equal(details.result, True, details.reason)
+
+@then('verify the display of scroll bar in landscape mode')
+@then('Verify the scroll feature in PreClass screen on a mobile browser')
+@then('Verify the bubble screen should be scrollable')
+def step_impl(neo_in_class):
+    details = neo_in_class.is_scroll_present()
+    check.equal(details.result, True, details.reason)
+
+@then('Verify that Save and Cancel button is present in Profile Photo pop up in web browser')
+def step_impl(neo_in_class):
+    neo_in_class.click_photo_edit_icon()
+    neo_in_class.upload_photo("../../../files/SamplePNG.png")
+    details = neo_in_class.verify_profile_photo_popup()
+    check.equal(details.result, True, details.reason)
+
+
+@then('Verify the animation of student bubbles present in PreClass screen')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_bubble_animation_preclass_screen()
+    check.equal(details.result, True, details.reason)
+
+@then('Verify the user login name and the name displayed in the pre class screen')
+def step_impl(neo_in_class):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
+    details = neo_in_class.verify_user_login_name(student1_details['name'])
+    check.equal(details.result, True, details.reason)
+
+
+@then('verify the pre class screen in offline mode')
+def step_impl(neo_in_class):
+    neo_in_class.set_network_flaky()
+    details = neo_in_class.is_network_failed_toast_msg_present()
+    check.equal(details.result, True, details.reason)
+
+@then('Verify the pre-class screen in landscape mode')
+@then('Verify the PreClass screen in landscape mode in mobile browser')
+@then('Verify that class info screen should be as per zeplin')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_class_info_screen()
+    check.equal(details.result, True, details.reason)
+
+@then('Verify the font of session description in landscape mode in mobile browser')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_font_of_session_description('Gotham-Book')
+    check.equal(details.result, True, details.reason)
+
+@then('Verify the pre class screen when topic description text is too long read more/readless should be displayed')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_session_description_in_preclass_screen()
+    check.equal(details.result, True, details.reason)
+
+@then('verify the pre class timer when the screen is running in the background')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_timer_in_preclass()
+    check.equal(details.result, True, details.reason)
+
+@then('verify the pre class timer when the screen is locked or kept idle')
+def step_impl(neo_in_class):
+    details = neo_in_class.verify_timer_countdown_in_preclass()
+    check.equal(details.result, True, details.reason)
+
+

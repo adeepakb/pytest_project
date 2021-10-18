@@ -66,10 +66,6 @@ def login_as_neo_user(student1_login):
     student1_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
-@given("Launch the application online in mobile")
-def login_as_neo_user(student1_login):
-    student1_login.login_for_neo_class_mweb('+91-', '2011313229', otp=None)
-
 @given("tutor start the session")
 def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data="neo_login_detail3", user='student1')
@@ -101,7 +97,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify that the in-class notifications do not cover the video/content when full screen is not active')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(2)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     # student1_neo.hover_on_inclass_audio_icon()
     # details = student1_neo.is_mic_disabled_tooltip_present()
     # check.equal(details.result, True, details.reason)
@@ -112,12 +109,13 @@ def step_impl(neo_tute, student1_neo):
 @then('Verify that when the student lowers hand a toast message is displayed prompting that student has lowered hand')
 def step_impl(student1_neo):
     student1_neo.click_on_hand_raise()
-    details = student1_neo.verify_lower_hand_tooltip()
+    details = student1_neo.verify_text_in_lower_hand_tooltip()
     check.equal(details.result, True, details.reason)
 
 @then('Verify that when focus mode is about to start the student is notified for same as in-class notification toast message, also verify the content of the message')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(1)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     details = student1_neo.is_focus_mode_toast_msg_present()
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_text_in_focus_mode_toast_msg()
@@ -147,17 +145,19 @@ def step_impl(student1_neo):
 
 @then('Verify that there is no distortion on the in-class notifications toast message or the session content when they appear or disappear from the screen')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(2)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     student1_neo.click_on_hand_raise()
     student1_neo.click_on_hand_raise()
-    details = student1_neo.verify_lower_hand_tooltip()
+    details = student1_neo.verify_text_in_lower_hand_tooltip()
     check.equal(details.result, True, details.reason)
 
 @then("Verify that the in-class notifications toast message should have tutor's image and indication that the message is from tutor")
 def step_impl(neo_tute, student1_neo):
+    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
     student1_neo.click_on_hand_raise()
-    neo_tute.click_on_menu_option(expected_student_name="Test 25", menu_item='Hands Down')
-    details = student1_neo.verify_message_from_tutor_text()
+    neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
+    details = student1_neo.verify_message_from_tutor_text("Message from Tutor")
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_pens_down_tooltip()
     check.equal(details.result, True, details.reason)
