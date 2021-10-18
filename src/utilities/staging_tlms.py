@@ -205,7 +205,7 @@ class Stagingtlms:
     def get_otp(self, cc, mobile_num):
         self.login_to_staging()
         self.wait_for_locator_webdriver("//li[@id='otp']")
-        self.chrome_driver.save_screenshot('image5.png')
+        self.chrome_driver.save_screenshot('image4.png')
         self.chrome_driver.find_element_by_xpath("//li[@id='otp']").click()
         self.wait_for_clickable_element_webdriver("//li[@id='mobile_otps']")
         self.chrome_driver.find_element_by_xpath("//li[@id='mobile_otps']").click()

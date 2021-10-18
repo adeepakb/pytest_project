@@ -21,6 +21,7 @@ class LoginWeb(LoginBase):
             #chrome_options.add_argument('--no-sandbox')
             #chrome_options.add_argument('--headless')
             chrome_options.add_argument("--use-fake-ui-for-media-stream")
+            chrome_options.add_argument("--use-fake-device-for-media-stream")
             self.driver = webdriver.Chrome(options=chrome_options)
         else :
             self.driver = driver
@@ -41,6 +42,7 @@ class LoginWeb(LoginBase):
         self.profile_form = (By.XPATH, '//*[@id="form"]')
         self.PREMIUM_ID = 'premium_id'
         self.profiles = (By.XPATH,"//input[@class='profile-radio-button']")
+        self.byjus_classes_card = "//div[text()='Byju’s Classes']"
 
     # This step is not applicable in web. Hence skipping this for web
     def click_on_premium_school(self):
@@ -100,10 +102,16 @@ class LoginWeb(LoginBase):
         pass
 
     def click_on_hamburger(self):
+        self.obj.wait_for_element_visible(self.hamburger)
         self.obj.element_click(self.hamburger)
 
     def click_on_byjus_classes(self):
+        self.obj.wait_for_element_visible(self.byjus_classes)
         self.obj.element_click(self.byjus_classes)
+
+    def click_on_byjus_classes_card(self):
+        self.obj.wait_for_element_visible(self.byjus_classes_card)
+        self.obj.element_click(('xpath',self.byjus_classes_card))
 
     def enter_phone_expired_user(self):
         self.driver.find_element_by_xpath("//input[@id='enterNumber']").send_keys(

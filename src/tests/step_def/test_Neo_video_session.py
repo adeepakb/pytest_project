@@ -62,9 +62,11 @@ def step_impl(neo_in_class):
 
 @when("tutor play video in the session and turn off focus mode")
 def step_impl(neo_tute,neo_in_class):
-    neo_tute.present_any_slide(1)
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     neo_tute.select_focus_mode('off')
     neo_in_class.turn_on_off_student_mic('ON')
 

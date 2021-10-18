@@ -108,8 +108,7 @@ def step_impl(neo_in_class):
 
 @when('click on "JOIN" button in home page')
 def step_impl(login_in,neo_in_class):
-    login_in.click_on_hamburger()
-    login_in.click_on_byjus_classes()
+    login_in.click_on_byjus_classes_card()
     neo_in_class.click_on_future_join_card(1)
 
 
