@@ -588,6 +588,7 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.kebab_menu))
 
     def click_on_kebab_menu(self):
+        time.sleep(3)
         self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
         self.obj.element_click(('xpath', self.kebab_menu))
 

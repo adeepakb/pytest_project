@@ -42,7 +42,7 @@ Then verify the pre class screen in offline mode
 Scenario: Verify the preclass experience feature in mobile
   Given Launch the application online in mobile
   And tutor start the session
-  When click on "JOIN" button in mobile home page
+  When click on "JOIN" button in home page
   Then Verify the font of session description in landscape mode in mobile browser
   Then Verify the PreClass screen in landscape mode in mobile browser
   Then Verify the scroll feature in PreClass screen on a mobile browser

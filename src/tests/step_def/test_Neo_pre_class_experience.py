@@ -190,18 +190,6 @@ def login_as_neo_user(login_in):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     login_in.login_for_neo_class_mweb(student1_details['code'], student1_details['mobile_no'], otp=None)
 
-@when('click on "JOIN" button in home page')
-def step_impl(login_in,neo_in_class):
-    login_in.click_on_hamburger()
-    login_in.click_on_byjus_classes()
-    neo_in_class.join_not_started_session()
-
-@when('click on "JOIN" button in mobile home page')
-def step_impl(login_in, neo_in_class):
-    login_in.click_on_mweb_hamburger()
-    login_in.click_on_byjus_classes()
-    neo_in_class.join_not_started_session()
-
 @then('Verify the display of bubble screen')
 def step_impl(neo_in_class):
     details = neo_in_class.is_students_bubbles_present()
