@@ -25,23 +25,18 @@ And Verify the error message when internet connection is lost while uploading an
 And Verify that student can upload photo only in JPEG,JPG,PNG format
 And Verify that maximum size allowed for photo should be upto 3MB
 And Verify uploading photos with different resolutions and sizes in the change profile photo pop up.
-
-
-Scenario: Verify the preclass experience feature
-  Given Launch the application online
-  And tutor start the session
-  When click on "JOIN" button in home page
-  Then Verify the display of bubble screen
-  Then Verify the pre-class screen in landscape mode
-  Then Verify the bubble screen should be scrollable
-  Then Verify the animation of student bubbles present in PreClass screen
-  Then Verify the user login name and the name displayed in the pre class screen
-  Then Verify that Save and Cancel button is present in Profile Photo pop up in web browser
-  Then Verify that class info screen should be as per zeplin
-  Then Verify the pre class screen when topic description text is too long read more/readless should be displayed
-  Then verify the pre class timer when the screen is running in the background
-  Then verify the pre class timer when the screen is locked or kept idle
-  Then verify the pre class screen in offline mode
+  #prashanth
+Then Verify the display of bubble screen
+Then Verify the pre-class screen in landscape mode
+Then Verify the bubble screen should be scrollable
+Then Verify the animation of student bubbles present in PreClass screen
+Then Verify the user login name and the name displayed in the pre class screen
+Then Verify that Save and Cancel button is present in Profile Photo pop up in web browser
+Then Verify that class info screen should be as per zeplin
+Then Verify the pre class screen when topic description text is too long read more/readless should be displayed
+Then verify the pre class timer when the screen is running in the background
+Then verify the pre class timer when the screen is locked or kept idle
+Then verify the pre class screen in offline mode
 
 
 Scenario: Verify the preclass experience feature in mobile

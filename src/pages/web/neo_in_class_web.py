@@ -2045,14 +2045,6 @@ class NeoInClass(CommonMethodsWeb):
         except Exception as e:
             return ReturnType(False, "Unable to hover over student bubble due to exception %s" % str(e))
 
-    def verify_students_name_in_pre_class_screen(self):
-        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
-        ele = self.obj.get_element(('xpath', self.students_name_pre_class))
-        if "Focus mode by tutor will start in 5 seconds" in ele.text:
-            return ReturnType(True, 'the text in tooltip doesnt match')
-        else:
-            return ReturnType(False, 'the text in tooltip doesnt match')
-
     def verify_text_in_lower_hand_tooltip(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
         ele = self.obj.get_element(('xpath', self.lower_your_hand_tootip))
