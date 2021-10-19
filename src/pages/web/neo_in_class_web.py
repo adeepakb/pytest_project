@@ -1422,6 +1422,7 @@ class NeoInClass(CommonMethodsWeb):
         if self.get_element(("xpath",self.heart_btn)).is_displayed():
             element = self.get_element(("xpath", self.thumbs_sticker_icon))
             self.action.move_to_element(element).click().perform()
+        time.sleep(3)
         if self.get_element(("xpath", self.heart_btn)).is_displayed():
             self.close_reaction_elements()
 

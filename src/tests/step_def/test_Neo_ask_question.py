@@ -325,6 +325,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class,test_tut):
     test_tut.send_message_in_chat(text="Hi I am tutor")
     time.sleep(2)
+    neo_in_class.close_reaction_elements()
     neo_in_class.send_chat("for confirming tutor's message")
     detail = neo_in_class.verify_tutor_messages_are_left_alligned(text="Hi I am tutor")
     check.equal(detail.result, True, detail.reason)
@@ -423,7 +424,7 @@ def step_impl(neo_in_class, test_tut):
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that alignment of the thumbnail when tutor allow student to ask question")
+@then("Verify that alignment of the thumbnail  when tutor allow student to ask question")
 @then("Verify that student should able to ask doubt when the Tutor allow the student to come on the screen")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
     student1_details = get_data(Login_Credentials,'neo_login_detail1', 'student3')
@@ -433,7 +434,7 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that other students should able to hear when a student asks doubts to Tutor")
+@then("Verify that other students should  able to hear when a student asks doubts to Tutor")
 def step_impl(student2_neo):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     student2_neo.get_audio_status_of_student(student_name=student1_details['name'])
