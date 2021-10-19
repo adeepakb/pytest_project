@@ -317,6 +317,7 @@ def step_impl(neo_in_class):
 def login_as_neo_user(mweb_login):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     mweb_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+    mweb_login.maximize_to_web()
 
 
 @then("Verify the student name on greeting message and student bubble")
@@ -338,3 +339,8 @@ def step_impl(mweb_student):
     details = mweb_student.is_scroll_bar_working()
     check.equal(details.result, True, details.reason)
 
+
+@then("student join neo session for next day for mobile web")
+def login_as_neo_user(mweb_login,mweb_student):
+    mweb_login.click_on_byjus_classes_card()
+    mweb_student.click_on_future_join_card(1)
