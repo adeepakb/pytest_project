@@ -125,6 +125,7 @@ def step_impl(neo_tute,student1_neo):
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_text_in_focus_mode_toast_msg()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 @then('Verify that in-class notification toast message for focus mode should not have close icon and same should get dismissed automatically after xx seconds')
 def step_impl(student1_neo):
