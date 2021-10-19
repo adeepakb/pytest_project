@@ -96,7 +96,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 @given("tutor start the session")
 def step_impl(neo_tute):
     # TODO Needs to be updated to fetch from DB. For time being, below workaround
-    neo_tute.start_neo_session(date="tomorrow")
+    neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1', date="tomorrow")
 
 
 @when("student join neo session for next day")
@@ -324,12 +324,6 @@ def step_impl(neo_in_class):
 def login_as_neo_user(mweb_login):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     mweb_login.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
-
-
-@when("student join neo session for next day for mobile web")
-def step_impl(mweb_student):
-    mweb_student.navigate_to_byjus_classes_screen()
-    mweb_student.join_not_started_session()
 
 
 @then("Verify the student name on greeting message and student bubble")

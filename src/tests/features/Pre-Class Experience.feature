@@ -27,11 +27,10 @@ Feature: Pre-Class Experience
     And Verify uploading photos with different resolutions and sizes in the change profile photo pop up.
 
     #deepak
-    When student join neo session for next day
     Then Verify the Student's greeting message on the landing screen.
     And Verify the list of students bubble on the screen before the class starts.
     And Verify that edit icon should be displayed for the logged in user's name bubble
-    Then Verify the student's name bubbles when any student joins the session.
+    And Verify the student's name bubbles when any student joins the session.
     And Verify the student's name bubbles when any student exists the session.
     And Verify scroll functionality below the students bubble list.
     And Verify that display timer countdown on screen.

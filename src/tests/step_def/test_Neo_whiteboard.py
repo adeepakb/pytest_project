@@ -72,7 +72,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session()
+    neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1')
     neo_tute.select_focus_mode('off')
 
 
@@ -267,12 +267,16 @@ def step_impl(neo_in_class,neo_tute):
 @then("Verify that mic/camera icon is displayed when the focused mode is turned on for full screen.")
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
+    neo_tute.set_students_camera(status='on')
+    neo_tute.set_students_mic(status='on')
     time.sleep(5)
     details = neo_in_class.mic_cam_status_in_focus_mode()
     check.equal(details.result, True, details.reason+"in focus mode")
     neo_tute.select_focus_mode(status='off')
     time.sleep(5)
     neo_in_class.do_full_screen_presentation()
+    neo_tute.set_students_mic(status='on')
+    neo_tute.set_students_camera(status='on')
     details = neo_in_class.mic_cam_status_in_focus_mode()
     check.equal(details.result, True, details.reason+"in full screen")
     neo_in_class.minimize_full_screen_presentation()
@@ -310,6 +314,8 @@ def step_impl(neo_in_class,neo_tute):
 @then("Verify the message when  tutor send request to student to turn on video / discuss doubt.")
 def step_impl(neo_in_class, neo_tute):
     neo_tute.select_focus_mode(status='off')
+    time.sleep(2)
+    neo_tute.set_students_camera(status='on')
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     time.sleep(5)
     neo_in_class.turn_on_off_student_video(action="OFF")
@@ -361,6 +367,7 @@ def step_impl(neo_in_class, neo_tute):
 @then("Verify the other student's video when they also start discussing doubts.")
 def step_impl(neo_tute, student2_neo):
     neo_tute.select_focus_mode(status='off')
+    neo_tute.set_students_camera(status='on')
     student2_neo.turn_on_off_student_video(action="ON")
     status_dict = student2_neo.get_student_video_status()
     my_status = status_dict['You']

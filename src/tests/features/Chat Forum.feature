@@ -3,8 +3,8 @@ Feature: Chat Forum
 
   Scenario: Verify the chat section "Class Forum" below the tutor's screen.
     Given Student launches in-class and navigate to home page
-    And click on "JOIN" button in home page
     And tutor start the session
+    And click on "JOIN" button in home page
     When student join neo session
     Then Verify the chat section Class Forum below the tutor's screen.
     And Verify that "students count" in chat Forum.

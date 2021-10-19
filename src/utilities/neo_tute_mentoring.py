@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        #self.chrome_options.add_argument('--no-sandbox')
-        #self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_options.add_argument("--use-fake-device-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
@@ -124,6 +124,8 @@ class NeoTute(CommonMethodsWeb):
         self.video_icon = "//img[@alt='cam']/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.cam_off = "//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.mic_off = "//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.cam_on= "//img[contains(@src,'cam-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.mic_on = "//img[contains(@src,'mic-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.chat_off = "//img[contains(@src,'chat-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.chat_on = "//img[contains(@src,'chat-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.timer = '//div[@class="topContainer--timer"]'
@@ -866,6 +868,28 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(False, "mic is off")
         except(NoSuchElementException):
             return ReturnType(True, "mic is on")
+
+    def set_students_camera(self,status = "off"):
+        try:
+            if status.lower() == 'off':
+                if self.get_video_status().result:
+                    self.element_click(("xpath",self.cam_on))
+            else:
+                if not self.get_video_status().result:
+                    self.element_click(("xpath", self.cam_off))
+        except:
+            pass
+
+    def set_students_mic(self,status = 'off'):
+        try:
+            if status.lower()== 'off':
+                if self.get_audio_status().result:
+                    self.element_click(("xpath",self.mic_on))
+            else:
+                if not self.get_audio_status().result:
+                    self.element_click(("xpath",self.mic_off))
+        except:
+            pass
 
     def get_chat_status(self):
         self.wait_for_locator_webdriver(self.signal_icon)

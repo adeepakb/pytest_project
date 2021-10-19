@@ -686,7 +686,7 @@ def step_impl(student1_neo):
     detail = student1_neo.is_session_topic_inclass_present()
     check.equal(detail.result,True,"Subject topic name is not displayed")
     text = student1_neo.get_session_topic_name_inclass()
-    flag  = "Control and Coordination" in text
+    flag  = "Control and Coordination" in text[1]
     check.equal(flag, True, "Topic name is incorrect")
 
 
@@ -732,19 +732,21 @@ def step_impl(student1_neo):
 
 
 @then("Verify that when more than 6 students have joined previous (<) and next (>) icon appear below the students video thumbnails")
-def step_impl(student1_neo,student7,student7_neo):
+def step_impl(student1_neo,student7,student7_neo,neo_tute):
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student7')
     student7.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student7_neo.home_click_on_join()
     student7_neo.join_neo_session()
     time.sleep(4)
+    neo_tute.stop_presentation(select_slide_num=1)
+    time.sleep(7)
     detail = student1_neo.are_steam_student_arrow_button_displayed()
     check.equal(detail.result, True, detail.reason)
 
 @then("Verify that when few students drop and total count drops below 7, previous (<) and next (>) icon disappears from below the students video thumbnails")
 def step_impl(student1_neo,student7,student7_neo):
     student7.driver.close()
-    time.sleep(2)
+    time.sleep(8)
     detail = student1_neo.are_steam_student_arrow_button_displayed()
     check.equal(detail.result, False, detail.reason)
 
@@ -763,7 +765,9 @@ def step_impl(student1_neo):
     check.equal(details.result, True, details.reason)
 
 @then("Verify that next (>) icon is clickable until all thumbnails of students have been displayed")
-def step_impl(student1_neo):
+def step_impl(student1_neo,neo_tute):
+    neo_tute.stop_presentation(select_slide_num=1)
+    time.sleep(4)
     details = student1_neo.scroll_till_end_on_student_card()
     check.equal(details.result, True, details.reason)
 
@@ -837,7 +841,7 @@ def step_impl(student1_neo):
 
 @then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text "Lower Hand" button should again change to "Raise Hand" and button goes to default state')
 def step_impl(student1_neo,neo_tute):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     student1_neo.raise_hand()
     neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
     time.sleep(3)
