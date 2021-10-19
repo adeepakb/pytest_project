@@ -769,17 +769,15 @@ class NeoTute(CommonMethodsWeb):
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
     def present_any_slide(self,select_slide_num):
-        try:
-            displayed = self.get_element(("xpath", "//div[@class = 'presentationContainer']")).is_displayed()
-        except:
-            displayed = False
-        if not displayed:
-            self.click_on_tab_item(tab_name="Session Slides")
-            self.obj.wait(1)
-            slide_select_icon = self.obj.get_element(('css', "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" %select_slide_num))
-            slide_select_icon.click()
+        self.click_on_tab_item(tab_name="Session Slides")
+        self.obj.wait_for_locator_webdriver(self.add_slide)
+        slide_select_icon = self.obj.get_element(('css',
+                                                  "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
+        slide_select_icon.click()
+        self.obj.wait_for_locator_webdriver("//div[@class = 'presentationContainer']")
 
-    def stop_presentation(self,select_slide_num):
+
+    def stop_presentation(self, select_slide_num):
         try:
             displayed = self.get_element(("xpath", "//div[@class = 'presentationContainer']")).is_displayed()
         except:
@@ -1080,27 +1078,24 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_video_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                self.obj.wait_for_locator_webdriver("//img[contains(@src,'cam-off')]")
-                element = self.get_element(("xpath", "//img[contains(@src,'cam-off')]"))
-                self.action.move_to_element(element).click().perform()
-                time.sleep(10)
-                try:
-                    flag = self.get_element(("xpath", "//img[contains(@src,'cam-off')]")).is_displayed()
-                except:
-                    flag= False
-                if flag:
-                    self.turn_tutor_video_on_off(status= 'on')
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-off" in element.get_attribute('innerHTML'):
+                        desired_element = element.find_element_by_xpath("//img")
+                        break
+                self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
             else:
-                self.obj.wait_for_locator_webdriver("//img[contains(@src,'cam-on')]")
-                element = self.get_element(("xpath", "//img[contains(@src,'cam-on')]"))
-                self.action.move_to_element(element).click().perform()
-                time.sleep(10)
-                try:
-                    flag = self.get_element(("xpath", "//img[contains(@src,'cam-on')]")).is_displayed()
-                except:
-                    flag= False
-                if flag:
-                    self.turn_tutor_video_on_off(status= 'off')
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                desired_element = None
+                for element in elements:
+                    if "cam-on" in element.get_attribute('innerHTML'):
+                        desired_element = element
+                        break
+                self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
         except:
             pass
@@ -1126,6 +1121,7 @@ class NeoTute(CommonMethodsWeb):
                 self.action.move_to_element(desired_element).click().perform()
         except:
             pass
+
 
     def is_floating_emojis_present_in_tute(self):
         self.obj.wait_for_locator_webdriver(self.floating_emojis)

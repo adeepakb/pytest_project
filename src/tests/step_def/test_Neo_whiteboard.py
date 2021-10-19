@@ -246,8 +246,10 @@ def step_impl(neo_in_class):
 @then('Verify that students thumbnail is not displayed when the focused mode is turned on for full screen.')
 def step_impl(neo_in_class,neo_tute):
     neo_tute.select_focus_mode(status='on')
-    neo_tute.present_any_slide(select_slide_num= 1)
-    neo_tute.present_any_slide(select_slide_num=1)
+    expected_slide_num = 1
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_slide_num)
     time.sleep(5)
     numb = neo_in_class.get_no_of_student_cards_displayed()
     flag = (numb == 1)

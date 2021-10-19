@@ -2101,9 +2101,8 @@ class NeoInClass(CommonMethodsWeb):
 
     def preclass_verify_bubbles(self):
         try:
-            elements = self.get_elements(("xpath", "//div[@class = '_2gu6r']"))
             elements2 = self.get_elements(("xpath", "//div[contains(@class , 'animation')]"))
-            flag = len(elements) and len(elements2)
+            flag =  len(elements2)<=25
             return ReturnType(True, "Pre class bubbles are shown") if flag else ReturnType(False,
                                                                                            "Pre class bubbles are not shown")
         except:
@@ -2167,6 +2166,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def preclass_verify_tutor_name(self, name = "Test Automation"):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class = 'classInfo__tutorName']"))
             tutor_name_element = self.get_element(("xpath", "//div[@class = 'classInfo__tutorName']"))
             flag = name in tutor_name_element.text
             return ReturnType(True,"Tutor name is not displayed") if flag else ReturnType(False,"Tutor name is not displayed")
@@ -2176,6 +2176,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def preclass_verify_tutor_thumbnail(self):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class = 'profileCard classInfo__tutorImg']"))
             flag = self.get_element(("xpath","//div[@class = 'profileCard classInfo__tutorImg']")).is_displayed()
 
             return ReturnType(True,"Tutor thumbnail is being displayed") if flag else ReturnType(False,"Tutor thumbnail is not being displayed")
@@ -2184,6 +2185,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def preclass_verify_subject_topic_name(self, name = 'Control and Coordination'):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class= 'classInfo_topicName']"))
             text = self.get_element(("xpath","//div[@class= 'classInfo_topicName']")).text
             flag = name in text
             return ReturnType(True,"Subject topic name displayed") if flag else ReturnType(False,"Subject topic name not displayed")
@@ -2193,6 +2195,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def verify_hover_over_bubble(self,name):
         try:
+            self.wait_for_element_visible(("xpath", self.bubble_name))
             elements = self.get_elements(("xpath", self.bubble_name))
             flag = False
             for element in elements:
@@ -2206,6 +2209,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def preclass_click_on_logo(self):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class='preClasView__byjusLogo']"))
             flag = self.element_click(("xpath", "//div[@class='preClasView__byjusLogo']"))
             return ReturnType(True," logo is not clickable") if not flag else ReturnType(False," logo is not clickable")
         except:

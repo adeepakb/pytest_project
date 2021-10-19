@@ -409,7 +409,6 @@ def step_impl(neo_in_class):
 @then("Verify the Tutor's video should display right side of the screen")
 def step_impl(neo_in_class,test_tut):
     test_tut.turn_tutor_video_on_off(status='on')
-    time.sleep(3)
     details = neo_in_class.is_tutor_video_on()
     check.equal(details.result, True, details.reason)
     test_tut.turn_tutor_video_on_off(status='off')
