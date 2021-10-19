@@ -443,7 +443,8 @@ def join_a_neo_session(student1_neo):
 
 
 @then('Verify the display of Focus mode icon')
-def step_impl(student1_neo):
+def step_impl(neo_tute, student1_neo):
+    neo_tute.select_focus_mode('on')
     details = student1_neo.is_focus_mode_icon_present()
     check.equal(details.result, True, details.reason)
 
@@ -498,17 +499,29 @@ def step_impl(student1_neo):
 
 @then('Verify the functionality of minimising window during session and reopening')
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(2)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
+    neo_tute.select_focus_mode('off')
     student1_neo.do_full_screen_presentation()
     student1_neo.minimize_full_screen_presentation()
-    details = student1_neo.is_minimize_full_screen_present()
+    details = student1_neo.is_minimize_full_screen_icon_present()
     check.equal(details.result, True, details.reason)
 
-@then('Verify the display of screen in desktop during video session')
+
 @then('Verify the display of session video continues without fail')
-@then('Verify the display of video session in chrome')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
+    details = student1_neo.is_video_being_presented()
+    check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
+
+@then('Verify the display of video session in chrome')
+@then('Verify the display of screen in desktop during video session')
+def step_impl(student1_neo):
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
 
@@ -532,16 +545,26 @@ def step_impl(neo_tute, student1_neo):
 @then("Verify the tutor's video background when user refreshes the page")
 def step_impl(neo_tute,student1_neo):
     student1_neo.refresh_and_join_the_session('mic-on', 'cam-on')
-    neo_tute.present_any_slide(3)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 @then("Verify the tutor's background video when network is flaky")
 def step_impl(neo_tute,student1_neo):
-    neo_tute.present_any_slide(3)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     student1_neo.set_network_flaky()
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
+    student1_neo.set_network_on()
 
 
 @then('Verify that the if a student speaks for less than 2 seconds his thumbnail should not be moved to view port')
@@ -555,8 +578,10 @@ def step_impl(student1_neo,student2,student2_neo):
     check.equal(details.result, False, details.reason)
 
 @then('Verify that the if a student speaks for more than 2 seconds his thumbnail should be moved to view port')
-def step_impl(student1_neo,student2_neo):
-    student2_neo.turn_on_off_student_mic('ON')
+def step_impl(neo_tute,student1_neo):
+    neo_tute.select_focus_mode('off')
+    student1_neo.turn_on_off_student_mic('ON')
+    student1_neo.hard_wait()
     details = student1_neo.is_student_speaking()
     check.equal(details.result, True, details.reason)
 
@@ -569,7 +594,8 @@ def step_impl(student1_neo,student2_neo):
 
 @then('Verify that when tutor has turned off mic and chat for all students, mic icon on the student thumbnails are greyed out and shown as disabled')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(3)
+    slide_num = neo_tute.find_video_slide()
+    neo_tute.present_any_slide(slide_num)
     students_audio_status = student1_neo.get_student_audio_status()
     check.equal(all(audio_status is not None for audio_status in students_audio_status), True,
                 "Audio/Mic status is displayed for other students on their thumbnail")
@@ -583,7 +609,6 @@ def step_impl(neo_tute, student1_neo):
     details = student1_neo.is_discuss_doubt_msg_present()
     check.equal(details.result, True, details.reason)
 
-@then('Verify that if multiple students are speaking, the thumbnail should appear in the view port in order of speaking')
 @then('Verify the only <=3 students who are speaking should appear in view port in chronological manner')
 def step_impl(student1_neo, student3, student3_neo):
     student3.login_and_navigate_to_home_screen('+91-', '2014947581', otp=None)
@@ -592,13 +617,19 @@ def step_impl(student1_neo, student3, student3_neo):
     details = student1_neo.verify_users_in_chronological_order('Prash Auto Test','Test 25', 'Test 23' )
     check.equal(details.result, True, details.reason)
 
+@then('Verify that if multiple students are speaking, the thumbnail should appear in the view port in order of speaking')
+def step_impl(student1_neo,):
+    details = student1_neo.verify_users_in_chronological_order('Prash Auto Test', 'Test 25', 'Test 23')
+    check.equal(details.result, True, details.reason)
 
 @then('Verify the display of screens when Tutor changes the slides')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(1)
-    tute_slide = neo_tute.get_url_of_presented_slide(1)
-    stud_slide = student1_neo.get_presented_screen_url()
-    check.equal(tute_slide, stud_slide, 'slides donot match')
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
+    check.equal(expected_video_slide_num, active_slide_number, 'slides donot match')
 
 
 #deepak

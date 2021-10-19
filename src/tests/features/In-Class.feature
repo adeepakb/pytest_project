@@ -73,12 +73,11 @@ Scenario: Verify the inclass feature in web
   When join neo session
   And click on start class
   Then Verify the display of student count icon
-  Then Verify the functionality of minimising window during session and reopening
-  Then Verify the display of controls in fullscreen mode
   Then Verify the display of session video continues without fail
   Then Verify the display of video session in chrome
   Then Verify the display of screen in desktop during video session
   Then Verify the display of Focus mode icon
+  Then Verify the display of controls in fullscreen mode
   Then Verify the display of mic and camera during Focus mode
   Then Verify that user should not able to pause or play video during session
   Then verify the tutor's video background when student rejoins the session
@@ -92,6 +91,7 @@ Scenario: Verify the inclass feature in web
   Then Verify the display of screens when Tutor changes the slides
   Then Verify the functionality when student rejoins after"Tutor want to discuss doubt with you" is triggered
   Then Verify the tutor's background video when network is flaky
+  Then Verify the functionality of minimising window during session and reopening
 
 
 Scenario: Verify the inclass feature in mobile
