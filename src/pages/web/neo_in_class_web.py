@@ -2,11 +2,12 @@ import base64
 import json
 import os
 import time
+import datetime
 import subprocess
 import requests
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
-    MoveTargetOutOfBoundsException
+    MoveTargetOutOfBoundsException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from utilities.common_methods_web import CommonMethodsWeb
@@ -29,7 +30,7 @@ class NeoInClass(CommonMethodsWeb):
         self.student_cards = "//div[contains(@class,'streamList__streamItem')]"
         self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[contains(@class,'neo_cl_VideoContainer')]"
         self.request_message = "//div[@class='bottomContainer__requestMessage']"
-        self.stream_list = '//section[@class="streamList__itemList"]'
+        self.stream_list = '//section[contains(@class,"streamList__itemList")]'
         self.profile_cards = "//div[contains(@class,'profileCard bottomContainer')]"
         self.info_tip_close = "//div[@class='infoTip__closeBtn']"
         self.focus_mode_icon = "//div[contains(@class,'presentation__focusIcon')]"
@@ -217,6 +218,18 @@ class NeoInClass(CommonMethodsWeb):
         self.focus_mode_toast_msg = "//div[text()='Focus mode by tutor will start in 5 seconds']"
         self.preclass_slider = "//input[@type= 'range']"
 
+        self.bubbles_UI = '//div[@class="myBubbleUI"]'
+        self.change_photo = "//span[text()='Change']"
+        self.save_photo = "//span[text()='Save']"
+        self.students_name_pre_class = '//*[@class="preClasView__studentName"]'
+        self.preclass_scrollbar = '//input[@type="range"]'
+        self.student_bubble = '.preClasView .myBubbleUI .child.active'
+        self.pre_class_timer = '//*[@class="neo-timer__svg"]'
+        self.secs_timer = '(//div[@class="neo-timer__label_container"])[2]'
+        self.mins_timer = '(//div[@class="neo-timer__label_container"])[1]'
+        self.secs_text = '//*[text()="secs"]'
+        self.mins_text = '//*[text()="mins"]'
+        self.reaction_tray = '//*[contains(@class,"reactionButton__types reactionButton__types--visible")]'
 
     def home_click_on_join(self):
         self.obj.wait(2)
@@ -234,25 +247,29 @@ class NeoInClass(CommonMethodsWeb):
         future_join_elements[future_card_num - 1].click()
 
     def join_neo_session(self):
+        self.driver.maximize_window()
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         time.sleep(3)
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
 
-
-
     def join_not_started_session(self):
         try:
+            self.wait_for_element_visible(("xpath", "//div[@class = 'type-video masterOrRegularCardContainer']"))
+            elements = self.get_elements(("xpath", "//div[@class = 'type-video masterOrRegularCardContainer']"))
             self.wait_for_element_visible(("xpath", self.session_elemnts))
             elements = self.get_elements(("xpath", self.session_elemnts))
             for element in elements:
                 try:
+                    timer_element_displayed = self.get_child_element(element, "xpath",
+                                                                     ".//div[@class = 'future-join-text']").is_displayed()
                     timer_element_displayed = self.get_child_element(element, "xpath",
                                                                      self.session_time_text).is_displayed()
                 except:
                     timer_element_displayed = False
 
                 if timer_element_displayed:
+                    self.get_child_element(element, "xpath", ".//span[@class = 'MuiButton-label']").click()
                     self.get_child_element(element, "xpath", self.session_join).click()
                     break
         except:
@@ -320,13 +337,27 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.get_element(('xpath', self.request_message)).text
 
     def verify_alignment_stream_list(self):
-        self.obj.wait_for_locator_webdriver(self.stream_list)
-        display_block = self.obj.get_element(('xpath', self.stream_list)).value_of_css_property('display')
-        content_alignment = self.obj.get_element(('xpath', self.stream_list)).value_of_css_property('justify-content')
-        if display_block == 'grid' and content_alignment == 'center':
-            return True
-        else:
-            return False
+        self.change_browser_size(1680,820)
+        time.sleep(5)
+        retry = 2
+        while retry:
+            try:
+                self.obj.wait_for_element_visible(('css','.streamList__itemList'))
+                ele = self.obj.get_element(('css','.streamList__itemList'))
+                print(ele)
+                display_block = ele.value_of_css_property('display')
+                content_alignment = ele.value_of_css_property('justify-content')
+                print(display_block)
+                print(content_alignment)
+                if display_block == 'grid' and (content_alignment == 'center' or content_alignment == 'start'):
+                    return True
+                else:
+                    return False
+            except (NoSuchElementException, StaleElementReferenceException):
+                retry -= 1
+                time.sleep(2)
+                continue
+        return False
 
     # returns bottom container profile card details, profile card name or profile picture src if attached
     def get_profile_cards(self):
@@ -586,6 +617,7 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.kebab_menu))
 
     def click_on_kebab_menu(self):
+        time.sleep(3)
         self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
         self.obj.element_click(('xpath', self.kebab_menu))
 
@@ -1003,6 +1035,14 @@ class NeoInClass(CommonMethodsWeb):
     def is_minimize_full_screen_present(self):
         return self.obj.is_element_present(
             ("xpath", "//div[@class='iconWrapper icon icon--whitebg icon--marginLeft icon--lightBlack']"))
+
+    def is_minimize_full_screen_icon_present(self):
+        self.obj.wait_for_locator_webdriver(self.session_topic_inclass)
+        if self.obj.is_element_present(
+            ("xpath", "//div[@class='iconWrapper icon icon--marginRight']")):
+            return ReturnType(True, 'minimize icon is displayed')
+        else:
+            return ReturnType(False, 'minimise icon is not displayed')
 
     def get_video_src(self):
         video_url = self.driver.find_element_by_xpath("//div[@class='shaka-video-container']/video")
@@ -1465,6 +1505,7 @@ class NeoInClass(CommonMethodsWeb):
     # by default the cam and mic is 'on' so passing the parameters as cam and mic on
 
     def join_neo_session_student(self, mic_status, cam_status):
+        self.driver.maximize_window()
         self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//img[contains(@src,'/static/media/" + mic_status + "')]"))
         time.sleep(2)
@@ -1878,6 +1919,7 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(False, "Chat disabled message is not displayed")
 
+
     def verify_other_student_mic_cam_cannt_be_controlled(self):
         try:
             WebDriverWait(self.driver, 2).until(
@@ -1995,12 +2037,35 @@ class NeoInClass(CommonMethodsWeb):
     def is_network_failed_toast_msg_present(self):
         self.obj.wait_for_locator_webdriver(self.network_error_msg)
         if self.obj.is_element_present(('xpath', self.network_error_msg)):
-            return ReturnType(True, 'mic and cam status are displayed as expected')
+            return ReturnType(True, 'network failed tooltip should be displayed')
         else:
-            return ReturnType(False, 'mic and cam status are not displayed as expected')
+            return ReturnType(False, 'network failed tooltip should is not displayed')
+
     def save_selected_photo(self):
         self.obj.wait_for_locator_webdriver(self.save_photo)
         self.obj.element_click(("xpath", self.save_photo))
+
+    def is_focus_mode_toast_msg_present(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
+        if self.obj.is_element_present(('xpath', self.focus_mode_toast_msg)):
+            return ReturnType(True, 'focus mode message is displayed')
+        else:
+            return ReturnType(False, 'focus mode message is not displayed')
+
+
+    def verify_text_in_focus_mode_toast_msg(self):
+        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
+        ele = self.obj.get_element(('xpath', self.focus_mode_toast_msg))
+        if "Focus mode by tutor will start in 5 seconds" in ele.text:
+            return ReturnType(True, 'the text in tooltip doesnt match')
+        else:
+            return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def hard_wait(self):
+        time.sleep(5)
+
+    def set_network_on(self):
+        self.obj.set_wifi_connection_on()
 
     def verify_photo_approval_pending(self):
         self.obj.wait_for_locator_webdriver(self.current_student_bubble_pp)
@@ -2023,18 +2088,25 @@ class NeoInClass(CommonMethodsWeb):
     def page_refresh(self):
         self.obj.page_refresh()
 
+    def is_students_bubbles_present(self):
+        self.obj.wait_for_locator_webdriver(self.bubbles_UI)
+        if self.obj.is_element_present(('xpath', self.bubbles_UI)):
+            return ReturnType(True, 'students bubbles are displayed')
+        else:
+            return ReturnType(False, 'students bubbles are not displayed')
+
     def approved_profile_pic_visible(self):
         self.obj.wait_for_locator_webdriver(self.current_approved_name_image)
         flag1 = self.obj.is_element_present(("xpath", self.current_approved_name_image))
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
-    def verify_text_in_focus_mode_toast_msg(self):
-        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
-        ele = self.obj.get_element(('xpath', self.focus_mode_toast_msg))
-        if "Focus mode by tutor will start in 5 seconds" in ele.text:
-            return ReturnType(True, 'the text in tooltip doesnt match')
+
+    def verify_profile_photo_popup(self):
+        self.obj.wait_for_locator_webdriver(self.change_photo)
+        if self.obj.is_element_present(('xpath', self.change_photo)) and self.obj.is_element_present(('xpath', self.save_photo)):
+            return ReturnType(True, 'save and change buttons are displayed')
         else:
-            return ReturnType(False, 'the text in tooltip doesnt match')
+            return ReturnType(False, 'save and change buttons are not displayed')
 
     def close_toast_message(self):
         self.obj.wait_for_locator_webdriver("//span[@class='MuiIconButton-label']")
@@ -2085,6 +2157,94 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, 'the text in tooltip doesnt match')
         else:
             return ReturnType(False, 'the text in tooltip doesnt match')
+
+    def is_scroll_present(self):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        if self.obj.is_element_present(('xpath', self.preclass_scrollbar)):
+            return ReturnType(True, 'scrollbar is displayed')
+        else:
+            return ReturnType(False, 'scrollbar is not displayed')
+
+    def verify_bubble_animation_preclass_screen(self):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        stud_animation = self.obj.get_elements(('css', '.preClasView .myBubbleUI .child'))
+        for anime in range(len(stud_animation)):
+            print(stud_animation[anime].value_of_css_property('animation'))
+            child_anime = stud_animation[anime].value_of_css_property('animation')
+            if child_anime is not None:
+                return ReturnType(True, 'animations are displayed')
+            else:
+                return ReturnType(False, 'animations are not displayed')
+
+    def verify_user_login_name(self, student_name):
+        self.obj.wait_for_locator_webdriver(self.students_name_pre_class)
+        ele = self.obj.get_element(('xpath', self.students_name_pre_class))
+        if student_name in ele.text:
+            return ReturnType(True, 'the user name and login name matches')
+        else:
+            return ReturnType(False, 'the user name and login name donot match')
+
+
+    def verify_class_info_screen(self):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        if self.obj.is_element_present(('xpath', self.preclass_scrollbar))  and \
+                self.obj.is_element_present(('xpath', self.students_name_pre_class)) and \
+                self.obj.is_element_present(('xpath', self.bubbles_UI)) and \
+                self.obj.is_element_present(('xpath', self.pre_class_timer)):
+            return ReturnType(True, 'all UI of class info screen is displayed')
+        else:
+            return ReturnType(False, 'all UI of class info screen is not displayed as expected')
+
+    def verify_font_of_session_description(self, exp_font_type):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        font_type = self.obj.get_element(('css', '.classInfo__desc'))
+        act_font_type = font_type.value_of_css_property('font-family')
+        if exp_font_type == act_font_type:
+            return ReturnType(True, 'font type is as expected')
+        else:
+            return ReturnType(False, 'font type is not as expected')
+
+    def verify_session_description_in_preclass_screen(self):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        if self.obj.is_element_present(('css', '.classInfo__desc')):
+            return ReturnType(True, 'session description is displayed')
+        else:
+            return ReturnType(False, 'session description is not displayed')
+
+    def verify_timer_countdown_in_preclass(self):
+        self.obj.wait_for_locator_webdriver(self.pre_class_timer)
+        times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
+        start_min = times[0].text[:2]
+        start_sec = times[1].text[:2]
+        time.sleep(2)
+        times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
+        end_min = times[0].text[:2]
+        end_sec = times[1].text[:2]
+        start = datetime.datetime.strptime('{}:{}'.format(start_min,start_sec), '%M:%S').time()
+        end = datetime.datetime.strptime('{}:{}'.format(end_min,end_sec), '%M:%S').time()
+        flag = start < end
+        if flag:
+            return ReturnType(True, 'seconds timer countdown is reducing')
+        else:
+            return ReturnType(False, 'seconds timer countdown is reducing')
+
+    def verify_timer_in_preclass(self):
+        self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
+        if self.obj.is_element_present(('xpath', self.pre_class_timer)) and \
+                self.obj.is_element_present(('xpath', self.secs_timer)) and \
+                self.obj.is_element_present(('xpath', self.mins_timer)) and \
+                self.obj.is_element_present(('xpath', self.secs_text)) and \
+                self.obj.is_element_present(('xpath', self.mins_text)):
+            return ReturnType(True, 'timer details are displayed')
+        else:
+            return ReturnType(False, 'timer details are not displayed')
+
+    def is_reaction_tray_present(self):
+        self.obj.wait_for_locator_webdriver(self.celebrations_icons)
+        if self.obj.is_element_present(('xpath', self.reaction_tray)):
+            return ReturnType(True, 'celebrations icons are displayed')
+        else:
+            return ReturnType(False, 'celebrations icons are not displayed')
 
     def preclass_verify_greeting_message(self, name):
         try:

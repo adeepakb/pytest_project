@@ -93,6 +93,7 @@ def step_impl(neo_tute, student1_neo):
     student1_neo.hover_on_inclass_video_icon()
     details = student1_neo.is_mic_disabled_tooltip_present()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 
 @then('Verify that the in-class notifications do not cover the video/content when full screen is not active')
@@ -114,12 +115,17 @@ def step_impl(student1_neo):
 
 @then('Verify that when focus mode is about to start the student is notified for same as in-class notification toast message, also verify the content of the message')
 def step_impl(neo_tute,student1_neo):
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.select_focus_mode('on')
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     details = student1_neo.is_focus_mode_toast_msg_present()
     check.equal(details.result, True, details.reason)
     details = student1_neo.verify_text_in_focus_mode_toast_msg()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 @then('Verify that in-class notification toast message for focus mode should not have close icon and same should get dismissed automatically after xx seconds')
 def step_impl(student1_neo):

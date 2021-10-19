@@ -16,7 +16,7 @@ Scenario: Verify the celebrations feature in web
   Then Verify that student should be able to send celebrations in flaky network
   Then Verify that a student is able to send celebration 5 times
   Then Verify that the celebrations send by students should not reach Tutor side
-  Then Verify that user should  be able to send multiple celebrations when refresh
+  Then Verify that user should be able to send multiple celebrations when refresh
   Then Verify that when a student send celebration, other students should be able to see the same
   Then Verify user should not be able to send emojis in interval while switching multiple tabs
 
