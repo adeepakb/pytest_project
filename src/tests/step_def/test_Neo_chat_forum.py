@@ -380,7 +380,6 @@ def step_impl(neo_in_class,test_tut):
 @then("Verify that all the messages from other students side is left aligned.")
 def step_impl(neo_in_class,student2_neo):
     student2_neo.send_chat("Hi I am another student")
-    neo_in_class.clo
     detail = neo_in_class.verify_other_student_messages_are_left_alligned(text= "Hi I am another student")
     check.equal(detail.result, True, detail.reason)
 
