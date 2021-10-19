@@ -53,8 +53,7 @@ def step_impl(neo_tute):
 
 @when('click on "JOIN" button in home page')
 def step_impl(login_in,neo_in_class):
-    login_in.click_on_hamburger()
-    login_in.click_on_byjus_classes()
+    login_in.click_on_byjus_classes_card()
     neo_in_class.click_on_future_join_card(1)
 
 
@@ -185,19 +184,11 @@ def step_impl(neo_in_class):
     print(flag2)
     check.equal(flag1 and flag2, True, "Photo upload successful for different resolutions and sizes")
 
-@given("Launch the application online")
-def navigate_to_one_to_many_and_mega_user(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
-    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 @given("Launch the application online in mobile")
 def login_as_neo_user(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     login_in.login_for_neo_class_mweb(student1_details['code'], student1_details['mobile_no'], otp=None)
-
-@given("tutor start the session")
-def step_impl(neo_tute):
-    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student2', date="tomorrow")
 
 @when('click on "JOIN" button in home page')
 def step_impl(login_in,neo_in_class):
