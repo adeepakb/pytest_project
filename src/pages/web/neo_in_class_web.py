@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import time
+import datetime
 import subprocess
 import requests
 from selenium.webdriver import ActionChains
@@ -2138,10 +2139,17 @@ class NeoInClass(CommonMethodsWeb):
 
     def verify_timer_countdown_in_preclass(self):
         self.obj.wait_for_locator_webdriver(self.pre_class_timer)
-        before_secs_timer = self.obj.get_element(('xpath', self.secs_timer)).text
-        time.sleep(3)
-        after_secs_timer = self.obj.get_element(('xpath', self.secs_timer)).text
-        if before_secs_timer != after_secs_timer:
+        times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
+        start_min = times[0].text[:2]
+        start_sec = times[1].text[:2]
+        time.sleep(2)
+        times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
+        end_min = times[0].text[:2]
+        end_sec = times[1].text[:2]
+        start = datetime.datetime.strptime('{}:{}'.format(start_min,start_sec), '%M:%S').time()
+        end = datetime.datetime.strptime('{}:{}'.format(end_min,end_sec), '%M:%S').time()
+        flag = start < end
+        if flag:
             return ReturnType(True, 'seconds timer countdown is reducing')
         else:
             return ReturnType(False, 'seconds timer countdown is reducing')
