@@ -25,7 +25,6 @@ Feature: Pre-Class Experience
     And Verify that student can upload photo only in JPEG,JPG,PNG format
     And Verify that maximum size allowed for photo should be upto 3MB
     And Verify uploading photos with different resolutions and sizes in the change profile photo pop up.
-  #prashanth
     Then Verify the display of bubble screen
     Then Verify the pre-class screen in landscape mode
     Then Verify the bubble screen should be scrollable
@@ -37,8 +36,6 @@ Feature: Pre-Class Experience
     Then verify the pre class timer when the screen is running in the background
     Then verify the pre class timer when the screen is locked or kept idle
     Then verify the pre class screen in offline mode
-
-    #deepak
     Then Verify the Student's greeting message on the landing screen.
     And Verify the list of students bubble on the screen before the class starts.
     And Verify that edit icon should be displayed for the logged in user's name bubble
