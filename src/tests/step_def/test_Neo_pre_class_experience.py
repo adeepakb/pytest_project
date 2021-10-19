@@ -99,13 +99,6 @@ def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1', date="tomorrow")
 
 
-@when("student join neo session for next day")
-@given("student join neo session for next day")
-def step_impl(neo_in_class):
-    neo_in_class.navigate_to_byjus_classes_screen()
-    neo_in_class.join_not_started_session()
-
-
 @when('click on "JOIN" button in home page')
 def step_impl(login_in,neo_in_class):
     login_in.click_on_byjus_classes_card()
