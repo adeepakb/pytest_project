@@ -175,12 +175,13 @@ def step_impl(neo_in_class):
 @when("student join neo session")
 @then("student join neo session")
 def step_impl(neo_in_class):
-    neo_in_class.join_neo_session()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
 
 
 @then("Verify the raise hand option should present in the screen")
 @then("verify raise hand is present in the screen")
-def step_impl(neo_in_class):
+def step_impl(neo_in_class,test_tut):
+    test_tut.select_focus_mode(status='off')
     check.equal(neo_in_class.is_hand_raise_icon_present(),True, "Raise hand is not present")
 
 
@@ -196,7 +197,7 @@ def step_impl(neo_in_class):
 def step_impl(test_student_2):
     login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
     test_student_2.home_click_on_join()
-    test_student_2.join_neo_session()
+    test_student_2.join_neo_session_student('mic-on', 'cam-on')
 
 
 
@@ -210,7 +211,7 @@ def step_impl(test_tut):
 def step_impl(test_student_3):
     login_in.login_and_navigate_to_home_screen('+91-', '2013795859', otp=None)
     test_student_3.home_click_on_join()
-    test_student_3.join_neo_session()
+    test_student_3.join_neo_session_student('mic-on', 'cam-on')
 
 
 @then("verify user asking question has enlarged video")
@@ -324,6 +325,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class,test_tut):
     test_tut.send_message_in_chat(text="Hi I am tutor")
     time.sleep(2)
+    neo_in_class.close_reaction_elements()
     neo_in_class.send_chat("for confirming tutor's message")
     detail = neo_in_class.verify_tutor_messages_are_left_alligned(text="Hi I am tutor")
     check.equal(detail.result, True, detail.reason)
@@ -331,6 +333,7 @@ def step_impl(neo_in_class,test_tut):
     time.sleep(2)
     details = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
     check.equal(details.result, True, details.reason)
+
 
 
 @then("Verify that student should able to ask doubt clicking on the 'Raise hand' option")
@@ -344,15 +347,17 @@ def step_impl(neo_in_class):
 
 @then("Verify that the student who is asking the question, his  video should be enlarged compared to other students.")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
+    test_tut.stop_presentation(select_slide_num=1)
     student1_details2 = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
     student2.login_and_navigate_to_home_screen(student1_details2['code'], student1_details2['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
-    student2_neo.join_neo_session()
+    student2_neo.join_neo_session_student('mic-on', 'cam-on')
     student1_details3 = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     student3.login_and_navigate_to_home_screen(student1_details3['code'], student1_details3['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
-    student3_neo.join_neo_session()
+    student3_neo.join_neo_session_student('mic-on', 'cam-on')
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
     time.sleep(7)
     details = neo_in_class.current_student_has_video_enlarged()
@@ -385,17 +390,20 @@ def step_impl(neo_in_class):
     neo_in_class.hover_on_inclass_audio_icon()
     check.equal(neo_in_class.is_turn_on_mic_tooltip_present(), True, "")
 
+
 @then("Verify that a student should not be able to answer other student's questions in the chat")
 @then("Verify that student can't control other student's video & mic when they ask questions")
 def step_impl(neo_in_class):
     details = neo_in_class.verify_other_student_mic_cam_cannt_be_controlled()
     check.equal(details.result, True, details.reason)
 
+
 @then("Verify the default reactions when user hover on the reaction (thumbs up)")
 def step_impl(neo_in_class):
     neo_in_class.hover_over_reaction_button()
     details = neo_in_class.is_reactions_icons_present()
     check.equal(details.result, True, details.reason)
+    neo_in_class.close_reaction_elements()
 
 
 @then("Verify the Tutor's video should display right side of the screen")
@@ -415,7 +423,7 @@ def step_impl(neo_in_class, test_tut):
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that alignment of the thumbnail when tutor allow student to ask question")
+@then("Verify that alignment of the thumbnail  when tutor allow student to ask question")
 @then("Verify that student should able to ask doubt when the Tutor allow the student to come on the screen")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
     student1_details = get_data(Login_Credentials,'neo_login_detail1', 'student3')
@@ -425,7 +433,7 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
     check.equal(details.result, True, details.reason)
 
 
-@then("Verify that other students should able to hear when a student asks doubts to Tutor")
+@then("Verify that other students should  able to hear when a student asks doubts to Tutor")
 def step_impl(student2_neo):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     student2_neo.get_audio_status_of_student(student_name=student1_details['name'])
@@ -447,14 +455,14 @@ def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo,
     student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
-    student3_neo.join_neo_session()
+    student3_neo.join_neo_session_student('mic-on', 'cam-on')
     student4_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     student4.login_and_navigate_to_home_screen(student4_details['code'], student4_details['mobile_no'], otp=None)
     student4_neo.home_click_on_join()
-    student4_neo.join_neo_session()
+    student4_neo.join_neo_session_student('mic-on', 'cam-on')
     student5_details = get_data(Login_Credentials, 'neo_login_detail1', 'student4')
     student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
     student5_neo.home_click_on_join()
-    student5_neo.join_neo_session()
+    student5_neo.join_neo_session_student('mic-on', 'cam-on')
     check.equal(student5_neo.verify_alignment_stream_list(),True, "Verified alignment of student's thumbnail when 5 students join")
     test_tut.select_focus_mode(status='off')

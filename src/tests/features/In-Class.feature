@@ -66,7 +66,7 @@ Scenario: Verify default alignment for multi users, student and tutor audio/vide
     And Verify that clicking on "Thumbs Up" icon expands the expression tab and list of expressions are displayed
     And Verify that student is able to send expression during the session
     And Verify that animation of the expressions on the session screen
-#
+
 Scenario: Verify the inclass feature in web
   Given Launch the application online
   And start the session as tutor

@@ -3,8 +3,8 @@ Feature: Ask Question
 
   Scenario: Verify the chat section "Class Forum" below the tutor's screen.
     Given launch the application online as neo user and navigate to home screen
-    And click on "JOIN" button in home page
     And tutor start the session
+    And click on "JOIN" button in home page
     When student join neo session
     Then Verify the raise hand option should present in the screen
     And Verify that student should able to ask doubt clicking on the 'Raise hand' option
@@ -21,8 +21,8 @@ Feature: Ask Question
     And Verify that a student should not be able to answer other student's questions in the chat
     And Verify that student's count and live chat should be displayed below the Tutor video
     And Verify that student should able to ask doubt when the Tutor allow the student to come on the screen
-    And Verify that other students should able to hear when a student asks doubts to Tutor
+    And Verify that other students should  able to hear when a student asks doubts to Tutor
     And Verify that when the Tutor remove a student from ask question , the thumbnail should be realigned
     And Verify that student can't control other student's video & mic when they ask questions
-    And Verify that alignment of the thumbnail when tutor allow student to ask question
+    And Verify that alignment of the thumbnail  when tutor allow student to ask question
 

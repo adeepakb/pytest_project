@@ -296,6 +296,7 @@ def step_impl(neo_in_class):
 def step_impl(neo_in_class,student2_neo,student2):
     neo_in_class.send_sticker()
     detail = neo_in_class.verify_sticker_displayed()
+    time.sleep(2)
     check.equal(detail.result, True, detail.reason)
     student2_neo.send_sticker()
     detail = student2_neo.verify_sticker_displayed()

@@ -249,3 +249,10 @@ class LoginWeb(LoginBase):
         element_to_hover_over = self.obj.get_element(("xpath", self.mob_hamburger))
         hover = self.action.move_to_element(element_to_hover_over)
         hover.click().perform()
+    def change_to_mobile_web(self):
+        self.driver.set_window_size(1280, 800)
+
+
+    def maximize_to_web(self):
+        self.driver.maximize_window()
+

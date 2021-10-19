@@ -3,8 +3,8 @@ Feature: Chat Forum
 
   Scenario: Verify the chat section "Class Forum" below the tutor's screen.
     Given Student launches in-class and navigate to home page
-    And click on "JOIN" button in home page
     And tutor start the session
+    And click on "JOIN" button in home page
     When student join neo session
     Then Verify the chat section Class Forum below the tutor's screen.
     And Verify that "students count" in chat Forum.
@@ -27,6 +27,7 @@ Feature: Chat Forum
     And Verify that tutor's name & tutor tag with time is showing in the chat forum.
     And Verify tutor's thumbnail in the chat forum.
     And Verify the message count in tutor's reply  when tutor replies to students message.
+    And Verify typing messages when the network is flaky.
     And Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.
     And Verify that students cant type when message is disabled from the tutor's end.
     And Verify that students chat is disabled and network goes off when he/she rejoin chat must be in disabled state.
