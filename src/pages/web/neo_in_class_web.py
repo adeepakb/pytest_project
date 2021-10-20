@@ -582,6 +582,7 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.student_exit_class))
 
     def click_on_exit_class_in_student(self):
+        time.sleep(3)
         self.obj.wait_for_clickable_element_webdriver(self.student_exit_class)
         self.obj.element_click(('xpath', self.student_exit_class))
 
@@ -1960,7 +1961,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'mic and cam status are not displayed as expected')
 
     def click_on_close_icon_in_toast_msg(self):
-        self.obj.element_click(('xpath', self.close_icon_toast_msg))
+        self.obj.element_click(('xpath', '//*[@class="MuiSvgIcon-root"]/parent::span[@class="MuiIconButton-label"]'))
     # pre-class experience
     def is_photo_edit_icon_present(self):
         self.wait_for_locator_webdriver(self.photo_edit_icon)
@@ -2216,7 +2217,7 @@ class NeoInClass(CommonMethodsWeb):
         times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
         start_min = times[0].text[:2]
         start_sec = times[1].text[:2]
-        time.sleep(2)
+        time.sleep(3)
         times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
         end_min = times[0].text[:2]
         end_sec = times[1].text[:2]
