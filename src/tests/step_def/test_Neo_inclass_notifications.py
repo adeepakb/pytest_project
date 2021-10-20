@@ -171,7 +171,8 @@ def step_impl(neo_tute, student1_neo):
 
 
 @then('Verify that if network error happens, same is displayed as in-class notification toast message with "Retry" button')
-def step_impl(student1_neo):
+def step_impl(neo_tute,student1_neo):
+    neo_tute.select_focus_mode('off')
     student1_neo.set_network_flaky()
     details = student1_neo.is_network_failed_toast_msg_present()
     check.equal(details.result, True, details.reason)
