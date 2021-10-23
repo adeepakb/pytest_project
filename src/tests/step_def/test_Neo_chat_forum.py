@@ -107,9 +107,7 @@ def step_impl(neo_in_class, text):
 
 @then("Verify messages when users typed  any combination of alphanumeric & special characters in the chat box.")
 def step_impl(neo_in_class):
-    time.sleep(3)
     neo_in_class.send_chat(text='a1!2% N n')
-    time.sleep(2)
     detail = neo_in_class.verify_a_text_in_chat(text='a1!2% N n')
     check.equal(detail.result, True, detail.reason)
 
@@ -118,7 +116,6 @@ def step_impl(neo_in_class):
     "Verify that text wrapping should happen without truncation or spill over the window when texts include multiple lines.")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='HI I am \n Tester')
-    time.sleep(3)
     detail = neo_in_class.verify_a_text_in_chat(text='HI I am')
     check.equal(detail.result, True, detail.reason)
     detail = neo_in_class.verify_a_text_in_chat(text='Tester')

@@ -1117,7 +1117,9 @@ class NeoInClass(CommonMethodsWeb):
     def get_all_chats(self):
         chat_elements = []
         try:
-
+            self.wait_for_element_visible(("xpath","//div[@class= 'cardWrapper']"))
+            self.wait_for_element_visible(("xpath", ".//div[@class='nameContainer isMe']"))
+            self.wait_for_element_visible(("xpath", ".//div[@class='nameContainer']"))
             elements = self.obj.get_elements(("xpath", "//div[@class='cardWrapper']"))
             chat_elements = []
             for element in elements:
@@ -1169,6 +1171,7 @@ class NeoInClass(CommonMethodsWeb):
             flag_sticker_displayed = False
 
         if flag_sticker_displayed:
+            self.wait_for_element_visible(("xpath", "//div[@class='chatCard isMe']"))
             element = self.get_element(("xpath", "//div[@class='chatCard isMe']"))
             self.action.move_to_element(element).click().perform()
         self.obj.wait_for_clickable_element_webdriver("//*[@class='sendAction']")
