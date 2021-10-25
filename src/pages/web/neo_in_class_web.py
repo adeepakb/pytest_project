@@ -2073,12 +2073,6 @@ class NeoInClass(CommonMethodsWeb):
         flag2 = self.obj.is_element_present(("xpath", self.current_student_bubble_pp))
         return flag1 and flag2
 
-    def is_focus_mode_toast_msg_present(self):
-        self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
-        if self.obj.is_element_present(('xpath', self.focus_mode_toast_msg)):
-            return ReturnType(True, 'mic and cam status are displayed as expected')
-        else:
-            return ReturnType(False, 'mic and cam status are not displayed as expected')
     def verify_toast_message(self, expected_message):
         time.sleep(1)
         self.obj.wait_for_locator_webdriver(self.toast_container)

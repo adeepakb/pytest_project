@@ -208,7 +208,7 @@ def step_impl(neo_in_class):
     check.equal(neo_in_class.verify_toast_message('Network error, please check your connection and retry'), True, "Error message displayed when internet connection is lost")
     neo_in_class.close_profile_photo_popup()
     neo_in_class.close_toast_message()
-
+    neo_in_class.set_wifi_connection_on()
 
 @then('Verify that student can upload photo only in JPEG,JPG,PNG format')
 def step_impl(neo_in_class):
