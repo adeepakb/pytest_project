@@ -1,6 +1,7 @@
 Feature:  Whiteboard
 
   Scenario: Verify whiteboard screen, texts, handwritten shapes, markers on Whiteboard presentation
+
     Given launch the application online as neo user and navigate to home screen
     And tutor start the session
     When click on "JOIN" button in home page
@@ -34,10 +35,11 @@ Feature:  Whiteboard
     Then Verify the students video when students accepts tutor's request to turn on the camera.
     And Verify that like emoji & minimize screen option is displayed at the bottom of whiteboard  when its in full screen mode.
     And Verify the video screen when user turns on camera while discussing doubts .
-    And Verify student is audible when students accepts tutor's request to turn on the mic.
-    And Verify that logged in student  can turn off their mic/camera when they are discussing doubts with tutor.
-    And Verify the other student's video when they also start discussing doubts.
-    And Verify the whiteboard screen size when users clicks on minimise screen icon.
+#    And Verify student is audible when students accepts tutor's request to turn on the mic.
+#    And Verify that logged in student  can turn off their mic/camera when they are discussing doubts with tutor.
+#    And Verify the other student's video when they also start discussing doubts.
+#    And Verify the whiteboard screen size when users clicks on minimise screen icon.
+
 
 
 

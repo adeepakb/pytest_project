@@ -1051,11 +1051,13 @@ class NeoInClass(CommonMethodsWeb):
         return video_src
 
     def hover_over_and_verify_bottom_container_focus_mode(self):
-        element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
-        hover = self.action.move_to_element(element_to_hover_over)
         try:
+            element_to_hover_over = self.obj.get_element(("xpath", "//div[@class='presentation__view']"))
+            hover = self.action.move_to_element(element_to_hover_over)
             hover.perform()
         except ElementNotInteractableException:
+            pass
+        except StaleElementReferenceException:
             pass
         flag1 = self.is_hand_raise_icon_present()
         flag2 = self.is_thumb_icon_present()
@@ -2377,6 +2379,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True," logo is not clickable") if not flag else ReturnType(False," logo is not clickable")
         except:
             ReturnType(False, " logo is not displayed")
+
 
 
 
