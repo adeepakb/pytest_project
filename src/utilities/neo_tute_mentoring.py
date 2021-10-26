@@ -111,6 +111,16 @@ class NeoTute(CommonMethodsWeb):
         self.close_toast = "xpath", "//div[@class='neo_cl_ToastIcon']"
         self.student_name = "xpath", ".//div[@class='student-name']"
         self.reject_buttpn = "xpath", ".//div[@class='reject']"
+        self.review_image = "xpath","//div[@class='studentsDetails__approve']/div[@class='review-image']"
+        self.toast_message = "xpath","//*[@class='studentsDetails__toastMsg']"
+        self.student_details_name = "//div[@class='studentsDetails__container']/div[@class='student-name']"
+        self.profile_card_src = "//div[@class='studentsDetails__container']/div/img"
+        self.second_approve_btn = "//div[contains(@class,'neo_cl_Button Button--secondary Button--rounded Button--block-width')]/span[text()='Approve']"
+        self.second_reject_btn = "//div[contains(@class,'neo_cl_Button Button--secondary Button--rounded Button--block-width')]/span[text()='Reject']"
+        self.pp_review_close = "//img[@alt='close']"
+        self.pp_review_image = "//div[@class='reviewImage']"
+        self.newly_updated_pp = "//div[@class='reviewImage']/img"
+
         self.play_pause = "xpath", "xpath", "//div[@class='play-pause']"
         self.full_screen_icon = "xpath", "//div[@class='full-screen']"
         self.mute_unmute = "xpath", "//div[@class='volume-control']"
@@ -605,13 +615,75 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False,
                               "no pdf is shown")
 
-
+    # student details
     def get_number_of_students_in_student_details(self):
         try:
-            elements = self.get_elements(self.student_cards_details)
+            self.obj.wait_for_locator_webdriver(self.student_details_name)
+            elements = self.get_elements(('xpath',self.student_details_name))
             return len(elements)
         except:
             return 0
+
+    def get_all_names_student_details(self):
+        student_names = []
+        self.obj.wait_for_locator_webdriver(self.student_details_name)
+        cards = self.get_elements(('xpath',self.student_details_name))
+        for card in cards:
+            student_name = card.text
+            student_names.append(student_name)
+        return student_names
+
+    def get_img_src_for_all_students(self):
+        all_profile_card_details = {}
+        self.obj.wait_for_locator_webdriver(self.profile_card_src)
+        cards = self.get_elements(('xpath', self.student_details_name))
+        profile_cards = self.obj.get_elements(('xpath',self.profile_card_src))
+        for i in range(len(profile_cards)):
+            student_name = cards[i].text
+            profile_src = profile_cards[i].get_attribute("src")
+            all_profile_card_details.update({i+1: [student_name,profile_src]})
+        print(all_profile_card_details)
+        return all_profile_card_details
+
+    def verify_approve_reject_review_buttons(self):
+        try:
+            self.obj.wait_for_locator_webdriver(self.student_details_name)
+            self.driver.execute_script("arguments[0].scrollIntoView(true);",self.obj.get_element(self.review_image))
+            self.wait_for_element_visible(self.review_image)
+            flag1 = self.obj.is_element_present(self.approve_button)
+            flag2 = self.obj.is_element_present(self.review_image)
+            flag3 = self.obj.is_element_present(self.reject_buttpn)
+            return flag1 and flag2 and flag3
+        except NoSuchElementException:
+            return False
+
+    def review_present_under_image(self):
+        self.obj.wait_for_element_visible(self.review_image)
+        return self.obj.is_element_present(self.review_image)
+
+    def click_on_review(self):
+        self.obj.wait_for_element_visible(self.review_image)
+        self.obj.element_click(self.review_image)
+
+    def click_on_close_pp_review_popup(self):
+        self.obj.wait_for_locator_webdriver(self.pp_review_close)
+        self.obj.element_click(('xpath', self.pp_review_close))
+
+    def verify_new_pp_review_popup(self):
+        try:
+            flag1 = self.obj.is_element_present(('xpath', self.second_approve_btn))
+            flag2 = self.obj.is_element_present(('xpath', self.second_reject_btn))
+            flag3 = self.obj.is_element_present(('xpath', self.pp_review_close))
+            review_image_elt = self.obj.get_element(("xpath",self.newly_updated_pp))
+            flag4 = 'https://tutoring-doubts-bucket.s3.ap-southeast-1.amazonaws.com/user_profile_images/students/' in review_image_elt.get_attribute("src")
+            return flag1 and flag2 and flag3 and flag4
+        except NoSuchElementException:
+            return False
+
+    def text_on_pp_review_popup(self):
+        self.obj.wait_for_locator_webdriver(self.pp_review_image)
+        text = self.obj.get_element(("xpath",self.pp_review_image)).text
+        return text
 
     def approve_profile_pic(self, name=None):
         try:
@@ -623,7 +695,8 @@ class NeoTute(CommonMethodsWeb):
                     self.wait_for_element_visible(self.approve_button)
                     self.element_click(self.approve_button)
                     self.wait_for_locator_webdriver(self.student_detail_toast)
-                    if self.is_element_present(('xpath',self.student_detail_toast)):
+                    if self.is_element_present(('xpath',self.student_detail_toast)) and \
+                            self.obj.get_element(self.toast_message).text == "You have approved %s's profile picture"%name:
                         self.wait_for_element_visible(self.close_toast)
                         self.element_click(self.close_toast)
                         return ReturnType(True, "Approved profile pic")
@@ -645,7 +718,8 @@ class NeoTute(CommonMethodsWeb):
                     self.wait_for_element_visible(self.reject_buttpn)
                     self.get_child_element(element,*self.reject_buttpn).click()
                     self.wait_for_locator_webdriver(self.student_detail_toast)
-                    if self.is_element_present(('xpath', self.student_detail_toast)):
+                    if self.is_element_present(('xpath', self.student_detail_toast)) and \
+                            self.obj.get_element(self.toast_message).text == "You have rejected %s's profile picture"%name:
                         self.element_click(self.close_toast)
                         return ReturnType(True, "Rejected profile pic")
                     else:
@@ -862,9 +936,10 @@ class NeoTute(CommonMethodsWeb):
 
     def get_audio_status(self):
         try:
+            self.obj.wait_for_locator_webdriver(self.mic_off)
             if self.is_element_present(('xpath', self.mic_off)):
                 return ReturnType(False, "mic is off")
-        except(NoSuchElementException):
+        except NoSuchElementException:
             return ReturnType(True, "mic is on")
 
     def set_students_camera(self,status = "off"):

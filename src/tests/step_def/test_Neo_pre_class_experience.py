@@ -203,12 +203,12 @@ def step_impl(neo_in_class):
 
 @then('Verify the error message when internet connection is lost while uploading an image')
 def step_impl(neo_in_class):
-    neo_in_class.set_network_flaky()
+    neo_in_class.set_wifi_connection_off()
     neo_in_class.click_photo_edit_icon()
     check.equal(neo_in_class.verify_toast_message('Network error, please check your connection and retry'), True, "Error message displayed when internet connection is lost")
     neo_in_class.close_profile_photo_popup()
     neo_in_class.close_toast_message()
-
+    neo_in_class.set_wifi_connection_on()
 
 @then('Verify that student can upload photo only in JPEG,JPG,PNG format')
 def step_impl(neo_in_class):
@@ -275,6 +275,7 @@ def step_impl(neo_in_class):
     neo_in_class.set_network_flaky()
     details = neo_in_class.is_network_failed_toast_msg_present()
     check.equal(details.result, True, details.reason)
+    neo_in_class.set_wifi_connection_on()
 
 @then('Verify the pre-class screen in landscape mode')
 @then('Verify the PreClass screen in landscape mode in mobile browser')

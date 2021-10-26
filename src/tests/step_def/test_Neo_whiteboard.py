@@ -74,6 +74,8 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1')
     neo_tute.select_focus_mode('off')
+    neo_tute.set_students_camera('on')
+    neo_tute.set_students_mic('on')
 
 
 @when('click on "JOIN" button in home page')

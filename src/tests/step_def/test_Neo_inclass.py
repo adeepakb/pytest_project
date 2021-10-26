@@ -188,6 +188,8 @@ def step_impl(neo_tute):
     if expected_slide_num != active_slide_number:
         neo_tute.present_any_slide(expected_slide_num)
     neo_tute.select_focus_mode('off')
+    neo_tute.set_students_camera('on')
+    neo_tute.set_students_mic('on')
 
 
 @given('click on "JOIN" button in home page')
