@@ -648,7 +648,7 @@ class NeoTute(CommonMethodsWeb):
     def verify_approve_reject_review_buttons(self):
         try:
             self.obj.wait_for_locator_webdriver(self.student_details_name)
-            self.driver.execute_script("arguments[0].scrollIntoView(true);",self.obj.get_element(self.approve_button))
+            self.driver.execute_script("arguments[0].scrollIntoView(true);",self.obj.get_element(self.review_image))
             self.wait_for_element_visible(self.review_image)
             flag1 = self.obj.is_element_present(self.approve_button)
             flag2 = self.obj.is_element_present(self.review_image)
@@ -936,9 +936,10 @@ class NeoTute(CommonMethodsWeb):
 
     def get_audio_status(self):
         try:
+            self.obj.wait_for_locator_webdriver(self.mic_off)
             if self.is_element_present(('xpath', self.mic_off)):
                 return ReturnType(False, "mic is off")
-        except(NoSuchElementException):
+        except NoSuchElementException:
             return ReturnType(True, "mic is on")
 
     def set_students_camera(self,status = "off"):

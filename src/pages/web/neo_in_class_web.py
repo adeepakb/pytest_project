@@ -262,8 +262,6 @@ class NeoInClass(CommonMethodsWeb):
             for element in elements:
                 try:
                     timer_element_displayed = self.get_child_element(element, "xpath",
-                                                                     ".//div[@class = 'future-join-text']").is_displayed()
-                    timer_element_displayed = self.get_child_element(element, "xpath",
                                                                      self.session_time_text).is_displayed()
                 except:
                     timer_element_displayed = False
@@ -306,10 +304,9 @@ class NeoInClass(CommonMethodsWeb):
             student_name = cards[i].get_attribute('innerHTML')
             stream_id = video_cards[i].get_attribute('id')
             try:
-                self.obj.get_element(
-                    ('xpath',
-                     "//div[@id='" + stream_id + "']/div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']"))
-                student_video_status.update({student_name: False})
+                self.obj.wait_for_locator_webdriver("//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']")
+                if self.obj.is_element_present(('xpath',"//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']")):
+                    student_video_status.update({student_name: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
         print(student_video_status)
@@ -2120,29 +2117,18 @@ class NeoInClass(CommonMethodsWeb):
         try:
             self.wait_for_locator_webdriver(self.current_student_bubble)
             before_hover_over_bubble = self.obj.get_element(
-                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(',
-                                                                                                   '').replace(')',
-                                                                                                               '').split(
-                ",")
+                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
             # self.obj.element_click(("xpath", self.current_student_bubble))
             hov = self.action.move_to_element(self.obj.get_element(("xpath", self.current_student_bubble)))
             hov.click().perform()
             after_hover_over_bubble = self.obj.get_element(
-                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(',
-                                                                                                   '').replace(')',
-                                                                                                               '').split(
-                ",")
+                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
             a = float(before_hover_over_bubble[0])
             b = float(after_hover_over_bubble[0])
             return ReturnType(True, "Student bubble hovered over") if a < b else ReturnType(False,
                                                                                             "Student bubble did not get hovered over")
         except Exception as e:
             return ReturnType(False, "Unable to hover over student bubble due to exception %s" % str(e))
-    def hard_wait(self):
-        time.sleep(5)
-
-    def set_network_on(self):
-        self.obj.set_wifi_connection_on()
 
     def verify_text_in_lower_hand_tooltip(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
@@ -2177,7 +2163,6 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, 'the user name and login name matches')
         else:
             return ReturnType(False, 'the user name and login name donot match')
-
 
     def verify_class_info_screen(self):
         self.obj.wait_for_locator_webdriver(self.preclass_scrollbar)
@@ -2368,11 +2353,3 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True," logo is not clickable") if not flag else ReturnType(False," logo is not clickable")
         except:
             ReturnType(False, " logo is not displayed")
-
-
-
-
-
-
-
-

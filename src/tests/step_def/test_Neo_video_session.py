@@ -68,6 +68,8 @@ def step_impl(neo_tute,neo_in_class):
     if expected_video_slide_num != active_slide_number:
         neo_tute.present_any_slide(expected_video_slide_num)
     neo_tute.select_focus_mode('off')
+    neo_tute.set_students_camera('on')
+    neo_tute.set_students_mic('on')
     neo_in_class.turn_on_off_student_mic('ON')
 
 
@@ -120,14 +122,16 @@ def step_impl(neo_in_class):
     neo_in_class.turn_on_off_student_video('OFF')
     students_audio_status = neo_in_class.get_student_audio_status()
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, True , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, False , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then('Verify that if students have turned off their camera, only the '
       'initials of their name is displayed on the thumbnail')
 def step_impl(neo_in_class):
-    students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'], False , "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
+    profile_card_details = neo_in_class.get_profile_cards()
+    student_details = get_data(Login_Credentials,'neo_login_detail1', 'student1')
+    student_name = student_details['name']
+    check.equal(student_name[0] == profile_card_details['You'], True, "Student turned off their camera, only the initials of their name is displayed on the thumbnail")
 
 
 @then('Verify that when control is not on the video window, '
