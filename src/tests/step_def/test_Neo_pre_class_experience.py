@@ -256,7 +256,7 @@ def step_impl(neo_in_class):
     neo_in_class.upload_photo("../../../files/SamplePNG.png")
     details = neo_in_class.verify_profile_photo_popup()
     check.equal(details.result, True, details.reason)
-
+    neo_in_class.close_profile_photo_popup()
 
 @then('Verify the animation of student bubbles present in PreClass screen')
 def step_impl(neo_in_class):
@@ -265,7 +265,7 @@ def step_impl(neo_in_class):
 
 @then('Verify the user login name and the name displayed in the pre class screen')
 def step_impl(neo_in_class):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student2')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     details = neo_in_class.verify_user_login_name(student1_details['name'])
     check.equal(details.result, True, details.reason)
 
