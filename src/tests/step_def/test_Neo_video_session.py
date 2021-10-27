@@ -71,6 +71,7 @@ def step_impl(neo_tute,neo_in_class):
     active_slide_number = neo_tute.active_presentation_slide_number()
     if expected_video_slide_num != active_slide_number:
         neo_tute.present_any_slide(expected_video_slide_num)
+        neo_tute.select_focus_mode('off')
 
 @then("Verify that default layout of the screen when session video is playing (not Focused)")
 def step_impl(neo_in_class):
