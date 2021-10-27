@@ -111,7 +111,7 @@ def step_impl(neo_in_class):
     neo_in_class.turn_on_off_student_video('ON')
     students_video_status = neo_in_class.get_student_video_status()
     students_audio_status = neo_in_class.get_student_audio_status()
-    check.equal(students_video_status['You'] is True and students_audio_status['You'] is True, True ,"Current Student's video/audio is playing if they have turned their camera/mic ON during the session")
+    check.equal(students_video_status['You'] and students_audio_status['You'], True ,"Current Student's video/audio is playing if they have turned their camera/mic ON during the session")
 
 
 @then("Verify that current student's camera and mic controls are displayed "
@@ -121,7 +121,7 @@ def step_impl(neo_in_class):
     neo_in_class.turn_on_off_student_video('OFF')
     students_audio_status = neo_in_class.get_student_audio_status()
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_video_status['You'] is False and students_audio_status['You'] is False, False , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    check.equal(students_video_status['You'] and students_audio_status['You'], False , "Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then('Verify that if students have turned off their camera, only the '
@@ -174,7 +174,7 @@ def step_impl(neo_in_class):
     neo_in_class.turn_on_off_student_video('ON')
     students_audio_status = neo_in_class.get_student_audio_status()
     students_video_status = neo_in_class.get_student_video_status()
-    check.equal(students_audio_status['You'] is True and students_video_status['You'] is True, True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
+    check.equal(students_audio_status['You'] and students_video_status['You'], True,"Current student's camera and mic controls are displayed with correct status at the bottom of the session screen")
 
 
 @then("Verify that Subject and Topic name is displayed at the top left corner of the video window, "
