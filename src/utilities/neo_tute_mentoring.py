@@ -282,7 +282,7 @@ class NeoTute(CommonMethodsWeb):
         self.select_any_shape('ellipse')
         self.action.drag_and_drop_by_offset(canvas, 52, 54).perform()
         self.select_any_shape('polygon')
-        self.action.drag_and_drop_by_offset(canvas, -20, -18).perform()
+        self.action.drag_and_drop_by_offset(canvas, -80, -30).perform()
         self.select_any_shape('rectangle')
         self.action.drag_and_drop_by_offset(canvas, 35, 20).perform()
         # self.action.drag_and_drop_by_offset(canvas, -50, 70).perform()

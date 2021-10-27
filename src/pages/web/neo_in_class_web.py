@@ -315,9 +315,8 @@ class NeoInClass(CommonMethodsWeb):
             student_name = cards[i].get_attribute('innerHTML')
             stream_id = video_cards[i].get_attribute('id')
             try:
-                self.obj.wait_for_locator_webdriver("//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']")
-                if self.obj.is_element_present(('xpath',"//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']")):
-                    student_video_status.update({student_name: False})
+                self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']"))
+                student_video_status.update({student_name: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
         print(student_video_status)
@@ -1244,9 +1243,10 @@ class NeoInClass(CommonMethodsWeb):
     # tutorStreamCard
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
-            tut_name = self.obj.get_element(("xpath", "//span[@class='tutorStreamCard__name--big']")).text
+            self.obj.wait_for_locator_webdriver("//span[contains(@class,'tutorStreamCard__name--big')]")
+            tut_name = self.obj.get_element(("xpath", "//span[contains(@class,'tutorStreamCard__name--big')]")).text
             check.equal(tut_name.lower(), tutor_name.lower(), "Tutor name is not correct")
-            tut_name_small = self.obj.get_element(("xpath", "//span[@class='tutorStreamCard__name--small']")).text
+            tut_name_small = self.obj.get_element(("xpath", "//span[contains(@class,'tutorStreamCard__name--small')]")).text
             check.equal(tut_name_small.lower(), '(tutor)', "Tutor name small is not correct")
         except:
             check.equal(True, False, "Tutor ui element not present")
