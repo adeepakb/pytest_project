@@ -34,8 +34,7 @@ And Verify that, for current student, other student's name are displayed at the 
 #And Verify the default alignment of student's thumbnails when five students join and enter the class
 #And Verify the default alignment of student's thumbnails(six students) when they join and enter the class
 # deepak
-Then Verify the tutor's video section when video of the tutor is turned off
-And Verify that tutor's video is not displayed when camera of the tutor is turned off
+Then Verify that tutor's video is not displayed when camera of the tutor is turned off
 And Verify that Tutor's first name is displayed on the tutor's video thumbnail
 And Verify that 'Tutor' text is displayed on the tutor's video thumbnail below tutor's name
 And Verify that students cannot control tutor's camera/mic
