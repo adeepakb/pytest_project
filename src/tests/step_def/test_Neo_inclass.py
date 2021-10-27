@@ -515,8 +515,11 @@ def step_impl(neo_tute,student1_neo):
 
 @then('Verify the display of session video continues without fail')
 def step_impl(neo_tute, student1_neo):
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
     neo_tute.select_focus_mode('off')
