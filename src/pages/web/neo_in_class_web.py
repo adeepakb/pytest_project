@@ -1526,7 +1526,6 @@ class NeoInClass(CommonMethodsWeb):
         time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
-        self.obj.wait(3)
         self.obj.wait_for_locator_webdriver(self.class_info_icon)
 
 
