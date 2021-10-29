@@ -454,7 +454,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify the text Hand Raised in mobile browser')
 def step_impl(student1_neo):
-    student1_neo.click_on_hand_raise()
+    # student1_neo.click_on_hand_raise()
+    student1_neo.verify_hand_is_raised_for_student()
     details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
@@ -609,8 +610,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify the functionality when student rejoins after"Tutor want to discuss doubt with you" is triggered')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(2)
-    neo_tute.select_focus_mode('off')
+    # neo_tute.present_any_slide(2)
+    # neo_tute.select_focus_mode('off')
     neo_tute.click_on_menu_option(expected_student_name="Prash Auto Test", menu_item="Ask Question")
     details = student1_neo.is_discuss_doubt_msg_present()
     check.equal(details.result, True, details.reason)

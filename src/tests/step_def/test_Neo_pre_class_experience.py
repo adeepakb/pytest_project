@@ -233,7 +233,7 @@ def step_impl(neo_in_class):
     check.equal(flag1 and flag2, True, "Photo upload successful for different resolutions and sizes")
 
 
-@given("Launch the application online in mobile")
+@given("Launch the application online in mweb")
 def login_as_neo_user(login_in):
     student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     login_in.login_for_neo_class_mweb(student1_details['code'], student1_details['mobile_no'], otp=None)

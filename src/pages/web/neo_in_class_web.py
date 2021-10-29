@@ -535,7 +535,10 @@ class NeoInClass(CommonMethodsWeb):
         if self.obj.is_element_present(('xpath', self.floating_emojis)):
             return ReturnType(True, 'floaters are displayed')
         else:
+            # log = self.driver.get_log('browser')
+            # print(log)
             return ReturnType(False, 'floaters are not displayed')
+
 
     def click_on_thumb_icon(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
@@ -910,6 +913,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'the text in popup doesnt match')
 
     def select_any_option_in_rating(self, rating_opt):
+        self.obj.wait_for_locator_webdriver(self.rating_options)
         try:
             options = self.obj.get_elements(('xpath', self.rating_options))
             for option in options:
@@ -942,6 +946,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'the text in popup doesnt match')
 
     def select_any_feedback_option(self, feedback_opt):
+        self.obj.wait_for_locator_webdriver(self.feedback_options)
         try:
             fb_options = self.obj.get_elements(('xpath', self.feedback_options))
             for option in fb_options:
@@ -1521,6 +1526,8 @@ class NeoInClass(CommonMethodsWeb):
         time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
+        self.obj.wait_for_locator_webdriver(self.class_info_icon)
+
 
     def is_submit_btn_enabled(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
@@ -1705,7 +1712,7 @@ class NeoInClass(CommonMethodsWeb):
             self.obj.wait_for_locator_webdriver \
                 (self.discuss_doubt_msg)
             ele = self.obj.get_element(('xpath', self.discuss_doubt_msg))
-            if 'Tutor want to discuss doubt with you. Please turn on your camera' in ele.text:
+            if 'Tutor want to discuss doubt with you.' in ele.text:
                 return ReturnType(True, 'the text in popup doesnt match')
             else:
                 return ReturnType(False, 'the text in popup doesnt match')
