@@ -875,6 +875,7 @@ def step_impl(student1_neo,neo_tute):
     student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     student1_neo.raise_hand()
     neo_tute.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
+    student1_neo.click_on_close_icon_in_toast_msg()
     time.sleep(3)
     detail = student1_neo.verify_hand_is_raised()
     check.equal(detail.result, False, detail.reason)
@@ -929,6 +930,8 @@ def step_impl(student1_neo):
 @then("Verify that animation of the expressions on the session screen")
 @then('Verify that student is able to send expression during the session')
 def step_impl(student1_neo):
+    student1_neo.click_on_close_icon_in_toast_msg()
+    student1_neo.click_on_thumb_icon
     student1_neo.select_any_celebration_symbol(celeb_symbol='clap')
     detail = student1_neo.are_emojis_displayed()
     check.equal(detail.result, True, detail.reason)

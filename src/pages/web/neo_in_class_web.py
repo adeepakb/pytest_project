@@ -230,6 +230,17 @@ class NeoInClass(CommonMethodsWeb):
         self.secs_text = '//*[text()="secs"]'
         self.mins_text = '//*[text()="mins"]'
         self.reaction_tray = '//*[contains(@class,"reactionButton__types reactionButton__types--visible")]'
+        self.join_class_mic_off = '//img[contains(@src,"/static/media/mic-off")]'
+        self.join_class_cam_off = '//img[contains(@src,"/static/media/cam-off")]'
+        self.join_class_mic_on = '//img[contains(@src,"/static/media/mic-on")]'
+        self.join_class_cam_on = '//img[contains(@src,"/static/media/cam-on")]'
+        self.join_class_mic = '//img[contains(@src,"/static/media/mic")]'
+        self.join_class_cam = '//img[contains(@src,"/static/media/cam")]'
+        self.session_time = '//div[@class="Session--time"]'
+        self.session_joinees =  '//div[@class="Session--joinees"]'
+        self.session_started = '//div[@class="Session--join_info sessionStarted"]'
+        self.session_title = '//div[@class="Session--title"]'
+
 
     def home_click_on_join(self):
         self.obj.wait(2)
@@ -582,8 +593,12 @@ class NeoInClass(CommonMethodsWeb):
         return self.obj.is_element_present(('xpath', self.student_exit_class))
 
     def click_on_exit_class_in_student(self):
-        self.obj.wait_for_clickable_element_webdriver(self.student_exit_class)
-        self.obj.element_click(('xpath', self.student_exit_class))
+        if self.is_exit_class_btn_present():
+            self.obj.wait_for_clickable_element_webdriver(self.student_exit_class)
+            self.obj.element_click(('xpath', self.student_exit_class))
+        elif not self.is_exit_class_btn_present():
+            self.click_on_kebab_menu()
+            self.click_on_exit_class_in_student()
 
     def verify_header_in_exit_class_popup(self):
         self.obj.wait_for_element_visible(('xpath', "//div[@class='exitClass_wrap']"))
@@ -618,8 +633,9 @@ class NeoInClass(CommonMethodsWeb):
 
     def click_on_kebab_menu(self):
         time.sleep(3)
-        self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
-        self.obj.element_click(('xpath', self.kebab_menu))
+        if not self.is_exit_class_btn_present():
+            self.obj.wait_for_clickable_element_webdriver(self.kebab_menu)
+            self.obj.element_click(('xpath', self.kebab_menu))
 
     def is_facing_issues_option_present(self):
         self.obj.wait_for_locator_webdriver(self.facing_issues_btn)
@@ -1965,7 +1981,11 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'mic and cam status are not displayed as expected')
 
     def click_on_close_icon_in_toast_msg(self):
-        self.obj.element_click(('xpath', self.close_icon_toast_msg))
+        # self.obj.element_click(('xpath', '//*[@class="MuiSvgIcon-root"]/parent::span[@class="MuiIconButton-label"]'))
+        flag = self.obj.wait_for_element_visible(('xpath',self.close_icon_toast_msg))
+        if flag:
+            self.obj.element_click(('xpath',self.close_icon_toast_msg))
+
     # pre-class experience
     def is_photo_edit_icon_present(self):
         self.wait_for_locator_webdriver(self.photo_edit_icon)
@@ -2221,7 +2241,7 @@ class NeoInClass(CommonMethodsWeb):
         times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
         start_min = times[0].text[:2]
         start_sec = times[1].text[:2]
-        time.sleep(2)
+        time.sleep(3)
         times = self.obj.get_elements(('xpath', '//div[@class="neo-timer__label_container"]'))
         end_min = times[0].text[:2]
         end_sec = times[1].text[:2]
@@ -2379,6 +2399,98 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True," logo is not clickable") if not flag else ReturnType(False," logo is not clickable")
         except:
             ReturnType(False, " logo is not displayed")
+
+    def is_mic_in_join_class_present(self):
+        self.obj.wait_for_locator_webdriver(self.join_class_mic)
+        if self.obj.is_element_present(('xpath', self.join_class_mic)):
+            return ReturnType(True, 'mic should be displayed')
+        else:
+            return ReturnType(False, 'mic is not displayed')
+
+    def is_cam_in_join_class_present(self):
+        self.obj.wait_for_locator_webdriver(self.join_class_cam)
+        if self.obj.is_element_present(('xpath', self.join_class_cam)):
+            return ReturnType(True, 'cam should be displayed')
+        else:
+            return ReturnType(False, 'cam is not displayed')
+
+    def verify_audio_video_functionality(self):
+        self.obj.wait_for_locator_webdriver(self.join_class_cam)
+        if self.obj.is_element_present(('xpath', self.join_class_mic_off)) and \
+                self.obj.is_element_present(('xpath', self.join_class_cam_off)):
+            return ReturnType(True, 'mic and cam should be off')
+        else:
+            return ReturnType(False, 'mic and cam is not off')
+
+    def click_on_join_class_video_icon(self):
+        self.obj.wait_for_clickable_element_webdriver(self.join_class_cam)
+        video_icon = self.obj.get_element(("xpath", self.join_class_cam))
+        video_icon.click()
+
+    def click_on_join_class_audio_icon(self):
+        self.obj.wait_for_clickable_element_webdriver(self.join_class_mic)
+        audio_icon = self.obj.get_element(("xpath", self.join_class_mic))
+        audio_icon.click()
+
+
+    def turn_on_off_join_class_student_mic(self, action):
+        time.sleep(3)
+        audio_status = self.get_join_class_student_audio_status()
+        if all([audio_status != action]):
+            self.click_on_join_class_audio_icon()
+
+    def turn_on_off_join_class_student_video(self, action):
+        video_status = self.get_join_class_student_video_status()
+        if all([video_status != action]):
+            self.click_on_join_class_video_icon()
+
+    def get_join_class_student_video_status(self):
+        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        if self.obj.is_element_present(('xpath', self.join_class_cam_on)):
+            return "ON"
+        else:
+            return "OFF"
+
+    def get_join_class_student_audio_status(self):
+        self.obj.wait_for_locator_webdriver("//div[contains(@class,'neo_cl_Button')]")
+        if self.obj.is_element_present(('xpath', self.join_class_mic_on)):
+            return "ON"
+        else:
+            return "OFF"
+
+    def verify_join_class_screen(self):
+        self.obj.wait_for_locator_webdriver(self.join_class_mic)
+        if self.obj.is_element_present(('xpath', self.join_class_mic)) and \
+                self.obj.is_element_present(('xpath', self.join_class_cam)) and \
+                self.obj.is_element_present(('xpath', self.join_class_cam)) and \
+                self.obj.is_element_present(('xpath',self.session_time)) and \
+                self.obj.is_element_present(('xpath',self.session_joinees)) and \
+                self.obj.is_element_present(('xpath',self.session_started)) and \
+                self.obj.is_element_present(('xpath',self.session_title)):
+                return ReturnType(True, 'all elements of join class are displayed')
+        else:
+            return ReturnType(False, 'all elements of join class are not displayedf')
+
+    def verify_class_started_message(self):
+        try:
+            text =self.get_element(("xpath","//div[@class = 'Session--join_info sessionStarted']"))
+            flag = "STARTED" in text
+            return ReturnType(True, "Class started message is displayed") if flag else ReturnType(False, "Class started message is not displayed")
+        except:
+            return ReturnType(False, "Class started message is not displayed")
+
+    def exit_session(self):
+        try:
+            self.click_on_kebab_menu()
+            self.click_on_exit_class_in_student()
+            self.click_on_exit_class_in_exit_popup()
+        except:
+            check.equal(False, True,"Could exit the session")
+
+
+
+
+
 
 
 

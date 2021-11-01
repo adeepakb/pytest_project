@@ -23,6 +23,7 @@ baseClass = BaseClass()
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_teardown():
+
     pass
     # feature_job.build_and_install_apk()
     # job_start_time = time.time()
