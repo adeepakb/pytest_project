@@ -77,17 +77,28 @@ class NeoTute(CommonMethodsWeb):
         self.tutor_controls_video_icon = '//div[contains(@class,"tutorCard--red_icon")]/img[@alt="cam"]'
         self.tutor_controls_audio_icon = '//div[contains(@class,"tutorCard--red_icon")]/img[@alt="mic"]'
 
+        self.input_card = "//div[@class='chatInputCard']"
+        self.send_icon = "//*[@class='sendAction']"
         self.chat_toggle = '//span[@class= "MuiSwitch-root"]'
         self.chat_container = '//div[@class= "chatWidgetContainer"]'
         self.type_something_inputcard = '//input[@placeholder="Type something"]'
         self.reply_button = "//div[@class='replyBtn']"
+        self.reply_close = "//div[@class='prevMessage']/div[@class='closeBtn']"
+        self.reply_message_by_tutor = "//div[@class='prevMessage']/following-sibling::div//div[@class='text isTutor']"
+        self.reply_to_message_text = "//div[@class='closeBtn']/following-sibling::div[2]"
         self.ban = "//*[@class='action']"
         self.ban_student_cancel = "//div[@class='popupActionButton' and text()='Cancel']"
         self.ban_student_ban = "//div[@class='popupActionButton' and text()='Ban']"
         self.ban_student_popup = "//div[@class ='popupWrapper']"
-        self.reply_button = "//*[@class='replyBtn']"
         self.approve_message = "//*[@id='approve_svg__b']"
         self.reject_message = "//*[@id='reject_svg__b']"
+        self.emoji_icon = "//*[@class='emoji']"
+        self.sticker_item = "//*[@class='emojiItem']"
+        self.sticker_onchat = '//img[contains(@src,"chat_stickers")]'
+        self.message_block_container = "//div[@class='blockContainer']"
+        self.chat_widget_view = ".//div[@class='chatWidgetMessageView']"
+        self.chatWidgetMessageView_tutor = ("css", '.chatWidgetMessageView .chatCard.isMe')
+        self.chatWidgetMessageView_student = ("xpath", "//div[@class = 'text']")
 
         self.stream_card_name = "//div[contains(@class,'tuteStreamNameClass neo_cl_StreamCard__name')]"
         self.stream_card_profilepic = "//div[@class='neo_cl_VideoContainer__profilePic']"
@@ -366,10 +377,134 @@ class NeoTute(CommonMethodsWeb):
         else:
             return ReturnType(False, "Student's message not present at tutor side")
 
+    def is_reply_btn_clickable(self,reply_to_message_text):
+        try:
+            self.obj.wait_for_clickable_element_webdriver(self.reply_button)
+            enabled = self.obj.get_element(('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']")).is_enabled()
+            self.obj.element_click(('xpath',"//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
+            return ReturnType(True, "reply button is clickable") if enabled else ReturnType(False, "reply button is not clickable")
+        except NoSuchElementException:
+            return ReturnType(False, "reply button is not present and clickable")
+
+    def verify_reply_chat_box(self):
+        self.obj.wait_for_element_visible(("xpath",self.reply_close))
+        flag1 = self.obj.is_element_present(("xpath",self.reply_close))
+        flag2 = self.obj.is_element_present(("xpath",self.input_card))
+        return flag1 and flag2
+
+    def click_close_reply_message(self,student_message):
+        self.obj.wait_for_element_visible(("xpath", self.reply_close))
+        self.obj.element_click(("xpath", self.reply_close))
+        return self.selected_message_present_on_reply(student_message)
+
+    def selected_message_present_on_reply(self,reply_to_message_text):
+        try:
+            if self.obj.get_element(('xpath',self.reply_to_message_text)).text == reply_to_message_text:
+                return ReturnType(True,"Selected message displayed when User click 'Reply' option")
+            else:
+                return ReturnType(False, "Message not matching with expected %s when User click 'Reply'" % reply_to_message_text)
+        except NoSuchElementException:
+            return ReturnType(False, "Selected message not displayed when User click 'Reply' option")
+
     def reply_to_message(self, reply_to_message_text, reply_message):
-        self.obj.element_click(
-            ('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
+        self.obj.element_click(('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
         self.send_message_in_chat(reply_message)
+
+    def is_reply_message_present(self,expected_message):
+        self.wait_for_locator_webdriver(self.reply_message_by_tutor)
+        actual_message = self.obj.get_element(('xpath',self.reply_message_by_tutor)).text
+        if actual_message == expected_message:
+            return ReturnType(True, "Tutor's reply message  to student is present")
+        else:
+            return ReturnType(False, "Tutor's reply message  to student is not present on screen")
+
+    def is_send_button_enabled(self):
+        try:
+            self.obj.wait_for_clickable_element_webdriver(self.send_icon)
+            enabled = self.obj.get_element(('xpath',self.send_icon)).is_enabled()
+            return ReturnType(True, "send button is clickable") if enabled else ReturnType(False,"send button is not clickable")
+        except NoSuchElementException:
+            return ReturnType(False, "send button is not present")
+
+    def click_on_sticker_icon(self):
+        self.wait_for_element_visible(("xpath", self.emoji_icon))
+        self.get_element(("xpath", self.emoji_icon)).click()
+
+    def verify_no_of_default_stickers(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.sticker_item))
+            stickers = self.get_elements(("xpath", self.sticker_item))
+            flag = len(stickers) == 11
+            return ReturnType(True, "All 11 default stickers are shown") if flag else ReturnType(False,"All 11 default stickers are not shown")
+        except NoSuchElementException:
+            return ReturnType(False,"Stickers are not shown")
+
+    def send_sticker_tutor(self):
+        self.element_click(("xpath", self.emoji_icon))
+        self.wait_for_element_visible(("xpath", self.sticker_item))
+        self.get_element(("xpath", self.sticker_item)).click()
+
+    def is_sticker_displayed_tutor(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.sticker_onchat))
+            return ReturnType(True, " Sticker is being displayed") if self.obj.is_element_present(("xpath", self.sticker_onchat))\
+                else ReturnType(False, "Sticker is not being displayed")
+        except NoSuchElementException:
+            return ReturnType(False, " Sticker is not being displayed")
+
+    def tap_outside_dialog_layout(self):
+        try:
+            self.action.move_by_offset(100, 100).double_click().perform()
+        except:
+            pass
+
+    def get_student_name_chat(self):
+        name_set = set()
+        students_elts = self.obj.get_elements(('xpath',self.message_block_container))
+        for elt in students_elts:
+            student_name = elt.text
+            name_set.add(student_name)
+        return name_set
+
+    def verify_chat_elements_tutor(self):
+        self.obj.wait_for_locator_webdriver(self.chat_widget_view)
+        flag1 = self.obj.is_element_present(("xpath", self.chat_widget_view))
+        flag2 = self.obj.is_element_present(("xpath", self.emoji_icon))
+        flag3 = self.obj.is_element_present(('xpath', self.type_something_inputcard))
+        flag4 = self.obj.is_element_present(("xpath", self.send_icon))
+        return flag1 and flag2 and flag3 and flag4
+
+    def is_tutor_message_right_aligned(self):
+        try:
+            tutor_chat_elements = self.obj.get_elements(self.chatWidgetMessageView_tutor)
+            for tutor_chat_element in tutor_chat_elements:
+                if tutor_chat_element.value_of_css_property('text-align') == '-webkit-right':
+                    return ReturnType(True, "Tutor chat elements are right aligned")
+                else:
+                    return ReturnType(False, "Tutor chat elements are not right aligned")
+        except NoSuchElementException:
+            return ReturnType(False, "Tutor chat elements are not present")
+
+    def is_student_message_left_aligned(self):
+        try:
+            student_chat_elements = self.obj.get_elements(self.chatWidgetMessageView_student)
+            for student_chat_element in student_chat_elements:
+                if student_chat_element.value_of_css_property('text-align') == 'left':
+                    return ReturnType(True, "Tutor chat elements are left aligned")
+                else:
+                    return ReturnType(False, "Tutor chat elements are not left aligned")
+        except NoSuchElementException:
+            return ReturnType(False, "Studengt chat elements are not present")
+
+    def page_refresh_and_rejoin(self):
+        self.driver.refresh()
+        self.obj.wait_for_clickable_element_webdriver(self.neo_start_button)
+        self.obj.element_click(('xpath', self.neo_start_button))
+
+    def neo_tutor_mobile_web(self):
+        self.driver.set_window_size(1280, 800)
+        size = self.driver.get_window_size()
+        print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
 
     def verify_ban_approve_reject_present(self):
         is_ban_present = self.obj.is_element_present(('xpath', self.ban))
@@ -882,7 +1017,7 @@ class NeoTute(CommonMethodsWeb):
             self.wait_for_locator_webdriver(self.add_slide)
             active_content= self.obj.get_element(("css",".slide--active div.slide__content_box div.slide__slide_number"))
             active_slide_num = active_content.text
-            return active_slide_num.lstrip("0")
+            return int(active_slide_num.lstrip("0"))
         except:
             return None
 
@@ -1197,7 +1332,6 @@ class NeoTute(CommonMethodsWeb):
         except:
             pass
 
-
     def is_floating_emojis_present_in_tute(self):
         self.obj.wait_for_locator_webdriver(self.floating_emojis)
         if self.obj.is_element_present(('xpath', self.floating_emojis)):
@@ -1205,13 +1339,10 @@ class NeoTute(CommonMethodsWeb):
         else:
             return ReturnType(False, 'floaters are not displayed')
 
-
     def enable_disable_chat(self, flag = "enable"):
         if flag == "enable":
             self.wait_for_clickable_element_webdriver(self.chat_off)
             self.element_click(("xpath",self.chat_off))
-        else:
+        elif flag == "disable":
             self.wait_for_clickable_element_webdriver(self.chat_on)
             self.element_click(("xpath", self.chat_on))
-
-

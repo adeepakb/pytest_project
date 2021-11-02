@@ -109,6 +109,8 @@ class NeoInClass(CommonMethodsWeb):
         self.chat_by_tutor = "//div[@class='text isTutor']"
         self.chat_by_me = "//div[@class = 'chatCard isMe']"
         self.send_chat_button = "//*[@class='sendAction']"
+        self.chat_forum_container = "//div[@class='chatContainer']"
+        self.chat_card_parent_elt = '//*[contains(@class,"chatCard")]/parent::div'
         self.chat_header = "//div[@class='chatContainer__chatheader']"
         self.chat_container_title = ".//div[@class='chatContainer__title']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
@@ -1094,7 +1096,7 @@ class NeoInClass(CommonMethodsWeb):
                                                                                                                 "Presentation is not being displayed")
 
     def do_full_screen_presentation(self):
-        self.wait_for_element_visible(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
+        self.obj.wait_for_locator_webdriver("//div[@class='iconWrapper icon icon--marginRight']")
         maximize_icon = self.obj.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         try:
             self.action.move_to_element(maximize_icon).click().perform()
@@ -1239,6 +1241,32 @@ class NeoInClass(CommonMethodsWeb):
             flag = self.get_element(("xpath", self.tutor_thumbnail)).is_deplayed()
             return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
                                                                                          "Tutor thumbnail is shown ")
+
+    def chat_container_visible(self):
+        try:
+            enabled = self.obj.get_element(('xpath', self.chat_forum_container)).is_enabled()
+            return enabled
+        except NoSuchElementException:
+            return False
+
+    def get_last_chat_data_index(self):
+        elements = self.obj.get_elements(("xpath",self.chat_card_parent_elt))
+        data_index = elements[-1].get_attribute('data-index')
+        return int(data_index)
+
+    def scroll_messages_from_top_to_bottom(self):
+        try:
+            while True:
+                self.obj.wait_for_element_visible(('css', 'div.message'))
+                msg_elements = self.obj.get_elements(('css', 'div.message'))
+                length = len(msg_elements)
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", msg_elements[length - 1])
+                time.sleep(2)
+                next_msg_elements = self.obj.get_elements(('css', 'div.message'))
+                if msg_elements == next_msg_elements:
+                    break
+        except:
+            return False
 
     # tutorStreamCard
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
