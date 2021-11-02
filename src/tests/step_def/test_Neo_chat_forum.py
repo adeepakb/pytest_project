@@ -396,7 +396,7 @@ def step_impl(neo_in_class,test_tut):
     neo_in_class.send_chat("This is for reply")
     initial_no = len(neo_in_class.get_all_chats())
     test_tut.reply_to_message(reply_to_message_text = 'This is for reply', reply_message ='This is tutor reply')
-    final_no =len(neo_in_class.get_all_chats())
+    final_no = len(neo_in_class.get_all_chats())
     flag = (final_no == initial_no + 1)
     check.equal(flag, True, "Message count is not increased when tutor replies a message")
 

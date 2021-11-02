@@ -103,12 +103,32 @@ def step_impl(neo_in_class):
     check.equal(details.result, True, details.reason)
 
 
+@then("Verify that the student should join and leave the class multiple times")
+def step_impl(neo_in_class):
+    neo_in_class.exit_session()
+    neo_in_class.join_neo_session_from_classes_page_paid()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
+    neo_in_class.exit_session()
+    neo_in_class.join_neo_session_from_classes_page_paid()
+
+
 @then("Verify that confirmation popup should be displayed when user click on leave the session")
 def step_impl(neo_in_class):
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
     neo_in_class.click_on_kebab_menu()
     neo_in_class.click_on_exit_class_in_student()
     flag =neo_in_class.verify_header_in_exit_class_popup()
-    check.equal(flag,True, "Confirmation popup is not displated")
+    check.equal(flag,True, "Confirmation popup is not displayed")
     neo_in_class.click_on_stayback_in_exit_popup()
 
 
+@then("verify that validation should be displayed when user try join the class with out internet connection")
+def step_impl(neo_in_class):
+    neo_in_class.exit_session()
+    neo_in_class.set_wifi_connection_off()
+    neo_in_class.join_neo_session_student('mic-on', 'cam-on')
+    neo_in_class.verify_join_session_network_error_popup()
+    neo_in_class.set_wifi_connection_on()
+    neo_in_class.click_on_retry_button()
+    details = neo_in_class.verify_class_started_message()
+    check.equal(details.result, True, details.reason)

@@ -181,7 +181,11 @@ class NeoInClass(CommonMethodsWeb):
         self.session_elemnts= "//div[@class = 'type-video masterOrRegularCardContainer']"
         self.session_time_text = ".//div[@class = 'future-join-text']"
         self.session_join= ".//span[@class = 'MuiButton-label']"
-
+        self.newtork_join_dialog ="//div[@class = 'neo_cl_Button Button--primary Button--rounded Button--block-width']"
+        self.network_join_dilog_message = "//div[@class = 'subText']"
+        self.network_join_dilog_message1= "//div[@class = 'text']"
+        self.network_join_dilog_retry = "//div[contains(text(),'Retry')]"
+        self.join_message = "//span[@class = 'Session--join_info sessionStarted']"
         # inclass
         self.weak_signal_indicator = '//*[@class="neo_cl_SignalStrength--text weak"]'
         self.students_right_arrow = '//div[contains(@class,"streamList__scrollerBtns streamList__scrollerBtns--right")]'
@@ -1346,18 +1350,16 @@ class NeoInClass(CommonMethodsWeb):
         self.element_click(("xpath", self.home_join_button))
 
     def join_neo_session_from_classes_page_paid(self):
-        self.wait_for_element_visible(("xpath", "//span[@class = 'MuiTab-wrapper']"))
-
-        self.wait_for_element_visible(("xpath", "//div[@class='btnCard']"))
-        elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
-        element = self.get_child_element(elements[1], "xpath",
+        try:
+            self.wait_for_element_visible(("xpath", "//span[@class = 'MuiTab-wrapper']"))
+            self.wait_for_element_visible(("xpath", "//div[@class='btnCard']"))
+            elements = self.get_elements(("xpath", "//div[@class='listViewContainer']"))
+            element = self.get_child_element(elements[0], "xpath",
                                          ".//div[@class='type-video masterOrRegularCardContainer']")
-        self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
-        self.turn_off_mic_from_student_join_page()
-        self.turn_off_video_from_student_join_page()
-        self.wait_for_clickable_element_webdriver("//span[contains(text(),'Join Class')]")
+            self.get_child_element(element, "xpath", ".//div[@class='btnCard']").click()
 
-        self.element_click(("xpath", "//span[contains(text(),'Join Class')]"))
+        except:
+            pass
 
     def turn_off_mic_from_student_join_page(self):
         self.wait_for_element_visible(("xpath", self.mic_video_buttons_on_join_screen))
@@ -2473,7 +2475,8 @@ class NeoInClass(CommonMethodsWeb):
 
     def verify_class_started_message(self):
         try:
-            text =self.get_element(("xpath","//div[@class = 'Session--join_info sessionStarted']"))
+
+            text =self.get_element(("xpath",self.join_message)).text
             flag = "STARTED" in text
             return ReturnType(True, "Class started message is displayed") if flag else ReturnType(False, "Class started message is not displayed")
         except:
@@ -2481,22 +2484,29 @@ class NeoInClass(CommonMethodsWeb):
 
     def exit_session(self):
         try:
-            self.click_on_kebab_menu()
-            self.click_on_exit_class_in_student()
-            self.click_on_exit_class_in_exit_popup()
+            if not self.verify_class_started_message().result:
+                self.click_on_kebab_menu()
+                self.click_on_exit_class_in_student()
+                self.click_on_exit_class_in_exit_popup()
+                self.click_on_close_icon_in_rating()
         except:
-            check.equal(False, True,"Could exit the session")
+            pass
+
+    def verify_join_session_network_error_popup(self):
+        try:
+            self.wait_for_element_visible(("xpath",self.newtork_join_dialog))
+            message = self.get_element(("xpath",self.network_join_dilog_message)).text
+            flag1= "StudentList : Please connect to network and try again later." in message
+            message1 = self.get_element(("xpath", self.network_join_dilog_message1)).text
+            flag2 = "Failed to fetch data" in message1
+            return ReturnType(True,"join session network dialog is correct") if all((flag1, flag2)) else ReturnType(False,"join session network dialog is not correct")
+        except:
+            return ReturnType(False,"join session network dialog is not correct")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def click_on_retry_button(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.network_join_dilog_retry))
+            self.element_click(("xpath", self.network_join_dilog_retry))
+        except:
+            check.equal(True,False,"Couldnt click on rejoin button")
