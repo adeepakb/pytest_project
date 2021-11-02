@@ -582,13 +582,14 @@ def step_impl(test_tut):
 
 @then('Verify that messages & stickers on mobile web.')
 def step_impl(test_tut):
-    test_tut.neo_tutor_mobile_web()
+    test_tut.change_browser_size(1280, 800)
     student_message = "Message from student"
     detail_1 = test_tut.is_message_present_for_tutor(student_message)
     check.equal(detail_1.result, True, detail_1.reason)
     test_tut.send_sticker_tutor()
     detail_2 = test_tut.is_sticker_displayed_tutor()
     check.equal(detail_2.result, True, detail_2.reason)
+    test_tut.change_browser_size('default','default')
 
 
 @then("Verify message count in Class Forum when tutor send messages")

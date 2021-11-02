@@ -395,6 +395,7 @@ class NeoTute(CommonMethodsWeb):
     def click_close_reply_message(self,student_message):
         self.obj.wait_for_element_visible(("xpath", self.reply_close))
         self.obj.element_click(("xpath", self.reply_close))
+        self.obj.wait_for_invisibility_of_element(("xpath", self.reply_close))
         return self.selected_message_present_on_reply(student_message)
 
     def selected_message_present_on_reply(self,reply_to_message_text):
@@ -501,10 +502,11 @@ class NeoTute(CommonMethodsWeb):
         self.obj.wait_for_clickable_element_webdriver(self.neo_start_button)
         self.obj.element_click(('xpath', self.neo_start_button))
 
-    def neo_tutor_mobile_web(self):
-        self.driver.set_window_size(1280, 800)
-        size = self.driver.get_window_size()
-        print("Window size: width = {}px, height = {}px.".format(size["width"], size["height"]))
+    def change_browser_size(self, width='default', height='default'):
+        if width == height == 'default':
+            self.driver.maximize_window()
+        else:
+            self.driver.set_window_size(width, height)
 
     def verify_ban_approve_reject_present(self):
         is_ban_present = self.obj.is_element_present(('xpath', self.ban))

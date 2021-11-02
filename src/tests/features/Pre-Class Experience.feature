@@ -1,6 +1,6 @@
 Feature: Pre-Class Experience
 
-
+#
   Scenario: Verify profile photo upload, approval and reject photo scenarios
     Given launch the application online as neo user and navigate to home screen
     And tutor start the session
@@ -58,7 +58,7 @@ Feature: Pre-Class Experience
 
 
   Scenario: Verify the preclass experience feature in mobile
-    Given Launch the application online in mobile
+    Given Launch the application online in mweb
     And tutor start the session
     When click on "JOIN" button in home page
     Then Verify the font of session description in landscape mode in mobile browser

@@ -164,6 +164,7 @@ def step_impl(student1_neo):
     student1_neo.select_any_celebration_symbol('like')
     details = student1_neo.is_floating_emojis_present()
     check.equal(details.result, True, details.reason)
+    student1_neo.set_network_on()
 
 
 @then('Verify the interval time after sending 5 emojis')
