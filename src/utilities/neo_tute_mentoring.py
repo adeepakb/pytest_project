@@ -107,7 +107,7 @@ class NeoTute(CommonMethodsWeb):
         self.student_card_menu = ".//div[contains(@class,'neo_cl_StreamCard__icon--menuOption')]"
         self.student_card_pin_student_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomLeft')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
         self.student_card_ask_question_icon = "//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"
-        self.student_video_container = "//div[@class='neo_cl_VideoContainer']"
+        self.student_video_container = "//div[contains(@class,'neo_cl_StreamCard')]/div[contains(@class,'neo_cl_VideoContainer')]"
         self.relaunch_error = "//*[contains(@class ,'Mui-error')]"
         self.neo_dashborad_class = "xpath", "//div[@class='neoDashboard__classInfo']"
         self.start_class_button = "xpath", "//span[contains(text(), 'Start Class')]"
@@ -594,8 +594,6 @@ class NeoTute(CommonMethodsWeb):
         print(student_names)
         return student_names
 
-
-
     def get_student_video_status(self):
         student_video_status = {}
         cards = self.obj.get_elements(('xpath', self.student_cards))
@@ -604,9 +602,8 @@ class NeoTute(CommonMethodsWeb):
             student_name = cards[i].text
             stream_id = video_cards[i].get_attribute('id')
             try:
-                self.obj.get_element(
-                    ('xpath', "//div[@id='" + stream_id + "']/div[@class='neo_cl_VideoContainer__profilePic']"))
-                student_video_status.update({student_name: False})
+                self.obj.get_element(('xpath', "//div[@id='" + stream_id + "']/div[@class='neo_cl_NameCard_container' or contains(@class,'neo_cl_VideoContainer__profilePic')]"))
+                student_video_status.update({student_name.split('\n')[-1]: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
         return student_video_status
@@ -629,18 +626,17 @@ class NeoTute(CommonMethodsWeb):
 
     # menu_item options : Pin Student,Unpin student, Ask Question,Remove from Ask Question,View Performance, Send An Award
     def click_on_menu_option(self, expected_student_name, menu_item):
+        self.obj.wait_for_locator_webdriver(self.student_cards)
         cards = self.obj.get_elements(('xpath', self.student_cards))
         for card in cards:
             actual_student_name = card.text
             if expected_student_name == actual_student_name or expected_student_name in actual_student_name:
-                menu_icon = self.get_child_element(card,"xpath",self.student_card_menu)
                 menu_icon = self.get_child_element(card, "xpath", self.student_card_menu)
                 self.chrome_driver.execute_script("arguments[0].click();", menu_icon)
-                #self.obj.element_click(('xpath', "//div[text()='" + menu_item + "']"))
                 self.wait_for_clickable_element_webdriver(".//div[text()='" + menu_item + "']")
                 try:
                     self.get_child_element(card, 'xpath', ".//div[text()='" + menu_item + "']").click()
-                except:
+                except NoSuchElementException:
                     pass
                 break
 
@@ -659,18 +655,40 @@ class NeoTute(CommonMethodsWeb):
                     return False
 
     def is_ask_question_icon_displayed(self, expected_student_name):
-        cards = self.obj.get_elements(('xpath', self.student_cards))
-        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
-        for i in range(len(cards)):
-            actual_student_name = cards[i].text
-            stream_id = video_cards[i].get_attribute('id')
-            if expected_student_name == actual_student_name:
-                try:
-                    self.obj.get_element(('xpath',
-                                          "//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
-                    return True
-                except NoSuchElementException:
-                    return False
+        try:
+            self.obj.wait_for_locator_webdriver(self.student_cards)
+            cards = self.obj.get_elements(('xpath', self.student_cards))
+            video_cards = self.obj.get_elements(('xpath', self.student_video_container))
+            for i in range(len(cards)):
+                actual_student_name = cards[i].text
+                stream_id = video_cards[i].get_attribute('id')
+                if expected_student_name == actual_student_name:
+                    try:
+                        self.obj.wait_for_locator_webdriver(("//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        return True
+                    except NoSuchElementException:
+                        return False
+        except NoSuchElementException:
+            return False
+
+    def is_hand_raise_icon_displayed(self, expected_student_name):
+        try:
+            self.obj.wait_for_locator_webdriver(self.student_cards)
+            cards = self.obj.get_elements(('xpath', self.student_cards))
+            video_cards = self.obj.get_elements(('xpath', self.student_video_container))
+            for i in range(len(cards)):
+                actual_student_name = cards[i].text
+                stream_id = video_cards[i].get_attribute('id')
+                if expected_student_name == actual_student_name:
+                    try:
+                        self.obj.wait_for_locator_webdriver(("//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        self.obj.get_element(('xpath',"//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        return True
+                    except NoSuchElementException:
+                        return False
+        except NoSuchElementException:
+            return False
 
     def join_a_neo_session_as_tutor(self, **kwargs):
         db = kwargs['db']
@@ -870,7 +888,7 @@ class NeoTute(CommonMethodsWeb):
     def play_pause_the_video(self):
         try:
             self.get_element(self.play_pause).click()
-        except:
+        except NoSuchElementException:
             check.equal(True, False, "Couldn't play or pause video")
 
     def verify_video_full_screen(self):
@@ -879,11 +897,8 @@ class NeoTute(CommonMethodsWeb):
                                      "//div[@class='full-screenMode playerWrapper']")).is_displayed()
             return ReturnType(True, "video full screen is being displayed") if flag else ReturnType(True,
                                                                                                     "video full screen is being displayed")
-        except:
-            ReturnType(True,
-                       "video full screen is being displayed")
-
-
+        except NoSuchElementException:
+            ReturnType(True,"video full screen is being displayed")
 
     def maximize_video(self):
         try:
@@ -892,7 +907,7 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(True, "Video is maximized")
             else:
                 return ReturnType(False, "Video is not maximized")
-        except:
+        except NoSuchElementException:
             return ReturnType(True, "Video is maximized")
 
     def minimize_video(self):
@@ -902,38 +917,52 @@ class NeoTute(CommonMethodsWeb):
                 return ReturnType(True, "Video is minimized")
             else:
                 return ReturnType(False, "Video is not maximized")
-        except:
+        except NoSuchElementException:
             return ReturnType(True, "Video is maximized")
 
     def mute_unmute_video(self):
         try:
             self.get_element(self.mute_unmute).click()
-        except:
+        except NoSuchElementException:
             check.equal(False, True, "Couldn't unmute the video")
 
-    def get_time_elapsed_in_video(self):
+    def is_volume_slider_present(self):
+        self.obj.wait_for_element_visible(('xpath', "//input[@class='input-range']"))
+        return self.obj.is_element_present(('xpath', "//input[@class='input-range']"))
 
+    def select_volume(self, action, size):
+        volume_control_icon = self.obj.get_element(self.mute_unmute)
+        hover = self.action.move_to_element(volume_control_icon)
+        hover.perform()
+        previous_volume = self.obj.get_element(('xpath', "//input[@class='input-range']")).get_attribute('value')
+        for i in range(size):
+            if action == "increment":
+                self.obj.enter_text(Keys.ARROW_UP, ('xpath', "//input[@class='input-range']"))
+                current_volume = self.obj.get_element(('xpath', "//input[@class='input-range']")).get_attribute('value')
+                return True if current_volume > previous_volume else False
+            elif action == "decrement":
+                self.obj.enter_text(Keys.ARROW_DOWN, ('xpath', "//input[@class='input-range']"))
+                current_volume = self.obj.get_element(('xpath', "//input[@class='input-range']")).get_attribute('value')
+                return True if current_volume < previous_volume else False
+
+    def get_time_elapsed_in_video(self):
         return self.get_element(self.time_elapsed).text
 
     def verify_video_is_presented(self):
         try:
             container = self.get_element(self.presentation_container)
             flag = self.get_child_element(container, *self.video_presentation).is_displayed()
-            return ReturnType(True, "Video is being presented") if flag else ReturnType(False,
-                                                                                        "Video is not being presented")
-        except:
-            return ReturnType(False,
-                              "Video is not being presented")
+            return ReturnType(True, "Video is being presented") if flag else ReturnType(False,"Video is not being presented")
+        except NoSuchElementException:
+            return ReturnType(False,"Video is not being presented")
 
     def verify_image_is_presented(self):
         try:
             container = self.get_element(self.presentation_container)
             flag = self.get_child_element(container, *self.image_presentation).is_displayed()
-            return ReturnType(True, "Image is being presented") if flag else ReturnType(False,
-                                                                                        "Image is not being presented")
-        except:
-            return ReturnType(False,
-                              "Image is not being presented")
+            return ReturnType(True, "Image is being presented") if flag else ReturnType(False,"Image is not being presented")
+        except NoSuchElementException:
+            return ReturnType(False, "Image is not being presented")
 
     def verify_blank_screen_presented(self):
         container = self.get_element(self.presentation_container)
@@ -945,9 +974,7 @@ class NeoTute(CommonMethodsWeb):
             flag2 = self.get_child_element(container, *self.video_presentation).is_displayed()
         except:
             flag2 = False
-
         flag = any((flag1, flag2))
-
         return ReturnType(False, " Blank screen is not presented") if flag else ReturnType(True,
                                                                                            "Blank screen is presented")
 
@@ -1008,7 +1035,7 @@ class NeoTute(CommonMethodsWeb):
                 card_src = slide_card.find_element_by_xpath(".//div/div/img").get_attribute("src")
                 if 'defaultVideoThumbnail' in card_src :
                     slide_num = slide_card.get_attribute("innerText").split('\n')[0].lstrip("0")
-                    return slide_num
+                    return int(slide_num)
                 else:
                     continue
             except:
@@ -1206,7 +1233,6 @@ class NeoTute(CommonMethodsWeb):
         length = len(elements)
         self.scroll_from_top_to_bottom(length)
         elements[0].click()
-        time.sleep(5)
 
     def is_present_icon_available_on_new_slide(self):
         self.wait_for_locator_webdriver(self.add_slide)
@@ -1300,8 +1326,8 @@ class NeoTute(CommonMethodsWeb):
                 self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
             else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
                 desired_element = None
                 for element in elements:
                     if "cam-on" in element.get_attribute('innerHTML'):
@@ -1315,6 +1341,7 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_audio_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
                 elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
@@ -1322,15 +1349,17 @@ class NeoTute(CommonMethodsWeb):
                         desired_element = element.find_element_by_xpath("//img")
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
             else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
                 desired_element = None
                 for element in elements:
                     if "mic-on" in element.get_attribute('innerHTML'):
                         desired_element = element
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
         except:
             pass
 
