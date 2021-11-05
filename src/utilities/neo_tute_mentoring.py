@@ -655,32 +655,40 @@ class NeoTute(CommonMethodsWeb):
                     return False
 
     def is_ask_question_icon_displayed(self, expected_student_name):
-        cards = self.obj.get_elements(('xpath', self.student_cards))
-        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
-        for i in range(len(cards)):
-            actual_student_name = cards[i].text
-            stream_id = video_cards[i].get_attribute('id')
-            if expected_student_name == actual_student_name:
-                try:
-                    self.obj.wait_for_locator_webdriver(("//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
-                    self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
-                    return True
-                except NoSuchElementException:
-                    return False
+        try:
+            self.obj.wait_for_locator_webdriver(self.student_cards)
+            cards = self.obj.get_elements(('xpath', self.student_cards))
+            video_cards = self.obj.get_elements(('xpath', self.student_video_container))
+            for i in range(len(cards)):
+                actual_student_name = cards[i].text
+                stream_id = video_cards[i].get_attribute('id')
+                if expected_student_name == actual_student_name:
+                    try:
+                        self.obj.wait_for_locator_webdriver(("//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        return True
+                    except NoSuchElementException:
+                        return False
+        except NoSuchElementException:
+            return False
 
     def is_hand_raise_icon_displayed(self, expected_student_name):
-        cards = self.obj.get_elements(('xpath', self.student_cards))
-        video_cards = self.obj.get_elements(('xpath', self.student_video_container))
-        for i in range(len(cards)):
-            actual_student_name = cards[i].text
-            stream_id = video_cards[i].get_attribute('id')
-            if expected_student_name == actual_student_name:
-                try:
-                    self.obj.wait_for_locator_webdriver(("//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
-                    self.obj.get_element(('xpath',"//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
-                    return True
-                except NoSuchElementException:
-                    return False
+        try:
+            self.obj.wait_for_locator_webdriver(self.student_cards)
+            cards = self.obj.get_elements(('xpath', self.student_cards))
+            video_cards = self.obj.get_elements(('xpath', self.student_video_container))
+            for i in range(len(cards)):
+                actual_student_name = cards[i].text
+                stream_id = video_cards[i].get_attribute('id')
+                if expected_student_name == actual_student_name:
+                    try:
+                        self.obj.wait_for_locator_webdriver(("//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        self.obj.get_element(('xpath',"//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        return True
+                    except NoSuchElementException:
+                        return False
+        except NoSuchElementException:
+            return False
 
     def join_a_neo_session_as_tutor(self, **kwargs):
         db = kwargs['db']
@@ -1225,7 +1233,6 @@ class NeoTute(CommonMethodsWeb):
         length = len(elements)
         self.scroll_from_top_to_bottom(length)
         elements[0].click()
-        time.sleep(5)
 
     def is_present_icon_available_on_new_slide(self):
         self.wait_for_locator_webdriver(self.add_slide)
@@ -1319,8 +1326,8 @@ class NeoTute(CommonMethodsWeb):
                 self.action.move_to_element(desired_element).click().perform()
                 time.sleep(2)
             else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
                 desired_element = None
                 for element in elements:
                     if "cam-on" in element.get_attribute('innerHTML'):
@@ -1334,6 +1341,7 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_audio_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
                 elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
@@ -1341,15 +1349,17 @@ class NeoTute(CommonMethodsWeb):
                         desired_element = element.find_element_by_xpath("//img")
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
             else:
-                elements = self.get_elements(
-                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
+                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon']")
+                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon']"))
                 desired_element = None
                 for element in elements:
                     if "mic-on" in element.get_attribute('innerHTML'):
                         desired_element = element
                         break
                 self.action.move_to_element(desired_element).click().perform()
+                time.sleep(2)
         except:
             pass
 

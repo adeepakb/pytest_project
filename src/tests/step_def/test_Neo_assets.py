@@ -84,6 +84,8 @@ def step_impl(neo_tute):
 
 @then('Verify that Audio Mute icon should be displayed when User mutes the audio')
 def step_impl(neo_tute, neo_in_class):
+    neo_tute.present_any_slide(1)
+    neo_tute.select_focus_mode('off')
     neo_in_class.turn_on_off_student_mic('OFF')
     student_details = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
     expected_student_name = student_details['name']
