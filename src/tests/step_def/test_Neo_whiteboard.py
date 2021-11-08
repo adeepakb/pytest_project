@@ -87,9 +87,9 @@ def step_impl(neo_in_class):
 
 @then("Verify the elements in default whiteboard screen when user lands on.")
 def step_impl(neo_tute,neo_in_class):
-    n = 1
     neo_tute.click_on_tab_item(tab_name="Session Slides")
     neo_tute.select_focus_mode('off')
+    n = neo_tute.active_presentation_slide_number()
     neo_tute.present_any_slide(n)
     neo_tute.click_on_add_slide()
     neo_tute.present_any_slide(n + 1)
