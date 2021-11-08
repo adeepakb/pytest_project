@@ -1032,13 +1032,18 @@ class NeoTute(CommonMethodsWeb):
         slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))
         for slide_card in slide_cards:
             try:
+                card_name_obj = slide_card.find_element_by_xpath(".//div//div[@class='slide__slide_name']")
+                card_name = card_name_obj.get_attribute("innerHTML")
+                if card_name == 'Blank Slide':
+                    self.obj.element_click(('xpath',"//div[@class='slide__slide_name' and text()='Blank Slide']/parent::div//div/div[@class='neo_cl_icon']"))
+                    continue
                 card_src = slide_card.find_element_by_xpath(".//div/div/img").get_attribute("src")
                 if 'defaultVideoThumbnail' in card_src :
                     slide_num = slide_card.get_attribute("innerText").split('\n')[0].lstrip("0")
                     return int(slide_num)
                 else:
                     continue
-            except:
+            except NoSuchElementException:
                 return None
 
     def active_presentation_slide_number(self):
