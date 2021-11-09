@@ -104,7 +104,7 @@ def step_impl(student1_neo):
     details = student1_neo.is_reactions_icons_present()
     check.equal(details.result, True, details.reason)
 
-@then('Verify that when a student send celebration, other students should be able to see the same')
+
 @then("Verify that when student tap on celebrations icon in website, same emoji's reaction keeps coming")
 @then('Verify that 4 celebrations icon appear when student tap on celebration icon when logged in from mobile browser')
 @then('Verify the emoji clicking once')
@@ -164,6 +164,7 @@ def step_impl(student1_neo):
     student1_neo.select_any_celebration_symbol('like')
     details = student1_neo.is_floating_emojis_present()
     check.equal(details.result, True, details.reason)
+    student1_neo.set_network_on()
 
 
 @then('Verify the interval time after sending 5 emojis')
@@ -201,6 +202,13 @@ def step_impl(student1_neo,student2,student2_neo):
     student2.login_and_navigate_to_home_screen('+91-', '2016170445', otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session_student('mic-on', 'cam-on')
+    check.equal(student2_neo.is_thumb_icon_present(),True,"Student 2 screen not loaded")
+    retry = 5
+    while retry:
+        all_student_names = student2_neo.get_all_student_names()
+        student1_name = get_data(Login_Credentials, "neo_login_detail3",'student1')['name']
+        if student1_name in all_student_names:
+            break
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')
     student1_neo.select_any_celebration_symbol('clap')

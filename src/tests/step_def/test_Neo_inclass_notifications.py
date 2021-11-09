@@ -98,13 +98,17 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify that the in-class notifications do not cover the video/content when full screen is not active')
 def step_impl(neo_tute, student1_neo):
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     # student1_neo.hover_on_inclass_audio_icon()
     # details = student1_neo.is_mic_disabled_tooltip_present()
     # check.equal(details.result, True, details.reason)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
+    neo_tute.select_focus_mode('off')
 
 
 @then('Verify that when the student lowers hand a toast message is displayed prompting that student has lowered hand')
@@ -151,12 +155,17 @@ def step_impl(student1_neo):
 
 @then('Verify that there is no distortion on the in-class notifications toast message or the session content when they appear or disappear from the screen')
 def step_impl(neo_tute,student1_neo):
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
+    neo_tute.select_focus_mode('off')
     student1_neo.click_on_hand_raise()
     student1_neo.click_on_hand_raise()
     details = student1_neo.verify_text_in_lower_hand_tooltip()
     check.equal(details.result, True, details.reason)
+    student1_neo.click_on_close_icon_in_toast_msg()
 
 @then("Verify that the in-class notifications toast message should have tutor's image and indication that the message is from tutor")
 def step_impl(neo_tute, student1_neo):

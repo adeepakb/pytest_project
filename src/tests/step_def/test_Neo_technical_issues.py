@@ -48,6 +48,7 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 @given("tutor start the session")
 def step_impl(neo_tute):
     neo_tute.start_neo_session()
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
     neo_tute.select_focus_mode('off')
 
 

@@ -19,8 +19,8 @@ class LoginWeb(LoginBase):
     def __init__(self, driver):
         if driver is None:
             chrome_options = Options()
-            #chrome_options.add_argument('--no-sandbox')
-            #chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--headless')
             chrome_options.add_argument("--use-fake-ui-for-media-stream")
             chrome_options.add_argument("--use-fake-device-for-media-stream")
             self.driver = webdriver.Chrome(options=chrome_options)

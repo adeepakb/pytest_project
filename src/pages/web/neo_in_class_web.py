@@ -109,6 +109,8 @@ class NeoInClass(CommonMethodsWeb):
         self.chat_by_tutor = "//div[@class='text isTutor']"
         self.chat_by_me = "//div[@class = 'chatCard isMe']"
         self.send_chat_button = "//*[@class='sendAction']"
+        self.chat_forum_container = "//div[@class='chatContainer']"
+        self.chat_card_parent_elt = '//*[contains(@class,"chatCard")]/parent::div'
         self.chat_header = "//div[@class='chatContainer__chatheader']"
         self.chat_container_title = ".//div[@class='chatContainer__title']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
@@ -279,8 +281,6 @@ class NeoInClass(CommonMethodsWeb):
             for element in elements:
                 try:
                     timer_element_displayed = self.get_child_element(element, "xpath",
-                                                                     ".//div[@class = 'future-join-text']").is_displayed()
-                    timer_element_displayed = self.get_child_element(element, "xpath",
                                                                      self.session_time_text).is_displayed()
                 except:
                     timer_element_displayed = False
@@ -323,9 +323,7 @@ class NeoInClass(CommonMethodsWeb):
             student_name = cards[i].get_attribute('innerHTML')
             stream_id = video_cards[i].get_attribute('id')
             try:
-                self.obj.get_element(
-                    ('xpath',
-                     "//div[@id='" + stream_id + "']/div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']"))
+                self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[@class ='neo_cl_NameCard localNameCardClass' or @class ='neo_cl_NameCard nameCardClass']"))
                 student_video_status.update({student_name: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
@@ -545,7 +543,10 @@ class NeoInClass(CommonMethodsWeb):
         if self.obj.is_element_present(('xpath', self.floating_emojis)):
             return ReturnType(True, 'floaters are displayed')
         else:
+            # log = self.driver.get_log('browser')
+            # print(log)
             return ReturnType(False, 'floaters are not displayed')
+
 
     def click_on_thumb_icon(self):
         self.obj.wait_for_locator_webdriver(self.thumb_icon)
@@ -925,6 +926,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'the text in popup doesnt match')
 
     def select_any_option_in_rating(self, rating_opt):
+        self.obj.wait_for_locator_webdriver(self.rating_options)
         try:
             options = self.obj.get_elements(('xpath', self.rating_options))
             for option in options:
@@ -957,6 +959,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(False, 'the text in popup doesnt match')
 
     def select_any_feedback_option(self, feedback_opt):
+        self.obj.wait_for_locator_webdriver(self.feedback_options)
         try:
             fb_options = self.obj.get_elements(('xpath', self.feedback_options))
             for option in fb_options:
@@ -1111,7 +1114,7 @@ class NeoInClass(CommonMethodsWeb):
                                                                                                                 "Presentation is not being displayed")
 
     def do_full_screen_presentation(self):
-        self.wait_for_element_visible(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
+        self.obj.wait_for_locator_webdriver("//div[@class='iconWrapper icon icon--marginRight']")
         maximize_icon = self.obj.get_element(("xpath", "//div[@class='iconWrapper icon icon--marginRight']"))
         try:
             self.action.move_to_element(maximize_icon).click().perform()
@@ -1266,12 +1269,39 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, "Tutor thumbnail is shown ") if flag else ReturnType(False,
                                                                                          "Tutor thumbnail is shown ")
 
+    def chat_container_visible(self):
+        try:
+            enabled = self.obj.get_element(('xpath', self.chat_forum_container)).is_enabled()
+            return enabled
+        except NoSuchElementException:
+            return False
+
+    def get_last_chat_data_index(self):
+        elements = self.obj.get_elements(("xpath",self.chat_card_parent_elt))
+        data_index = elements[-1].get_attribute('data-index')
+        return int(data_index)
+
+    def scroll_messages_from_top_to_bottom(self):
+        try:
+            while True:
+                self.obj.wait_for_element_visible(('css', 'div.message'))
+                msg_elements = self.obj.get_elements(('css', 'div.message'))
+                length = len(msg_elements)
+                self.driver.execute_script("arguments[0].scrollIntoView(true);", msg_elements[length - 1])
+                time.sleep(2)
+                next_msg_elements = self.obj.get_elements(('css', 'div.message'))
+                if msg_elements == next_msg_elements:
+                    break
+        except:
+            return False
+
     # tutorStreamCard
     def verify_tutor_ui_elements(self, tutor_name='Test Automation'):
         try:
-            tut_name = self.obj.get_element(("xpath", "//span[@class='tutorStreamCard__name--big']")).text
+            self.obj.wait_for_locator_webdriver("//span[contains(@class,'tutorStreamCard__name--big')]")
+            tut_name = self.obj.get_element(("xpath", "//span[contains(@class,'tutorStreamCard__name--big')]")).text
             check.equal(tut_name.lower(), tutor_name.lower(), "Tutor name is not correct")
-            tut_name_small = self.obj.get_element(("xpath", "//span[@class='tutorStreamCard__name--small']")).text
+            tut_name_small = self.obj.get_element(("xpath", "//span[contains(@class,'tutorStreamCard__name--small')]")).text
             check.equal(tut_name_small.lower(), '(tutor)', "Tutor name small is not correct")
         except:
             check.equal(True, False, "Tutor ui element not present")
@@ -1545,6 +1575,8 @@ class NeoInClass(CommonMethodsWeb):
         time.sleep(2)
         self.obj.wait_for_clickable_element_webdriver("//div[contains(@class,'neo_cl_Button')]")
         self.obj.element_click(("xpath", "//div[contains(@class,'neo_cl_Button')]"))
+        self.obj.wait_for_locator_webdriver(self.class_info_icon)
+
 
     def is_submit_btn_enabled(self):
         self.obj.wait_for_locator_webdriver(self.rating_popup_header)
@@ -1729,7 +1761,7 @@ class NeoInClass(CommonMethodsWeb):
             self.obj.wait_for_locator_webdriver \
                 (self.discuss_doubt_msg)
             ele = self.obj.get_element(('xpath', self.discuss_doubt_msg))
-            if 'Tutor want to discuss doubt with you. Please turn on your camera' in ele.text:
+            if 'Tutor want to discuss doubt with you.' in ele.text:
                 return ReturnType(True, 'the text in popup doesnt match')
             else:
                 return ReturnType(False, 'the text in popup doesnt match')
@@ -1951,7 +1983,6 @@ class NeoInClass(CommonMethodsWeb):
         except:
             return ReturnType(False, "Chat disabled message is not displayed")
 
-
     def verify_other_student_mic_cam_cannt_be_controlled(self):
         try:
             WebDriverWait(self.driver, 2).until(
@@ -2088,7 +2119,6 @@ class NeoInClass(CommonMethodsWeb):
         else:
             return ReturnType(False, 'focus mode message is not displayed')
 
-
     def verify_text_in_focus_mode_toast_msg(self):
         self.obj.wait_for_locator_webdriver(self.focus_mode_toast_msg)
         ele = self.obj.get_element(('xpath', self.focus_mode_toast_msg))
@@ -2162,18 +2192,12 @@ class NeoInClass(CommonMethodsWeb):
         try:
             self.wait_for_locator_webdriver(self.current_student_bubble)
             before_hover_over_bubble = self.obj.get_element(
-                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(',
-                                                                                                   '').replace(')',
-                                                                                                               '').split(
-                ",")
+                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
             # self.obj.element_click(("xpath", self.current_student_bubble))
             hov = self.action.move_to_element(self.obj.get_element(("xpath", self.current_student_bubble)))
             hov.click().perform()
             after_hover_over_bubble = self.obj.get_element(
-                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(',
-                                                                                                   '').replace(')',
-                                                                                                               '').split(
-                ",")
+                ("xpath", self.current_student_bubble)).value_of_css_property('transform').replace('matrix(','').replace(')','').split(",")
             a = float(before_hover_over_bubble[0])
             b = float(after_hover_over_bubble[0])
             return ReturnType(True, "Student bubble hovered over") if a < b else ReturnType(False,
@@ -2411,6 +2435,7 @@ class NeoInClass(CommonMethodsWeb):
         except:
             ReturnType(False, " logo is not displayed")
 
+    # join class screen
     def is_mic_in_join_class_present(self):
         self.obj.wait_for_locator_webdriver(self.join_class_mic)
         if self.obj.is_element_present(('xpath', self.join_class_mic)):
@@ -2442,7 +2467,6 @@ class NeoInClass(CommonMethodsWeb):
         self.obj.wait_for_clickable_element_webdriver(self.join_class_mic)
         audio_icon = self.obj.get_element(("xpath", self.join_class_mic))
         audio_icon.click()
-
 
     def turn_on_off_join_class_student_mic(self, action):
         time.sleep(3)

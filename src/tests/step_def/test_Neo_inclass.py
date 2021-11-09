@@ -183,11 +183,14 @@ def step_impl(student1_login):
 def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data='neo_login_detail2',user= 'student1')
     neo_tute.click_on_tab_item(tab_name="Session Slides")
+    neo_tute.select_focus_mode('off')
+    neo_tute.set_students_camera('on')
+    neo_tute.set_students_mic('on')
     expected_slide_num = 1
     active_slide_number = neo_tute.active_presentation_slide_number()
     if expected_slide_num != active_slide_number:
         neo_tute.present_any_slide(expected_slide_num)
-    neo_tute.select_focus_mode('off')
+        neo_tute.select_focus_mode('off')
 
 
 @given('click on "JOIN" button in home page')
@@ -451,7 +454,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify the text Hand Raised in mobile browser')
 def step_impl(student1_neo):
-    student1_neo.click_on_hand_raise()
+    # student1_neo.click_on_hand_raise()
+    student1_neo.verify_hand_is_raised_for_student()
     details = student1_neo.verify_hand_is_raised()
     check.equal(details.result, True, details.reason)
 
@@ -513,8 +517,11 @@ def step_impl(neo_tute,student1_neo):
 
 @then('Verify the display of session video continues without fail')
 def step_impl(neo_tute, student1_neo):
-    slide_num = neo_tute.find_video_slide()
-    neo_tute.present_any_slide(slide_num)
+    neo_tute.click_on_tab_item(tab_name="Session Slides")
+    expected_video_slide_num = neo_tute.find_video_slide()
+    active_slide_number = neo_tute.active_presentation_slide_number()
+    if expected_video_slide_num != active_slide_number:
+        neo_tute.present_any_slide(expected_video_slide_num)
     details = student1_neo.is_video_being_presented()
     check.equal(details.result, True, details.reason)
     neo_tute.select_focus_mode('off')
@@ -603,8 +610,8 @@ def step_impl(neo_tute, student1_neo):
 
 @then('Verify the functionality when student rejoins after"Tutor want to discuss doubt with you" is triggered')
 def step_impl(neo_tute, student1_neo):
-    neo_tute.present_any_slide(2)
-    neo_tute.select_focus_mode('off')
+    # neo_tute.present_any_slide(2)
+    # neo_tute.select_focus_mode('off')
     neo_tute.click_on_menu_option(expected_student_name="Prash Auto Test", menu_item="Ask Question")
     details = student1_neo.is_discuss_doubt_msg_present()
     check.equal(details.result, True, details.reason)
@@ -883,7 +890,7 @@ def step_impl(student1_neo,neo_tute):
 
 
 @then("Verify that if other students in the class raises hand, a hand icon should be displayed beside the mic icon on the student's thumbnail")
-def step_impl(student1_neo, student2_neo, student2):
+def step_impl(student1_neo, student2_neo):
     student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2_neo.raise_hand()
     detail = student1_neo.verify_hand_is_raised_for_student(student_name=student2_details['name'])

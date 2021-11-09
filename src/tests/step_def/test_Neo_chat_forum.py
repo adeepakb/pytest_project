@@ -66,11 +66,10 @@ def login_in(request, driver):
         yield login_in
 
 
-
 @given("Student launches in-class and navigate to home page")
 def step_impl(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
-    login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
+    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
+    login_in.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
 
 
 @given("student navigates to byjus classes screen")
@@ -107,6 +106,7 @@ def step_impl(neo_in_class, text):
 
 @then("Verify messages when users typed  any combination of alphanumeric & special characters in the chat box.")
 def step_impl(neo_in_class):
+    time.sleep(3)
     neo_in_class.send_chat(text='a1!2% N n')
     time.sleep(2)
     detail = neo_in_class.verify_a_text_in_chat(text='a1!2% N n')
@@ -467,4 +467,184 @@ def step_impl(neo_in_class, test_tut, login_in):
     check.equal(detail.result, False , detail.reason)
 
 
+@then('Verify that messages sent by student is present in Tutor side')
+def step_impl(test_tut,neo_in_class):
+    test_tut.select_focus_mode('off')
+    test_tut.click_on_tab_item(tab_name="Class Forum")
+    student_message = "Message from student"
+    neo_in_class.send_chat(student_message)
+    details = test_tut.is_message_present_for_tutor(student_message)
+    check.equal(details.result,True,details.reason)
 
+
+@then('Verify that latest message is displayed to the Tutor')
+@then("Verify that the messages sent by the students should be present in Tutor's Class Forum if Tutor joins the session late")
+def step_impl(test_tut):
+    test_tut.click_on_tab_item(tab_name="Class Forum")
+    student_message = "Message from student"
+    details = test_tut.is_message_present_for_tutor(student_message)
+    check.equal(details.result,True,details.reason)
+
+
+@then('Verify that Reply option present against each message should be clickable')
+def step_impl(test_tut):
+    student_message = "Message from student"
+    details = test_tut.is_reply_btn_clickable(student_message)
+    check.equal(details.result,True,details.reason)
+
+
+@then("Verify that chat box should appear on clicking 'Reply' option")
+@then("Verify that text wrapping in Tutor's message bubble when they reply")
+def step_impl(test_tut):
+    check.equal(test_tut.verify_reply_chat_box(),True,"Chat box did not appear on clicking on 'Reply' option")
+
+
+@then("Verify  that the selected message should be displayed when User click 'Reply' option")
+def step_impl(test_tut):
+    student_message = "Message from student"
+    details = test_tut.selected_message_present_on_reply(student_message)
+    check.equal(details.result,True,details.reason)
+
+
+@then('Verify that Tutor should be able to reply to student messages')
+def step_impl(test_tut):
+    student_message = "Message from student"
+    tute_reply_message = "reply from tutor"
+    test_tut.reply_to_message(student_message,tute_reply_message)
+    details = test_tut.is_reply_message_present(tute_reply_message)
+    check.equal(details.result,True,details.reason)
+
+
+@then("Verify that 'Close' option should be present and is clickable")
+def step_impl(test_tut):
+    student_message = "Message from student"
+    test_tut.is_reply_btn_clickable(student_message)
+    details = test_tut.click_close_reply_message(student_message)
+    check.equal(details.result, False, details.reason)
+
+
+@then("Verify that the 'Send' option should be enabled")
+def step_impl(test_tut):
+    details = test_tut.is_send_button_enabled()
+    check.equal(details.result,True,details.reason)
+
+
+@then('Verify the elements present in Class Forum')
+def step_impl(test_tut):
+    check.equal(test_tut.verify_chat_elements_tutor(),True,"All chat elements are present at tutor side")
+
+
+@then("Verify that 'Stickers' should be present in the chat box")
+def step_impl(test_tut):
+    test_tut.click_on_sticker_icon()
+
+
+@then("Verify that a list of Stickers should be displayed when User click 'Stickers' option")
+def step_impl(test_tut):
+    detail = test_tut.verify_no_of_default_stickers()
+    check.equal(detail.result, True, detail.reason)
+    test_tut.tap_outside_dialog_layout()
+
+
+@then('Verify that Chat forum when student enables full screen mode')
+def step_impl(test_tut,neo_in_class):
+    test_tut.click_on_tab_item(tab_name="Session Slides")
+    expected_slide_num = 1
+    active_slide_number = test_tut.active_presentation_slide_number()
+    if expected_slide_num != active_slide_number:
+        test_tut.present_any_slide(expected_slide_num)
+    test_tut.select_focus_mode('off')
+    neo_in_class.do_full_screen_presentation()
+    check.equal(neo_in_class.chat_container_visible(),True,"Chat forum is visible")
+    neo_in_class.minimize_full_screen_presentation()
+
+
+@then('Verify that Chat forum when tutor enables focus mode.')
+def step_impl(test_tut,neo_in_class):
+    test_tut.click_on_tab_item(tab_name="Session Slides")
+    test_tut.select_focus_mode('on')
+    check.equal(neo_in_class.chat_container_visible(),True,"Chat forum is visible")
+    test_tut.select_focus_mode('off')
+
+
+@then('Verify that the toast message "Live Chat is disabled" when Tutor turn off chat')
+@then('Verify that Tutor is able to disable chat')
+def step_impl(neo_in_class, test_tut):
+    test_tut.enable_disable_chat(flag="disable")
+    detail = neo_in_class.is_chat_disabled_message_dislayed(message='Live Chat is disabled')
+    check.equal(detail.result, True,detail.reason)
+
+
+@then('Verify that students name are shown correctly in Class Forum')
+def step_impl(test_tut):
+    student2_name = get_data(Login_Credentials, "neo_login_detail2",'student3')['name']
+    name_set = test_tut.get_student_name_chat()
+    check.equal(student2_name in name_set,True,"Student's name are shown correctly in Class Forum")
+
+
+@then('Verify that Tutor is able to enable chat')
+def step_impl(neo_in_class, test_tut):
+    test_tut.enable_disable_chat(flag="enable")
+    details_1 = test_tut.is_send_button_enabled()
+    check.equal(details_1.result, True, details_1.reason)
+    details_2 = neo_in_class.is_chat_disabled_message_dislayed(message='Live Chat is disabled')
+    check.equal(details_2.result, False, details_2.reason)
+
+
+@then('Verify that Class Forum on student side is disabled when Focus Mode is ON')
+def step_impl(neo_in_class, test_tut):
+    test_tut.select_focus_mode('on')
+    detail = neo_in_class.is_chat_disabled_message_dislayed(message='Live Chat is disabled')
+    check.equal(detail.result, True,detail.reason)
+    test_tut.select_focus_mode('off')
+
+
+@then('Verify that message tiles as per zeplin screen.')
+def step_impl(test_tut):
+    detail_1 = test_tut.is_tutor_message_right_aligned()
+    check.equal(detail_1.result, True,detail_1.reason)
+    detail_2 = test_tut.is_student_message_left_aligned()
+    check.equal(detail_2.result, True, detail_2.reason)
+
+
+@then('Verify that after Tutor refresh the page also, messages in Class Forum should be intact')
+def step_impl(test_tut):
+    test_tut.page_refresh_and_rejoin()
+    test_tut.click_on_tab_item(tab_name="Class Forum")
+    check.equal(test_tut.verify_chat_elements_tutor(), True, "All chat elements are present at tutor side")
+
+
+@then('Verify that messages & stickers on mobile web.')
+def step_impl(test_tut):
+    test_tut.change_browser_size(1280, 800)
+    student_message = "Message from student"
+    detail_1 = test_tut.is_message_present_for_tutor(student_message)
+    check.equal(detail_1.result, True, detail_1.reason)
+    test_tut.send_sticker_tutor()
+    detail_2 = test_tut.is_sticker_displayed_tutor()
+    check.equal(detail_2.result, True, detail_2.reason)
+    test_tut.change_browser_size('default','default')
+
+
+@then("Verify message count in Class Forum when tutor send messages")
+def step_impl(neo_in_class,test_tut):
+    test_tut.click_on_tab_item(tab_name="Class Forum")
+    neo_in_class.scroll_messages_from_top_to_bottom()
+    no_of_chats_before = neo_in_class.get_last_chat_data_index()
+    test_tut.send_message_in_chat(text="Hi I am tutor")
+    neo_in_class.scroll_messages_from_top_to_bottom()
+    no_of_chats_after = neo_in_class.get_last_chat_data_index()
+    check.equal((no_of_chats_before + 1 == no_of_chats_after), True, "Message count is not increased when tutor types a message")
+
+
+@then("Verify the message count in tutor's reply  when tutor replies to students message.")
+@then("Verify that logged in user message shows first then tutor's reply when tutor responds to any doubts.")
+def step_impl(neo_in_class,test_tut):
+    neo_in_class.send_chat("This is for reply")
+    neo_in_class.scroll_messages_from_top_to_bottom()
+    no_of_chats_before = neo_in_class.get_last_chat_data_index()
+    test_tut.reply_to_message(reply_to_message_text = 'This is for reply', reply_message ='This is tutor reply')
+    neo_in_class.scroll_messages_from_top_to_bottom()
+    no_of_chats_after = neo_in_class.get_last_chat_data_index()
+    flag = (no_of_chats_after == no_of_chats_before + 1)
+    check.equal(flag, True, "Message count is not increased when tutor replies a message")
