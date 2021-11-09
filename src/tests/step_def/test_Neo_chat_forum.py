@@ -108,6 +108,7 @@ def step_impl(neo_in_class, text):
 @then("Verify messages when users typed  any combination of alphanumeric & special characters in the chat box.")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='a1!2% N n')
+    time.sleep(2)
     detail = neo_in_class.verify_a_text_in_chat(text='a1!2% N n')
     check.equal(detail.result, True, detail.reason)
 
@@ -116,6 +117,7 @@ def step_impl(neo_in_class):
     "Verify that text wrapping should happen without truncation or spill over the window when texts include multiple lines.")
 def step_impl(neo_in_class):
     neo_in_class.send_chat(text='HI I am \n Tester')
+    time.sleep(2)
     detail = neo_in_class.verify_a_text_in_chat(text='HI I am')
     check.equal(detail.result, True, detail.reason)
     detail = neo_in_class.verify_a_text_in_chat(text='Tester')
@@ -167,7 +169,13 @@ def step_impl(neo_in_class,login_in):
 
 @given("tutor start the session")
 def step_impl(test_tut):
-    test_tut.start_neo_session(login_data="neo_login_detail2", user='student1')
+    test_tut.start_neo_session(login_data="neo_login_detail2", user='student3')
+    test_tut.select_focus_mode(status='off')
+    expected_video_slide_num = test_tut.find_video_slide()
+    active_slide_number = test_tut.active_presentation_slide_number()
+
+    if expected_video_slide_num != active_slide_number:
+        test_tut.present_any_slide(expected_video_slide_num)
 
 
 @when('tutor unraises hand for student')
@@ -249,6 +257,7 @@ def step_impl(neo_in_class):
 @then("Verify that logged user messages is right aligned.")
 @then("verify student chat is right alligned")
 def step_impl(neo_in_class):
+    neo_in_class.click_on_close_icon_in_toast_msg()
     neo_in_class.send_chat(text='Hi I am student')
     time.sleep(2)
     detail = neo_in_class.verify_student_messages_are_right_alligned(text="Hi I am student")
@@ -285,6 +294,7 @@ def step_impl(neo_in_class,student2_neo,student2):
 @then("Verify stickers in chat when user selects any sticker from the list.")
 def step_impl(neo_in_class):
     neo_in_class.send_sticker()
+    time.sleep(3)
     detail = neo_in_class.verify_sticker_displayed()
     check.equal(detail.result, True, detail.reason)
 
@@ -292,10 +302,13 @@ def step_impl(neo_in_class):
 @then("Verify that chat forum when multiple users sent stickers at the same time.")
 def step_impl(neo_in_class,student2_neo,student2):
     neo_in_class.send_sticker()
-    detail = neo_in_class.verify_sticker_displayed()
+    neo_in_class.send_chat("hi")
     time.sleep(2)
+    detail = neo_in_class.verify_sticker_displayed()
     check.equal(detail.result, True, detail.reason)
     student2_neo.send_sticker()
+    time.sleep(2)
+    student2_neo.send_chat("hi")
     detail = student2_neo.verify_sticker_displayed()
     check.equal(detail.result, True, detail.reason)
 
@@ -308,11 +321,11 @@ def step_impl(neo_in_class):
 
 
 
-
 @then('Verify that "You lowered hand" message when logged in student lowers hand.')
 def step_impl(neo_in_class):
     neo_in_class.raise_hand()
     neo_in_class.unraise_hand()
+    time.sleep(3)
     detail = neo_in_class.verify_lower_hand_text_is_displayed()
     check.equal(detail.result, True, detail.reason)
 

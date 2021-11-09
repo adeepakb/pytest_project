@@ -113,7 +113,9 @@ class NeoInClass(CommonMethodsWeb):
         self.chat_container_title = ".//div[@class='chatContainer__title']"
         self.chat_member_count = ".//span[@class='chatContainer__count']"
         self.tutor_name = "//span[@class = 'tutorStreamCard__name--big']"
+        self.tutor_name1 = "//span[@class = 'tutorStreamCard__name--big tutorStreamCard__name--whiteText']"
         self.tutor_title = "//span[@class = 'tutorStreamCard__name--small']"
+        self.tutor_title1 = "//span[@class = 'tutorStreamCard__name--small tutorStreamCard__name--whiteText']"
         self.tutor_thumbnail = "//div[@class = 'neo_cl_VideoContainer__overlay']"
         self.tutor_controls_container = "//div[@class='iconWrapper tutorStreamCard__icon']"
         self.tutor_video = "//div[@class='tutorStreamCard']//div[contains(@id,'agora-video-player-track')]"
@@ -185,7 +187,7 @@ class NeoInClass(CommonMethodsWeb):
         self.network_join_dilog_message = "//div[@class = 'subText']"
         self.network_join_dilog_message1= "//div[@class = 'text']"
         self.network_join_dilog_retry = "//div[contains(text(),'Retry')]"
-        self.join_message = "//span[@class = 'Session--join_info sessionStarted']"
+        self.join_message = "//div[@class = 'Session--join_info sessionStarted']"
         # inclass
         self.weak_signal_indicator = '//*[@class="neo_cl_SignalStrength--text weak"]'
         self.students_right_arrow = '//div[contains(@class,"streamList__scrollerBtns streamList__scrollerBtns--right")]'
@@ -1247,10 +1249,16 @@ class NeoInClass(CommonMethodsWeb):
                                                                                                         "displayed on "
                                                                                                         "place holder")
         elif element_type.lower() == "tutor name":
-            flag = self.get_element(("xpath", self.tutor_name)).is_displayed()
+            try:
+                flag = self.get_element(("xpath", self.tutor_name)).is_displayed()
+            except:
+                flag = self.get_element(("xpath", self.tutor_name1)).is_displayed()
             return ReturnType(True, "Tutor name is shown ") if flag else ReturnType(False, "Tutor name is not shown ")
         elif element_type.lower() == 'tutor tag':
-            flag = self.get_element(("xpath", self.tutor_title)).is_displayed()
+            try:
+                flag = self.get_element(("xpath", self.tutor_title)).is_displayed()
+            except:
+                flag = self.get_element(("xpath", self.tutor_title1)).is_displayed()
             return ReturnType(True, "Tutor tag is shown ") if flag else ReturnType(False, "Tutor tag is not shown ")
 
         elif element_type.lower() == 'tutor thumbnail':
@@ -1421,6 +1429,7 @@ class NeoInClass(CommonMethodsWeb):
 
     def close_sticker_menu(self):
         self.element_click(("xpath", "//div[@class = 'self.chat_by_me']"))
+        self.send_sticker()
 
     def raise_hand(self):
         if not self.verify_hand_is_raised().result:
@@ -1439,7 +1448,7 @@ class NeoInClass(CommonMethodsWeb):
             return ReturnType(True, "Lower hand message is shown and correct") if flag else ReturnType(False,
                                                                                                        "Lower hand message is shown and not correct")
         except:
-            ReturnType(False,
+            return ReturnType(False,
                        "Lower hand message is not shown")
 
     def verify_hand_is_raised(self):

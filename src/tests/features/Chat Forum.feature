@@ -30,8 +30,8 @@ Feature: Chat Forum
     And Verify typing messages when the network is flaky.
     And Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.
     And Verify that students cant type when message is disabled from the tutor's end.
-    And Verify that students chat is disabled and network goes off when he/she rejoin chat must be in disabled state.
-    And Verify that students chat is enabled and network goes off when he/she rejoin chat must be in the same state.
+    #And Verify that students chat is disabled and network goes off when he/she rejoin chat must be in disabled state.
+    #And Verify that students chat is enabled and network goes off when he/she rejoin chat must be in the same state.
     And Verify that sticker sent in chat shouldn't be distorted.
     And Verify that logged in user message shows first then tutor's reply when tutor responds to any doubts.
     And Verify the Class Forum when student throttles network to Offline

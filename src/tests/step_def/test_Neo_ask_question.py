@@ -164,6 +164,8 @@ def step_impl(login_in):
 @given("tutor start the session")
 def step_impl(test_tut):
     test_tut.start_neo_session(login_data="neo_login_detail1", user='student1')
+    active_slide_number = test_tut.active_presentation_slide_number()
+    test_tut.stop_presentation(select_slide_num=active_slide_number)
 
 
 @given('click on "JOIN" button in home page')
@@ -427,6 +429,8 @@ def step_impl(neo_in_class, test_tut):
 @then("Verify that student should able to ask doubt when the Tutor allow the student to come on the screen")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
     student1_details = get_data(Login_Credentials,'neo_login_detail1', 'student3')
+    active_slide_number = test_tut.active_presentation_slide_number()
+    test_tut.stop_presentation(select_slide_num=active_slide_number)
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
     details = neo_in_class.current_student_has_video_enlarged()

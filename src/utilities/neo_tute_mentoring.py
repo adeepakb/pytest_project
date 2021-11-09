@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        #self.chrome_options.add_argument('--no-sandbox')
-        #self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_options.add_argument("--use-fake-device-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
@@ -938,6 +938,7 @@ class NeoTute(CommonMethodsWeb):
     def select_focus_mode(self,status):
         time.sleep(2)
         self.wait_for_locator_webdriver("//label[@class='switch']")
+        self.wait_for_locator_webdriver("//span[@class='on']")
         if status == 'on':
             self.element_click(("xpath","//span[@class='off']"))
         else:

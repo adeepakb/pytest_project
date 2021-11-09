@@ -41,13 +41,13 @@ def neo_tute(driver):
 
 @given("Launch the application online")
 def step_impl(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail3', 'student1')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @given("tutor start the session")
 def step_impl(neo_tute):
-    neo_tute.start_neo_session(login_data="neo_login_detail3", user='student1')
+    neo_tute.start_neo_session(login_data="neo_login_detail2", user='student1')
 
 @when('join neo session')
 def step_impl(neo_in_class):
