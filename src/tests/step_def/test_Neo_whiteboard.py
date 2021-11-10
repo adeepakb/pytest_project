@@ -74,10 +74,6 @@ def navigate_to_one_to_many_and_mega_user(login_in):
 def step_impl(neo_tute):
     neo_tute.start_neo_session(login_data="neo_login_detail1", user='student1')
     neo_tute.select_focus_mode('off')
-    expected_video_slide_num = neo_tute.find_video_slide()
-    active_slide_number = neo_tute.active_presentation_slide_number()
-    if expected_video_slide_num != active_slide_number:
-        neo_tute.present_any_slide(expected_video_slide_num)
 
 
 @when('click on "JOIN" button in home page')
