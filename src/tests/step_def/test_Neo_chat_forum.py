@@ -393,26 +393,6 @@ def step_impl(neo_in_class,student2_neo):
     detail = neo_in_class.verify_other_student_messages_are_left_alligned(text= "Hi I am another student")
     check.equal(detail.result, True, detail.reason)
 
-@then("Verify message count in Class Forum when tutor send messages")
-def step_impl(neo_in_class,test_tut):
-    initial_no =len(neo_in_class.get_all_chats())
-    test_tut.send_message_in_chat(text="Hi I am tutor")
-    time.sleep(5)
-    final_no = len(neo_in_class.get_all_chats())
-    flag = (final_no==initial_no+1)
-    check.equal(flag, True, "Message count is not increased when tutor types a message")
-
-
-@then("Verify that logged in user message shows first then tutor's reply when tutor responds to any doubts.")
-@then("Verify the message count in tutor's reply  when tutor replies to students message.")
-def step_impl(neo_in_class,test_tut):
-    neo_in_class.send_chat("This is for reply")
-    initial_no = len(neo_in_class.get_all_chats())
-    test_tut.reply_to_message(reply_to_message_text = 'This is for reply', reply_message ='This is tutor reply')
-    final_no = len(neo_in_class.get_all_chats())
-    flag = (final_no == initial_no + 1)
-    check.equal(flag, True, "Message count is not increased when tutor replies a message")
-
 
 
 @then('Verify that "Text input is temporarily disabled for all " shows when tutor disables the chat option.')
