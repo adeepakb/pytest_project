@@ -28,8 +28,8 @@ class NeoTute(CommonMethodsWeb):
         self.driver = driver
         self.tlms = Stagingtlms(driver)
         self.chrome_options = Options()
-        self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--no-sandbox')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--use-fake-ui-for-media-stream")
         self.chrome_options.add_argument("--use-fake-device-for-media-stream")
         self.chrome_driver = webdriver.Chrome(options=self.chrome_options)
@@ -115,15 +115,15 @@ class NeoTute(CommonMethodsWeb):
         self.topic_header = "xpath", "//div[@class='sessionPlan__header']"
         self.session_plan_content = "xpath", '//div[@class = "sessionPlan_content"]'
         self.session_id_ui = "xpath", '//div[@class= "sessionId"]'
-        self.tab_item = "xpath", '//div[@class = "tabViewContainer__tabViewText"]'
+        self.tab_item = '//div[@class = "tabViewContainer__tabViewText"]'
         self.student_cards_details = "xpath", "//div[@class='studentsDetails__outer']"
         self.approve_button = "xpath", ".//div[@class='neo_cl_Button Button--primary Button--rounded']"
         self.student_detail_toast = "//div[@class='studentsDetails__toastIcon']"
         self.close_toast = "xpath", "//div[@class='neo_cl_ToastIcon']"
         self.student_name = "xpath", ".//div[@class='student-name']"
         self.reject_buttpn = "xpath", ".//div[@class='reject']"
-        self.review_image = "xpath","//div[@class='studentsDetails__approve']/div[@class='review-image']"
-        self.toast_message = "xpath","//*[@class='studentsDetails__toastMsg']"
+        self.review_image = "xpath", "//div[@class='studentsDetails__approve']/div[@class='review-image']"
+        self.toast_message = "xpath", "//*[@class='studentsDetails__toastMsg']"
         self.student_details_name = "//div[@class='studentsDetails__container']/div[@class='student-name']"
         self.profile_card_src = "//div[@class='studentsDetails__container']/div/img"
         self.second_approve_btn = "//div[contains(@class,'neo_cl_Button Button--secondary Button--rounded Button--block-width')]/span[text()='Approve']"
@@ -145,7 +145,7 @@ class NeoTute(CommonMethodsWeb):
         self.video_icon = "//img[@alt='cam']/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.cam_off = "//img[contains(@src,'cam-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.mic_off = "//img[contains(@src,'mic-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
-        self.cam_on= "//img[contains(@src,'cam-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
+        self.cam_on = "//img[contains(@src,'cam-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.mic_on = "//img[contains(@src,'mic-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.chat_off = "//img[contains(@src,'chat-off')]/parent::div[contains(@Class,'topContainer--action_icon')]"
         self.chat_on = "//img[contains(@src,'chat-on')]/parent::div[contains(@Class,'topContainer--action_icon')]"
@@ -170,6 +170,7 @@ class NeoTute(CommonMethodsWeb):
         self.delete_blank_slide = "(//div[@class='slide__content_box']//div[@class='neo_cl_icon']//div[1]//*[local-name()='svg'])[1]"
         self.presentaion_name = "xpath", "//div[@class='presentation-name']"
         self.floating_emojis = "//span[contains(@class,'floaters')]"
+        self.thumbnails_size_controller = "//input[@class='e-range']"
 
     def login_as_tutor(self):
         email = self.decrypted_data['staging_access']['email']
@@ -182,13 +183,13 @@ class NeoTute(CommonMethodsWeb):
         self.obj.element_click(('xpath', self.login_submit))
         self.obj.wait_for_locator_webdriver(self.sign_in_with_google_email)
         self.obj.enter_text(email, ('xpath', self.sign_in_with_google_email))
-        self.obj.get_element(('xpath',self.sign_in_with_google_email)).send_keys(Keys.ENTER)
+        self.obj.get_element(('xpath', self.sign_in_with_google_email)).send_keys(Keys.ENTER)
         self.obj.wait_for_clickable_element_webdriver(self.sign_in_password)
         self.obj.enter_text(password, ('xpath', self.sign_in_password))
         self.obj.get_element(('xpath', self.sign_in_password)).send_keys(Keys.ENTER)
 
-    def start_neo_session(self,login_data="neo_login_detail1", user='student1',date ='today'):
-        url = self.tlms.get_tutor_url('neo', login_data= login_data, user=user, date = date)
+    def start_neo_session(self, login_data="neo_login_detail1", user='student1', date='today'):
+        url = self.tlms.get_tutor_url('neo', login_data=login_data, user=user, date=date)
         self.login_as_tutor()
         self.obj.wait_for_locator_webdriver(self.tllms_mentoring)
         self.chrome_driver.get(url)
@@ -227,7 +228,8 @@ class NeoTute(CommonMethodsWeb):
 
     def laser_pointer_present(self):
         self.obj.wait_for_locator_webdriver(self.laser_pointer_icon)
-        source = self.obj.get_element(('xpath', "//div[@class='netless-whiteboard cursor-laserPointer']")).value_of_css_property('cursor')
+        source = self.obj.get_element(
+            ('xpath', "//div[@class='netless-whiteboard cursor-laserPointer']")).value_of_css_property('cursor')
         if "data:image/svg+xml" in source:
             return True
         else:
@@ -377,43 +379,48 @@ class NeoTute(CommonMethodsWeb):
         else:
             return ReturnType(False, "Student's message not present at tutor side")
 
-    def is_reply_btn_clickable(self,reply_to_message_text):
+    def is_reply_btn_clickable(self, reply_to_message_text):
         try:
             self.obj.wait_for_clickable_element_webdriver(self.reply_button)
-            enabled = self.obj.get_element(('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']")).is_enabled()
-            self.obj.element_click(('xpath',"//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
-            return ReturnType(True, "reply button is clickable") if enabled else ReturnType(False, "reply button is not clickable")
+            enabled = self.obj.get_element(('xpath',
+                                            "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']")).is_enabled()
+            self.obj.element_click(('xpath',
+                                    "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
+            return ReturnType(True, "reply button is clickable") if enabled else ReturnType(False,
+                                                                                            "reply button is not clickable")
         except NoSuchElementException:
             return ReturnType(False, "reply button is not present and clickable")
 
     def verify_reply_chat_box(self):
-        self.obj.wait_for_element_visible(("xpath",self.reply_close))
-        flag1 = self.obj.is_element_present(("xpath",self.reply_close))
-        flag2 = self.obj.is_element_present(("xpath",self.input_card))
+        self.obj.wait_for_element_visible(("xpath", self.reply_close))
+        flag1 = self.obj.is_element_present(("xpath", self.reply_close))
+        flag2 = self.obj.is_element_present(("xpath", self.input_card))
         return flag1 and flag2
 
-    def click_close_reply_message(self,student_message):
+    def click_close_reply_message(self, student_message):
         self.obj.wait_for_element_visible(("xpath", self.reply_close))
         self.obj.element_click(("xpath", self.reply_close))
         self.obj.wait_for_invisibility_of_element(("xpath", self.reply_close))
         return self.selected_message_present_on_reply(student_message)
 
-    def selected_message_present_on_reply(self,reply_to_message_text):
+    def selected_message_present_on_reply(self, reply_to_message_text):
         try:
-            if self.obj.get_element(('xpath',self.reply_to_message_text)).text == reply_to_message_text:
-                return ReturnType(True,"Selected message displayed when User click 'Reply' option")
+            if self.obj.get_element(('xpath', self.reply_to_message_text)).text == reply_to_message_text:
+                return ReturnType(True, "Selected message displayed when User click 'Reply' option")
             else:
-                return ReturnType(False, "Message not matching with expected %s when User click 'Reply'" % reply_to_message_text)
+                return ReturnType(False,
+                                  "Message not matching with expected %s when User click 'Reply'" % reply_to_message_text)
         except NoSuchElementException:
             return ReturnType(False, "Selected message not displayed when User click 'Reply' option")
 
     def reply_to_message(self, reply_to_message_text, reply_message):
-        self.obj.element_click(('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
+        self.obj.element_click(
+            ('xpath', "//div[text()='" + reply_to_message_text + "']/parent::div/parent::div/div[@class='replyBtn']"))
         self.send_message_in_chat(reply_message)
 
-    def is_reply_message_present(self,expected_message):
+    def is_reply_message_present(self, expected_message):
         self.wait_for_locator_webdriver(self.reply_message_by_tutor)
-        actual_message = self.obj.get_element(('xpath',self.reply_message_by_tutor)).text
+        actual_message = self.obj.get_element(('xpath', self.reply_message_by_tutor)).text
         if actual_message == expected_message:
             return ReturnType(True, "Tutor's reply message  to student is present")
         else:
@@ -422,8 +429,9 @@ class NeoTute(CommonMethodsWeb):
     def is_send_button_enabled(self):
         try:
             self.obj.wait_for_clickable_element_webdriver(self.send_icon)
-            enabled = self.obj.get_element(('xpath',self.send_icon)).is_enabled()
-            return ReturnType(True, "send button is clickable") if enabled else ReturnType(False,"send button is not clickable")
+            enabled = self.obj.get_element(('xpath', self.send_icon)).is_enabled()
+            return ReturnType(True, "send button is clickable") if enabled else ReturnType(False,
+                                                                                           "send button is not clickable")
         except NoSuchElementException:
             return ReturnType(False, "send button is not present")
 
@@ -436,9 +444,10 @@ class NeoTute(CommonMethodsWeb):
             self.wait_for_element_visible(("xpath", self.sticker_item))
             stickers = self.get_elements(("xpath", self.sticker_item))
             flag = len(stickers) == 11
-            return ReturnType(True, "All 11 default stickers are shown") if flag else ReturnType(False,"All 11 default stickers are not shown")
+            return ReturnType(True, "All 11 default stickers are shown") if flag else ReturnType(False,
+                                                                                                 "All 11 default stickers are not shown")
         except NoSuchElementException:
-            return ReturnType(False,"Stickers are not shown")
+            return ReturnType(False, "Stickers are not shown")
 
     def send_sticker_tutor(self):
         self.element_click(("xpath", self.emoji_icon))
@@ -448,7 +457,8 @@ class NeoTute(CommonMethodsWeb):
     def is_sticker_displayed_tutor(self):
         try:
             self.wait_for_element_visible(("xpath", self.sticker_onchat))
-            return ReturnType(True, " Sticker is being displayed") if self.obj.is_element_present(("xpath", self.sticker_onchat))\
+            return ReturnType(True, " Sticker is being displayed") if self.obj.is_element_present(
+                ("xpath", self.sticker_onchat)) \
                 else ReturnType(False, "Sticker is not being displayed")
         except NoSuchElementException:
             return ReturnType(False, " Sticker is not being displayed")
@@ -461,7 +471,7 @@ class NeoTute(CommonMethodsWeb):
 
     def get_student_name_chat(self):
         name_set = set()
-        students_elts = self.obj.get_elements(('xpath',self.message_block_container))
+        students_elts = self.obj.get_elements(('xpath', self.message_block_container))
         for elt in students_elts:
             student_name = elt.text
             name_set.add(student_name)
@@ -602,7 +612,8 @@ class NeoTute(CommonMethodsWeb):
             student_name = cards[i].text
             stream_id = video_cards[i].get_attribute('id')
             try:
-                self.obj.get_element(('xpath', "//div[@id='" + stream_id + "']/div[@class='neo_cl_NameCard_container' or contains(@class,'neo_cl_VideoContainer__profilePic')]"))
+                self.obj.get_element(('xpath',
+                                      "//div[@id='" + stream_id + "']/div[@class='neo_cl_NameCard_container' or contains(@class,'neo_cl_VideoContainer__profilePic')]"))
                 student_video_status.update({student_name.split('\n')[-1]: False})
             except NoSuchElementException:
                 student_video_status.update({student_name: True})
@@ -664,8 +675,10 @@ class NeoTute(CommonMethodsWeb):
                 stream_id = video_cards[i].get_attribute('id')
                 if expected_student_name == actual_student_name:
                     try:
-                        self.obj.wait_for_locator_webdriver(("//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
-                        self.obj.get_element(('xpath',"//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        self.obj.wait_for_locator_webdriver((
+                                                                        "//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
+                        self.obj.get_element(('xpath',
+                                              "//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--bottomCenter')]/div/div[contains(@class,'neo_cl_StreamCard__icon')]"))
                         return True
                     except NoSuchElementException:
                         return False
@@ -682,8 +695,10 @@ class NeoTute(CommonMethodsWeb):
                 stream_id = video_cards[i].get_attribute('id')
                 if expected_student_name == actual_student_name:
                     try:
-                        self.obj.wait_for_locator_webdriver(("//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
-                        self.obj.get_element(('xpath',"//div[@id='"+stream_id+"']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        self.obj.wait_for_locator_webdriver((
+                                                                        "//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
+                        self.obj.get_element(('xpath',
+                                              "//div[@id='" + stream_id + "']//div[contains(@class,'neo_cl_VideoContainer__overlay_view--center')]/div/div[contains(@class,'neo_cl_StreamCard__icon--raiseHand')]"))
                         return True
                     except NoSuchElementException:
                         return False
@@ -774,7 +789,7 @@ class NeoTute(CommonMethodsWeb):
     def get_number_of_students_in_student_details(self):
         try:
             self.obj.wait_for_locator_webdriver(self.student_details_name)
-            elements = self.get_elements(('xpath',self.student_details_name))
+            elements = self.get_elements(('xpath', self.student_details_name))
             return len(elements)
         except:
             return 0
@@ -782,7 +797,7 @@ class NeoTute(CommonMethodsWeb):
     def get_all_names_student_details(self):
         student_names = []
         self.obj.wait_for_locator_webdriver(self.student_details_name)
-        cards = self.get_elements(('xpath',self.student_details_name))
+        cards = self.get_elements(('xpath', self.student_details_name))
         for card in cards:
             student_name = card.text
             student_names.append(student_name)
@@ -792,18 +807,18 @@ class NeoTute(CommonMethodsWeb):
         all_profile_card_details = {}
         self.obj.wait_for_locator_webdriver(self.profile_card_src)
         cards = self.get_elements(('xpath', self.student_details_name))
-        profile_cards = self.obj.get_elements(('xpath',self.profile_card_src))
+        profile_cards = self.obj.get_elements(('xpath', self.profile_card_src))
         for i in range(len(profile_cards)):
             student_name = cards[i].text
             profile_src = profile_cards[i].get_attribute("src")
-            all_profile_card_details.update({i+1: [student_name,profile_src]})
+            all_profile_card_details.update({i + 1: [student_name, profile_src]})
         print(all_profile_card_details)
         return all_profile_card_details
 
     def verify_approve_reject_review_buttons(self):
         try:
             self.obj.wait_for_locator_webdriver(self.student_details_name)
-            self.driver.execute_script("arguments[0].scrollIntoView(true);",self.obj.get_element(self.review_image))
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", self.obj.get_element(self.review_image))
             self.wait_for_element_visible(self.review_image)
             flag1 = self.obj.is_element_present(self.approve_button)
             flag2 = self.obj.is_element_present(self.review_image)
@@ -829,15 +844,16 @@ class NeoTute(CommonMethodsWeb):
             flag1 = self.obj.is_element_present(('xpath', self.second_approve_btn))
             flag2 = self.obj.is_element_present(('xpath', self.second_reject_btn))
             flag3 = self.obj.is_element_present(('xpath', self.pp_review_close))
-            review_image_elt = self.obj.get_element(("xpath",self.newly_updated_pp))
-            flag4 = 'https://tutoring-doubts-bucket.s3.ap-southeast-1.amazonaws.com/user_profile_images/students/' in review_image_elt.get_attribute("src")
+            review_image_elt = self.obj.get_element(("xpath", self.newly_updated_pp))
+            flag4 = 'https://tutoring-doubts-bucket.s3.ap-southeast-1.amazonaws.com/user_profile_images/students/' in review_image_elt.get_attribute(
+                "src")
             return flag1 and flag2 and flag3 and flag4
         except NoSuchElementException:
             return False
 
     def text_on_pp_review_popup(self):
         self.obj.wait_for_locator_webdriver(self.pp_review_image)
-        text = self.obj.get_element(("xpath",self.pp_review_image)).text
+        text = self.obj.get_element(("xpath", self.pp_review_image)).text
         return text
 
     def approve_profile_pic(self, name=None):
@@ -846,12 +862,14 @@ class NeoTute(CommonMethodsWeb):
             elements = self.get_elements(self.student_cards_details)
             for element in elements:
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
-                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);", self.get_child_element(element, *self.student_name))
+                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
+                                                      self.get_child_element(element, *self.student_name))
                     self.wait_for_element_visible(self.approve_button)
                     self.element_click(self.approve_button)
                     self.wait_for_locator_webdriver(self.student_detail_toast)
-                    if self.is_element_present(('xpath',self.student_detail_toast)) and \
-                            self.obj.get_element(self.toast_message).text == "You have approved %s's profile picture"%name:
+                    if self.is_element_present(('xpath', self.student_detail_toast)) and \
+                            self.obj.get_element(
+                                self.toast_message).text == "You have approved %s's profile picture" % name:
                         self.wait_for_element_visible(self.close_toast)
                         self.element_click(self.close_toast)
                         return ReturnType(True, "Approved profile pic")
@@ -869,12 +887,14 @@ class NeoTute(CommonMethodsWeb):
             for element in elements:
                 self.get_child_element(element, *self.student_name)
                 if self.get_child_element(element, *self.student_name).text.lower() == name.lower():
-                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",self.get_child_element(element, *self.student_name))
+                    self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
+                                                      self.get_child_element(element, *self.student_name))
                     self.wait_for_element_visible(self.reject_buttpn)
-                    self.get_child_element(element,*self.reject_buttpn).click()
+                    self.get_child_element(element, *self.reject_buttpn).click()
                     self.wait_for_locator_webdriver(self.student_detail_toast)
                     if self.is_element_present(('xpath', self.student_detail_toast)) and \
-                            self.obj.get_element(self.toast_message).text == "You have rejected %s's profile picture"%name:
+                            self.obj.get_element(
+                                self.toast_message).text == "You have rejected %s's profile picture" % name:
                         self.element_click(self.close_toast)
                         return ReturnType(True, "Rejected profile pic")
                     else:
@@ -898,7 +918,7 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(True, "video full screen is being displayed") if flag else ReturnType(True,
                                                                                                     "video full screen is being displayed")
         except NoSuchElementException:
-            ReturnType(True,"video full screen is being displayed")
+            ReturnType(True, "video full screen is being displayed")
 
     def maximize_video(self):
         try:
@@ -952,15 +972,17 @@ class NeoTute(CommonMethodsWeb):
         try:
             container = self.get_element(self.presentation_container)
             flag = self.get_child_element(container, *self.video_presentation).is_displayed()
-            return ReturnType(True, "Video is being presented") if flag else ReturnType(False,"Video is not being presented")
+            return ReturnType(True, "Video is being presented") if flag else ReturnType(False,
+                                                                                        "Video is not being presented")
         except NoSuchElementException:
-            return ReturnType(False,"Video is not being presented")
+            return ReturnType(False, "Video is not being presented")
 
     def verify_image_is_presented(self):
         try:
             container = self.get_element(self.presentation_container)
             flag = self.get_child_element(container, *self.image_presentation).is_displayed()
-            return ReturnType(True, "Image is being presented") if flag else ReturnType(False,"Image is not being presented")
+            return ReturnType(True, "Image is being presented") if flag else ReturnType(False,
+                                                                                        "Image is not being presented")
         except NoSuchElementException:
             return ReturnType(False, "Image is not being presented")
 
@@ -1006,14 +1028,13 @@ class NeoTute(CommonMethodsWeb):
         self.chrome_driver.execute_script("arguments[0].scrollIntoView(true);",
                                           self.chrome_driver.find_elements_by_css_selector('.neo_cl_slide')[length - 1])
 
-    def present_any_slide(self,select_slide_num):
+    def present_any_slide(self, select_slide_num):
         self.click_on_tab_item(tab_name="Session Slides")
         self.obj.wait_for_locator_webdriver(self.add_slide)
         slide_select_icon = self.obj.get_element(('css',
                                                   "div.droppableList__slide_drag_item:nth-child(%s) div.neo_cl_slide.slide--mode-presenter div.slide__img_box div.slide__actions_wrapper div:nth-child(2) div.neo_cl_icon div:nth-child(1) > svg:nth-child(1)" % select_slide_num))
         slide_select_icon.click()
         self.obj.wait_for_locator_webdriver("//div[@class = 'presentationContainer']")
-
 
     def stop_presentation(self, select_slide_num):
         try:
@@ -1029,16 +1050,17 @@ class NeoTute(CommonMethodsWeb):
 
     def find_video_slide(self):
         self.wait_for_locator_webdriver(self.add_slide)
-        slide_cards = self.obj.get_elements(('css',".neo_cl_slide"))
+        slide_cards = self.obj.get_elements(('css', ".neo_cl_slide"))
         for slide_card in slide_cards:
             try:
                 card_name_obj = slide_card.find_element_by_xpath(".//div//div[@class='slide__slide_name']")
                 card_name = card_name_obj.get_attribute("innerHTML")
                 if card_name == 'Blank Slide':
-                    self.obj.element_click(('xpath',"//div[@class='slide__slide_name' and text()='Blank Slide']/parent::div//div/div[@class='neo_cl_icon']"))
+                    self.obj.element_click(('xpath',
+                                            "//div[@class='slide__slide_name' and text()='Blank Slide']/parent::div//div/div[@class='neo_cl_icon']"))
                     continue
                 card_src = slide_card.find_element_by_xpath(".//div/div/img").get_attribute("src")
-                if 'defaultVideoThumbnail' in card_src :
+                if 'defaultVideoThumbnail' in card_src:
                     slide_num = slide_card.get_attribute("innerText").split('\n')[0].lstrip("0")
                     return int(slide_num)
                 else:
@@ -1049,7 +1071,8 @@ class NeoTute(CommonMethodsWeb):
     def active_presentation_slide_number(self):
         try:
             self.wait_for_locator_webdriver(self.add_slide)
-            active_content= self.obj.get_element(("css",".slide--active div.slide__content_box div.slide__slide_number"))
+            active_content = self.obj.get_element(
+                ("css", ".slide--active div.slide__content_box div.slide__slide_number"))
             active_slide_num = active_content.text
             return int(active_slide_num.lstrip("0"))
         except:
@@ -1108,28 +1131,30 @@ class NeoTute(CommonMethodsWeb):
             self.obj.wait_for_locator_webdriver(self.mic_off)
             if self.is_element_present(('xpath', self.mic_off)):
                 return ReturnType(False, "mic is off")
+            else:
+                return ReturnType(True, "mic is on")
         except NoSuchElementException:
             return ReturnType(True, "mic is on")
 
-    def set_students_camera(self,status = "off"):
+    def set_students_camera(self, status="off"):
         try:
             if status.lower() == 'off':
                 if self.get_video_status().result:
-                    self.element_click(("xpath",self.cam_on))
+                    self.element_click(("xpath", self.cam_on))
             else:
                 if not self.get_video_status().result:
                     self.element_click(("xpath", self.cam_off))
         except:
             pass
 
-    def set_students_mic(self,status = 'off'):
+    def set_students_mic(self, status='off'):
         try:
-            if status.lower()== 'off':
+            if status.lower() == 'off':
                 if self.get_audio_status().result:
-                    self.element_click(("xpath",self.mic_on))
+                    self.element_click(("xpath", self.mic_on))
             else:
                 if not self.get_audio_status().result:
-                    self.element_click(("xpath",self.mic_off))
+                    self.element_click(("xpath", self.mic_off))
         except:
             pass
 
@@ -1138,6 +1163,8 @@ class NeoTute(CommonMethodsWeb):
         try:
             if self.is_element_present(('xpath', self.chat_off)):
                 return ReturnType(False, "chat is off")
+            else:
+                return ReturnType(True, "chat is on")
         except(NoSuchElementException):
             return ReturnType(True, "chat is on")
 
@@ -1156,7 +1183,6 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False, "Global audio icon is off")
         else:
             return ReturnType(None, "Global audio icon is not present")
-
 
     def get_tutor_video_status(self):
         try:
@@ -1179,15 +1205,25 @@ class NeoTute(CommonMethodsWeb):
             return ReturnType(False, "mic is off")
 
     # status : on/off
-    def select_focus_mode(self,status):
-        time.sleep(2)
+    def select_focus_mode(self, status):
+        time.sleep(5)
         self.wait_for_locator_webdriver("//label[@class='switch']")
         self.wait_for_locator_webdriver("//span[@class='on']")
         if status == 'on':
-            self.element_click(("xpath","//span[@class='off']"))
+            self.element_click(("xpath", "//span[@class='off']"))
         else:
             self.element_click(("xpath", "//span[@class='on']"))
         time.sleep(1)
+
+    def verify_focus_mode_on(self):
+        try:
+            self.wait_for_locator_webdriver("//label[@class='switch']")
+            flag = self.get_element(("xpath","//span[@class='on']")).is_displayed()
+            return ReturnType(True,"Focus mode is on") if flag else ReturnType(False,"Focus mode is off")
+        except:
+            return ReturnType(False,"Focus mode is off")
+
+
 
     def verify_the_focus_mode(self):
         self.wait_for_locator_webdriver(self.signal_icon)
@@ -1214,14 +1250,20 @@ class NeoTute(CommonMethodsWeb):
         self.wait_for_locator_webdriver(self.signal_icon)
         return self.is_element_present(('xpath', self.continue_class_btn))
 
+    def click_on_continue_class_button(self):
+        self.wait_for_locator_webdriver(self.continue_class_btn)
+        self.element_click(('xpath', self.continue_class_btn))
+
+
+
     def is_end_class_button_present_in_popup(self):
         self.wait_for_locator_webdriver(self.signal_icon)
         return self.is_element_present(('xpath', self.end_class_in_popup))
 
     def click_on_tab_item(self, tab_name='Session Plan'):
         try:
-            self.obj.wait_for_element_visible(self.tab_item)
-            items = self.get_elements(self.tab_item)
+            self.obj.wait_for_element_visible(("xpath", self.tab_item))
+            items = self.get_elements(("xpath", self.tab_item))
             for item in items:
                 if item.text.replace("\n", " ") == tab_name:
                     item.click()
@@ -1310,7 +1352,6 @@ class NeoTute(CommonMethodsWeb):
         except TimeoutException:
             return False
 
-
     def get_url_of_presented_slide(self, select_slide_num):
         self.click_on_tab_item(tab_name="Session Slides")
         slide_select_icon = self.obj.get_element(('css',
@@ -1322,8 +1363,10 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_video_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
+                self.obj.wait_for_locator_webdriver(
+                    "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
                     if "cam-off" in element.get_attribute('innerHTML'):
@@ -1347,8 +1390,10 @@ class NeoTute(CommonMethodsWeb):
     def turn_tutor_audio_on_off(self, status='off'):
         try:
             if status.lower() == 'on':
-                self.obj.wait_for_locator_webdriver("//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
-                elements = self.get_elements(("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
+                self.obj.wait_for_locator_webdriver(
+                    "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']")
+                elements = self.get_elements(
+                    ("xpath", "//div[@class = 'tutorCard--icon tutorCard--grey_icon tutorCard--red_icon']"))
                 desired_element = None
                 for element in elements:
                     if "mic-off" in element.get_attribute('innerHTML'):
@@ -1376,10 +1421,90 @@ class NeoTute(CommonMethodsWeb):
         else:
             return ReturnType(False, 'floaters are not displayed')
 
-    def enable_disable_chat(self, flag = "enable"):
+    def enable_disable_chat(self, flag="enable"):
         if flag == "enable":
             self.wait_for_clickable_element_webdriver(self.chat_off)
-            self.element_click(("xpath",self.chat_off))
+            self.element_click(("xpath", self.chat_off))
         elif flag == "disable":
             self.wait_for_clickable_element_webdriver(self.chat_on)
             self.element_click(("xpath", self.chat_on))
+
+    def verify_tab_elements(self):
+        try:
+            items = self.get_elements(("xpath", self.tab_item))
+            number = len(items)
+            flag = number == 5
+            item_list = ['Session\nPlan', 'Session\nSlides', 'Class\nLog', 'Class\nForum', 'Student\nDetails']
+            p_list = []
+            flag2 = True
+            for item in items:
+                if not item.text in item_list:
+                    flag2 = flag and False
+                    return ReturnType(False, "{} is not  displayed".format(flag2))
+            return ReturnType(True, "Tab elements are correct") if all((flag2, flag)) else ReturnType(False,
+                                                                                                      "Tab elements are incorrect")
+        except:
+            return ReturnType(False, "Tab elements are incorrect")
+
+    def verify_screen_elements(self):
+        try:
+            flag = self.verify_tab_elements().result
+            flag2 = self.is_audio_icon_present() and self.is_video_icon_present() and self.is_chat_icon_present() and \
+                    self.is_signal_icon_present() and self.is_end_class_button_present() and self.is_timer_present() and \
+                    self.is_tutor_card_present() and self.is_tutor_mic_present() and self.is_tutor_video_present()
+            return ReturnType(True, "Tutor Screen elements are correct") if all((flag2, flag)) else ReturnType(False,
+                                                                                                               "Tutor screen elements are incorrect")
+        except:
+            return ReturnType(False, "Tutor screen elements are incorrect")
+
+    def is_thumbnail_controller_displayed(self):
+        try:
+            self.wait_for_element_visible(("xpath", self.thumbnails_size_controller))
+            flag = self.get_element(("xpath", self.thumbnails_size_controller)).is_displayed()
+            return ReturnType(True, "Thumbnail size controller is displayed") if flag else ReturnType(False,
+                                                                                                      "Thumbnail size controller is not displayed")
+        except:
+            return ReturnType(False, "Thumbnail size controller is not displayed")
+
+    def set_thumbnail_size(self,size =3):
+        self.wait_for_element_visible(("xpath", self.thumbnails_size_controller))
+        el = self.get_element(("xpath", self.thumbnails_size_controller))
+        self.chrome_driver.execute_script("arguments[0].value = arguments[1];", el,size)
+
+    def verify_thumbnail_controller_action(self):
+        try:
+            self.set_thumbnail_size(3)
+            size_dict = self.get_element(("xpath", self.student_cards)).size
+            self.set_thumbnail_size(2)
+            size_dict_new = self.get_element(("xpath", self.student_cards)).size
+            flag1 = size_dict['height'] > size_dict_new['height']
+            flag2 = size_dict['width'] > size_dict_new['width']
+            self.set_thumbnail_size(3)
+            return ReturnType(True, "Thumbnail controller is working fine") if all((flag1, flag2)) else ReturnType(
+                False, "Thumbnail controller is not working fine")
+        except:
+            return ReturnType(False,"Thumbnail controller is not working fine")
+
+    def is_end_class_button_displayed(self):
+        try:
+            self.wait_for_element_visible(("xpath",self.end_button))
+            flag =self.get_element(("xpath", self.end_button)).is_displayed()
+            return ReturnType(True,"End button is displayed") if flag else ReturnType(False,"End button is not displayed")
+        except:
+            return ReturnType(False, "End button is not displayed")
+
+
+    def is_internet_connection_displayed(self):
+        try:
+            flag = self.get_element(("xpath","//div[@class='neo_cl_SignalStrength']")).is_displayed()
+            return ReturnType(True,"Internet connection is being displayed") if flag else ReturnType(False,"Internet connection is not being displayed")
+        except:
+            return ReturnType(False, "Internet connection is not being displayed")
+
+
+
+
+
+
+
+

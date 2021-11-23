@@ -68,7 +68,7 @@ def login_in(request, driver):
 
 @given("Student launches in-class and navigate to home page")
 def step_impl(login_in):
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
+    student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     login_in.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
 
 
@@ -169,7 +169,7 @@ def step_impl(neo_in_class,login_in):
 
 @given("tutor start the session")
 def step_impl(test_tut):
-    test_tut.start_neo_session(login_data="neo_login_detail2", user='student3')
+    test_tut.start_neo_session(login_data="neo_login_detail1", user='student3')
     test_tut.select_focus_mode(status='off')
     expected_video_slide_num = test_tut.find_video_slide()
     active_slide_number = test_tut.active_presentation_slide_number()
@@ -277,7 +277,7 @@ def step_impl(neo_in_class):
 @then("Verify when more than one students sent messages in chat box at the same time.")
 def step_impl(neo_in_class,student2_neo,student2):
     neo_in_class.send_chat(text='Hi I am student')
-    student2_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
+    student2_details = get_data(Login_Credentials, 'neo_login_detail1', 'student4')
     student2.login_and_navigate_to_home_screen(student2_details['code'], student2_details['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session()
@@ -343,7 +343,7 @@ def step_impl(neo_in_class,login_in):
 @then('Verify that if a student has raised hand and the tutor lowers the hand for that student, text Lower Hand button should again change to Raise Hand and button goes to default state')
 def step_impl(neo_in_class,test_tut):
     neo_in_class.raise_hand()
-    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item='Hands Down')
     time.sleep(1)
     details = neo_in_class.verify_hands_down_message()
@@ -557,7 +557,7 @@ def step_impl(neo_in_class, test_tut):
 
 @then('Verify that students name are shown correctly in Class Forum')
 def step_impl(test_tut):
-    student2_name = get_data(Login_Credentials, "neo_login_detail2",'student3')['name']
+    student2_name = get_data(Login_Credentials, "neo_login_detail1",'student3')['name']
     name_set = test_tut.get_student_name_chat()
     check.equal(student2_name in name_set,True,"Student's name are shown correctly in Class Forum")
 

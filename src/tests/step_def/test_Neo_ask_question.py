@@ -156,14 +156,14 @@ def login_in(request, driver):
 
 @given("launch the application online as neo user and navigate to home screen")
 def step_impl(login_in):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     login_in.login_and_navigate_to_home_screen(student1_details['code'], student1_details['mobile_no'], otp=None)
 
 
 @when("tutor start the session")
 @given("tutor start the session")
 def step_impl(test_tut):
-    test_tut.start_neo_session(login_data="neo_login_detail1", user='student1')
+    test_tut.start_neo_session(login_data="neo_login_detail2", user='student1')
     active_slide_number = test_tut.active_presentation_slide_number()
     test_tut.stop_presentation(select_slide_num=active_slide_number)
 
@@ -350,15 +350,15 @@ def step_impl(neo_in_class):
 @then("Verify that the student who is asking the question, his  video should be enlarged compared to other students.")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
     test_tut.stop_presentation(select_slide_num=1)
-    student1_details2 = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student1_details2 = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student2.login_and_navigate_to_home_screen(student1_details2['code'], student1_details2['mobile_no'], otp=None)
     student2_neo.home_click_on_join()
     student2_neo.join_neo_session_student('mic-on', 'cam-on')
-    student1_details3 = get_data(Login_Credentials, 'neo_login_detail1', 'student1')
+    student1_details3 = get_data(Login_Credentials, 'neo_login_detail2', 'student1')
     student3.login_and_navigate_to_home_screen(student1_details3['code'], student1_details3['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session_student('mic-on', 'cam-on')
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
     time.sleep(7)
@@ -417,7 +417,7 @@ def step_impl(neo_in_class,test_tut):
 
 @then("Verify the student whom the tutor select those students can ask questions")
 def step_impl(neo_in_class, test_tut):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
     time.sleep((1))
@@ -428,7 +428,7 @@ def step_impl(neo_in_class, test_tut):
 @then("Verify that alignment of the thumbnail  when tutor allow student to ask question")
 @then("Verify that student should able to ask doubt when the Tutor allow the student to come on the screen")
 def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo):
-    student1_details = get_data(Login_Credentials,'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials,'neo_login_detail2', 'student3')
     active_slide_number = test_tut.active_presentation_slide_number()
     test_tut.stop_presentation(select_slide_num=active_slide_number)
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
@@ -439,13 +439,13 @@ def step_impl(neo_in_class,test_tut,student2,student2_neo,student3,student3_neo)
 
 @then("Verify that other students should  able to hear when a student asks doubts to Tutor")
 def step_impl(student2_neo):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     student2_neo.get_audio_status_of_student(student_name=student1_details['name'])
 
 
 @then("Verify that when the Tutor remove a student from ask question , the thumbnail should be realigned")
 def step_impl(neo_in_class,test_tut):
-    student1_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student1_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Ask Question")
     test_tut.click_on_menu_option(expected_student_name=student1_details['name'], menu_item="Remove from Ask Question")
     time.sleep(2)
@@ -456,15 +456,15 @@ def step_impl(neo_in_class,test_tut):
 @then("Verify that when a student is on focus mode, five thumbnails should be displayed on the screen.")
 def step_impl(student5,student5_neo,student4,student4_neo,student3,student3_neo,test_tut):
     test_tut.select_focus_mode(status= 'on')
-    student3_details = get_data(Login_Credentials, 'neo_login_detail1', 'student2')
+    student3_details = get_data(Login_Credentials, 'neo_login_detail2', 'student2')
     student3.login_and_navigate_to_home_screen(student3_details['code'], student3_details['mobile_no'], otp=None)
     student3_neo.home_click_on_join()
     student3_neo.join_neo_session_student('mic-on', 'cam-on')
-    student4_details = get_data(Login_Credentials, 'neo_login_detail1', 'student3')
+    student4_details = get_data(Login_Credentials, 'neo_login_detail2', 'student3')
     student4.login_and_navigate_to_home_screen(student4_details['code'], student4_details['mobile_no'], otp=None)
     student4_neo.home_click_on_join()
     student4_neo.join_neo_session_student('mic-on', 'cam-on')
-    student5_details = get_data(Login_Credentials, 'neo_login_detail1', 'student4')
+    student5_details = get_data(Login_Credentials, 'neo_login_detail2', 'student4')
     student5.login_and_navigate_to_home_screen(student5_details['code'], student5_details['mobile_no'], otp=None)
     student5_neo.home_click_on_join()
     student5_neo.join_neo_session_student('mic-on', 'cam-on')
