@@ -206,3 +206,4 @@ def step_impl(test_tut,neo_in_class):
 def step_impl(test_tut):
     details = test_tut.is_internet_connection_displayed()
     check.equal(details.result,True,details.reason)
+
